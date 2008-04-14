@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename="test" description="test"/>
+  <role rolename="admin" description="admin role"/>
+  <group groupname="demo" description="String"/>
+  <user username="test" password="123" fullName="test2" groups="demo" roles="test,admin"/>
+  <user username="guest" password="***" fullName="String" groups="demo"/>
+  <user username="admin" password="123" fullName="String" groups="demo"/>  
+</tomcat-users>

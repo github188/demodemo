@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-bean-collections.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-core.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-2.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/json_simple.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-3.0.16-ga-bin.jar"/>
+	<classpathentry kind="lib" path="lib/pushlet.jar"/>
+	<classpathentry kind="lib" path="lib/sigma-msg.jar"/>
+	<classpathentry kind="lib" path="lib/SNMP4J.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/annotations-api.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/catalina.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/el-api.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/jasper.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/jasper-el.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/jasper-jdt.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="tomcat-lib/tomcat-coyote.jar"/>
+	<classpathentry kind="lib" path="webroot/applets/jfreechart-1.0.9.jar"/>
+	<classpathentry kind="lib" path="webroot/applets/jta.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

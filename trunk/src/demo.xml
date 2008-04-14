@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE demo PUBLIC "demo.dtd" "http://www.sigma.com/demo/demo.dtd">
+<demo name="dld" topology="stoan0.jpg">
+<brief>
+ Interface Failure OSPF and NSRP
+</brief>
+<detail>
+ This demo shows how OSPF can be used to reroute traffic around a failed interface.
+
+ In this demo we fail an interface and watch OSPF reroute around the failure
+</detail>
+<series>
+ <ser name="series1" description="ge-0/0/2.0" xLabel="xLabel" yLabel="yLabel" yMax="100" color="blue" type="snmp" ip="a1.b1.c1.d1" community="public" OID="a.b.c.d.e.f.g1" poll="10" />
+ <ser name="series2" description="ge-0/0/3.0" xLabel="xLabel" yLabel="yLabel" yMax="100" color="orange" type="snmp" ip="a1.b1.c1.d1" community="public" OID="a.b.c.d.e.f.g2" poll="10" />
+ <ser name="series3" description="ge-0/0/2.0" xLabel="xLabel" yLabel="yLabel" yMax="100" color="blue" type="snmp" ip="a2.b2.c2.d2" community="public" OID="a.b.c.d.e.f.g1" poll="10" />
+ <ser name="series4" description="ge-0/0/3.0" xLabel="xLabel" yLabel="yLabel" yMax="100" color="orange" type="snmp" ip="a2.b2.c2.d2" community="public" OID="a.b.c.d.e.f.g2" poll="10" />
+ <ser name="series5" description="ISG2000-E(Primary)" xLabel="xLabel" yLabel="yLabel" yMax="100" color="blue" type="snmp" ip="a3.b3.c3.d3" community="public" OID="a.b.c.d.e.f.g3" poll="10" />
+ <ser name="series6" description="ISG2000-F(Backup)" xLabel="xLabel" yLabel="yLabel" yMax="100" color="orange" type="snmp" ip="a4.b4.c4.d4" community="public" OID="a.b.c.d.e.f.g3" poll="10" />
+</series>
+<graphs>
+ <graph name="graph1" title="M7iDC-A Interfaces" type="gta" series="series1,series2" style="gsa"  />
+ <graph name="graph2" title="M7iDC-B Interfaces" type="gta" series="series3,series4" style="gsa"  />
+ <graph name="graph3" title="ISG Session Tables" type="gta" series="series5,series6" style="gsb"  />
+ <graph name="his" title="his" type="pic" picture="http://127.0.0.1/pic?node=abc&amp;type=his" />
+</graphs>
+<consoles>
+ <console name="console1" title="CLI Session - ISG2000-E" type="normal" device="a3.b3.c3.d3" />
+</consoles>
+<preparation>
+ preparation
+</preparation>
+<healthy>
+ healthy
+</healthy>
+<actions>
+ <action name="basic" topology="stoan1.jpg" graphs="graph1,graph2,graph3,his" consoles="console1" pre="pre1" func="action1" depends="" >
+ Here we can see that the primary eth1/1 infterface and the secondary interface eth1/2 both have an OSPF adjacency.
+
+ [Console] We can see that the learned default route is on the eth1/1 interface which connect to the M7iDC-A's ge-0/0/2.0.
+ </action>
+ <action name="failover" topology="stoan2.jpg" graphs="graph1,graph2,graph3,his" consoles="console1" pre="pre2" func="action2" depends="basic" >
+ Here we are going to fail interface eth1/1. This will force SPF to run and the new best path to be determined.
+
+ [Console] We disable the eth1/1 interface here this will force traffic to failover to the second interface eth1/2 which connects to M7iDC-B's ge-0/0/2.0.
+
+ [Graph Traffic] Traffic Starts Flowing through the eth1/2 interface connected to M7iDC-B's ge-0/0/2.0. Traffic Stops Flowing through M7iDC-A's ge-0/0/2.0 at the same time.
+
+ [Graph Session] The blue line here represents ISG2000-E's session table see that it is unchanged during the interface failover.
+
+ [Console] The default route points out the secondary interface is:
+
+ [Console] Here we show that the only OSPF neighbor active is via the eth1/2 interface:
+ </action>
+ <action name="restore" topology="stoan1.jpg" graphs="graph1,graph2,graph3,his" consoles="console1" pre="pre3" func="action3" depends="failover" >
+ [Console] The e1/1 interface is set to an up state:
+
+ [Console] We check and see that the default route still points out the eth1/2 interface:
+
+ We timelaps the demo 30 seconds to show that after the OSPF neighbor relationship comes back up that the traffic begins to flow out the e1/1 interface.
+
+ [Graph Traffic] Traffic Starts Flowing out the eth1/1 interface. Traffic Stops Flowing out the eth1/2 interface
+
+ [Graph Session] No sessions were lost during this interface failback
+                         
+ </action>
+</actions>
+<provision>
+ provision
+</provision>
+</demo> 

@@ -1,0 +1,12 @@
+#init profile.
+echo off
+#echo "This_is_load_profile!"
+
+#Set heartbeat period as 10s and retry 3 times
+#set HEART_PERIOD=5s
+#set HEART_RETRY=3
+#set TIME_OUT=1s
+heart init 
+#authUser exit_fail
+echo on
+shell cmdLine

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<server name="server:name=sigma">
+    
+   <mbean code="com.sigma.demo.util.threadpool.BasicThreadPool"
+      name="demo.server.system:service=SocketThreadPool">
+      <attribute name="Name">JBoss System Threads</attribute>
+      <attribute name="ThreadGroupName">Basic</attribute>
+      <!-- How long a thread will live without any tasks in MS -->
+      <attribute name="KeepAliveTime">60000</attribute>
+      <!-- The max number of threads in the pool -->
+      <attribute name="MaximumPoolSize">10</attribute>
+      <!--
+      <attribute name="MinimumPoolSize">5</attribute>      
+      -->
+      <!-- The max number of tasks before the queue is full -->
+      <attribute name="MaximumQueueSize">1000</attribute>
+   </mbean>
+   
+   <mbean code="com.sigma.demo.naming.JNDIService"
+      name="demo.server.system:service=namingService">
+   </mbean>  
+   
+   <mbean code="com.sigma.demo.acl.GroupService"
+      name="demo.server.system:service=GroupManager">
+   </mbean>
+   
+   <mbean code="com.sigma.demo.acl.realm.TomcatRealmAdapter"
+      name="demo.server.system:service=tomcatRealmAdapter">
+   </mbean>
+
+   <mbean code="com.sigma.demo.acl.FacadeService"
+      name="demo.server.system:service=demoFacade">
+      <!--
+      <attribute name="jndi"></attribute>
+      -->
+      <attribute name="realm">demo.server.system:service=tomcatRealmAdapter</attribute>
+      <attribute name="defaultRealm">all</attribute>
+   </mbean>
+
+   <mbean code="com.sigma.demo.deploy.MainDeployService"
+      name="demo.server.system:service=MainDeployer,type=scanner"
+      depends="demo.server.system:service=XMLDeployer,type=deployer"
+      >
+      <attribute name="ScanPeriod">4000</attribute>
+      <attribute name="ScanEnabled">true</attribute>
+      <attribute name="Filter">8099</attribute>
+      <attribute name="URLs">${demo.server.root}/deploy,D:/tmp/demo</attribute>
+      <attribute name="thread_pool">demo.server.system:service=SocketThreadPool</attribute>
+   </mbean>
+   
+   <mbean code="com.sigma.demo.deploy.DemoConfigService"
+	  name="demo.server.system:service=demoConfig"
+   >
+      <attribute name="thread_pool">demo.server.system:service=SocketThreadPool</attribute>
+      <attribute name="snmp_service">demo.server.system:service=snmpService</attribute>
+      <attribute name="shell_name">cmd.exe /C</attribute>                        
+   </mbean>
+   
+   <mbean code="com.sigma.demo.service.SNMPWatcherService"
+	  name="demo.server.system:service=snmpService"
+   >
+      <attribute name="thread_pool">demo.server.system:service=SocketThreadPool</attribute>
+   </mbean>
+   
+      
+   
+   <mbean code="com.sigma.demo.deploy.XMLDeployer"
+      name="demo.server.system:service=XMLDeployer,type=deployer"
+      depends="demo.server.system:service=GroupManager">
+      <attribute name="GroupManager">demo.server.system:service=GroupManager</attribute>
+      <!--apply to demo service -->
+      <attribute name="demo_config">demo.server.system:service=demoConfig</attribute>
+   </mbean>   
+   
+   
+   <mbean code="com.sigma.tomcat.Tomcat6Service"
+      name="demo.server.system:service=WebInvoker"
+      >
+      <attribute name="Listen">8081</attribute>
+   </mbean>   
+ 
+</server>

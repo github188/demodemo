@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+demo is the root element for demo script definition consists of brief, detail, steps and optional 
+vars, pre, health, graphs, consoles, vncsvrs, post.
+brief - short description
+detail - detailed description
+vars - variables
+pre -  be called when initializing demo program
+health - be called before entering steps section, failed verification will stop demo program
+graphs - graphical charts
+consoles - input windows
+vncsvrs - remote windows
+steps - demo steps
+post - be called when finishing demo program
+-->
+<!ELEMENT demo (brief, detail, vars?, pre?, health?, graphs?, consoles?, vncsvrs?, steps, post?)>
+<!ELEMENT brief (#PCDATA)>
+<!ELEMENT detail (#PCDATA)>
+<!ELEMENT vars (var+)>
+<!ELEMENT pre (action+)>
+<!ELEMENT health (action+)>
+<!ELEMENT graphs (graph+)>
+<!ELEMENT consoles (console+)>
+<!ELEMENT vncsvrs (vncsvr+)>
+<!ELEMENT steps (step+)>
+<!ELEMENT post (action+)>
+
+<!--
+name - name of certain demo program
+topo - topology picture name
+-->
+<!ATTLIST demo
+name CDATA #REQUIRED
+topo CDATA #REQUIRED
+>
+
+<!--
+var can be used to define variable, for example: map logic device name to an ip address, 
+value of certain variable can be referenced by ${name} in further definition. this 
+requires demo script parser to gather var elements before replacement.
+name - name of certain variable.
+value - value of ceratin variable.
+-->
+<!ELEMENT var EMPTY>
+<!ATTLIST var
+name ID #REQUIRED
+value CDATA #REQUIRED
+>
+
+<!--
+action can be used to define command or function to call.
+cmd - command or function string to be executed
+verify - expected return value, not to check by default
+type - target to execute, default is ms
+-->
+<!ELEMENT action EMPTY>
+<!ATTLIST action
+cmd CDATA #REQUIRED
+verify CDATA #IMPLIED
+type (gui|ns|ms) #IMPLIED
+>
+
+<!--
+name - name of graphcial chart
+init - command to be executed when initializing graphcial chart
+command - command to be executed when retrieving data generally
+period - period of data retrieving
+type - TBD
+-->
+<!ELEMENT graph EMPTY>
+<!ATTLIST graph
+name ID #REQUIRED
+init CDATA #IMPLIED
+cmd CDATA #REQUIRED
+period CDATA #IMPLIED
+type CDATA #IMPLIED
+>
+
+<!--
+name - name of input window
+target - TBD
+args - TBD
+type - TBD
+-->
+<!ELEMENT console EMPTY>
+<!ATTLIST console
+name ID #REQUIRED
+target CDATA #REQUIRED
+args CDATA #IMPLIED
+type CDATA #IMPLIED
+>
+
+<!--
+name - name of remote window
+target - remote machine
+port - TBD
+uname - TBD
+passwd - TBD
+type - TBD
+-->
+<!ELEMENT vncsvr EMPTY>
+<!ATTLIST vncsvr
+name ID #REQUIRED
+target CDATA #REQUIRED
+port CDATA #REQUIRED
+uname CDATA #IMPLIED
+passwd CDATA #IMPLIED
+type CDATA #FIXED "vnc"
+>
+
+<!--
+name - name of demo step
+topo - topology picture name
+graphs - group of graphical charts
+consoles - group of input windows
+-->
+<!ELEMENT step (desc, action+)>
+<!ELEMENT desc (#PCDATA)>
+
+<!ATTLIST step
+name ID #REQUIRED
+topo CDATA #REQUIRED
+graphs CDATA #IMPLIED
+consoles CDATA #IMPLIED
+>

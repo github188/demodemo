@@ -1,0 +1,33 @@
+body{
+	padding:0px;margin:0px;
+	font-size:14px;
+}
+.wrapper{
+	width:780px;
+	margin:0px auto;
+}
+
+ul.tab{margin:0px;}
+
+ul.tab li{
+	display:inline;
+	list-style:none;
+}
+
+#context{
+	background:#999;
+	padding:20px;
+}
+
+#footer{
+	background:#555;
+}
+
+#news legend{
+	border-left:0px;
+	float:right;
+}
+
+#news fieldset{
+	border-left:0px;
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+  <display-name>Tomcat Administration Application</display-name>
+  
+  <description>
+  </description>
+  
+  <servlet>
+     <servlet-name>Web Dispatcher</servlet-name>
+     <servlet-class>com.sigma.web.DispatcherServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>pushlet</servlet-name>
+   	<servlet-class>nl.justobjects.pushlet.servlet.Pushlet</servlet-class>
+   	<load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+	<servlet-name>pushlet</servlet-name>
+	<url-pattern>/pushlet.srv</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+     <servlet-name>Web Dispatcher</servlet-name>
+     <url-pattern>*.cgi</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+     <servlet-name>Web Dispatcher</servlet-name>
+     <url-pattern>/cl/*</url-pattern>
+  </servlet-mapping>
+</web-app> 

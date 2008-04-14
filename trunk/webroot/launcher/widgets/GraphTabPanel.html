@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <title>Win Tab Test</title>
+        <link rel="stylesheet" type="text/css" href="../../static/css/ext-all.css"/>
+        <!-- GC -->
+        <!-- LIBS -->
+        <script type="text/javascript" src="../../static/extjs/adapter/ext/ext-base.js">
+        </script>
+        <!-- ENDLIBS -->
+        <script type="text/javascript" src="../../static/extjs/ext-all.js">
+        </script>
+        <script type="text/javascript" src="sigma.js">
+        </script>
+		<script type="text/javascript" src="WinPanel.js">
+        </script>
+        <script type="text/javascript" src="GraphTabPanel.js">
+        </script>
+        <style type="text/css">
+            html, body {
+                font: normal 11px verdana;
+            }
+            
+            #main-panel td {
+                padding: 5px;
+            }
+        </style>
+        <script type="text/javascript">
+            Ext.onReady(function(){
+                var p = new Sigma.GraphTabPanel({
+                    title: 'Win Tab Panel',
+                    collapsible: true,
+                    collapsed: false,
+                    renderTo: 'container',
+                    width: 600,
+                    height: 500,
+					plain:false
+//                    items: [{
+//                        title: 'Normal Tab',
+//                        html: "My content was added during construction."
+//                    }, {
+//                        title: 'Event Tab',
+//                        listeners: {
+//                            activate: handleActivate
+//                        },
+//                        html: "I am tab 4's content. I also have an event listener attached."
+//                    }]
+                
+                });
+				p.render('container');
+                p.on('maximize', function(window){
+                    window.setSize(700, 500);
+                });
+                p.on('restore', function(window){
+                    window.setSize(400, 300);
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+[2007/11/13 19:40:30] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with xml
+[2007/11/13 19:40:30] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:30] [main] [debug] graphs:
+::arrGraph(graph1) = name="graph1" title="title1" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10"
+::arrGraph(graph2) = name="graph2" title="title2" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10"
+::arrGraph(graph3) = name="graph3" title="title3" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10"
+[2007/11/13 19:40:30] [main] [debug] consoles:
+::arrConsole(console1) = name="console1" title="title1" type="normal" device="10.11.1.1"
+::arrConsole(console2) = name="console2" title="title2" type="normal" device="10.11.1.1"
+::arrConsole(console3) = name="console3" title="title3" type="normal" device="10.11.1.1"
+[2007/11/13 19:40:30] [main] [debug] actions:
+::arrAction(action1) = name="action1" description="This is action1" topology="action1.jpg" graphs="graph1,graph2|graph3" consoles="console1|console2,console3" func="action1" depends=""
+::arrAction(action2) = name="action2" description="This is action2" topology="action2.jpg" graphs="graph1,graph2|graph3" consoles="console1|console2,console3" func="action2" depends="action1"
+[2007/11/13 19:40:30] [main] [debug] properties:
+::arrProperty(actions)     = action1,action2
+::arrProperty(brief)       = This is brief
+::arrProperty(consoles)    = console1,console2,console3
+::arrProperty(detail)      = This is detailed information
+::arrProperty(graphs)      = graph1,graph2,graph3
+::arrProperty(healthy)     = healthy
+::arrProperty(name)        = dld
+::arrProperty(preparation) = preparation
+::arrProperty(provision)   = provision
+::arrProperty(topology)    = demo1.jpg
+[2007/11/13 19:40:30] [main] [alert] Below is static information in xml format:
+<demo name="dld" topology="demo1.jpg">
+  <brief>This is brief</brief>
+  <detail>This is detailed information</detail>
+  <graphs>
+    <graph name="graph1" title="title1" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10" />
+    <graph name="graph2" title="title2" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10" />
+    <graph name="graph3" title="title3" type="snmp" ip="10.11.1.1" community="public" OID="1.2.3.4.5.6" poll="10" />
+  </graphs>
+  <consoles>
+    <console name="console1" title="title1" type="normal" device="10.11.1.1" />
+    <console name="console2" title="title2" type="normal" device="10.11.1.1" />
+    <console name="console3" title="title3" type="normal" device="10.11.1.1" />
+  </consoles>
+  <preparation>preparation</preparation>
+  <healthy>healthy</healthy>
+  <actions>
+    <action name="action1" description="This is action1" topology="action1.jpg" graphs="graph1,graph2|graph3" consoles="console1|console2,console3" func="action1" depends="" />
+    <action name="action2" description="This is action2" topology="action2.jpg" graphs="graph1,graph2|graph3" consoles="console1|console2,console3" func="action2" depends="action1" />
+  </actions>
+  <provision>provision</provision>
+</demo>
+[2007/11/13 19:40:30] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with preparation
+[2007/11/13 19:40:30] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:30] [preparation] [info] Preparing
+[2007/11/13 19:40:30] [DM::popWeb] [alert] api call DM::popup Page http://10.11.1.1/index.htm
+[2007/11/13 19:40:30] [DM::popVNC] [alert] api call DM::popup VNC 10.11.2.2:5900 abcd
+[2007/11/13 19:40:30] [DM::popFlash] [alert] api call DM::popup Flash test.swf
+[2007/11/13 19:40:31] [preparation] [info] Finish to prepare
+[2007/11/13 19:40:32] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with healthy
+[2007/11/13 19:40:32] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:32] [healthy] [info] Checking health
+[2007/11/13 19:40:32] [healthy] [info] Finish to check health
+[2007/11/13 19:40:32] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with action1
+[2007/11/13 19:40:32] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:32] [action1] [info] Start to run action1
+[2007/11/13 19:40:32] [DM::activeGraph] [alert] api call DM::active Graph graph1
+[2007/11/13 19:40:32] [DM::activeConsole] [alert] api call DM::active Console console1
+[2007/11/13 19:40:32] [DM::switchTopo] [alert] api call DM::switchTopo action1-2.jpg
+[2007/11/13 19:40:32] [DS::lazyProvision] [alert] api call DS::demoProvision ns5gt
+[2007/11/13 19:40:32] [action1] [info] Finish to run action1
+[2007/11/13 19:40:33] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with action2
+[2007/11/13 19:40:33] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:33] [action2] [info] Start to run action2
+[2007/11/13 19:40:33] [DM::activeGraph] [alert] api call DM::active Graph graph1
+[2007/11/13 19:40:33] [action2] [info] Finish to run action2
+[2007/11/13 19:40:33] [main] [debug] Try to execute demo script ./demos/group1/demo1/demo1.tcl with provision
+[2007/11/13 19:40:33] [main] [debug] Success to load demo ./demos/group1/demo1/demo1.tcl
+[2007/11/13 19:40:33] [provision] [info] Provisioning
+[2007/11/13 19:40:33] [provision] [info] Finish to provision

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context displayName="UER-Demo" 
+			docBase="D:/pool/Ecplise_workbench/UER-AdminCenter/Web" path="/demo"
+	   	workDir="work\Catalina\localhost\demo">
+  <Logger className="org.apache.catalina.logger.FileLogger" prefix="demo." suffix=".txt" timestamp="true"/>
+</Context>

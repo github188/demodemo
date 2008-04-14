@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Panel Test</title>
+        <link rel="stylesheet" type="text/css" href="../../static/css/ext-all.css"/>
+        <!-- GC -->
+        <!-- LIBS -->
+        <script type="text/javascript" src="../../static/extjs/adapter/ext/ext-base.js">
+        </script>
+        <!-- ENDLIBS -->
+        <script type="text/javascript" src="../../static/extjs/ext-all.js">
+        </script>
+        <script type="text/javascript" src="sigma.js">
+        </script>
+		<script type="text/javascript" src="ResizePanel.js">
+        </script>
+		<script type="text/javascript" src="WinPanel.js">
+        </script>
+		<script type="text/javascript" src="ImageView.js">
+        </script>
+        <style type="text/css">
+            html, body {
+                font: normal 11px verdana;
+            }
+            
+            #main-panel td {
+                padding: 5px;
+            }
+        </style>
+        <script type="text/javascript">
+            Ext.onReady(function(){
+                var p = new Sigma.ImageView({
+                    title: 'ImageView Panel',
+                    collapsible: true,
+                    collapsed: false,
+                    renderTo: 'container',
+                    width: 800,
+                    height: 600
+                });
+                p.setImage('./sara_and_zack.jpg');
+				p.render('container');
+                //                p.on('maximize', function(button, window){
+                //                    window.setSize(700, 500);
+                //                });
+                //                p.on('restore', function(button, window){
+                //                    window.setSize(400, 300);
+                //                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+    </body>
+</html>
