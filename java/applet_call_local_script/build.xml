@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="LogViewer" default="help" basedir=".">
+
+  <target name="properties">
+    <!-- Allow user to override default settings from build.properties -->
+    <property file="build.local.properties" />
+    <tstamp>
+      <!-- Specify date part of Context#getImplementationVersion() -->
+      <format property="build.date" pattern="yyyy-MM-dd-hhmm"/>
+    </tstamp>
+    <property file="build.properties"/>
+	<property name="version" value="0.1"/>
+	  
+	<property name="night.build.name" value="js-shell-${build.date}"/>
+	<property name="night.build.dir" value="${build.dir}/${night.build.name}"/>
+  </target>
+
+	<target name="init" depends="properties">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/classes"/>
+		<mkdir dir="${build.dir}/lib"/>
+		<mkdir dir="${build.dir}/lib/ext-lib"/>
+		<mkdir dir="${build.dir}/docs"/>
+		<mkdir dir="${build.dir}/examples"/>
+		<mkdir dir="${build.dir}/bin"/>
+		<mkdir dir="${build.dir}/signed"/>
+						
+	</target>
+	
+	<target name="compile-shell" depends="properties, init">
+		<javac srcdir="src"
+			   destdir="${build.dir}/classes"
+			   includes="**/*.java"
+			   deprecation="on"
+			   debug="${debug}"
+			   target="${target-jvm}"
+			   source="${source-level}"
+			   classpath="."
+			   encoding="utf-8"
+		>
+		</javac>
+	</target>
+	
+	<target name="gen-key">
+		<genkey alias="IPA BugTracker" storepass="secret" keystore="bugtracker_key" >
+		  <dname>
+		    <param name="CN" value="IPA BugTracker"/>
+		    <param name="OU" value="IPA TA"/>
+		    <param name="O"  value="NSN.COM"/>
+		    <param name="C"  value="CH"/>
+		  </dname>
+		</genkey>
+	
+	</target>
+  
+	<target name="jar" depends="compile-shell">
+		<copy file="../lib/portal/bug_updater_mini.py" todir="${build.dir}/classes"/>
+		<jar jarfile="${build.dir}/lib/bug_traker.jar"
+			 basedir="${build.dir}/classes"
+			 compress="True"
+		 />
+		 
+		<signjar destDir="${build.dir}/signed"
+		    alias="IPA BugTracker" keystore="bugtracker_key"
+		    storepass="secret"
+		    preservelastmodified="true">
+		  <path>
+		    <fileset dir="${build.dir}/lib" includes="**/*.jar" />
+		  </path>
+		</signjar>
+				 
+	</target>
+  
+
+  <target name="clean" depends="properties">
+    <delete quiet="true" dir="${build.dir}"/>
+  </target>
+
+  <target name="deepclean" depends="properties">
+    <delete quiet="true" dir="${build.dir}"/>
+  </target>
+
+  <target name="help" depends="properties">
+<echo>The following targets are available with this build file:
+
+ clean       remove all compiled classes and copied property files
+
+ compile     compile classes and copy all property files
+             into ${classes} directory
+             excluding deprecated code
+
+ deepclean   remove all generated files and directories
+
+ dist        create ${dist.file} with full Rhino distribution
+
+ help        print this help
+
+ jar         create runtime.jar in ${build.dir}/lib
+</echo>
+  </target>
+
+</project>
