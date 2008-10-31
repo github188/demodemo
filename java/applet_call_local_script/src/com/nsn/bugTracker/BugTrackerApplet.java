@@ -51,7 +51,7 @@ public class BugTrackerApplet extends Applet {
 		AccessController.doPrivileged(
 				new PrivilegedAction() {
 					public Object run(){
-						execScript("bug_updater_mini.py", 
+						execScript("xxx.py", 
 							  new String[]{"-r", getParameter("UpdateUrl"), "-b", bug},
 							  new ProcessFilter("*", ""){
 								@Override

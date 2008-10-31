@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <title>test</title>
+	</head>
+	<body>
+
+
+		
+		<APPLET id="hello" CODE="com.nsn.bugTracker.BugTrackerApplet.class" CODEBASE="http://127.0.0.1:8080/" archive="js/bug_traker.jar" WIDTH = "300" HEIGHT = "300" ALIGN = "center" VSPACE = "3">
+		</APPLET>
+		
+		<script>
+			
+			jshello = document.getElementById('hello');
+			
+			alert(jshello.getCurrentUser());
+		</script>
+		
+	</body>
+</html>
