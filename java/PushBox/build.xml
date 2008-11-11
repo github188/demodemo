@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<project name="Crazy-History" default="run" basedir=".">
+
+	<property name="base.dir" value="." />
+	<property name="src.dir" value="src" />
+	<property name="classes.dir" value="classes" />
+	<property name="java_version" value="1.5" />
+	
+	<!-- 编译 -->
+	<target name="compile"  description="compile the source files">
+		<mkdir dir="${classes.dir}" />
+		
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" target="${java_version}" debug="false" 			encoding="UTF-8"
+			fork="true"
+			memoryInitialSize="64m"
+			memoryMaximumSize="128m"
+			>
+		</javac>
+
+	</target>
+
+	
+	<target name="run" depends="compile" description="lunach usr demo server">
+		<java 
+			classname="PushBox"
+			fork="true"
+			clonevm="true"
+			maxmemory="1024m"
+		>
+			<classpath> 
+				<pathelement location="${classes.dir}"/>				
+			</classpath>
+		</java>
+	</target>
+	
+
+</project>
