@@ -23,23 +23,44 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
+import org.demo.five.FiveChess;
+import org.demo.five.Player;
+import org.demo.five.player.LocalPlayer;
+import org.demo.five.player.RobotPlayer;
+
 public class MainPlane extends JFrame {
 	private ChessBoard board = null;
+	private FiveChess chess = null;
+	private Player localPlayer = null;
 	
 	public MainPlane(){
 		  super("Java五子棋");
 		  setLayout(new BorderLayout());
 		  board = new ChessBoard();
+		  chess = new FiveChess();
+		  localPlayer = new LocalPlayer("anonymity", ChessMan.WHITE);
+		  board.setPlayer(localPlayer);
+		  
+		  chess.addPlayer(localPlayer);
+		  chess.addPlayer(new RobotPlayer("robot", ChessMan.BLACK));
+		  chess.addModelListener(board);
+		  
 		  this.getContentPane().add("Center", board);
-		  //add(boardPanel,BorderLayout.CENTER);
 		  this.init();
 		  pack();
 		  setSize(670,548);
 		  //setVisible(true);
-		  setResizable(false);	  
+		  setResizable(false); 
+	}
+	
+	public void start(){
+		
 	}
 	
 	public void init() {
+		
+		this.chess.start(this.localPlayer);
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);

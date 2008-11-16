@@ -17,13 +17,45 @@
 
 package org.demo.five.gui;
 
-import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
+
 
 /**
  * @author deon
  */
-public class ChessMan extends Canvas {
-
-	private static final long serialVersionUID = 1L;
-
+public class ChessMan {
+	public static final ChessMan WHITE = new ChessMan(1);
+	public static final ChessMan BLACK = new ChessMan(2);
+	
+	private int value = 0;
+	//private static final long serialVersionUID = 1L;
+	private ChessMan(int value){
+		this.value = value;
+	}
+	
+	public void paint(int x, int y, int size, Graphics g) {
+		if (this == WHITE){
+			g.setColor(Color.white);
+		}else {
+			g.setColor(Color.yellow);
+		}
+		
+		g.fillOval(x - size/2, y - size/2, size, size);
+	}
+	
+	public int getValue(){
+		return this.value;
+	}
+	
+	public static ChessMan load(int i){
+		if(i == WHITE.getValue()){
+			return WHITE;
+		}else if(i == BLACK.getValue()){
+			return BLACK;
+		}else {
+			return new ChessMan(i);
+		}
+			
+	}
 }

@@ -20,7 +20,7 @@ package org.demo.five.model;
 import java.util.*;
 
 public class DataModel {
-	protected byte[][] data = new byte[18][18];
+	public byte[][] data = new byte[18][18];
 	private Collection<ModelListener> listener = new Vector<ModelListener>();
 	public DataModel(){
 		
@@ -35,4 +35,24 @@ public class DataModel {
 			l.update(e);
 		}
 	}
+	
+	public void set(int x, int y, int data){
+		this.set(x, y, (byte)data);
+	}	
+	
+	public void set(int x, int y, byte data){
+		this.data[x][y] = data;
+		fireEvent(new ModelEvent(ModelEvent.ADD, x, y, data));
+	}
+	
+	public void remove(int x, int y){
+		byte oldData = this.data[x][y];
+		this.data[x][y] = 0;
+		fireEvent(new ModelEvent(ModelEvent.REMOVE, x, y, oldData));
+	}
+	
+	public boolean isEmpty(int x, int y){
+		return this.data[x][y] == 0;
+	}
+	
 }

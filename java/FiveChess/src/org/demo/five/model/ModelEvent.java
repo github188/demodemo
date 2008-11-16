@@ -22,8 +22,8 @@ package org.demo.five.model;
  * @author deon
  */
 public class ModelEvent {
-	public int ADD = 0;
-	public int REMOVE = 1;
+	public static final int ADD = 1;
+	public static final int REMOVE = 2;
 	
 	private int action;
 	private int x;
