@@ -7,9 +7,7 @@ import java.util.Iterator;
 import org.demo.five.model.DataModel;
 import org.junit.Test;
 
-public class TestGameTreefindAllPosition {
-	private GameTree game = null;
-	private DataModel data = null;
+public class TestGameTreefindAllPosition extends BaseTestGameTree{
 	
 	private String initState = "0**0" +
 							   "*00x" +
@@ -18,7 +16,7 @@ public class TestGameTreefindAllPosition {
 	
 	@Test
 	public void test_findAllPosition_9() {
-		this.initStatus(4, initState);
+		this.initChessStatus(4, initState);
 		int[][] position = {{0,0},{3,0}, {1,1}, {2,1}, {1,2}, {3,2}, {0, 3}};
 		Iterator<GameTree.Position> iter = game.findAllPosition(true);
 		
@@ -35,7 +33,7 @@ public class TestGameTreefindAllPosition {
 	
 	@Test
 	public void test_findAllPosition_0() {
-		this.initStatus(4, initState);
+		this.initChessStatus(4, initState);
 		int[][] position = {{0,0},{3,0}, {1,1}, {2,1}, {1,2}, {3,2}, {0, 3}};
 		Iterator<GameTree.Position> iter = game.findAllPosition(true);
 		
@@ -50,17 +48,5 @@ public class TestGameTreefindAllPosition {
 
 	}	
 	
-	private void initStatus(int size, String st){
-		data = new DataModel(size);
-		game = new GameTree(data, 1, 2);
-		
-		int length = data.data.length;
-		for(int i = 0; i < length * length; i++){
-			if(st.charAt(i) == '*'){
-				data.set(i % length, i / length, 1);
-			}else if(st.charAt(i) == 'x'){
-				data.set(i % length, i / length, 2);
-			}
-		}
-	}
+
 }

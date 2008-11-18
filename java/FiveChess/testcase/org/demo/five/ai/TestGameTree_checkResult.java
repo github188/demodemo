@@ -9,7 +9,7 @@ import org.demo.five.model.DataModel;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestGameTree_checkResult {
+public class TestGameTree_checkResult extends BaseTestGameTree{
 	private static final byte RC = 1, HC = 2;
 	private GameTree game = null;
 	private DataModel data = null;
@@ -21,7 +21,7 @@ public class TestGameTree_checkResult {
 
 	@Test
 	public void test_one_self_point_in_min_bound() {
-		this.initStatus(new int[][]{{0,7,RC}});
+		this.initChessStatus(15, new int[][]{{0,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
 		assertEquals(R(1, 7), "C111");
@@ -35,7 +35,7 @@ public class TestGameTree_checkResult {
 	
 	@Test
 	public void test_one_self_point_in_max_bound() {
-		this.initStatus(new int[][]{{14,7,RC}});
+		this.initChessStatus(15, new int[][]{{14,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
 		assertEquals(R(13, 7), "C111");
@@ -49,7 +49,7 @@ public class TestGameTree_checkResult {
 	
 	@Test
 	public void test_one_self_point() {
-		this.initStatus(testData1);
+		this.initChessStatus(15, testData1);
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
 		assertEquals(R(8, 7), "2111");
@@ -71,13 +71,13 @@ public class TestGameTree_checkResult {
 	
 	@Test
 	public void test_two_self_point() {
-		this.initStatus(new int[][]{{7,7,RC}, {8,7,RC} });
+		this.initChessStatus(15, new int[][]{{7,7,RC}, {8,7,RC} });
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 	}	
 
 	@Test
 	public void test_one_opponent_point() {
-		this.initStatus(testData1);
+		this.initChessStatus(15, testData1);
 		
 		assertEquals(H(8, 7), "B111");
 		assertEquals(H(8, 6), "1B11");
@@ -91,21 +91,6 @@ public class TestGameTree_checkResult {
 	}
 	
 	
-	private String R(int x, int y){
-		return new String(game.checkResult(x, y, RC));
-	}
-	private String H(int x, int y){
-		return new String(game.checkResult(x, y, HC));
-	}
-	
-	private void initStatus(int[][] testData){
-		data = new DataModel(15);
-		game = new GameTree(data, RC, HC);
-		
-		for(int[] d : testData){
-			data.set(d[0], d[1], d[2]);
-		}
-		
-	}
+
 
 }
