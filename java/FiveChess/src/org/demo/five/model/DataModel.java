@@ -20,10 +20,15 @@ package org.demo.five.model;
 import java.util.*;
 
 public class DataModel {
-	public byte[][] data = new byte[18][18];
-	private Collection<ModelListener> listener = new Vector<ModelListener>();
+	public byte[][] data = null;
+	private Collection<ModelListener> listener = null;
 	public DataModel(){
-		
+		this(18);
+	}
+
+	public DataModel(int length){
+		data = new byte[length][length];
+		listener = new Vector<ModelListener>();
 	}
 	
 	public void addListener(ModelListener l){
