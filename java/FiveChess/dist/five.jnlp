@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for FiveChess Application -->
+<jnlp
+  spec="1.5+"
+  codebase="http://demodemo.googlecode.com/svn/trunk/java/FiveChess/dist"
+  href="five.jnlp">
+  <information>
+    <title>Five Game</title>
+    <vendor>Deonwu</vendor>
+    <description>Simple five Game</description>
+    <offline-allowed/> 
+    <shortcut online="false">
+      <desktop/>
+    </shortcut>
+  </information>
+  <resources>
+    <jar href="five-0.1.jar"/>
+  </resources>
+  <application-desc main-class="org.demo.five.gui.MainPlane"/>
+</jnlp> 
