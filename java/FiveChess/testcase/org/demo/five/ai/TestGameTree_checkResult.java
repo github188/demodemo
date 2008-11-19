@@ -10,15 +10,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestGameTree_checkResult extends BaseTestGameTree{
-	private static final byte RC = 1, HC = 2;
-	private GameTree game = null;
-	private DataModel data = null;
 	private int[][] testData1 = {{7,7,RC} };
-	
-	@Before
-	public void setUp() throws Exception {
-	}
 
+	@Test
+	public void test_empty_board() {
+		this.initChessStatus(15, new int[][]{});
+		//byte[] st = game.checkResult(5, 2, (byte)1);
+		//某一点的8个方向的棋子
+		assertEquals(R(0, 0), "B0BB");
+		assertEquals(R(14, 14), "B0BB");
+		assertEquals(R(14, 0), "BBB0");
+		assertEquals(R(0, 14), "BBB0");
+	}
+	
+	
+	
 	@Test
 	public void test_one_self_point_in_min_bound() {
 		this.initChessStatus(15, new int[][]{{0,7,RC}});
@@ -31,7 +37,7 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		assertEquals(R(5, 7), "1111");
 		
 		assertEquals(R(0, 8), "BB2B");
-	}	
+	}
 	
 	@Test
 	public void test_one_self_point_in_max_bound() {

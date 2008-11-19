@@ -19,8 +19,10 @@ package org.demo.five.ai;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.demo.five.model.DataModel;
 
@@ -41,6 +43,8 @@ public class GameTree {
 	private int searchWidth;
 	byte[][] dir = {{1, 0}, {1, -1}, {0, -1}, {-1, -1},
 			{-1, 0}, {-1, 1}, {0, 1}, {1, 1}};
+	
+	private boolean random = false;
 	/**
 	 * 创建一个博弈树。
 	 * @param value 博弈树的当前状态。
@@ -48,12 +52,17 @@ public class GameTree {
 	 * @param human 在博弈树中代表人的值。
 	 * @param width 搜索宽度，在博弈树的每层选择进行递归模拟的数量。越大搜索的时间越长。
 	 */
-	public GameTree(DataModel value, byte robot, byte human, int width){
+	public GameTree(DataModel value, byte robot, byte human, int width, boolean random){
 		this.data = value.data;
 		this.robot = robot;
 		this.human = human;
 		this.searchWidth = width;
+		this.random = random;
 	}
+	
+	public GameTree(DataModel value, byte robot, byte human, int width){
+		this(value, robot, human, width, false);
+	}	
 	
 	public GameTree(DataModel value, int robot, int human){
 		this(value, (byte)robot, (byte)human, 5);
@@ -73,9 +82,9 @@ public class GameTree {
 				//if (arg0.weight == arg1.weight) return 1;
 				//避免删除同值得节点。
 				if (Math.abs(arg0.weight) > Math.abs(arg1.weight)){
-					return robot ? 1 : -1;
+					return -1;
 				}else {
-					return robot ? -1 : 1;
+					return 1;
 				}
 			}});
 		Position min, max, index;
@@ -96,21 +105,46 @@ public class GameTree {
 			}
 		}
 		
+		//开局第一颗。
+		if (list.size() == this.data.length * this.data.length){
+			return new Position(this.data.length /2, this.data.length /2, 0);
+		}
+		
 		max = list.isEmpty() ? DUMMY : list.first();
+		List<Position> equals = new Vector<Position>();
+		Iterator<Position> optimize = list.iterator();
 		if (depth > 0){
 			//max = GameTree.MIN_DUMMY;
-			Iterator<Position> optimize = list.iterator();
 			for(int i = 0; i < searchWidth && optimize.hasNext(); i++){
 				index = optimize.next();
 				data[index.x][index.y] = robot ? this.robot : this.human;
+				
 				//模拟搜索对方的最优方案。
 				min = search(depth - 1, !robot);
 				index.weight += min.weight;
 				if(robot && index.weight > max.weight || index.weight < max.weight){
 					max = index;
+				}else if(this.random && max.weight == index.weight) {
+					equals.add(index);
 				}
+				
 				data[index.x][index.y] = 0;
 			}
+		}else if(this.random) {
+			while(optimize.hasNext()) {
+				index = optimize.next();
+				if(index.weight == max.weight){
+					equals.add(index);
+				}else {
+					break;
+				}
+			}
+		}
+		
+		if(this.random && !equals.isEmpty()){ //在等值棋力中随机选择一个点。
+			equals.add(max);
+			int i = (int)(Math.random() * equals.size());
+			max = equals.get(i);
 		}
 		
 		return max;
@@ -165,36 +199,41 @@ public class GameTree {
 	 * 0x0000x 2
 	 */
 	public int evaluation(Position p, boolean robot){
-		byte[] status = this.checkResult(p.x, p.y, robot ? this.robot : this.human);
+		byte[][] status = this.checkResult(p.x, p.y, robot ? this.robot : this.human);
 		int result = 0;
-		for (byte i : status){
+		for (byte i : status[0]){
 			if(i >= 'A'){
 				result += (int)Math.pow(10, i - 'A');
 			}else if(i >= '0'){
 				result += (int)Math.pow(10, i - '0') * 2;
 			}
 		}
+		for (byte i : status[1]){
+			result -= i;
+		}
 		
 		return (robot) ? result : -1 * result;
 	}
 	
 	
-	public byte[] checkResult(int x, int y, byte chess){
+	public byte[][] checkResult(int x, int y, byte chess){
 		//if(this.data.isEmpty(x, y)) return false;
 		//byte[][] data = this.data.data;		
-		byte[] result = new byte[4];
+		byte[][] result = new byte[2][4];
 		byte[] r1, r2;
 		int dirCount = dir.length / 2;
 		for(int i = 0; i < dirCount; i++){
 			r1 = this.checkStatusOnDirection(x, y, chess, i);
 			r2 = this.checkStatusOnDirection(x, y, chess, i + dirCount);
 			
-			result[i] = (byte)(r1[0] + r2[0] + 1); //
+			result[0][i] = (byte)(r1[0] + r2[0] + 1); //
 			
 			if(r1[2] + r2[2] < 4){ //当前的活动空间为死棋。
-				result[i] = '0';
+				result[0][i] = '0';
 			}else{
-				result[i] += (r1[1] == 0 || r2[1] == 0) ? 'A' : '0';
+				result[0][i] += (r1[1] == 0 || r2[1] == 0) ? 'A' : '0';
+				//棋子间的空格数=搜索宽度 - 棋子数 - 外延空格数
+				result[1][i] += r1[2] - r1[0] - r1[1] + r2[2] - r2[0] - r2[1];
 			}
 		}
 		
@@ -223,7 +262,7 @@ public class GameTree {
 			}
 		}
 		//一共有多少自己的棋子；是否是活棋；在这个方向上搜索的长度，
-		return new byte[]{count, space, i};
+		return new byte[]{count, space, --i};
 	}
 	
 }

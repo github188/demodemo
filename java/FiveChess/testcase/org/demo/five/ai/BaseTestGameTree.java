@@ -10,7 +10,7 @@ public class BaseTestGameTree {
 	
 	protected void initChessStatus(int size, int[][] testData){
 		data = new DataModel(size);
-		game = new GameTree(data, RC, HC);
+		game = gameInstance(data);
 		
 		for(int[] d : testData){
 			data.set(d[0], d[1], d[2]);
@@ -20,7 +20,7 @@ public class BaseTestGameTree {
 	
 	protected void initChessStatus(int size, String st){
 		data = new DataModel(size);
-		game = new GameTree(data, 1, 2);
+		game = gameInstance(data);
 		
 		int length = data.data.length;
 		for(int i = 0; i < length * length; i++){
@@ -32,11 +32,15 @@ public class BaseTestGameTree {
 		}
 	}	
 	
+	protected GameTree gameInstance(DataModel data){
+		return new GameTree(data, RC, HC);
+	}
+	
 	protected String R(int x, int y){
-		return new String(game.checkResult(x, y, RC));
+		return new String(game.checkResult(x, y, RC)[0]);
 	}
 	protected String H(int x, int y){
-		return new String(game.checkResult(x, y, HC));
+		return new String(game.checkResult(x, y, HC)[0]);
 	}	
 	
 	protected int RE(int x, int y){
@@ -46,5 +50,11 @@ public class BaseTestGameTree {
 	protected int HE(int x, int y){
 		GameTree.Position p = new GameTree.Position(x, y, 0);
 		return game.evaluation(p, false);
-	}		
+	}
+
+	protected GameTree.Position S(int depth, boolean robot){
+		//GameTree.Position p = new GameTree.Position(x, y, 0);
+		return game.search(depth, robot);
+	}
+	
 }
