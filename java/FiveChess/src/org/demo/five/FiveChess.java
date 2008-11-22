@@ -17,6 +17,9 @@
 
 package org.demo.five;
 
+import java.util.Collection;
+import java.util.Vector;
+
 import org.demo.five.model.DataModel;
 import org.demo.five.model.ModelListener;
 
@@ -35,32 +38,40 @@ public class FiveChess {
 	private Player playerOne = null;
 	private Player playerTwo = null;
 	public int status = WAITING;
+	private ChessListenerBroadcast listener = new ChessListenerBroadcast();
 	
 	public FiveChess(){
 		data = new DataModel();
 	}
 	
 	public void play(Player p, int x, int y) {
-		if (this.status != PLAYING) return;
+		if (this.status != PLAYING) throw new Error("Chess not start!");
 		
-		if((p == this.playerOne || p == this.playerTwo) && p.isActive()){
-			if(this.data.isEmpty(x, y)){
-				this.data.set(x, y, p.getChessMan().getValue());
-				if(this.checkResult(x, y)){
-					this.end(p, WIN);
-				}else {
-					this.handover(p, false);
-				}
-			}
+		if (p != this.playerOne && p != this.playerTwo) 
+			throw new Error(String.format("User '%s' not join game.", p.name()));
+		
+		if(!p.isActive()) 
+			new Error(String.format("User '%s' not active.", p.name()));
+		
+		if(!this.data.isEmpty(x, y))
+			new Error(String.format("Invalid Position '%s,%s'.", x, y));
+		
+		this.data.set(x, y, p.getChessMan().getValue());
+		this.listener.play(p, x, y);
+		
+		if(this.checkResult(x, y)){
+			this.end(p, WIN);
+		}else {
+			this.handover(p, false);
 		}
 	}
 
 	public void undo(int step){
-		
+		this.listener.undo(step);
 	}
 
 	public void redo(int step){
-		
+		this.listener.redo(step);
 	}
 	
 	public void addPlayer(Player p){
@@ -69,6 +80,7 @@ public class FiveChess {
 		}else {
 			playerTwo = p;
 		}
+		
 		p.setFiveChess(this);
 		if(this.playerOne != null && this.playerTwo != null){
 			this.status = READY;
@@ -76,8 +88,21 @@ public class FiveChess {
 	}
 	
 	public void start(Player p){
-		this.handover(p, true);
+		this.data.clear();
 		this.status = PLAYING;
+		//this.handover(p, true);
+		
+		if(this.playerOne == p){
+			p.start(this.playerTwo, true);
+			this.playerTwo.start(this.playerOne, false);
+		}else {
+			p.start(this.playerOne, true);
+			this.playerOne.start(this.playerTwo, false);
+		}
+		
+		this.listener.start(p);
+		p.handover(true);
+		//this.handover(p, true);
 	}
 	
 	protected void handover(Player p, boolean hold){
@@ -87,27 +112,35 @@ public class FiveChess {
 		}else if(this.playerTwo == p) {
 			this.playerOne.handover(!hold);
 		}
+		
+		this.listener.handover(p);
 	}
 	
 	public void addModelListener(ModelListener l) {
 		this.data.addListener(l);
 	}
 	
-	public void end(Player p, int result){
+	public void addChessListener(ChessListener l) {
+		this.listener.addListener(l);
+	}	
+	
+	public void end(Player p, final int result){
 		this.status = END;
-		
+		int pResult = 0;
 		p.setResult(result);
 		if(result == WIN){
-			result = FAIL;
+			pResult = FAIL;
 		}else if(result == FAIL){
-			result = WIN;
+			pResult = WIN;
 		}
 		
 		if(p == this.playerOne){
-			this.playerTwo.setResult(result);
+			this.playerTwo.setResult(pResult);
 		}else {
-			this.playerOne.setResult(result);
+			this.playerOne.setResult(pResult);
 		}
+		
+		this.listener.end(p, result);
 	}
 	
 	protected boolean checkResult(int x, int y){
@@ -135,4 +168,52 @@ public class FiveChess {
 		return false;
 	}
 	
+	class ChessListenerBroadcast implements ChessListener{
+		private Collection<ChessListener> lisenters = new Vector<ChessListener>();
+		
+		public void addListener(ChessListener l){
+			this.lisenters.add(l);
+		}
+
+		@Override
+		public void end(Player p, int result) {
+			for (ChessListener l : lisenters) {
+				l.end(p, result);
+			}
+		}
+
+		@Override
+		public void redo(int step) {
+			for (ChessListener l : lisenters) {
+				l.redo(step);
+			}			
+		}
+
+		@Override
+		public void undo(int step) {
+			for (ChessListener l : lisenters) {
+				l.undo(step);
+			}			
+		}
+
+		@Override
+		public void play(Player p, int x, int y) {
+			for (ChessListener l : lisenters) {
+				l.play(p, x, y);
+			}				
+		}
+
+		@Override
+		public void start(Player p) {
+			for (ChessListener l : lisenters) {
+				l.start(p);
+			}			
+		}	
+		
+		public void handover(Player p){
+			for (ChessListener l : lisenters) {
+				l.handover(p);
+			}						
+		}
+	}
 }

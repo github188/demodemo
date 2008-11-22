@@ -60,4 +60,9 @@ public class DataModel {
 		return this.data[x][y] == 0;
 	}
 	
+	public void clear(){
+		for (byte[] row : this.data)
+			for(int i = 0; i < row.length; i++) row[i] = 0;
+	}
+	
 }

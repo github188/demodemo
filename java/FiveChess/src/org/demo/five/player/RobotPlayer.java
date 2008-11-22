@@ -17,9 +17,16 @@
 
 package org.demo.five.player;
 
+import org.demo.five.Player;
+import org.demo.five.ai.GameTree;
 import org.demo.five.gui.ChessMan;
 
 public class RobotPlayer extends AbstractPlayer{
+	
+	protected Player competitor = null;
+	protected GameTree brain = null;
+	protected boolean isFirst = false; //是否先手走棋。
+	protected int level = 0;
 
 	public RobotPlayer(String name, ChessMan c) {
 		super(name, c);
@@ -28,23 +35,38 @@ public class RobotPlayer extends AbstractPlayer{
 	public void handover(boolean isHold) {
 		super.handover(isHold);
 		if(isHold){
-			int x = random();
-			int y = random();
-			while(! this.chess.data.isEmpty(x, y)){
-				x = random();
-				y = random();
-			}
-			
-			this.play(x, y);
+			GameTree.Position p = this.brain.search(this.level, this.isFirst);
+			this.play(p.x, p.y);
 		}
 	}
 	
-	private int random(){
-		int d = (int) Math.round(Math.random() * 18);
-		while(d < 0 || d >= 18){
-			d = (int) Math.round(Math.random() * 18);
+	@Override
+	public void start(Player p, boolean isFirst) {
+		
+		this.competitor = p;
+		this.isFirst = isFirst;
+		int robot, human;
+		if(isFirst) {
+			robot = this.getChessMan().getValue();
+			human = this.competitor.getChessMan().getValue();
+		}else {
+			robot = this.competitor.getChessMan().getValue();
+			human = this.getChessMan().getValue();
 		}
 		
-		return d;
+		this.brain = new GameTree(this.chess.data, robot, human);
+		
+		/*
+		if(this.isFirst){
+			GameTree.Position position = this.brain.search(this.level, this.isFirst);
+			//激活用户。
+			super.handover(true);
+			this.play(position.x, position.y);
+		} */
 	}
+	
+	public void setLevel(int l) {
+		this.level = l;
+	}
+	
 }

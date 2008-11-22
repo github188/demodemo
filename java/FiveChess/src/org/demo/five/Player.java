@@ -22,6 +22,13 @@ import org.demo.five.gui.ChessMan;
 public interface Player {
 
 	/**
+	 * 开局
+	 * @param p 对手。
+	 * @param isFirst Ture表示先手开局， False表示后手开局。
+	 */
+	public void start(Player p, boolean isFirst);
+	
+	/**
 	 * 轮换走棋
 	 * @param isHold Ture表示轮到该玩家走棋， False该玩家等待对方走棋。
 	 */
@@ -55,4 +62,6 @@ public interface Player {
 	public void setChessMan(ChessMan c);
 	
 	public ChessMan getChessMan();
+	
+	public String name();
 }

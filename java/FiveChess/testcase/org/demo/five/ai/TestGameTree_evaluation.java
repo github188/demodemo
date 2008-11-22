@@ -16,14 +16,14 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		this.initChessStatus(15, new int[][]{{0,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
-		assertEquals(RE(1, 7), 160);
-		assertEquals(RE(2, 7), 159);
-		assertEquals(RE(3, 7), 158);
+		assertEquals(RE(1, 7), 260);
+		assertEquals(RE(2, 7), 259);
+		assertEquals(RE(3, 7), 258);
 		assertEquals(RE(4, 7), 157);
 		assertEquals(RE(5, 7), 80);
 		
 		//assertEquals(R(0, 8), "BB2B");
-		assertEquals(RE(0, 8), 230);
+		assertEquals(RE(0, 8), 260);
 	}
 	
 	@Test
@@ -38,7 +38,7 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(6, 7), "2111");
-		assertEquals(HE(6, 7), -260);
+		assertEquals(HE(6, 7), -130);
 	}	
 
 	@Test
@@ -62,16 +62,16 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "3111");
-		assertEquals(HE(8, 7), -2060);
+		assertEquals(HE(8, 7), -1030);
 		
 		assertEquals(H(7, 6), "1221");
-		assertEquals(HE(7, 6), -440);
+		assertEquals(HE(7, 6), -220);
 
 		this.initChessStatus(15, new int[][]{{7,7,HC}, {5,7,HC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "3111");
-		assertEquals(HE(8, 7), -2059);		
+		assertEquals(HE(8, 7), -1029);		
 	}	
 	
 	@Test
@@ -86,7 +86,7 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "4111");
-		assertEquals(HE(8, 7), -20060);		
+		assertEquals(HE(8, 7), -10030);		
 
 	}		
 
@@ -102,7 +102,7 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "F111");
-		assertEquals(HE(8, 7), -100060);
+		assertEquals(HE(8, 7), -200030);
 	}	
 	
 	@Test

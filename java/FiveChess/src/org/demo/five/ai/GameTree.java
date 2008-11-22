@@ -28,7 +28,7 @@ import org.demo.five.model.DataModel;
 
 public class GameTree {
 	private static final Position DUMMY = new Position(0, 0, 0);
-	private static final int MAX_WEIGHT = 10000;
+	private static final int MAX_WEIGHT = 100000;
 	public static class Position {
 		public int x;
 		public int y;
@@ -190,7 +190,7 @@ public class GameTree {
 	/**
 	 * 评估但前节点的分值。
 	 * @param p
-	 * @param robot
+	 * @param robot 定义robot为先手，先后主要进攻，以活棋为最大值。后手为防守以冲型为最大值。
 	 * 
 	 * 
 	 * 1x00000 
@@ -198,14 +198,14 @@ public class GameTree {
 	 * 0x0x000 2
 	 * 0x0000x 2
 	 */
-	public int evaluation(Position p, boolean robot){
+	public int evaluation(Position p, boolean robot){ 
 		byte[][] status = this.checkResult(p.x, p.y, robot ? this.robot : this.human);
 		int result = 0;
 		for (byte i : status[0]){
 			if(i >= 'A'){
-				result += (int)Math.pow(10, i - 'A');
+				result += (int)Math.pow(10, i - 'A') * (robot ? 1 : 2);
 			}else if(i >= '0'){
-				result += (int)Math.pow(10, i - '0') * 2;
+				result += (int)Math.pow(10, i - '0') * (robot ? 2 : 1);
 			}
 		}
 		for (byte i : status[1]){
@@ -233,7 +233,7 @@ public class GameTree {
 			}else{
 				result[0][i] += (r1[1] == 0 || r2[1] == 0) ? 'A' : '0';
 				//棋子间的空格数=搜索宽度 - 棋子数 - 外延空格数
-				result[1][i] += r1[2] - r1[0] - r1[1] + r2[2] - r2[0] - r2[1];
+				result[1][i] += r1[2] - r1[0] - r1[1] + r2[2] - r2[0] - r2[1]; 
 			}
 		}
 		
@@ -251,7 +251,11 @@ public class GameTree {
 			ix += dx;
 			iy += dy;
 			if(ix >= data.length || ix < 0 || 
-			   iy >= data[0].length || iy < 0 ) break;
+			   iy >= data[0].length || iy < 0 ){
+				i++;
+				space++; //边界上定义为活棋。这样可以简化后手防守算法。
+				break;
+			}
 			if(data[ix][iy] == chess){
 				count++;
 				space = 0;

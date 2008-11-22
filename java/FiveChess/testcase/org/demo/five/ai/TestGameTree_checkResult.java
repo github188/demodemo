@@ -17,10 +17,10 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		this.initChessStatus(15, new int[][]{});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
-		assertEquals(R(0, 0), "B0BB");
-		assertEquals(R(14, 14), "B0BB");
-		assertEquals(R(14, 0), "BBB0");
-		assertEquals(R(0, 14), "BBB0");
+		assertEquals(R(0, 0), "1011");
+		assertEquals(R(14, 14), "1011");
+		assertEquals(R(14, 0), "1110");
+		assertEquals(R(0, 14), "1110");
 	}
 	
 	
@@ -30,13 +30,13 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		this.initChessStatus(15, new int[][]{{0,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
-		assertEquals(R(1, 7), "C111");
-		assertEquals(R(2, 7), "C111");
-		assertEquals(R(3, 7), "C111");
-		assertEquals(R(4, 7), "C111");
+		assertEquals(R(1, 7), "2111");
+		assertEquals(R(2, 7), "2111");
+		assertEquals(R(3, 7), "2111");
+		assertEquals(R(4, 7), "C111"); //可能会造成，后手棋力的错误计算。
 		assertEquals(R(5, 7), "1111");
 		
-		assertEquals(R(0, 8), "BB2B");
+		assertEquals(R(0, 8), "1121");
 	}
 	
 	@Test
@@ -44,13 +44,13 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		this.initChessStatus(15, new int[][]{{14,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子
-		assertEquals(R(13, 7), "C111");
-		assertEquals(R(12, 7), "C111");
-		assertEquals(R(11, 7), "C111");
+		assertEquals(R(13, 7), "2111");
+		assertEquals(R(12, 7), "2111");
+		assertEquals(R(11, 7), "2111");
 		assertEquals(R(10, 7), "C111");
 		assertEquals(R(9, 7), "1111");
 		
-		assertEquals(R(14, 8), "BB2B");
+		assertEquals(R(14, 8), "1121");
 	}		
 	
 	@Test

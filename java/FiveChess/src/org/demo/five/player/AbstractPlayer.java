@@ -24,11 +24,14 @@ import org.demo.five.gui.ChessMan;
 
 public class AbstractPlayer implements Player {
 	protected FiveChess chess = null;
+	private boolean isStart = false;
 	private boolean isActive = false;
 	private int goal = 0;
 	private ChessMan cm = null;
+	private String name = "";
 	
 	public AbstractPlayer(String name){
+		this.name = name;
 		
 	}
 	public AbstractPlayer(String name, ChessMan c){
@@ -39,12 +42,13 @@ public class AbstractPlayer implements Player {
 	
 	@Override
 	public void handover(boolean isHold) {
+		System.out.println(String.format("%s,%s", this.name(), isHold));
 		this.isActive = isHold;
 	}
 
 	@Override
 	public boolean isActive() {
-		return this.isActive;
+		return this.isStart && this.isActive;
 	}
 
 	public void play(int x, int y) {
@@ -62,6 +66,7 @@ public class AbstractPlayer implements Player {
 	
 	public void setResult(int r){
 		this.goal = r;
+		this.isStart = false;
 	}
 
 	@Override
@@ -72,6 +77,14 @@ public class AbstractPlayer implements Player {
 	@Override
 	public ChessMan getChessMan() {
 		return this.cm;
+	}
+	@Override
+	public void start(Player p, boolean isFirst) {
+		this.isStart = true;
+	}
+	
+	public String name(){
+		return this.name;
 	}
 
 }

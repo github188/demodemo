@@ -15,21 +15,18 @@
  * $Id$
  */
 
-package org.demo.five.player;
+package org.demo.five;
 
-import org.demo.five.FiveChess;
-import org.demo.five.gui.ChessMan;
+public interface ChessListener {
+	public void undo(int step);
 
-public class LocalPlayer extends AbstractPlayer{
-	//private 
+	public void redo(int step); 
 	
-	public LocalPlayer(String name, ChessMan c) {
-		super(name, c);
-	}
+	public void end(Player p, int result);
 	
+	public void play(Player p, int x, int y);
 	
-	public void setResult(int r){
-		super.setResult(r);
-	}	
-
+	public void start(Player p);
+	
+	public void handover(Player p);
 }

@@ -32,8 +32,44 @@ public class TestGameTree_search_simple extends BaseTestGameTree {
 		assertEquals(p.weight, 260);
 		assertEquals(p.x, 4);
 		assertEquals(p.y, 4);
+
+		p = S(0, false);
+		assertEquals(p.weight, -50);
+		assertEquals(p.x, 4);
+		assertEquals(p.y, 4);
+		
+	}
+	
+	@Test
+	public void test_search_two_point_one_side() {
+		this.initChessStatus(10, new int[][]{{4, 5, RC}, {5, 5, RC}});
+		
+		p = S(0, true);
+		assertEquals(p.weight, 2060);
+		assertEquals(p.x, 3);
+		assertEquals(p.y, 5);
+
+		p = S(0, false);
+		assertEquals(p.weight, -60);
+		assertEquals(p.x, 4);
+		assertEquals(p.y, 4);
 		
 	}	
+	
+	@Test
+	public void test_search_two_point_two_side() {
+		this.initChessStatus(10, new int[][]{{4, 5, RC}, {5, 5, HC}});
+		
+		p = S(0, true);
+		assertEquals(p.weight, 260);
+		assertEquals(p.x, 3);
+		assertEquals(p.y, 4);
+
+		p = S(0, false);
+		assertEquals(p.weight, -230);
+		assertEquals(p.x, 6);
+		assertEquals(p.y, 5);
+	}		
 	
 	protected GameTree gameInstance(DataModel data){
 		return new TestGameTree(data, RC, HC);

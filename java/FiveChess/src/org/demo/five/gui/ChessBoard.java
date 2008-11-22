@@ -24,8 +24,9 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import org.demo.five.Player;
 import org.demo.five.model.ModelEvent;
@@ -111,6 +112,8 @@ public class ChessBoard extends Canvas implements ModelListener{
 			gridY >= 0 && gridY <= gridCount){
 			if(this.actor != null && this.actor.isActive()){
 				this.actor.play(gridX, gridY);
+			}else {
+				this.showMessage("还没有开始!");
 			}
 		}
 	}
@@ -138,5 +141,16 @@ public class ChessBoard extends Canvas implements ModelListener{
 			 c.paint(x, y, this.curCellWidth - (int)(this.curCellWidth * 0.2), this.frameBuffer.getGraphics());
 			 this.repaint();
 		}
+	}
+	
+	protected void showMessage(String message){
+		JOptionPane.showMessageDialog(this,
+				message, 
+			    "Message", JOptionPane.WARNING_MESSAGE);	
+	}
+	
+	public void reset() {
+		this.initBuffer();
+		this.repaint();
 	}
 }
