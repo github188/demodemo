@@ -65,7 +65,7 @@ public class GameTree {
 	}	
 	
 	public GameTree(DataModel value, int robot, int human){
-		this(value, (byte)robot, (byte)human, 5);
+		this(value, (byte)robot, (byte)human, 5000000);
 	}	
 	
 	/**
@@ -104,33 +104,37 @@ public class GameTree {
 				break;
 			}
 		}
-		
-		//开局第一颗。
-		if (list.size() == this.data.length * this.data.length){
-			return new Position(this.data.length /2, this.data.length /2, 0);
-		}
+		if (!list.isEmpty())
+			this.filter(list.iterator(), list.size());
 		
 		max = list.isEmpty() ? DUMMY : list.first();
 		List<Position> equals = new Vector<Position>();
 		Iterator<Position> optimize = list.iterator();
-		if (depth > 0){
+		
+		if(false)
+		System.out.println(String.format("Search for %s, length: %s", robot ? "R" : "H", list.size()));
+		if (depth > 0 && list.size() > 1){
 			//max = GameTree.MIN_DUMMY;
 			for(int i = 0; i < searchWidth && optimize.hasNext(); i++){
 				index = optimize.next();
+				//System.out.println(String.format("%s, %s,%s,%s", robot ? "R" : "H",
+				//		index.x, index.y, index.weight));
 				data[index.x][index.y] = robot ? this.robot : this.human;
-				
 				//模拟搜索对方的最优方案。
 				min = search(depth - 1, !robot);
-				index.weight += min.weight;
-				if(robot && index.weight > max.weight || index.weight < max.weight){
+				if(false && index.x == 7 && index.y == 8){
+					System.out.println(String.format("Min, %s,%s,%s", 
+							min.x, min.y, min.weight));
+				}
+				index.weight += min.weight;				
+				if((robot && index.weight > max.weight) || (!robot && index.weight < max.weight)){
 					max = index;
 				}else if(this.random && max.weight == index.weight) {
 					equals.add(index);
 				}
-				
 				data[index.x][index.y] = 0;
 			}
-		}else if(this.random) {
+		}else if(this.random && list.size() > 1) {
 			while(optimize.hasNext()) {
 				index = optimize.next();
 				if(index.weight == max.weight){
@@ -150,11 +154,39 @@ public class GameTree {
 		return max;
 	}
 	
+	protected void filter(Iterator<Position> iter, int length){
+		//开局第一颗。	
+		if (length == this.data.length * this.data.length){
+			for (Position p = null; iter.hasNext();){
+				p = iter.next();
+				if(p.x != this.data.length /2 || p.y != this.data.length /2){
+					iter.remove();
+				}
+			}
+		}else if(length + 1 == this.data.length * this.data.length) { //开局第二颗。
+			for (Position p = null; iter.hasNext();){
+				p = iter.next();
+				if(Math.abs(p.weight) != 70){
+					iter.remove();
+				}
+			}	
+		}
+		
+		//删除孤立一点的棋子。
+		for (Position p = null; iter.hasNext();){
+			p = iter.next();
+			if(Math.abs(p.weight) == 80){
+				iter.remove();
+			}
+		}
+		
+	}
+	
 	protected Iterator<Position> findAllPosition(final boolean robot){
 		return new Iterator<Position>(){
 			int index = -1;
 			int end = data.length * data.length;
-			int next = 0;
+			int next = -1;
 			@Override
 			public boolean hasNext() {
 				if (next <= index){
@@ -201,11 +233,15 @@ public class GameTree {
 	public int evaluation(Position p, boolean robot){ 
 		byte[][] status = this.checkResult(p.x, p.y, robot ? this.robot : this.human);
 		int result = 0;
-		for (byte i : status[0]){
-			if(i >= 'A'){
-				result += (int)Math.pow(10, i - 'A') * (robot ? 1 : 2);
-			}else if(i >= '0'){
-				result += (int)Math.pow(10, i - '0') * (robot ? 2 : 1);
+		int data = 0;
+		for (int i = 0; i < status[0].length; i++){
+			data = status[0][i];
+			if(data >= 'A'){
+				result += (int)Math.pow(10, data - 'A'); // * (robot ? 1 : 2);
+			}else if(data >= '0'){
+				//如果有多子相连的情况，中间的空格将大大的减弱力度。
+				if (data >= '3') data -= status[1][i];
+				result += (int)Math.pow(10, data - '0') * 2; //(robot ? 2 : 1);
 			}
 		}
 		for (byte i : status[1]){
@@ -265,6 +301,11 @@ public class GameTree {
 				break;
 			}
 		}
+		
+		if (i == 5){ //?
+			i++;
+			space++;
+		}		
 		//一共有多少自己的棋子；是否是活棋；在这个方向上搜索的长度，
 		return new byte[]{count, space, --i};
 	}

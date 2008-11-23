@@ -9,38 +9,52 @@ import org.junit.Test;
 public class TestGameTree_search_simple extends BaseTestGameTree {
 	private GameTree.Position p = null;
 	
-	//@Test
-	public void test_search_empty() {
+	@Test
+	public void test_search_first_step() {
 		this.initChessStatus(8, new int[][]{});
 		
 		p = S(0, true);
-		assertEquals(p.weight, 0);
-		assertEquals(p.x, 4);
-		assertEquals(p.y, 4);
+		assertEquals(80, p.weight);
+		assertEquals(4, p.x);
+		assertEquals(4, p.y);
 		
 		p = S(0, false);
-		assertEquals(p.weight, 0);
-		assertEquals(p.x, 4);
-		assertEquals(p.y, 4);	
+		assertEquals(-80, p.weight);
+		assertEquals(4, p.x);
+		assertEquals(4, p.y);	
 	}
 	
 	@Test
-	public void test_search_one_point() {
-		this.initChessStatus(10, new int[][]{{5, 5, RC}});
+	public void test_search_sec_step() {
+		this.initChessStatus(8, new int[][]{{4, 4, HC}});
 		
 		p = S(0, true);
-		assertEquals(p.weight, 260);
-		assertEquals(p.x, 4);
-		assertEquals(p.y, 4);
-
+		assertEquals(70, p.weight);
+		assertEquals(3, p.x);
+		assertEquals(3, p.y);
+		
+		this.initChessStatus(8, new int[][]{{4, 4, RC}});
+		
 		p = S(0, false);
-		assertEquals(p.weight, -50);
+		assertEquals(-70, p.weight);
+		assertEquals(3, p.x);
+		assertEquals(3, p.y);		
+		
+	}	
+	
+	//@Test
+	public void test_search_one_point() {
+		this.initChessStatus(10, new int[][]{{5, 5, RC}, {0, 0, HC}});
+		
+		p = S(0, true);
+		assertEquals(260, p.weight);
 		assertEquals(p.x, 4);
 		assertEquals(p.y, 4);
 		
+		
 	}
 	
-	@Test
+	//@Test
 	public void test_search_two_point_one_side() {
 		this.initChessStatus(10, new int[][]{{4, 5, RC}, {5, 5, RC}});
 		
@@ -56,7 +70,7 @@ public class TestGameTree_search_simple extends BaseTestGameTree {
 		
 	}	
 	
-	@Test
+	//@Test
 	public void test_search_two_point_two_side() {
 		this.initChessStatus(10, new int[][]{{4, 5, RC}, {5, 5, HC}});
 		

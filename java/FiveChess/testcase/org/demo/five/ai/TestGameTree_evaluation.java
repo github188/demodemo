@@ -19,7 +19,7 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		assertEquals(RE(1, 7), 260);
 		assertEquals(RE(2, 7), 259);
 		assertEquals(RE(3, 7), 258);
-		assertEquals(RE(4, 7), 157);
+		assertEquals(RE(4, 7), 257);
 		assertEquals(RE(5, 7), 80);
 		
 		//assertEquals(R(0, 8), "BB2B");
@@ -38,14 +38,12 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(6, 7), "2111");
-		assertEquals(HE(6, 7), -130);
+		assertEquals(HE(6, 7), -260);
 	}	
 
 	@Test
 	public void test_evaluation_two_point_in_center() {
 		this.initChessStatus(15, new int[][]{{7,7,RC}, {6,7,RC}});
-		//byte[] st = game.checkResult(5, 2, (byte)1);
-		//某一点的8个方向的棋子		
 		assertEquals(R(8, 7), "3111");
 		assertEquals(RE(8, 7), 2060);
 		
@@ -53,25 +51,21 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		assertEquals(RE(7, 6), 440);
 
 		this.initChessStatus(15, new int[][]{{7,7,RC}, {5,7,RC}});
-		//byte[] st = game.checkResult(5, 2, (byte)1);
-		//某一点的8个方向的棋子		
+		//因为存在空格所以降低了值
 		assertEquals(R(8, 7), "3111");
-		assertEquals(RE(8, 7), 2059);
+		assertEquals(259, RE(8, 7));
 		
 		this.initChessStatus(15, new int[][]{{7,7,HC}, {6,7,HC}});
-		//byte[] st = game.checkResult(5, 2, (byte)1);
-		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "3111");
-		assertEquals(HE(8, 7), -1030);
+		assertEquals(HE(8, 7), -2060);
 		
 		assertEquals(H(7, 6), "1221");
-		assertEquals(HE(7, 6), -220);
+		assertEquals(HE(7, 6), -440);
 
 		this.initChessStatus(15, new int[][]{{7,7,HC}, {5,7,HC}});
-		//byte[] st = game.checkResult(5, 2, (byte)1);
-		//某一点的8个方向的棋子		
+		////因为存在空格所以降低了值
 		assertEquals(H(8, 7), "3111");
-		assertEquals(HE(8, 7), -1029);		
+		assertEquals(HE(8, 7), -259);		
 	}	
 	
 	@Test
@@ -86,7 +80,7 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
 		assertEquals(H(8, 7), "4111");
-		assertEquals(HE(8, 7), -10030);		
+		assertEquals(HE(8, 7), -20060);		
 
 	}		
 
@@ -95,14 +89,14 @@ public class TestGameTree_evaluation extends BaseTestGameTree{
 		this.initChessStatus(15, new int[][]{{7,7,RC}, {6,7,RC}, {5,7,RC}, {4,7,RC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
-		assertEquals(R(8, 7), "F111");
-		assertEquals(RE(8, 7), 100060);
+		assertEquals(R(8, 7), "5111");
+		assertEquals(RE(8, 7), 200060);
 		
 		this.initChessStatus(15, new int[][]{{7,7,HC}, {6,7,HC}, {5,7,HC}, {4,7,HC}});
 		//byte[] st = game.checkResult(5, 2, (byte)1);
 		//某一点的8个方向的棋子		
-		assertEquals(H(8, 7), "F111");
-		assertEquals(HE(8, 7), -200030);
+		assertEquals(H(8, 7), "5111");
+		assertEquals(HE(8, 7), -200060);
 	}	
 	
 	@Test

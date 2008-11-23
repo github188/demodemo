@@ -33,7 +33,7 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		assertEquals(R(1, 7), "2111");
 		assertEquals(R(2, 7), "2111");
 		assertEquals(R(3, 7), "2111");
-		assertEquals(R(4, 7), "C111"); //可能会造成，后手棋力的错误计算。
+		assertEquals(R(4, 7), "2111"); //可能会造成，后手棋力的错误计算。
 		assertEquals(R(5, 7), "1111");
 		
 		assertEquals(R(0, 8), "1121");
@@ -47,7 +47,7 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		assertEquals(R(13, 7), "2111");
 		assertEquals(R(12, 7), "2111");
 		assertEquals(R(11, 7), "2111");
-		assertEquals(R(10, 7), "C111");
+		assertEquals(R(10, 7), "2111");
 		assertEquals(R(9, 7), "1111");
 		
 		assertEquals(R(14, 8), "1121");
@@ -70,7 +70,7 @@ public class TestGameTree_checkResult extends BaseTestGameTree{
 		
 		assertEquals(R(9, 7), "2111");
 		assertEquals(R(10, 7), "2111");
-		assertEquals(R(11, 7), "C111");
+		assertEquals(R(11, 7), "2111");
 		assertEquals(R(12, 7), "1111");
 		assertEquals(R(13, 7), "1111");	
 	}

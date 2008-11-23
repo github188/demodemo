@@ -35,7 +35,7 @@ public class RobotPlayer extends AbstractPlayer{
 	public void handover(boolean isHold) {
 		super.handover(isHold);
 		if(isHold){
-			GameTree.Position p = this.brain.search(this.level, this.isFirst);
+			GameTree.Position p = this.brain.search(1, this.isFirst);
 			this.play(p.x, p.y);
 		}
 	}

@@ -145,6 +145,7 @@ public class MainPlane extends JFrame implements ChessListener {
 		
 		stepData = new DefaultListModel();
 		JList steps = new JList(stepData);	
+		//stepData = steps.getModel();
 		
 		JScrollPane listScrollPane = new JScrollPane(steps);
 		
@@ -159,7 +160,7 @@ public class MainPlane extends JFrame implements ChessListener {
 		
 		cPanel.add(startButton);
 		
-		cPanel.add(listScrollPane);
+		//cPanel.add(listScrollPane);
 
 	}
 
@@ -188,7 +189,10 @@ public class MainPlane extends JFrame implements ChessListener {
 	@Override
 	public void play(Player p, int x, int y) {
 		String s = p.getChessMan() == ChessMan.WHITE ? "W" : "B";
+		stepData.add(0, "test");
 		stepData.addElement(String.format("%s:%s,%s", s, x, y));
+		//stepData.
+		System.out.println(String.format("%s:%s,%s", s, x, y));
 	}
 
 	@Override

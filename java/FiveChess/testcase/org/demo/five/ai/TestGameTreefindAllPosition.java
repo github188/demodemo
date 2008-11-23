@@ -48,5 +48,21 @@ public class TestGameTreefindAllPosition extends BaseTestGameTree{
 
 	}	
 	
+	@Test
+	public void test_findAllPosition_2() {
+		this.initChessStatus(4, new int[][]{{0, 0, RC}, {0, 1, HC}});
+		Iterator<GameTree.Position> iter = game.findAllPosition(true);
+		
+		int count = 0;
+		iter.hasNext();
+		iter.hasNext();
+		iter.hasNext();
+		for(; iter.next() != null;) {
+			count++;
+		}
+		assertEquals(count, 14);
+
+	}		
+	
 
 }
