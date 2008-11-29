@@ -52,9 +52,14 @@ public class ChessBoard extends Canvas implements ModelListener{
  
 	
 	public ChessBoard(){
+		this(18);
+	}
+	
+	public ChessBoard(int size){
+		this.gridCount = size;
 		this.setBackground(Color.white);
 		this.initMouseAdapter();
-	}
+	}	
 	
 	
 	public void paint(Graphics g) {
@@ -81,7 +86,7 @@ public class ChessBoard extends Canvas implements ModelListener{
 		int height = this.getHeight();
 		
 		curCellWidth = (width > height) ? height : width;
-		curCellWidth = (curCellWidth - minPadding) / gridCount;
+		curCellWidth = (curCellWidth - minPadding * 2) / gridCount;
 		//new Font()
 		//g.setFont()
 		g.setColor(Color.RED);

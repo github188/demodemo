@@ -26,6 +26,11 @@ import java.util.Vector;
 
 import org.demo.five.model.DataModel;
 
+/**
+ * 使用大小树进行搜索。
+ * @author dalwu
+ *
+ */
 public class GameTree {
 	private static final Position DUMMY = new Position(0, 0, 0);
 	private static final int MAX_WEIGHT = 100000;

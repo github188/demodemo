@@ -44,6 +44,10 @@ public class FiveChess {
 		data = new DataModel();
 	}
 	
+	public FiveChess(int size){
+		data = new DataModel(size);
+	}	
+	
 	public void play(Player p, int x, int y) {
 		if (this.status != PLAYING) throw new Error("Chess not start!");
 		

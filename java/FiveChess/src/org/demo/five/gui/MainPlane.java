@@ -61,8 +61,8 @@ public class MainPlane extends JFrame implements ChessListener {
 	public MainPlane(){
 		  super("Java五子棋");
 		  setLayout(new BorderLayout());
-		  board = new ChessBoard();
-		  chess = new FiveChess();
+		  board = new ChessBoard(15);
+		  chess = new FiveChess(15);
 		  localPlayer = new LocalPlayer("玩家-Human", ChessMan.WHITE);
 		  board.setPlayer(localPlayer);
 		  
@@ -83,6 +83,7 @@ public class MainPlane extends JFrame implements ChessListener {
 	
 	public void startChess(){
 		this.startButton.setEnabled(false);
+		this.robotFirst.setEnabled(false);
 		this.board.reset();
 		
 		int level = 1;
@@ -177,6 +178,7 @@ public class MainPlane extends JFrame implements ChessListener {
 				    "Message", JOptionPane.WARNING_MESSAGE);			
 		}
 		
+		this.robotFirst.setEnabled(true);
 		this.startButton.setEnabled(true);
 	}
 
