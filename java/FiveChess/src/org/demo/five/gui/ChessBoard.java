@@ -132,7 +132,7 @@ public class ChessBoard extends Canvas implements ModelListener{
 		});
 	}
 
-	@Override
+
 	public void update(ModelEvent e) {
 		log.info("ModelEvent: A:" + e.getAction() + ",X:" + e.getX() + ",Y:" + e.getY() + ",D:" + e.getData());
 		ChessMan c = null;

@@ -40,13 +40,13 @@ public class AbstractPlayer implements Player {
 	}
 
 	
-	@Override
+	
 	public void handover(boolean isHold) {
 		System.out.println(String.format("%s,%s", this.name(), isHold));
 		this.isActive = isHold;
 	}
 
-	@Override
+	
 	public boolean isActive() {
 		return this.isStart && this.isActive;
 	}
@@ -59,7 +59,7 @@ public class AbstractPlayer implements Player {
 		}
 	}
 
-	@Override
+	
 	public void setFiveChess(FiveChess c) {
 		chess = c;
 	}
@@ -69,16 +69,16 @@ public class AbstractPlayer implements Player {
 		this.isStart = false;
 	}
 
-	@Override
+	
 	public void setChessMan(ChessMan c) {
 		this.cm = c;
 	}
 
-	@Override
+	
 	public ChessMan getChessMan() {
 		return this.cm;
 	}
-	@Override
+	
 	public void start(Player p, boolean isFirst) {
 		this.isStart = true;
 	}

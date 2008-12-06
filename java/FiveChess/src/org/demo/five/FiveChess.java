@@ -179,35 +179,35 @@ public class FiveChess {
 			this.lisenters.add(l);
 		}
 
-		@Override
+		
 		public void end(Player p, int result) {
 			for (ChessListener l : lisenters) {
 				l.end(p, result);
 			}
 		}
 
-		@Override
+		
 		public void redo(int step) {
 			for (ChessListener l : lisenters) {
 				l.redo(step);
 			}			
 		}
 
-		@Override
+		
 		public void undo(int step) {
 			for (ChessListener l : lisenters) {
 				l.undo(step);
 			}			
 		}
 
-		@Override
+		
 		public void play(Player p, int x, int y) {
 			for (ChessListener l : lisenters) {
 				l.play(p, x, y);
 			}				
 		}
 
-		@Override
+		
 		public void start(Player p) {
 			for (ChessListener l : lisenters) {
 				l.start(p);

@@ -130,7 +130,7 @@ public class MainPlane extends JFrame implements ChessListener {
 		
 		startButton = new JButton("玩家开始");
 		startButton.addActionListener(new ActionListener(){
-			@Override
+			
 			public void actionPerformed(ActionEvent arg0) {
 				startChess();				
 			}});
@@ -165,7 +165,7 @@ public class MainPlane extends JFrame implements ChessListener {
 
 	}
 
-	@Override
+	
 	public void end(Player p, int result) {
 		if(result == FiveChess.DRAW){
 			JOptionPane.showMessageDialog(this,
@@ -182,13 +182,13 @@ public class MainPlane extends JFrame implements ChessListener {
 		this.startButton.setEnabled(true);
 	}
 
-	@Override
+	
 	public void handover(Player p) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void play(Player p, int x, int y) {
 		String s = p.getChessMan() == ChessMan.WHITE ? "W" : "B";
 		stepData.add(0, "test");
@@ -197,19 +197,19 @@ public class MainPlane extends JFrame implements ChessListener {
 		System.out.println(String.format("%s:%s,%s", s, x, y));
 	}
 
-	@Override
+	
 	public void redo(int step) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void start(Player p) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void undo(int step) {
 		stepData.removeElement(stepData.lastElement());
 	}

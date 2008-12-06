@@ -82,7 +82,7 @@ public class GameTree {
 	public Position search(int depth, final boolean robot){
 
 		SortedSet<Position> list = new TreeSet<Position>(new Comparator<Position>(){
-			@Override
+			
 			public int compare(Position arg0, Position arg1) {
 				//if (arg0.weight == arg1.weight) return 1;
 				//避免删除同值得节点。
@@ -192,7 +192,7 @@ public class GameTree {
 			int index = -1;
 			int end = data.length * data.length;
 			int next = -1;
-			@Override
+			
 			public boolean hasNext() {
 				if (next <= index){
 					for(next++; next < this.end; next++){
@@ -204,7 +204,7 @@ public class GameTree {
 				return next < this.end;
 			}
 
-			@Override
+			
 			public Position next() {
 				if ((next > index && next < end) || this.hasNext()){
 					Position p = new Position(next % data.length, 
