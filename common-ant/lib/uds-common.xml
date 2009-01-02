@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!-- ======================================================================
+     05-Sep-2005
+     
+     uds_common
+     
+     Provides an ant build environment for the Ubiquity Developer Studio.
+     ====================================================================== -->
+<project name="uds_common"> 
+    <!-- import dependency task -->
+    <import file="./depend.xml"/> 
+   
+    <taskdef name="sar" classname="net.ubiquity.ace.uds.ant.Sar">
+        <classpath>
+            <fileset dir="${uds.home}">
+                <include name="*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+    
+    <taskdef name="build-subprojects" classname="net.ubiquity.ace.uds.ant.BuildProjects">
+        <classpath>
+            <fileset dir="${uds.home}">
+                <include name="*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+    
+    <taskdef name="build-bpel" classname="net.ubiquity.ace.uds.ant.CompileBpel">
+        <classpath>
+            <fileset dir="${uds.home}">
+                <include name="*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+    
+    <target name="clean"  description="Cleans the target directories.">
+        <delete dir="${build.bin.dir}"/>
+        <delete dir="${artefact.dir}"/>
+    </target>
+    
+    <target name="-copy-to-bundled-lib-dir">
+      <copy file="${bundled.lib.file}" toDir="${basedir}/bundled-lib"/>
+    </target>
+    
+    <target name="compile" depends="subprojects, eclipse_dependencies"
+            description="Builds the main java classes"> 
+        <mkdir dir="${basedir}/bundled-lib"/>
+        
+        <!-- copy bundled libs into bundled-lib -->
+        <ant antfile="${ant.temp.script}"/>        
+        <delete file="${ant.temp.script}"/>
+        
+        <mkdir dir="${build.bin.dir}"/>
+        <javac
+              srcdir="${eclipse.project.src}"
+              destdir="${build.bin.dir}"
+              source="${build.javac.source}"
+              debug="${build.javac.debug}"
+              debuglevel="lines,vars,source"
+			  encoding="UTF-8"
+              >
+            <classpath>
+                <fileset dir="${basedir}/bundled-lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <fileset dir="${basedir}/${build.lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <pathelement location="${eclipse.lib.dependencies}:${bundled.project.dependency.list}"/>
+            </classpath>
+        </javac>
+		<copy todir="${build.bin.dir}" >
+			<fileset dir="${basedir}/src" >
+				<include name="**/*.properties" />
+				<include name="icons/*.*" />
+			</fileset>
+		</copy>
+        <build-bpel destination="${build.bin.dir}"
+                    srcDir="${build.bpel.src}"
+                    wsdlHome="${wsdl.dir}"
+                    libDir="${build.lib.dir}"/>
+    </target>
+    
+    <target name="jar" depends="clean, compile">
+        <echo>Creating Jar: ${artefact.dir}/${eclipse.project.name}.jar</echo>   
+        <tempfile property="dummy.file" suffix=".dumdum"/>  
+        <jar destfile="${build.bin.dir}/${eclipse.project.name}.jar"
+             basedir="${build.bin.dir}">
+            <fileset dir="${basedir}" includes="${uds.project.bundled},${dummy.file}"/>
+			<fileset dir="${basedir}/src" >
+				<include name="**/*.properties" />
+				<include name="icons/*.*" />
+			</fileset>            
+        </jar>
+    </target>
+    
+    <target name="build" depends="clean, compile">
+        <echo>Creating SAR: ${artefact.dir}/${eclipse.project.name}.sar</echo>
+        <mkdir dir="${artefact.dir}"/>
+        <tempfile property="dummy.include" suffix=".dumdum"/> 
+           
+        <!-- Is this a BPEL build? If so, set up the include to add the BPEL jar -->     
+        <available property="bpel.build" file="${build.bin.dir}/tree.dat" value="**/bpel.jar"/>   
+        
+        <sar destfile="${artefact.dir}/${eclipse.project.name}.sar"
+             sipxml="${sip.xml.dir}/sip.xml"
+             >
+            <classes dir="${build.bin.dir}"/>
+            <lib dir="${basedir}"
+                 includes="${uds.project.bundled},${dummy.include}"/>
+            <lib dir="${basedir}/bundled-lib/"/>
+            <lib dir="${basedir}/lib/"            
+                 includes="${bpel.build},${dummy.include}"/>
+        </sar>
+    </target>
+    
+    <target name="check-subprojects" depends="eclipse_dependencies">
+        <condition property="eclipse.project.dependencies.set">
+          <not>
+          <equals arg1="" arg2="${eclipse.project.dependencies}" trim="true"/>
+      </not>
+        </condition>
+        <condition property="eclipse.bundled.dependencies.set">
+          <not>
+          <equals arg1="" arg2="${uds.bundled.projects}" trim="true"/>
+      </not>
+        </condition>
+    </target>
+    
+    <target name="bundled-subprojects" if="eclipse.bundled.dependencies.set" 
+            depends="check-subprojects">            
+        <mkdir dir="${basedir}/bundled-lib"/>
+        <build-subprojects bundletodir="${basedir}/bundled-lib">
+            <filelist dir="${basedir}" files="${uds.bundled.projects}"/>
+        </build-subprojects>
+    </target>
+    
+    <target name="unbundled-subprojects" if="eclipse.project.dependencies.set" 
+            depends="check-subprojects">
+        <build-subprojects libtodir="${basedir}/${build.lib.dir}">
+            <filelist dir="${basedir}" files="${eclipse.project.dependencies}"/>
+        </build-subprojects>
+    </target>
+    
+    <target name="subprojects" depends="bundled-subprojects, unbundled-subprojects">
+    </target>
+</project>

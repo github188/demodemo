@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!-- ======================================================================
+     05-Sep-2005
+     
+     ant_eclipse
+     
+     This build file provides a target which pulls in the eclipse 
+     dependencies so that UDS eclispe projects can be built using ant.
+     ====================================================================== -->
+<project name="ant_eclipse" basedir="."> 
+    <target name="eclipse_dependencies">
+        
+        <!-- read .project -->
+        <tempfile property="temp.file" suffix=".properties"/>        
+        <xslt style="${uds.home}/project-transform.xsl" in="${eclipse.project.file}" out="${temp.file}"/>
+        <property file="${temp.file}"/>
+        <delete file="${temp.file}"/>
+        
+        <!-- read .classpath -->
+        <tempfile property="temp.file2" suffix=".properties"/>        
+        <xslt style="${uds.home}/classpath-transform.xsl" in="${eclipse.classpath.file}" out="${temp.file2}"/>
+        <property file="${temp.file2}"/>
+        <delete file="${temp.file2}"/>
+        
+        <!-- read .udsproject -->
+        <tempfile property="temp.file3" suffix=".properties"/>        
+        <tempfile property="ant.temp.script" suffix=".xml"/>
+        <xslt style="${uds.home}/uds-project-transform.xsl" in="${uds.project.file}" out="${temp.file3}"/>
+        <xslt style="${uds.home}/uds-project-ant.xsl" in="${uds.project.file}" out="${ant.temp.script}"/>
+        <property file="${temp.file3}"/>
+        <delete file="${temp.file3}"/>
+               
+        <echo>Project name: ${eclipse.project.name}</echo>
+        <echo>Project source: ${eclipse.project.src}</echo>
+        <property name="build.bpel.src" value="${eclipse.project.src}"/>
+        <echo>Project libraries: ${eclipse.lib.dependencies}</echo>
+        <echo>Project dependencies: ${eclipse.project.dependencies}</echo>
+        <echo>Bundled projects: ${uds.bundled.projects}</echo>
+    </target>
+</project>
