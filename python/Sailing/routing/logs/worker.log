@@ -1,0 +1,12 @@
+20090522141054 - INFO - Starting 'worker' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522141054 - INFO - Waiting 2 seconds for next round
+20090522141056 - INFO - Waiting 2 seconds for next round
+20090522141058 - INFO - Waiting 2 seconds for next round
+20090522141100 - INFO - worker daemon stopped
+20090522141329 - INFO - Starting 'worker' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522141329 - INFO - Not found application directory, 'worker'
+20090522141329 - INFO - Create directory, 'worker'
+20090522141329 - INFO - Waiting 2 seconds for next round
+20090522141331 - INFO - Waiting 2 seconds for next round
+20090522141333 - INFO - Waiting 2 seconds for next round
+20090522141333 - INFO - worker daemon stopped

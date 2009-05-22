@@ -1,0 +1,112 @@
+20090522135959 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 31, in run
+    CONFIG = self.config
+AttributeError: 'Application' object has no attribute 'config'
+
+20090522135959 - INFO - spider daemon stopped
+20090522140032 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 31, in run
+    for fn in self.list_file("waiting"):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 41, in list_file
+    return glob.glob(join_path(self.app_name, '*.%s' % type))[:len]
+AttributeError: 'Application' object has no attribute 'app_name'
+
+20090522140032 - INFO - spider daemon stopped
+20090522140107 - INFO - Waiting 2 seconds for next round
+20090522140109 - INFO - Waiting 2 seconds for next round
+20090522140110 - INFO - spider daemon stopped
+20090522140603 - INFO - Starting 'spider.log' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522140603 - INFO - Waiting 2 seconds for next round
+20090522140605 - INFO - Waiting 2 seconds for next round
+20090522140607 - INFO - spider daemon stopped
+20090522140622 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522140622 - INFO - Waiting 2 seconds for next round
+20090522140624 - INFO - Waiting 2 seconds for next round
+20090522140625 - INFO - spider daemon stopped
+20090522162316 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162316 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 40, in run
+    self.command(change_status(fn, 'running'))
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\__init__.py", line 8, in change_status
+    move_to(path, new_st)
+NameError: global name 'move_to' is not defined
+
+20090522162316 - INFO - spider daemon stopped
+20090522162405 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162405 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 40, in run
+    self.command(change_status(fn, 'running'))
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\__init__.py", line 9, in change_status
+    move_to(path, new_st)
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\common.py", line 61, in move_to
+    shutil.move(src, dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 199, in move
+    copy2(src,dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 91, in copy2
+    copyfile(src, dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 46, in copyfile
+    fsrc = open(src, 'rb')
+IOError: [Errno 2] No such file or directory: 'spider\\0002'
+
+20090522162405 - INFO - spider daemon stopped
+20090522162607 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162607 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 40, in run
+    self.command(change_status(fn, 'running'))
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\__init__.py", line 5, in change_status
+    path, ext = os.path.splitext(path)
+UnboundLocalError: local variable 'path' referenced before assignment
+
+20090522162607 - INFO - spider daemon stopped
+20090522162618 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162618 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 40, in run
+    self.command(change_status(fn, 'running'))
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\__init__.py", line 5, in change_status
+    path, ext = os.path.splitext(path)
+UnboundLocalError: local variable 'path' referenced before assignment
+
+20090522162619 - INFO - spider daemon stopped
+20090522162634 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162634 - ERROR - Interrupted by exception
+Traceback (most recent call last):
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\ctlDaemon.py", line 72, in start
+    self.run()
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\application.py", line 40, in run
+    self.command(change_status(fn, 'running'))
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\core\__init__.py", line 9, in change_status
+    move_to(new_st, new_st)
+  File "C:\USERS\_my_work\workspace\Sailing\src\sailing\common\common.py", line 61, in move_to
+    shutil.move(src, dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 199, in move
+    copy2(src,dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 91, in copy2
+    copyfile(src, dst)
+  File "c:\users\programs\python25\lib\shutil.py", line 41, in copyfile
+    raise Error, "`%s` and `%s` are the same file" % (src, dst)
+Error: `spider\0002.waiting.running` and `spider\0002.waiting.running` are the same file
+
+20090522162634 - INFO - spider daemon stopped
+20090522162753 - INFO - Starting 'spider' on directory 'C:\USERS\_my_work\workspace\Sailing\routing'.
+20090522162757 - INFO - Waiting 2 seconds for next round
+20090522162759 - INFO - Waiting 2 seconds for next round
+20090522162801 - INFO - Waiting 2 seconds for next round
+20090522162802 - INFO - spider daemon stopped
