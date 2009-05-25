@@ -2,6 +2,7 @@
 from sailing.common.ctlDaemon import ControllableDaemon
 from sailing.common.logger import Logger
 from sailing.common.common import *
+from sailing.common.utils import import_class
 from sailing.conf import settings as CONFIG
 import glob
 import os
@@ -24,36 +25,27 @@ class Application(ControllableDaemon):
             make_path(CONFIG.APP_NAME)
             self.logger.info("Create directory, '%s'" % (CONFIG.APP_NAME))
         
-        try:
-            module = __import__('sailing.%s' % CONFIG.APP_NAME, globals(), locals(), ['main', ], -1)
-            self.command = getattr(module, 'main')
-        except:
-            self.logger.info("Could not find function 'sailing.%s.main'." % CONFIG.APP_NAME)
-            self.command = None
+        sailor_name = "sailing.%s.%s" % (CONFIG.APP_NAME, CONFIG.APP_NAME.capitalize())
+        sailor_cls = import_class(sailor_name)
         
-        if not callable(self.command): raise Exception("Not found application '%s'" % CONFIG.APP_NAME)
-        
+        if sailor_cls is None: raise Exception("Not found application '%s'" % sailor_name)
+        self.sailor = sailor_cls()
+        self.sailor.ready()
         
     def run(self):
-        from sailing.core import change_status   
-        for fn in self.list_file("waiting"):
-            self.command(change_status(fn, 'running'))
+        from sailing.core import FileTask
+        task_list = FileTask.search(CONFIG.APP_NAME, "waiting", len=5)
+        
+        if len(task_list) == 0:
+            self.sailor.idle()
+            self.logger.info('Waiting %d seconds for idle action' % CONFIG.IDLE_INTERVAL)
+            sleep(CONFIG.IDLE_INTERVAL)
+        else:
+            for t in task_list:
+                t.status = 'running'
+                self.sailor.start(t)
+                t.status = 'done'
+            self.sailor.waiting()
             
-        self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
-        sleep(CONFIG.POLLING_INTERVAL)
-
-    def list_file(self, type, len=100):
-        return glob.glob(join_path(CONFIG.APP_NAME, '*.%s' % type))[:len]
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-     
+            self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
+            sleep(CONFIG.POLLING_INTERVAL)

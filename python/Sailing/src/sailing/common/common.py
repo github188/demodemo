@@ -19,6 +19,9 @@ def dir_name(path):
 def base_name(path):
     return os.path.basename(path)
 
+def norm_path(path):
+    return os.path.normpath(path)
+
 def exists_path(path):
     return os.path.exists(path)
 

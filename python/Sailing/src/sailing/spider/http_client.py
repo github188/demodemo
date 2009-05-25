@@ -3,6 +3,7 @@ import urllib2, httplib
 import StringIO
 import gzip
 from urlparse import urlparse
+from sailing.common.common import *
 
 class HTTPClient(object):
     
@@ -33,6 +34,7 @@ class HTTPClient(object):
     
     def download(self, url, save_as):
         
+        if not exists_path(dir_name(save_as)): make_path(dir_name(save_as))
         fd = open(save_as, "w+")
         
         url = self.relative_path(url)
