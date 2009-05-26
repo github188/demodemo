@@ -4,12 +4,14 @@ import StringIO
 import gzip
 from urlparse import urlparse
 from sailing.common.common import *
+import logging
 
 class HTTPClient(object):
     
     def __init__(self, www_root=None):
         self.proxy = None
         self.last_url = None
+        self.logger = logging.getLogger("HttpClient")
         #import urllib
     
     def set_proxy(self, proxy, www_root=None):
@@ -34,11 +36,12 @@ class HTTPClient(object):
     
     def download(self, url, save_as):
         
+        self.logger.info("download:%s-->%s" % (url, save_as))
+        
         if not exists_path(dir_name(save_as)): make_path(dir_name(save_as))
         fd = open(save_as, "w+")
         
         url = self.relative_path(url)
-        
         try:
             #httplib.HTTPConnection.debuglevel = 1
             request = urllib2.Request(url)
@@ -47,16 +50,19 @@ class HTTPClient(object):
             
             f = opener.open(request)
             #print f
-            if 'gzip' in f.headers.get('Content-Encoding'):
+            encoding = f.headers.get('Content-Encoding')
+            if encoding and 'gzip' in encoding:
                 compresseddata = f.read()                              
                 compressedstream = StringIO.StringIO(compresseddata)   
                 gzipper = gzip.GzipFile(fileobj=compressedstream)      
-                data = gzipper.read()    
-
+                data = gzipper.read()
                 gzipper.close()
-        except:
-            data = f.read()
-            f.close()
+            else:
+                data = f.read()
+                f.close()
+            
+        except urllib2.HTTPError, e:
+            raise
             
         fd.write(data)
         fd.close()

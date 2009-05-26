@@ -5,12 +5,14 @@ from sailing.conf import settings
 from sailing.core.web.website import WebSite
 from urlparse import urlparse
 from sailing.common.utils import import_class
+import logging
 
 class Analyse(Sailor):
     
     def __init__(self):
         self.url_mapping = []
         self.crawlers = {}
+        self.logger = logging.getLogger("worker")
     
     def idle(self):
         
@@ -24,6 +26,8 @@ class Analyse(Sailor):
         task.add_action("%s ==> index.html" % (settings.START_INDEX, ))
         
         task.status = 'waiting'
+        
+        self.logger.info("created new task '%s'." % task.path)
     
     def ready(self):
         self.url_mapping = settings.CROWERS_MAPPING

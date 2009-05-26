@@ -42,8 +42,15 @@ class Application(ControllableDaemon):
         else:
             for t in task_list:
                 t.status = 'running'
-                self.sailor.start(t)
-                t.status = 'done'
+                try:
+                    self.logger.info("start process task '%s'" % t.path)
+                    self.sailor.start(t)
+                    t.status = 'done'
+                    self.logger.info("done process task '%s'" % t.path)
+                except Exception, e:
+                    t.status = 'waiting'
+                    self.logger.error(trackable("Exception on task '%s'" % t))
+                    
             self.sailor.waiting()
             
             self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
