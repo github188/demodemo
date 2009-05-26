@@ -3,7 +3,8 @@ from sailing.core import Sailor, new_task
 from sailing.core.web.website import WebSite
 from http_client import HTTPClient
 from sailing.conf import settings
-from sailing.common.common import join_path
+from sailing.common.common import join_path, trackable
+import logging
 
 class Spider(Sailor):
     pass
@@ -11,6 +12,7 @@ class Spider(Sailor):
     def ready(self):
         self.http = HTTPClient()
         self.http.set_proxy(settings.PROXY)
+        self.logger = logging.getLogger("Spider")
 
     def start(self, t):
         
@@ -22,8 +24,13 @@ class Spider(Sailor):
         for l in t.list_actions():
             url, save_as = l.split("==>")
             url, save_as = url.strip(), save_as.strip()
-            status = self.http.download(url.strip(), self._save_as(site, save_as))
-            next_task.add_action("%s %s %s" % (status, url, save_as))
+            if not url.startswith("http:"):
+                url = "http://%s%s" % (site.hostname, url)
+            try:
+                status = self.http.download(url, self._save_as(site, save_as))
+                next_task.add_action("%s %s %s" % (status, url, save_as))
+            except Exception, e:
+                self.logger.error(trackable("Exception on task '%s'" % e))
             
         next_task.status = 'waiting'
 

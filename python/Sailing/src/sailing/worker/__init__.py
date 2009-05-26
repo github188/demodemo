@@ -68,6 +68,8 @@ class Analyse(Sailor):
                 self._crawling(site, self.default_crawlers, path, url, status)
                 
     def _crawling(self, site, crawlers, path, url, status):
+        
+        self.logger.info("Crawling path:%s" % site.real_path(path))
         task = new_task('spider')
         
         task.header('Site', site.hostname)

@@ -39,9 +39,9 @@ class HTTPClient(object):
         self.logger.info("download:%s-->%s" % (url, save_as))
         
         if not exists_path(dir_name(save_as)): make_path(dir_name(save_as))
-        fd = open(save_as, "w+")
         
-        url = self.relative_path(url)
+        
+        #url = self.relative_path(url)
         try:
             #httplib.HTTPConnection.debuglevel = 1
             request = urllib2.Request(url)
@@ -61,11 +61,11 @@ class HTTPClient(object):
                 data = f.read()
                 f.close()
             
+            fd = open(save_as, "w+")
+            fd.write(data)
+            fd.close()
         except urllib2.HTTPError, e:
             raise
-            
-        fd.write(data)
-        fd.close()
         
         return '200'
     
