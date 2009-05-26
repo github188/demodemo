@@ -6,6 +6,7 @@ from sailing.common.utils import import_class
 from sailing.conf import settings as CONFIG
 import glob
 import os
+import logging
 
 class Application(ControllableDaemon):
     
@@ -14,10 +15,8 @@ class Application(ControllableDaemon):
         ControllableDaemon.__init__(self, '%s daemon' % CONFIG.APP_NAME, CONFIG.RUNNING_FLAG, CONFIG.CLOSING_FLAG)
             
     def prepare(self):
-        logger = Logger(name=CONFIG.LOG_NAME, path=CONFIG.LOG_PATH, 
-                        level=CONFIG.LOG_LEVEL, size=CONFIG.LOG_SIZE, rotation=CONFIG.LOG_ROTATION, 
-                        notifier=CONFIG.LOG_NOTIFIER, notification_level=CONFIG.LOG_NOTIFICATION_LEVEL)
-        self.logger = logger
+        self._setting_logging()
+        self.logger = logging.getLogger("root")
         
         self.logger.info("Starting '%s' on directory '%s'." % (CONFIG.APP_NAME, CONFIG.DATA_ROOT))
         if not exists_path(CONFIG.APP_NAME):
@@ -49,3 +48,19 @@ class Application(ControllableDaemon):
             
             self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
             sleep(CONFIG.POLLING_INTERVAL)
+            
+    def _setting_logging(self):
+        
+        filename = "%s/%s" % (CONFIG.LOG_PATH, CONFIG.LOG_NAME)
+        
+        FORMAT = "%(asctime)-15s %(name)-5s: %(levelname)-6s %(message)s"
+        logging.basicConfig(level=logging.DEBUG,
+                            format=FORMAT,
+                            filename=filename)
+        
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(name)-5s: %(levelname)-6s %(message)s')
+        console.setFormatter(formatter)
+        
+        logging.getLogger('').addHandler(console)
