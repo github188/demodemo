@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>你最近在干啥</title>   
+		
+    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
+	<!--[if IE]><link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+    <link rel="stylesheet" href="/css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<script type="text/javascript" src="/js/jquery-1.2.6.min.js"></script>
+</head>
+<body>
+<!-- container -->
+<div class="container">
+    <!-- Header -->
+	{% block header %}
+	<hr class="space">
+        <div class="span-4">
+            <img src="/images/my.jpg" style="float:left;" />
+        </div>
+	{% endblock %}
+    <!-- END Header -->
+	<hr class="space">
+    <!-- Content -->
+     {% block content %}content{% endblock %}
+    <!-- END Content -->
+
+	<hr class="space">		
+	{% block footer %}
+	
+	&copy; 2007-2009 浪子记忆 &nbsp;
+	<a href="#" target="_blank">关于浪子</a> &nbsp;
+	<a href="#" target="_blank">京ICP证020015号</a> &nbsp;
+	{% endblock %}
+</div>
+<!-- END Container -->
+
+</body></html>

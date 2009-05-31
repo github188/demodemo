@@ -1,0 +1,46 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+<div class='circle_b' >
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+	<div class="f" style='padding:4px;'>
+		<div class="tag" style="padding-left:20px;">
+			<span style="font-size:18px;font-weight:bolder;">{{title}}</span>
+		</div>
+		<hr class="space">
+		<div>
+			修改圈子内的联系信息,只有'<a href='/group/actives/{{v.group.id}}'>{{v.group.name}}</a>'内成员可见.
+		</div>
+		{% if error_msg %}
+		  <div class="error">{{ error_msg }}</div>                    
+		{% endif %}                 
+ 	   <form id="dummy" action="?" method="post">
+			<table>
+				<tr>
+					<td><label for="truename">圈内名字:</label></td>
+					<td><input type="text" name="truename" size="20" id="truename" value="{{v.truename_v}}" />&nbsp;</td>
+				</tr>
+				<tr>
+					<td><label for="email">邮箱:</label></td>
+					<td><input type="text" name="email" size="20" id="email" value="{{v.email_v}}" />&nbsp;<span>联系的邮箱</span></td>
+				</tr>
+                <tr>
+                    <td><label for="mobile">QQ:</label></td>
+                    <td><input type="text" name="qq" size="20" id="qq" value="{{v.qq_v}}" />&nbsp;</td>
+                </tr>
+				<tr>
+					<td><label for="mobile">手机:</label></td>
+					<td><input type="text" name="mobile" size="20" id="mobile" value="{{v.mobile_v}}" />&nbsp;<span>联系的手机</span></td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td><input type="submit" value="保存名片" />&nbsp;&nbsp;<a href='/group/actives/{{v.group.id}}'>取消返回</a></td>
+				</tr>                                                                           
+			</table>        
+		<div class='clear'></div>
+	</div>
+	<div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+{% endblock %}
+

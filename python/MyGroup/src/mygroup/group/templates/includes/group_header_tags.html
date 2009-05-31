@@ -1,0 +1,36 @@
+{% ifequal v.action "actives" %}
+<li class="sel yel_bor">
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/group/actives/{{v.group.id}}">最新动态</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "actives" %}
+	<li><a href="/group/actives/{{v.group.id}}">最新动态</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "members" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/group/members/{{v.group.id}}">成员动态</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "members" %}
+    <li><a href="/group/members/{{v.group.id}}">成员动态</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "news" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/group/news/{{v.group.id}}">大事列表</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "news" %}
+    <li><a href="/group/news/{{v.group.id}}">大事列表</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "history" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/group/history/{{v.group.id}}">陈年旧事</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "history" %}
+    <li><a href="/group/history/{{v.group.id}}">陈年旧事</a></li>
+{% endifnotequal %}
+

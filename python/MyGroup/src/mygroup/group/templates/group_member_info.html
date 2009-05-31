@@ -1,0 +1,58 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+                <div class="span-11">
+					<cpan style="font-weight:bolder;font-size:18px;">{{v.group.name}}</cpan>
+					---由"{{v.author.truename_v}}"创建。&nbsp;
+				</div>
+                <div class="clear">
+					{{v.group.description}}
+				</div>
+            </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+        <hr class="space">    		
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+				<div style="font-size:14px;">{{member.truename_v}}联系方式</div>
+				<div class="span-5">QQ:{{member.qq_v}}</div>
+				<div class="span-5">email:{{member.email_v}}</div>
+				<div class="span-5">手机:{{member.mobile_v}}</div>
+				<div class='clear'></div>
+                <div style="font-size:14px;">{{member.truename_v}}关注的圈子</div>
+				{% for g in user.my_groups %}
+					<a href="/group/actives/{{g.group.id}}">{{g.group.name}}</a>&nbsp;
+				{% endfor %}
+                <div class='clear'></div>           							
+	        </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+		<hr class="space">    
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f">
+				<div class="tag">
+					<ul>
+						<li class="sel yel_bor">
+							<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="#">最近活动</a></div>
+						</li>
+						<li><a href="/group/actives/{{v.group.id}}">返回圈子</a></li>
+					</ul>
+				</div>
+				<hr class="space">
+				<div id="main_context">
+				{% for actives in v.cur_actives %}
+					{% include "includes/member_actives.html" %}
+				{% endfor %}
+				</div>
+            </div>         
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+
+{% endblock %}
+

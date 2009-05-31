@@ -1,0 +1,127 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+<div class='circle_b' >
+<link type="text/css" href="/css/smoothness/ui.all.css" rel="stylesheet" />  
+<script type="text/javascript" src="/js/jquery-ui-1.6.custom.min.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                // Dialog         
+                $('#group_memeber').dialog({
+                    autoOpen: false,
+                    width: 350,
+                    height: 250,
+                    modal: true,
+                    buttons: {
+                        "添加/保存": function() {
+						$.post("?", {ajax:'true',
+									 truename:$('#g_truename').val(),
+									 qq:$('#g_qq').val(),
+									 email:$('#g_email').val(),
+									 mobile:$('#g_mobile').val() 
+									 },
+							  function(data){
+								  if(data == 'OK'){
+									  $("#member_list").append("<tr><td>" + $('#g_truename').val() + "</td><td>" +
+			$('#g_qq').val() + "</td><td>" + $('#g_email').val() + "</td><td>" + $('#g_mobile').val() +
+												"</td></tr>");
+									  $('#g_truename').val('');
+									  $('#g_qq').val('');
+									  $('#g_email').val('');
+									  $('#g_mobile').val('');
+								 }else {
+									alert(data);
+								 } 
+							  }, "text");
+                            //$(this).dialog("close"); 
+                        },
+                        "关闭": function() { 
+                            $(this).dialog("close"); 
+                        }
+                    }
+                });
+                
+                // Dialog Link
+                $('#add_member').click(function(){
+                    $('#group_memeber').dialog('open');
+                    return false;
+                })
+
+            });
+</script>
+		
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+    <div class="f" style='padding:4px;'>
+        <div class="tag" style="padding-left:20px;">
+            <span style="font-size:18px;font-weight:bolder;">{{title}}</span>
+        </div>
+        <hr class="space">
+        <div>
+            添加成员的联系信息, 如果新注册的用户，有匹配的联系信息，自动加入该分组.
+        </div>
+		<table>
+			<tr>
+				<td style="width:80px;">圈子名字:</td>
+				<td>{{group.name}}</td>
+			</tr>
+			<tr>
+				<td>圈子说明:</td>
+				<td>{{group.description}}</td>
+			</tr>
+			<tr>
+				<td>访问权限:</td>
+				<td>
+					{{group.status_view}}
+				</td>
+			</tr>
+		</table>
+        <div class='clear'><a href="#" id='add_member'>添加</a>&nbsp;&nbsp;
+			<a href="/group/actives/{{group.id}}" >返回圈子</a>
+		</div>
+        <table id="member_list">
+			<tr>
+				<th>真实姓名</th>
+				<th>QQ号</th>
+				<th>邮件地址</th>
+				<th>手机号</th>
+				<th>状态</th>
+			</tr>			
+{% for m in invite_list %}
+            <tr>
+                <td>{{m.truename}}</td>
+                <td>{{m.qq}}</td>
+                <td>{{m.email}}</td>
+                <td>{{m.mobile}}</td>
+                <td>
+					{% if m.user_id %}<a href="/group/member/{{group.id}}/{{m.user_id}}">{% endif %}
+					{{m.status_view}}
+					{% if m.user_id %}</a>{% endif %}
+				/删除</td>
+            </tr>   
+{% endfor %}		
+        </table>			
+    </div>
+    <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+<div id="group_memeber" title="添加圈子成员" >
+    <table>
+        <tr>
+            <th>真实姓名</th>
+            <td><input name='truename' id='g_truename' type='text' size='20' value='' /></td>
+        </tr>
+        <tr>
+            <th>QQ号</th>
+            <td><input name='qq' id='g_qq' type='text' size='20' value='' /></td>
+        </tr>
+        <tr>
+            <th>邮件地址</th>
+            <td><input name='email' id='g_email' type='text' size='20' value='' /></td>
+        </tr>
+        <tr>
+            <th>手机号</th>
+            <td><input name='mobile' id='g_mobile' type='text' size='20' value='' /></td>
+        </tr>
+	</table>
+</div>  			
+{% endblock %}
+

@@ -1,0 +1,85 @@
+{% extends "mygroup/base_site.html" %}
+
+{% block header %}
+<hr class="space">
+        <div class="span-4">
+            <img src="/images/my.jpg" style="float:left;" />
+        </div>
+        <br/>
+        <div class="span-15" >
+        <div class='circle_b1' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f color1">
+                <a href="/my">首页</a>
+                <a href="/my/setting">我的设置</a>
+                <a href="/my/ohters">随便逛逛</a>
+                <a href="/logout">退出</a>
+            </div>          
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+        </div>
+{% endblock %}
+    
+{% block content %}
+    <div class="span-15">
+		{% block mid_content %}
+			<div>添加内容在此</div>
+		{% endblock %}
+    </div>
+    
+    <div class="span-7 last">
+        <div class='circle_b1'>
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f">
+				{% block user_info %}
+                <div>
+					<a href="/my"><img src='{{my.user.logo_url}}' class='header' /></a>
+                    <span style="font-size:24px;font-weight:bolder;">
+						<a href="/my">{{my.user.truename}}</a>
+					</span>
+                </div>
+				本月问<cpan class='color2'><b>{{my.monthly_ask_count}}</b></cpan>次<br/> 
+				总共问<b>{{my.all_ask_count}}</b>次<br/>
+                {% endblock %}
+				
+				{% block user_groups %}
+				<br/> 
+                <div class='color2'>
+                    <div style="color:#000;"><b>我的圈子</b></div>
+                    <div><a href="/group/create">创建新的圈子</a></div>
+					{% for g in my.my_groups %}
+						<div><a href="/group/actives/{{g.group.id}}">{{g.group.name}}</a> -- {{g.truename_v}}</div>
+					{% endfor %}
+                </div> 
+				<br/>  
+				{% endblock %}
+				
+				{% block user_favorite %}				
+                <div class='color2'>
+					<div style="color:#000;"><b>最近问过你的人...</b></div>
+					{% for u in my.recent_asked_user %}
+                    <div class="span-2">
+                        <img src='{{u.logo_url}}' class='header' /><br/>
+                        {{u.truename}}
+                    </div>
+					{% endfor %}                                                                         
+                </div>
+				{% endblock %}
+				
+				{% block user_invite %}
+                <div class='clear color2'>
+					<br/>
+					<div style="color:#000;"><b>发送链接邀请朋友...</b></div>
+                    <p>复制下面的网址发送给朋友，当你的朋友接受邀请并注册后，你们将自动的相互关注。</p>
+                </div>
+				{% endblock %}      
+            <div class='clear'></div>   
+            </div>  
+         
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>      
+        
+    </div>
+
+{% endblock %}
+

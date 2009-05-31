@@ -1,0 +1,70 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+<div class='circle_b' >
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+	<div class="f" style='padding:4px;'>
+		<div class="tag" style="padding-left:20px;">
+			<span style="font-size:18px;font-weight:bolder;">{{title}}</span>
+		</div>
+		<hr class="space">              
+ 	   <form id="dummy" action="?" method="post">
+			<table>
+                <tr>
+                    <td><label>头像:</label></td>
+                    <td><img class='header' src="{{v.logo_url}}" /></td>
+                </tr>           
+                <tr>
+                    <td><label for="name">登录用户名:</label></td>
+                    <td>{{v.name}}</td>
+                </tr>			
+				<tr>
+					<td><label for="truename">真实名字:</label></td>
+					<td>{{v.truename}}&nbsp;</td>
+				</tr>
+				<tr>
+					<td><label for="email">邮箱:</label></td>
+					<td><input type="text" name="email" size="20" id="email" value="{{v.email}}" />&nbsp;<span>联系的邮箱</span></td>
+				</tr>
+                <tr>
+                    <td><label for="mobile">QQ:</label></td>
+                    <td><input type="text" name="qq" size="20" id="qq" value="{{v.qq}}" />&nbsp;</td>
+                </tr>
+				<tr>
+					<td><label for="mobile">手机:</label></td>
+					<td><input type="text" name="mobile" size="20" id="mobile" value="{{v.mobile}}" />&nbsp;<span>联系的手机</span></td>
+				</tr>
+                <tr>
+                    <td><label for="password">登录密码:</label></td>
+                    <td><input type="password" name="password" size="20" id="password" value="{{v.password}}" />&nbsp;<span>登录密码</span></td>
+                </tr>				
+				<tr>
+					<td>
+					</td>
+					<td><input type="submit" value="保存设置" /></td>
+				</tr>                                                                           
+			</table>
+		</form>        
+		<div class='clear'></div>
+        <div class="tag" style="padding-left:20px;">
+            <span style="font-size:18px;font-weight:bolder;">上传头像</span>
+        </div>
+		<form action="/upload_show" enctype="multipart/form-data" method='POST'>
+			<table>
+                <tr>
+                    <td><label for="file">头像:</label></td>
+                    <td><input type='file' id='file' name='file' /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="上传头像" /></td>
+                </tr>
+			</table>
+		</form>
+						
+        <hr class="space">									
+	</div>
+	<div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+{% endblock %}
+

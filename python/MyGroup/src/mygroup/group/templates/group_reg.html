@@ -1,0 +1,94 @@
+{% extends "mygroup/base_site.html" %}
+
+{% block header %}
+<hr class="space">
+		<div class="span-4">
+			<img src="/images/my.jpg" style="float:left;" />
+		</div>
+		<br/>
+		<div class="span-15" >
+        <div class='circle_b1' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f color1">
+				<a href="/index">首页</a>
+				<a href="/reg">注册</a>
+				<a href="/index">登陆</a>
+				<a href="#">随便逛逛</a>
+			</div>			
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+		</div>
+{% endblock %}
+
+{% block content %}
+    <div class="span-15">	
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+				<div class="tag" style="padding-left:20px;">
+					<span style="font-size:18px;font-weight:bolder;">快速注册</span>
+				</div>
+				<hr class="space">
+				<div>
+					如果你以前注册过从<a href='/index'>这里</a>登陆. 如果你忘记了密码, 请与站长联系, QQ:81711368.
+				</div>
+				{% if error_msg %}
+                  <div class="error">{{ error_msg }}</div>                    
+				{% endif %}					
+				<form id="dummy" action="/reg" method="post">
+					<table>
+						<tr>
+							<td style="width:80px;"><label for="name">名字:</label></td>
+							<td><input type="text" name="name" size="20" id="name" value="" />&nbsp;<span>登陆的用户名</span></td>
+						</tr>
+						<tr>
+							<td><label for="password">密码:</label></td>
+							<td><input type="password" name="password" size="20" id="password" value="" />&nbsp;<span>登陆的密码</span></td>
+						</tr>
+                        <tr>
+                            <td><label for="truename">真实名字:</label></td>
+                            <td><input type="text" name="truename" size="20" id="truename" value="" />&nbsp;<span>真实姓名</span></td>
+                        </tr>
+                        <tr>
+                            <td><label for="qq">QQ:</label></td>
+                            <td><input type="text" name="qq" size="20" id="qq" value="" />&nbsp;<span>联系的QQ号</span></td>
+                        </tr>
+						<tr>
+							<td><label for="email">邮箱:</label></td>
+							<td><input type="text" name="email" size="20" id="email" value="" />&nbsp;<span>联系的邮箱</span></td>
+						</tr>
+						<tr>
+							<td><label for="mobile">手机:</label></td>
+							<td><input type="text" name="mobile" size="20" id="mobile" value="" />&nbsp;<span>联系的手机</span></td>
+						</tr>
+						<tr>
+							<td>
+										
+							</td>
+							<td><input type="submit" value="完成注册" /></td>
+						</tr>																			
+					</table>
+				</form>			
+				<div class='clear'></div>
+	        </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+		
+    </div>
+	
+	<div class="span-7 last">
+        <div class='circle_b1'>
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f">
+				<p>注册后，你可以看到朋友/同学/亲人最近在干什么.</p>
+				<p>使用中如果遇到什么问题,请与作者联系, QQ:81711368. 目前网站还在测试中. 主要用于站长朋友/同学/同事间交流. 
+				对其他网友的问题会在最短时间内尽量解决.</p>						
+			<div class='clear'></div>	
+			</div>	
+         
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>		
+		
+	</div>
+{% endblock %}
+

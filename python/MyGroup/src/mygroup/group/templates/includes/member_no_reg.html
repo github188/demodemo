@@ -1,0 +1,19 @@
+{% if v.have_no_register %}
+<b>未加入成员列表...</b>&nbsp;&nbsp;<a href="/group/invite/{{v.group.id}}">添加邀请</a>
+<table id="member_list">
+	<tr>
+		<th>姓名</th>
+		<th>QQ号</th>
+		<th>邮件地址</th>
+		<th>手机号</th>
+	</tr>           
+{% for m in v.no_register %}
+	<tr>
+		<td>{{m.truename}}</td>
+		<td>{{m.qq}}</td>
+		<td>{{m.email}}</td>
+		<td>{{m.mobile}}</td>
+	</tr>   
+{% endfor %}        
+</table>
+{% endif %}        

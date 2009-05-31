@@ -1,0 +1,57 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+<div class='circle_b' >
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+	<div class="f" style='padding:4px;'>
+		<div class="tag" style="padding-left:20px;">
+			<span style="font-size:18px;font-weight:bolder;">{{title}}</span>
+		</div>
+		<hr class="space">
+		<div>
+			创建圈子后，可以和圈子内的成员，分享最近在干什么。
+		</div>
+		{% if error_msg %}
+		  <div class="error">{{ error_msg }}</div>                    
+		{% endif %}                 
+		<form id="dummy" action="?" method="post">
+			<input type="hidden" name="id" value="{{group.id}}" />
+			<table>
+				<tr>
+					<td style="width:80px;"><label for="name">圈子名字:</label></td>
+					<td>
+						{% if group.id %}
+						{{group.name}}
+						{% else %}
+						<input type="text" name="name" size="20" id="name" value="{{group.name}}" />&nbsp;<span>圈子名</span>
+						{% endif %}
+					</td>
+				</tr>
+				<tr>
+					<td><label for="description">圈子说明:</label></td>
+					<td><textarea name="description" id='description' style='height:40px;width:95%'>{{group.description}}</textarea></td>
+				</tr>
+				<tr>
+					<td><label for="status">访问权限:</label></td>
+					<td>					
+						<select name="status" id='status'>
+							<option {% ifequal group.status "0" %}selected='selected'{% endifequal %} value="0">任何人都可加入</option>
+							<option {% ifequal group.status '1' %}selected='selected'{% endifequal %} value="1">邀请的人才能加入</option>
+							<option {% ifequal group.status '2' %}selected='selected'{% endifequal %} value="2">验证后可以加入</option>
+							<option {% ifequal group.status '3' %}selected='selected'{% endifequal %} value="3">任何人都不能加入</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td><input type="submit" value="保存圈子信息" /></td>
+				</tr>                                                                           
+			</table>
+		</form>         
+		<div class='clear'></div>
+	</div>
+	<div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+{% endblock %}
+

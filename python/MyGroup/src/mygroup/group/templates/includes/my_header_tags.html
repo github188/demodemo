@@ -1,0 +1,36 @@
+{% ifequal v.action "sent" %}
+<li class="sel yel_bor">
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/my/sent">我发送的</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "sent" %}
+	<li><a href="/my/sent">我发送的</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "followed" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/my/followed">我关注的</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "followed" %}
+    <li><a href="/my/followed">我关注的</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "follower" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/my/follower">关注我的</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "follower" %}
+    <li><a href="/my/follower">关注我的</a></li>
+{% endifnotequal %}
+
+{% ifequal v.action "reply" %}
+<li class="sel yel_bor">
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div><div class="f"><a class="now" href="/my/reply">回复我的</a></div>
+</li>
+{% endifequal %}
+{% ifnotequal v.action "reply" %}
+    <li><a href="/my/reply">回复我的</a></li>
+{% endifnotequal %}
+

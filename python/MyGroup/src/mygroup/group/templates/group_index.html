@@ -1,0 +1,80 @@
+{% extends "mygroup/base_site.html" %}
+
+{% block header %}
+<hr class="space">
+        <div class="span-4">
+            <img src="/images/my.jpg" style="float:left;" />
+        </div>
+        <br/>
+        <div class="span-15" >
+        <div class='circle_b1' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f color1">
+                <a href="/index">首页</a>
+                <a href="/reg">注册</a>
+                <a href="/index">登陆</a>
+                <a href="#">随便逛逛</a>
+            </div>          
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+        </div>
+{% endblock %}
+	
+{% block content %}
+    <div class="span-15">
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+				<h3>最近在做什么?</h3>
+				<h4>在夜深人静的时候, 你是否想知道TA最近在干什么?</h4>
+				<h4>在孤独无助的时候, 你是否在意谁在关心你最近在干什么?</h4>
+				<h4>随着时间的流逝有些人和事，总会不经意的拨动我们的心弦. 
+					不想去打扰,只想在某个角落,静静的关注的TA最近在干什么</h4>
+				<h4>留下你的问候, 也许TA永远不会看见，永远也没有回答，只是用自己教徒般的虔诚，默默地表达自己的思念,关怀。</h4>
+				<h4>留下你的回忆, 因为世上的某个角落有人在关注着你.</h4>
+            </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+    </div>
+    
+    <div class="span-7 last">
+        <div class='circle_b1'>
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f">
+                <div style="padding-left:20px;">
+                    <span style="font-size:18px;font-weight:bolder;">你是谁?</span>
+                </div>
+				<form id="dummy" action="/login" method="post">
+                {% if error_msg %}
+                  <div class="error">{{ error_msg }}</div>                    
+                {% endif %}					
+					<table>
+						<tr>
+							<td style="width:40px;"><label for="name">名字:</label></td>
+							<td><input type="text" name="name" size="15" id="name" value="{{name}}" /></td>
+						</tr>
+						<tr>
+							<td><label for="password">密码:</label></td>
+							<td><input type="password" name="password" size="15" id="password" value="" /></td>
+						</tr>
+						<tr>
+							<td>
+										
+							</td>
+							<td><input type="submit" value="芝麻开门" /></td>
+						</tr>  
+					</table> 
+				  </form>
+				  
+				  <h3><b>我以前还没有来过</b></h3>
+				  <h3><a href="/reg">我来啦</a></h3>
+            </div>  
+         
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>      
+        
+    </div>
+	
+
+{% endblock %}
+

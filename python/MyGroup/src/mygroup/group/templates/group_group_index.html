@@ -1,0 +1,130 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+                <div class="span-11">
+					<cpan style="font-weight:bolder;font-size:18px;">{{v.group.name}}</cpan>
+					---由"{{v.author.truename_v}}"创建。&nbsp;
+					<a href="/group/setting/{{v.group.id}}">修改圈内名片</a>
+				</div>
+                <div class="clear">
+					{{v.group.description}} --- <a href="/group/invite/{{v.group.id}}">添加邀请</a>
+					{% ifequal v.group.creator my.user %}
+					&nbsp;&nbsp;<a href="/group/edit/{{v.group.id}}">修改描述信息</a>
+					{% endifequal %}
+				</div>
+            </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+        <hr class="space">    		
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+				<div class="span-6" style="font-weight:bolder;font-size:24px;">最近在做什么?</div>
+				<div class="span-5">
+				圈子内本月问<cpan class='color2'><b>{{v.monthly_ask_count}}</b></cpan>次 / 总共问<b>{{v.all_ask_count}}</b>次
+				</div>
+				<div class="clear">
+				<span>话题:<a href='#' class='cate'>[八卦]</a>&nbsp;
+					<a href='#' class='cate'>[工作]</a> &nbsp;
+					<a href='#' class='cate'>[小秘密]</a>&nbsp;
+					<a href='#' class='cate'>[学习]</a>&nbsp;
+					<a href='#' class='cate'>[麻木]</a>&nbsp;
+					<a href='#' class='cate'>[自定义]</a>
+				</span>
+				</div>
+				<textarea id='text' style='height:40px;width:95%'></textarea>
+				<div class="span-11">还剩<span id='t_len'>70</span>字符</div>
+				<div class="span-3 last">
+					<a href='#' id="save">保存</a></div>
+				<div class='clear'></div>
+<script type="text/javascript">
+	$(function(){
+		$('.cate').click(function(){
+				$('#text').val($(this).html());
+				return false;
+		});
+	
+		$("#text").change(function(){
+			//alert();
+			$("#t_len").html((70 - $('#text').val().length) + '');
+		});
+	
+        $("#save").click(function(){
+			if($('#text').val().length < 10){
+				alert("至少10个字符!");
+				return false;
+			};
+			$.post("/group/doing/{{v.group.id}}", {text:$('#text').val()},
+						function(data){
+							$("#main_context").html(data);
+							$("#text").val('');
+						}, "html");
+		
+			 return false;
+        });
+			
+        $("a.ask").click(function(){
+			//alert(this.href);
+			var link = $(this);
+            $.get(this.href + '?' + (new Date()).getTime(), function(data){
+							if (data == 'OK'){
+								link.html('已问候');
+							}else {
+								alert(data);
+							}
+                        }, "html");
+        
+             return false;
+        }); 
+			
+        $("a.vote").click(function(){
+			var cur = this;
+            $.get(this.href + '?' + (new Date()).getTime(), function(data){
+                            if (data == 'OK'){
+								$('img', cur).attr('src', '/images/star_on.gif');
+							}else if(data.match(/\d+/)){
+								$('img', cur.parentNode).get(parseInt(data) + 2).src = '/images/star_on.gif';
+                            }else {
+                                alert(data);
+                            }
+                        }, "html");
+        
+             return false;
+        }); 			
+				
+	});	
+</script>				
+	        </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+		<hr class="space">    
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f">
+				<div class="tag">
+					<ul>
+						{% include "includes/group_header_tags.html" %}
+					</ul>
+				</div>
+				<hr class="space">
+				<div id="main_context">
+				{% for actives in v.cur_actives %}
+					{% include "includes/member_actives.html" %}
+				{% endfor %}
+				{% if v.empty %}
+					<div>没有找到相关纪录。</div>
+				{% endif %}					
+				{% ifequal v.action "members" %}
+					{% include "includes/member_no_reg.html" %}
+				{% endifequal %}
+				</div>
+            </div>         
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+
+{% endblock %}
+
