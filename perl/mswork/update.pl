@@ -2,6 +2,6 @@
 #
 print "Context-Type: text/plain";
 print "\n\n";
-print "Hello world!"
+print "Hello world!\n";
 
-
+print `svn up`
