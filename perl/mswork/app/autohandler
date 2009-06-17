@@ -1,0 +1,7 @@
+<html>
+<body>
+Hi it's autohandlers.
+
+% $m->call_next;
+</body>
+</htm>
