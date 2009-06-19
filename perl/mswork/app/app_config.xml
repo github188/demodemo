@@ -1,0 +1,10 @@
+<config>
+    <facebook>
+        <canvasurl>http://apps.facebook.com/demo_firstapp/</canvasurl>
+        <callbackurl>http://facebook.masonsoft.com:8116/demo/firstapp/</callbackurl>
+        <api_key>780dfe2c39fb328f89cef9ce5f1d5d7f</api_key>
+        <secret>b8a94675744b8186e821bee19edf4805</secret>
+        <app_path>demo_firstapp</app_path>
+    </facebook>
+	
+</config>

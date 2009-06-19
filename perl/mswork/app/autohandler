@@ -1,7 +1,30 @@
-<html>
-<body>
-Hi it's autohandlers.
+<%once%>
+use MSFB::Schema;
+use MSFB;
 
-% $m->call_next;
-</body>
-</htm>
+my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
+my $schema;
+</%once>
+
+<%shared>
+my $fb;
+</%shared>
+
+<%init>
+$schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", \%dbi_params);
+$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin/app_config.xml");
+
+my $fbml = $fb->require_add();
+if ($fbml) {
+	$m->print($fbml);
+	return;
+}
+
+$fbml = $fb->require_login();
+if ($fbml) {
+	$m->print($fbml);
+	return;
+}
+
+$m->call_next;
+</%init>
