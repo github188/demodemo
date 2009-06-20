@@ -5,26 +5,13 @@ use FindBin;
 </%once>
 
 <%shared>
-my $fb;
 my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
-my $schema;
 </%shared>
 
 <%init>
+
 $schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", );
-$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app_config.xml");
-
-my $fbml = $fb->require_add();
-if ($fbml) {
-	$m->print($fbml);
-	return;
-}
-
-$fbml = $fb->require_login();
-if ($fbml) {
-	$m->print($fbml);
-	return;
-}
+$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app/app_config.xml");
 
 $m->call_next;
 </%init>

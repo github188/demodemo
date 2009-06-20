@@ -16,7 +16,7 @@ use CGI::Fast;
 use HTML::Mason::CGIHandler;
 use HTML::Entities;
                             
-$::MASON_GLOBALS = [qw(  )]; # List of variable names to make global
+$::MASON_GLOBALS = [qw($schema $fb)]; # List of variable names to make global
 
 %::MASON_CONFIG = (
     error_mode           => "output", # or fatal
