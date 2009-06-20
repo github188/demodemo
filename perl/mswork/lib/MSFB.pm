@@ -22,15 +22,18 @@ sub new_client {
 					   error  => $error,
 					   no_stderr => 1,
 					   class => "debug");
-
-	$self->query($cgi);
-	my $auth_token = $cgi->param('auth_token');
 	
+	$self->query($cgi);
+	my $auth_token = $cgi->param('auth_token') or $self->auth->create_token();
+	
+	$self->info("cgi:$cgi");
 	$self->info("new client auth token:$auth_token");
 	$self->info("app config:$cfg_file");
 	$self->info("api key:$config->{facebook}->{'api_key'}");
 	$self->auth->get_session($auth_token) if $auth_token;
-
+	
+	$self->info("user id:" . $self->session_uid());
+	
     return $self;
 }
 

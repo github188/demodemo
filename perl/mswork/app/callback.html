@@ -1,5 +1,5 @@
 <%init>
-
+$m->redirect($fb->get_login_url(canvas=>'1')) unless($fb->canvas->in_fb_canvas());
 </%init>
 <fb:header>
   Welcome, <fb:name uid="<% $fb->session_uid() %>" firstnameonly="true" useyou="false" />!

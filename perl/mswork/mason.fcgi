@@ -41,7 +41,7 @@ while (my $cgi = CGI::Fast->new ) {
     my($url) = ($ENV{'REQUEST_URI'}=~/(.*)/);
     $url =~ s{\?.*}{};
     $url =~ s{/ms}{};
-    $ENV{'REQUEST_URI'} = $url;
+    #$ENV{'REQUEST_URI'} = $url;
     eval {
         if ( ( !$handler->interp->comp_exists( $url ) )
              and ( $handler->interp->comp_exists( $url . "/index.html" ) ) ) {
