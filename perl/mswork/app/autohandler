@@ -1,18 +1,18 @@
-<%once%>
+<%once>
 use MSFB::Schema;
 use MSFB;
-
-my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
-my $schema;
+use FindBin;
 </%once>
 
 <%shared>
 my $fb;
+my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
+my $schema;
 </%shared>
 
 <%init>
-$schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", \%dbi_params);
-$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin/app_config.xml");
+$schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", );
+$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app_config.xml");
 
 my $fbml = $fb->require_add();
 if ($fbml) {

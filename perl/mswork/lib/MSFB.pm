@@ -2,19 +2,21 @@ package MSFB;
 use strict;
 use Data::Dumper;
 use Config::Any;
-use base qw(WWW::Facebook::API)
+use base qw(WWW::Facebook::API);
 use Log::Common;
 
+my $access='/home/deonwu/access.log';
+my $error='/home/deonwu/error.log';
 sub new_client {
     my ($self, $cgi, $cfg_file) = @_;
 	
-	$config = _load_config($cfg_file)
+	my $config = _load_config($cfg_file);
 	
 	my $self = $self->new(desktop     => 0,
             api_key     => $config->{facebook}->{'api_key'},
             secret      => $config->{facebook}->{'secret'},
             app_path    => $config->{facebook}->{'app_path'}
-			)
+			);
 	
 	$self->{'log'} = Log::Common->new(access => $access,
 					   error  => $error,
@@ -41,18 +43,18 @@ sub require_add {
 	
 	my ($self, ) = @_;
 	
-    return '<fb:redirect url="' . $client->get_add_url . '" /><!-- get_user -->'
+    return '<fb:redirect url="' . $self->get_add_url . '" /><!-- get_user -->'
         unless $self->canvas->get_user();	
 }
 
 sub info {
 	my ($self, $msg) = @_;
-	$self->log->access(message=>$msg)
+	$self->{'log'}->access(message=>$msg)
 }
 
 sub error {
 	my ($self, $msg) = @_;
-	$self->log->error(message=>$msg)
+	$self->{'log'}->error(message=>$msg)
 }
 
 #static class method.
@@ -65,7 +67,6 @@ sub _load_config {
         my $filename;
         ($filename, $config) = each %$_;
     }
-    print Dumper $config;
     return $config;
 }
 

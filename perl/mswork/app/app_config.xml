@@ -1,10 +1,10 @@
 <config>
     <facebook>
-        <canvasurl>http://apps.facebook.com/demo_firstapp/</canvasurl>
-        <callbackurl>http://facebook.masonsoft.com:8116/demo/firstapp/</callbackurl>
-        <api_key>780dfe2c39fb328f89cef9ce5f1d5d7f</api_key>
-        <secret>b8a94675744b8186e821bee19edf4805</secret>
-        <app_path>demo_firstapp</app_path>
+        <canvasurl>http://www.10ding.com/ms/app/canvas.html</canvasurl>
+        <callbackurl>http://www.10ding.com/ms/app/callback.html</callbackurl>
+        <api_key>7b4e03c51bea3ffde855170d1cec2f73</api_key>
+        <secret>bfef6c85201c131eaec12a1ae070c939</secret>
+        <app_path>deon_group</app_path>
     </facebook>
 	
 </config>
