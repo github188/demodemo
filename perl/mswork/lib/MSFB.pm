@@ -27,6 +27,8 @@ sub new_client {
 	my $auth_token = $cgi->param('auth_token');
 	
 	$self->info("new client auth token:$auth_token");
+	$self->info("app config:$cfg_file");
+	$self->info("api key:$config->{facebook}->{'api_key'}");
 	$self->auth->get_session($auth_token) if $auth_token;
 
     return $self;
