@@ -13,7 +13,7 @@ my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
 $schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", );
 $fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app/app_config.xml");
 
-print $fb->get_login_url(canvas=>'1') unless($fb->canvas->in_fb_canvas());
+#print $fb->get_login_url(canvas=>'1') unless($fb->canvas->in_fb_canvas());
 #
 
 $m->call_next;

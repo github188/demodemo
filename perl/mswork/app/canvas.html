@@ -1,20 +1,26 @@
+<%args>
+$page=>'home'
+</%args>
 <%init>
+$page ||= 'home';
 
 </%init>
-<fb:header>
-  Welcome, <fb:name uid="<% $fb->session_uid() %>" firstnameonly="true" useyou="false" />!
-</fb:header>
 
-<div class="clearfix" style="float: left; border: 1px #d8dfea solid; padding: 10px 10px 10px 10px; margin-left: 30px; margin-bottom: 30px; width: 500px;">
-  Your favorite language is.
-  <br /><br />
+<%def .select>
+<%args>
+$cur
+$page
+</%args>
+<%init>
+	print "selected='true'" if $cur eq $page;
+</%init>
+</%def>
 
-  <div class="grayheader clearfix">
-    <br /><br />
-
-    <form action="." method="POST">
-      <input type="text" name="language" value="{{ fbuser.language|escape }}" />
-      <input type="submit" value="Change" />
-    </form>
-  </div>
-</div>
+<fb:tabs>  
+	<fb:tab-item href='?page=home' title='Home' <& .select,  cur=>$page, page=>'home' &>/> 
+	<fb:tab-item href='?page=quiz' title='Quiz'   <& .select,  cur=>$page,  page=>'quiz' &>/>
+	<fb:tab-item href='?page=message_board' title='Message Board'   <& .select,  cur=>$page,  page=>'message_board' &>/>  
+	<fb:tab-item href='?page=sugars' title='Sugars'   <& .select,  cur=>$page, page=>'sugars' &>/> 
+	<fb:tab-item href='?page=about_us' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'about_us' &>/> 
+</fb:tabs>
+<& "$page.html" &>
