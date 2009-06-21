@@ -1,5 +1,12 @@
+<%init>
+use Data::Dumper;
+
+print "--------------------";
+print Dumper $m->cgi_object();
+print "--------------------";
+</%init>
 <fb:header>
-  Welcome, <fb:name uid="<% $fb->session_uid() %>" firstnameonly="true" useyou="false" />!
+  Welcome, <fb:name uid="<% $fb->canvas->get_user() %>" firstnameonly="true" useyou="false" />!
 </fb:header>
 
   <div class="grayheader clearfix">

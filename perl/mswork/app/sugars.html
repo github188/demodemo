@@ -1,8 +1,16 @@
 
-<fb:header>
-  Welcome, <fb:name uid="<% $fb->session_uid() %>" firstnameonly="true" useyou="false" />!
-</fb:header>
-
-  <div class="grayheader clearfix">
-	Sugars
-  </div>
+<fb:editor action="?new_sugars" labelwidth="100">
+	<fb:editor-text label="I am" name="name" value=""/>  
+	<fb:editor-text label="Seeking" name="seeking" value=""/>  
+	<fb:editor-text label="Location" name="location" value=""/>  
+	<fb:editor-text label="Email" name="email" value=""/>  
+	<fb:editor-text label="IM" name="im" value=""/>  
+	<fb:editor-text label="Photo" name="photo" value=""/>
+	
+	<fb:editor-textarea label="Description" name="description"/>
+	<fb:editor-buttonset>
+	<fb:editor-button value="Add"/>
+	<fb:editor-button value="Recommend"/> 
+	<fb:editor-cancel />
+	</fb:editor-buttonset>
+</fb:editor>

@@ -22,19 +22,27 @@ sub new_client {
 					   error  => $error,
 					   no_stderr => 1,
 					   class => "debug");
+
+
+	$self->info("create new FB API from config:$cfg_file");
+	$self->info("api key:$config->{facebook}->{'api_key'}");
 	
+    return $self;
+}
+
+sub update_session {
+	my ($self, $cgi) = @_;
 	$self->query($cgi);
-	my $auth_token = $cgi->param('auth_token') or $self->auth->create_token();
+	my $auth_token = $cgi->param('auth_token'); #or $self->auth->create_token();
+	
+	$self->info("update request session");
 	
 	$self->info("cgi:$cgi");
 	$self->info("new client auth token:$auth_token");
-	$self->info("app config:$cfg_file");
-	$self->info("api key:$config->{facebook}->{'api_key'}");
 	$self->auth->get_session($auth_token) if $auth_token;
 	
 	$self->info("user id:" . $self->session_uid());
-	
-    return $self;
+	$self->info("user canvas user:" . $self->canvas->get_user());
 }
 
 sub require_login {
