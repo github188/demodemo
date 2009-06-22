@@ -16,6 +16,11 @@ $page
 </%init>
 </%def>
 
+
+<fb:profile-pic uid="<% $fb->canvas->get_user() %>" linked="true" /> Welcome, <fb:name uid="<% $fb->canvas->get_user() %>" useyou="false" />
+<br/><br/>
+<h2>Arrangement or Not?</h2>
+<br/>
 <fb:tabs>  
 	<fb:tab-item href='?page=home' title='Home' <& .select,  cur=>$page, page=>'home' &>/> 
 	<fb:tab-item href='?page=quiz' title='Quiz'   <& .select,  cur=>$page,  page=>'quiz' &>/>
