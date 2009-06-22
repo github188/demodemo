@@ -1,0 +1,3 @@
+integer function hello_word(string name)
+    print("helloword!");
+endfunction

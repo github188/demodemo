@@ -1,0 +1,86 @@
+#-----------------------------------------------------------------
+# pycparser: _c_ast_gen.yaml
+#
+# Defines the AST Node classes used in pycparser.
+# 
+# Each entry is a Node sub-class name, listing the attributes
+# and child nodes of the class:
+#   <name>*     - a child node
+#   <name>**    - a sequence of child nodes
+#   <name>      - an attribute
+#
+# Copyright (C) 2008-2009, Eli Bendersky
+# License: LGPL
+#-----------------------------------------------------------------
+
+# op: =, +=, /= etc.
+#
+Assignment: [op, var*, value*]
+
+BinaryOp: [op, left*, right*]
+
+Break: []
+
+Case: [expr*, stmt*]
+
+# Compound statement: { declarations... statements...}
+#
+Compound: [decls**, stmts**]
+
+# type: integer, char, float, string, etc. see CLexer for constant token types
+#
+Constant: [type, value]
+
+Continue: []
+
+#do while();
+DoWhile: [cond*, stmt*]  
+
+#Decl: [name, quals, storage, type*, init*, bitsize*]
+
+Decl: [qualifier, type, vars**]
+
+Default: [stmt*]
+
+# a list of comma separated expressions
+#
+ExprList: [exprs**]
+
+EllipsisParam: []
+
+FileAST: [ext**]
+
+#function_definition : function_type_specifier FUNCTION identifier LPAREN param_type_list_opt RPAREN compound_statement ENDFUNCTION
+FunctionDecl: [type, name*, param*, stmt* ]
+
+# name: Id
+# args: ExprList
+#
+FuncCall: [name*, args*]
+
+For: [init*, cond*, next*, stmt*]
+
+Goto: [name]
+
+If: [cond*, iftrue*, iffalse*]
+
+ID: [name]
+
+Label: [name, stmt*]
+
+Param: [out, type, var*]
+
+# a list of comma separated function parameter declarations
+#
+ParamList: [params**]
+
+Return: [expr*]
+
+UnaryOp: [op, expr*]
+
+Varible: [type, name*, index* ]
+
+VaribleDecl: [name*, init ]
+
+While: [cond*, stmt*]
+
