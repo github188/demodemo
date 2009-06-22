@@ -1,0 +1,21 @@
+Generating LALR tables
+WARNING: 110 shift/reduce conflicts
+WARNING: 216 reduce/reduce conflicts
+WARNING: reduce/reduce conflict in state 173 resolved using rule (declaration_specifiers_list -> declaration_specifiers)
+WARNING: rejected rule (declaration_specifiers_list -> declaration_specifiers_list declaration_specifiers) in state 173
+WARNING: reduce/reduce conflict in state 174 resolved using rule (compound_statement -> statement_list)
+WARNING: rejected rule (compound_statement -> declaration_specifiers_list statement_list) in state 174
+WARNING: reduce/reduce conflict in state 177 resolved using rule (statement_list -> statement)
+WARNING: rejected rule (statement_list -> statement_list statement) in state 177
+WARNING: reduce/reduce conflict in state 184 resolved using rule (statement_list -> statement)
+WARNING: rejected rule (labeled_statement -> DEFAULT COLON statement) in state 184
+WARNING: reduce/reduce conflict in state 189 resolved using rule (statement_list -> statement)
+WARNING: rejected rule (labeled_statement -> ID COLON statement) in state 189
+WARNING: reduce/reduce conflict in state 193 resolved using rule (statement_list -> statement)
+WARNING: rejected rule (labeled_statement -> CASE expression COLON statement) in state 193
+WARNING: Rule (declaration_specifiers_list -> declaration_specifiers_list declaration_specifiers) is never reduced
+WARNING: Rule (compound_statement -> declaration_specifiers_list statement_list) is never reduced
+WARNING: Rule (statement_list -> statement_list statement) is never reduced
+WARNING: Rule (labeled_statement -> DEFAULT COLON statement) is never reduced
+WARNING: Rule (labeled_statement -> ID COLON statement) is never reduced
+WARNING: Rule (labeled_statement -> CASE expression COLON statement) is never reduced
