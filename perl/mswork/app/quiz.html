@@ -1,8 +1,54 @@
+<%args>
+$quiz_no=>-1
+$submit=>'no'
+</%args>
+<%init>
+use Data::Dumper;
 
-<fb:header>
-  Welcome, <fb:name uid="<% $fb->canvas->get_user() %>" firstnameonly="true" useyou="false" />!
-</fb:header>
+my $answer_key = "quiz_" . $fb->canvas->get_user();
+my $answer = $m->cache->get($answer_key);
+if (!defined($answer)) {
+	$answer = {};
+	$m->cache->set($answer_key, $answer);
+}
 
-  <div class="grayheader clearfix">
-	Quiz
-  </div>
+$answer->{$quiz_no} = $submit if $quiz_no >= 0 and $quiz_no <= 10;
+$m->cache->set($answer_key, $answer);
+
+my $question;
+my $check_out_list;
+
+my $done_quiz = $quiz_no >= 7;
+if ($done_quiz){
+	$check_out_list = $dbh->selectall_arrayref("SELECT description, user_count FROM ms_sugar_answer", {Slice => {}});  
+}else {
+	$quiz_no++;
+	($question) = $dbh->selectrow_array("SELECT question FROM ms_sugar_question WHERE order_by=?", {}, $quiz_no);
+}
+
+print "answer_key:$answer_key\n";
+print "quiz_no:$quiz_no\n";
+print "question:$question\n";
+print Dumper $answer;
+</%init>
+<br/>
+<div>
+% 
+% unless ($done_quiz) {
+<fb:editor action="?page=quiz" labelwidth="100">
+	<input type="hidden" name="order_by" value="<% $quiz_no %>" />
+	<div><b>Quiz:</b>&nbsp;&nbsp;<% $question %>
+	</div>
+	<fb:editor-buttonset>
+		<fb:editor-button value="Yes"/>  
+		<fb:editor-button value="No"/>
+	</fb:editor-buttonset> 
+</fb:editor>
+% }else {
+<ul>
+% for my $answer (@{$check_out_list}){	
+<li><b><% $answer->{"user_count"} %></b><% $answer->{"description"} %></li>
+% } #end for
+</ul>
+% } #end done quiz
+</div>

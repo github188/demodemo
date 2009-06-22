@@ -29,4 +29,4 @@ $page
 	<fb:tab-item href='?page=about_us' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'about_us' &>/> 
 	<fb:tab-item href='?page=friends_test' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'friends_test' &>/> 
 </fb:tabs>
-<& "$page.html" &>
+<& "$page.html", %ARGS &>

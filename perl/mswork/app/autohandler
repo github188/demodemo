@@ -2,15 +2,21 @@
 use MSFB::Schema;
 use MSFB;
 use FindBin;
+use DBI;
 </%once>
 
 <%shared>
-my $dbi_dsn = "DBI:mysql:database=deonwu;host=mysql.10ding.com";
+my $dbi_dsn = "DBI:mysql:database=mswork;host=mysql.10ding.com";
 </%shared>
 
 <%init>
-
-$schema ||= MSFB::Schema->connect($dbi_dsn, "deonwu", "mswork", );
+my $DB_ATTR = {
+	RaiseError  => 1,
+	PrintError  => 1,
+	AutoCommit  => 0,
+	LongReadLen => 1048576,
+};
+$dbh ||= DBI->connect($dbi_dsn, "deonwu", "mswork", $DB_ATTR) or die "DB connection not established: $DBI::errstr";
 $fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app/app_config.xml");
 
 #update current request session.
@@ -21,3 +27,7 @@ $fb->update_session($m->cgi_object());
 
 $m->call_next;
 </%init>
+<%cleanup>
+$dbh->disconnect if $dbh;
+$dbh = undef;
+</%cleanup>
