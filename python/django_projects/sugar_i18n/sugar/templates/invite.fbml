@@ -1,0 +1,8 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+    <fb:fbml>
+        <fb:request-form action="index" method="POST" invite="true" type="Arrangement" content="Your text goes here." >
+            <fb:multi-friend-selector showborder="false" actiontext="Invite your friends to use Arrangement." />
+        </fb:request-form>
+    </fb:fbml>
+{% endblock %}

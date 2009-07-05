@@ -1,0 +1,30 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+<br/>
+<script>
+<!--
+function uncheck(id) {
+  document.getElementById(id).setChecked(false);
+}
+//-->
+</script>
+
+<div style="margin-bottom:20px;">To see if you are interested in an arrangement potially?
+</div>
+<fb:editor action="quiz" labelwidth="100">
+<input type="hidden" name="submit" value="Yes" id="q{{ forloop.counter }}y" onclick="uncheck('q{{ forloop.counter }}n');"/><label for="q{{ forloop.counter }}y">Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;
+{% for q in question_list %}
+    <div style="margin-bottom:10px;"><div>Q{{ forloop.counter }}. {{q.question}} </div>
+         <div style="margin-top:10px;padding-left:40px;"><span style="margin-bottom:10px;">Your answer:</span><br/>
+            <input type="checkbox" name="q{{ forloop.counter }}" value="Yes" id="q{{ forloop.counter }}y" onclick="uncheck('q{{ forloop.counter }}n');"/><label for="q{{ forloop.counter }}y">Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="q{{ forloop.counter }}" value="No" id="q{{ forloop.counter }}n" onclick="uncheck('q{{ forloop.counter }}y');"/><label for="q{{ forloop.counter }}n">No</label>
+         </div>
+    </div>
+{% endfor %}
+    <fb:editor-buttonset>
+        <fb:editor-button value="Submit" name="submit"/>
+        <fb:editor-cancel />
+    </fb:editor-buttonset> 
+</fb:editor>
+
+{% endblock %}

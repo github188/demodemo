@@ -1,0 +1,13 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+
+<br/>
+<div><span style="font-size:16px;"><b>You {{ description }}</span></b></div>
+<br/>
+Totally <b>{{ totally_count }}</b> had the test.
+<br/>
+{% for a in answer_list %}
+<div style="margin-top:8px;"><b>{{ a.user_count }}</b>&nbsp;&nbsp;{{ a.description }}</div>
+{% endfor %}
+
+{% endblock %}

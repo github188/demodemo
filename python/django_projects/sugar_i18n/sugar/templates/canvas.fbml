@@ -1,0 +1,15 @@
+{% load facebook %}
+<fb:profile-pic uid="{{ r|fb_canvas_uid }}" linked="true" /> Welcome, <fb:name uid="{{ r|fb_canvas_uid }}" useyou="false" />
+<br/><br/>
+<h2>Arrangement or Not?</h2>
+<br/>
+<fb:tabs>
+    <fb:tab-item href='home' title='Home' {% ifequal tag "home" %}selected='true'{% endifequal %}/> 
+    <fb:tab-item href='quiz' title='Quiz' {% ifequal tag "quiz" %}selected='true'{% endifequal %}/>
+    <fb:tab-item href='post' title='Post an Arrangement'   {% ifequal tag "post" %}selected='true'{% endifequal %}/>  
+    <fb:tab-item href='sugars' title='Who Is Sugar'   {% ifequal tag "sugars" %}selected='true'{% endifequal %}/> 
+    <fb:tab-item href='invite' title='Tell Friends About Us' {% ifequal tag "invite" %}selected='true'{% endifequal %}/> 
+</fb:tabs>
+{% block content %}
+welcome sugar in python.
+{% endblock %}

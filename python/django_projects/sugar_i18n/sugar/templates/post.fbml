@@ -1,0 +1,7 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+    <br/>
+    <fb:comments xid="feedbacks" canpost="true" candelete="false" showform="true"> 
+        <fb:title>Post an arrangement?</fb:title> 
+    </fb:comments>
+{% endblock %}
