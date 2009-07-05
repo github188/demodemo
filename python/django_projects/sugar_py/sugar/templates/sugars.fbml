@@ -1,0 +1,59 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+<br/><br/>
+<h2>Who are interested in an arrangement recently?</h2>
+<table>
+{% for row in new_sugars %}
+    <tr>
+        {% for e in row %}
+            <td>
+<img src="{{ e.photo }}" witdh="145px" height="109px" />
+<div style="text-align:center;"><a href="sugar?sg_uid={{ e.fb_uid }}">{{ e.get_gender_display }} in {{ e.location.name }}</a></div>                    
+            </td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+
+<br/><br/>
+<h2>To get involved in an arrangement? Please leave your information here!</h2>
+<br/><br/>
+<style>
+.editorkit_row input{width: 250px;}
+.editorkit_row select{width: 250px;}
+</style>
+<form action="{{ sugars_action }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" value="{{ form.instance.fb_uid }}" name="sg_uid" />
+    <table class="editorkit" border="0" cellspacing="0" style="width:450px">
+    <tr class="width_setter"><th style="width:100px"></th>
+        <td></td>
+    </tr>
+    <tr><th><label>I am:</label></th>
+        <td class="editorkit_row">
+            {{ form.gender }}
+        </td>
+    </tr>  
+    <tr><th><label>Seeking:</label></th><td class="editorkit_row">
+            {{ form.seeking }}
+        </td>
+    </tr>  
+    <tr><th><label>Location:</label></th><td class="editorkit_row">
+        {{ form.location }}
+        </td>
+    </tr>
+    <tr><th><label>Photo:</label></th><td class="editorkit_row">
+    {% if form.instance.photo %}
+        <img src="{{ form.instance.photo }}" witdh="145px" height="109px" style="margin-bottom:10px;"/>
+    {% endif %}
+        <input type="file" name="photo" value="" style="width: 300px;"/> &nbsp;
+        </td>
+    </tr>
+    <tr><th class="detached_label"><label>Description:</label></th><td class="editorkit_row">
+        <textarea name="description" rows="5" cols="38" wrap="virtual" style="width: 247px;">{{ form.instance.description }}</textarea></td></tr>
+    <tr><th></th><td class="editorkit_buttonset">
+    <input type="submit" class="editorkit_button action" value="Add" name='submit'/>
+    <span class="cancel_link"><span>or</span><a href="#">Cancel</a></span>
+    </td></tr>
+</table>
+</form>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+    <div>
+    <br/>
+    <b>Sugar Daddy:</b> A wealthy, usually older man who gives expensive gifts to a young person in return for intimacy or companionship.
+    <br/><br/>
+    <b>Sugar Mommy: </b>A wealthy, usually older woman who gives expensive gifts to a young person in return for intimacy or companionship.
+    <br/><br/>
+    <b>Sugar Baby: </b>A young person who gives intimacy or companionship to an older man or woman in exchange for expensive gifts.
+    <br/><br/> 
+    <b>Arrangement: </b>Short for "Mutually Beneficial Relationship" between two people. Such a relationship is usually that an older and wealthy individual who gives a young person expensive gifts or financial assistance in return for friendship, or intimacy.
+    <br/><br/>
+    Want to see if you like this lifestyle potentially? Try the <a href="quiz">Quiz</a> now.  
+    </div>
+    <div>
+    <br/>
+    <h2>Featured Sugars</h2>
+    <table>
+    {% for row in featured %}
+        <tr>
+            {% for e in row %}
+                <td>
+<img src="{{ e.photo }}" witdh="145px" height="109px" />
+<div style="text-align:center;"><a href="sugar?sg_uid={{ e.fb_uid }}">{{ e.get_gender_display }} in {{ e.location.name }}</a></div>                    
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

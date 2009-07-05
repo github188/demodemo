@@ -1,0 +1,33 @@
+{% extends "canvas.fbml" %}
+{% block content %}
+<br/><br/>
+<h2>User Profile</h2>
+<br/><br/>
+<table class="editorkit" border="0" cellspacing="0" style="width:450px">
+<tr><th><label>Photo:</label></th><td class="editorkit_row">
+    <img src="{{ sugar.photo }}" witdh="145px" height="109px" style="margin-bottom:10px;"/> 
+    </td>
+</tr>
+<tr><th><label>I am:</label></th>
+    <td class="editorkit_row">
+    {{ sugar.get_gender_display }}
+    </td>
+</tr>  
+<tr><th><label>Seeking:</label></th><td class="editorkit_row">
+    {{ sugar.get_seeking_display }}
+</td>
+</tr>  
+<tr><th><label>Location:</label></th><td class="editorkit_row">
+    {{ sugar.location.name }}
+    </td>
+</tr>  
+<tr><th class="detached_label"><label>Description:</label></th><td class="editorkit_row">
+    {{ sugar.description }}
+    </td>
+</tr>
+<tr><th class="detached_label"></th><td class="editorkit_row">
+    <a href="sugars">Return Sugar list</a></td>
+</tr>
+</table>
+{% endblock %}
+
