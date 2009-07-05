@@ -1,16 +1,115 @@
+<%args>
+$submit=>0
+</%args>
+<%init>
+use SUGAR qw(load_sugar_user save_sugar_user get_sugar_list get_country_list);
 
-<fb:editor action="?new_sugars" labelwidth="100">
-	<fb:editor-text label="I am" name="name" value=""/>  
-	<fb:editor-text label="Seeking" name="seeking" value=""/>  
-	<fb:editor-text label="Location" name="location" value=""/>  
-	<fb:editor-text label="Email" name="email" value=""/>  
-	<fb:editor-text label="IM" name="im" value=""/>  
-	<fb:editor-text label="Photo" name="photo" value=""/>
+my ($u, $status);
+ 
+if ($submit){
+	($status, $u) = save_sugar_user($dbh, $fb, $m->cgi_object());
+	my $uri = $fb->apps_uri();
+	my $path = $fb->app_path();
 	
-	<fb:editor-textarea label="Description" name="description"/>
-	<fb:editor-buttonset>
-	<fb:editor-button value="Add"/>
-	<fb:editor-button value="Recommend"/> 
-	<fb:editor-cancel />
-	</fb:editor-buttonset>
-</fb:editor>
+	my $fb_canvas = "$uri$path/?page=sugars";
+	#print $fb_canvas;
+	$m->redirect($fb_canvas) if $status == "OK";
+} else {
+	$u = load_sugar_user($dbh, $fb);
+}
+
+my @sugar_list = get_sugar_list($dbh, 10);
+my $country_list = get_country_list($dbh);
+
+my $gender = $m->cache->get('seeking');
+if (!$gender) {
+	$gender = {1=>"sugar daddy", 2=>"sugar baby[female]", 3=>"sugar mommy", 4=>"sugar baby[male]"};
+	$m->cache->set('seeking', $gender);
+}
+
+my $country = $m->cache->get('country');
+if (!$country) {
+	$country = {};
+	my $cl = get_country_list($dbh);
+	for my $c (@{$cl}) {
+		$country->{$c->{cid}} = $c->{name};
+	}
+	$m->cache->set('country', $country);
+}
+
+</%init>
+
+<%def .select>
+<%args>
+$cur
+$val
+</%args>
+<%init>
+	print "selected='selected'" if $cur == $val;
+</%init>
+</%def>
+
+<br/><br/>
+<h2>Who are interested in an arrangement recently?</h2>
+<&| table.ms, data =>\@sugar_list, cols=>5 &>
+<img src="<% $_->{photo} %>" witdh="145px" height="109px" />
+<div style="text-align:center;"><a href="?page=sugar&sg_uid=<% $_->{fb_uid} %>"><% $gender->{$_->{gender}} %> in <% $country->{$_->{location}} %></a></div>
+</&>
+
+<br/><br/>
+<h2>To get involved in an arrangement? Please leave your information here!</h2>
+<br/><br/>
+<form action="http://www.10ding.com/ms/app/sugars.html" method="post" enctype="multipart/form-data">
+	<input type="hidden" value="<% $u->{fb_uid} %>" name="sg_uid" />
+	<input type="hidden" value="<% $u->{photo} %>" name="pic" />
+	<table class="editorkit" border="0" cellspacing="0" style="width:450px">
+	<tr class="width_setter"><th style="width:100px"></th>
+		<td></td>
+	</tr>
+	<tr><th><label>I am:</label></th>
+		<td class="editorkit_row">
+		<select name="gender" style="width: 250px;">
+			<option value="" <& .select, cur=>$u->{gender}, val=>undef &>>--please choose--</option>
+			
+			<option value="1" <& .select, cur=>$u->{gender}, val=>1 &>>sugar daddy</option>
+			<option value="3" <& .select, cur=>$u->{gender}, val=>3 &>>sugar mommy</option>
+			<option value="2" <& .select, cur=>$u->{gender}, val=>2 &>>sugar baby[female]</option>
+			<option value="4" <& .select, cur=>$u->{gender}, val=>4 &>>sugar baby[male]</option>
+		</select>
+		</td>
+	</tr>  
+	<tr><th><label>Seeking:</label></th><td class="editorkit_row">
+		<select name="seeking" style="width: 250px;">
+			<option value="" <& .select, cur=>$u->{seeking}, val=>undef &>>--please choose--</option>
+			
+			<option value="1" <& .select, cur=>$u->{seeking}, val=>1 &>>sugar daddy</option>
+			<option value="3" <& .select, cur=>$u->{seeking}, val=>3 &>>sugar mommy</option>
+			<option value="2" <& .select, cur=>$u->{seeking}, val=>2 &>>sugar baby[female]</option>
+			<option value="4" <& .select, cur=>$u->{seeking}, val=>4 &>>sugar baby[male]</option>
+		</select>
+		</td>
+	</tr>  
+	<tr><th><label>Location:</label></th><td class="editorkit_row">
+		<select name="location" style="width: 250px;">
+% for my $i (@{$country_list}){
+			<option value="<% $i->{cid} %>" <& .select, cur=>$u->{location}, val=>$i->{cid} &>><% $i->{name} %></option>
+% print q{<option value="">-------------</option>} if $i->{cid} == 180;
+% }
+		</select>
+
+		
+		</td>
+	</tr>
+	<tr><th><label>Photo:</label></th><td class="editorkit_row">
+%		print qq(<img src="$u->{photo}" witdh="145px" height="109px" style="margin-bottom:10px;"/>) if $u->{photo};
+		<input type="file" name="photo" value="" style="width: 300px;"/> &nbsp;
+		</td>
+	</tr>
+	<tr><th class="detached_label"><label>Description:</label></th><td class="editorkit_row">
+		<textarea name="description" rows="5" cols="38" wrap="virtual" style="width: 247px;"><% $u->{description} %></textarea></td></tr>
+	<tr><th></th><td class="editorkit_buttonset">
+	<input type="submit" class="editorkit_button action" value="Add" name='submit'/>
+	<span class="cancel_link"><span>or</span><a href="#">Cancel</a></span>
+	</td></tr>
+</table>
+</form>

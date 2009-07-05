@@ -24,9 +24,8 @@ $page
 <fb:tabs>  
 	<fb:tab-item href='?page=home' title='Home' <& .select,  cur=>$page, page=>'home' &>/> 
 	<fb:tab-item href='?page=quiz' title='Quiz'   <& .select,  cur=>$page,  page=>'quiz' &>/>
-	<fb:tab-item href='?page=message_board' title='Message Board'   <& .select,  cur=>$page,  page=>'message_board' &>/>  
-	<fb:tab-item href='?page=sugars' title='Sugars'   <& .select,  cur=>$page, page=>'sugars' &>/> 
-	<fb:tab-item href='?page=about_us' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'about_us' &>/> 
-	<fb:tab-item href='?page=friends_test' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'friends_test' &>/> 
+	<fb:tab-item href='?page=message_board' title='Post an Arrangement'   <& .select,  cur=>$page,  page=>'message_board' &>/>  
+	<fb:tab-item href='?page=sugars' title='Who Is Sugar'   <& .select,  cur=>$page, page=>'sugars' &>/> 
+	<fb:tab-item href='?page=invite' title='Tell Friends About Us'   <& .select,  cur=>$page, page=>'invite' &>/> 
 </fb:tabs>
 <& "$page.html", %ARGS &>

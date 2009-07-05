@@ -1,5 +1,24 @@
 <%init>
-use Data::Dumper;
+use SUGAR qw(get_featured_list);
+
+my @featured_list = get_featured_list($dbh, 10);
+
+my $gender = $m->cache->get('seeking');
+if (!$gender) {
+	$gender = {1=>"sugar daddy", 2=>"sugar baby[female]", 3=>"sugar mommy", 4=>"sugar baby[male]"};
+	$m->cache->set('seeking', $gender);
+}
+
+my $country = $m->cache->get('country');
+if (!$country) {
+	$country = {};
+	my $cl = get_country_list($dbh);
+	for my $c (@{$cl}) {
+		$country->{$c->{cid}} = $c->{name};
+	}
+	$m->cache->set('country', $country);
+}
+
 </%init>
 <div>
 <br/>
@@ -11,10 +30,16 @@ use Data::Dumper;
 <br/><br/> 
 <b>Arrangement: </b>Short for "Mutually Beneficial Relationship" between two people. Such a relationship is usually that an older and wealthy individual who gives a young person expensive gifts or financial assistance in return for friendship, or intimacy.
 <br/><br/>
-Want to see if you like this lifestyle potentially? Try the <a href="?page=quiz">Quiz</a>now.	
+Want to see if you like this lifestyle potentially? Try the <a href="?page=quiz">Quiz</a> now.	
 </div>
 <div>
 <br/>
 <h2>Featured Sugars</h2>
+
+<&| table.ms, data =>\@featured_list, cols=>5 &>
+<img src="<% $_->{photo} %>" witdh="145px" height="109px" />
+<div style="text-align:center;"><a href="?page=sugar&sg_uid=<% $_->{fb_uid} %>"><% $gender->{$_->{gender}} %> in <% $country->{$_->{location}} %></a></div>
+</&>
+
 </div>
 

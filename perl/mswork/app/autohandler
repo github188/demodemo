@@ -1,8 +1,7 @@
 <%once>
-use MSFB::Schema;
 use MSFB;
-use FindBin;
 use DBI;
+use SUGAR qw(get_country_list); 
 </%once>
 
 <%shared>
@@ -11,19 +10,19 @@ my $dbi_dsn = "DBI:mysql:database=mswork;host=mysql.10ding.com";
 
 <%init>
 my $DB_ATTR = {
-	RaiseError  => 1,
+	RaiseError  => 0,
 	PrintError  => 1,
 	AutoCommit  => 0,
 	LongReadLen => 1048576,
 };
+
 $dbh ||= DBI->connect($dbi_dsn, "deonwu", "mswork", $DB_ATTR) or die "DB connection not established: $DBI::errstr";
-$fb ||= MSFB->new_client($m->cgi_object(), "$FindBin::Bin/app/app_config.xml");
 
-#update current request session.
-$fb->update_session($m->cgi_object());
+my $cur_app = "app";
+$fb = MSFB->new_client($m->cgi_object(), $cur_app);
 
-#print $fb->get_login_url(canvas=>'1') unless($fb->canvas->in_fb_canvas());
-#
+return if $fb->required_login();
+
 
 $m->call_next;
 </%init>

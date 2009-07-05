@@ -4,7 +4,13 @@
         <callbackurl>http://www.10ding.com/ms/app/callback.html</callbackurl>
         <api_key>7b4e03c51bea3ffde855170d1cec2f73</api_key>
         <secret>bfef6c85201c131eaec12a1ae070c939</secret>
-        <app_path>deon_group</app_path>
+        <app_path>arrangement-or-not</app_path>
     </facebook>
 	
+	<log>
+		<access>/home/deonwu/10ding.com/ms/app_access.log</access>
+		<error>/home/deonwu/10ding.com/ms/app_error.log</error>
+	</log>
+	
+	<debug>1</debug>
 </config>

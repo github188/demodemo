@@ -4,30 +4,55 @@ use Data::Dumper;
 use Config::Any;
 use base qw(WWW::Facebook::API);
 use Log::Common;
+use FindBin;
 
-my $access='/home/deonwu/access.log';
-my $error='/home/deonwu/error.log';
+my $CLIENT_CACHE = {};
+
 sub new_client {
-    my ($self, $cgi, $cfg_file) = @_;
+    my ($self, $cgi, $app_name, $cfg_file) = @_;
 	
-	my $config = _load_config($cfg_file);
+	my $client = $CLIENT_CACHE->{$app_name};
+	unless ($client) {
+		my $config;
+		($config, $cfg_file) = _load_config($cfg_file || "$FindBin::Bin/$app_name/app_config.xml");
+		$client = $self->new(desktop     => 0,
+	            api_key     => $config->{facebook}->{'api_key'},
+	            secret      => $config->{facebook}->{'secret'},
+	            app_path    => $config->{facebook}->{'app_path'}
+				);
+		
+		$client->{'log'} = Log::Common->new(access => $config->{log}->{'access'},
+						   error  => $config->{log}->{'error'},
+						   no_stderr => 1,
+						   class => "debug");
+		
+		$client->{'debug'} = $config->{debug};
+		$client->info("create new FB API for app:$app_name");
+		$client->info("config file:$cfg_file");
+		$CLIENT_CACHE->{$app_name} = $client;
+	}
 	
-	my $self = $self->new(desktop     => 0,
-            api_key     => $config->{facebook}->{'api_key'},
-            secret      => $config->{facebook}->{'secret'},
-            app_path    => $config->{facebook}->{'app_path'}
-			);
+	$client->query($cgi);
 	
-	$self->{'log'} = Log::Common->new(access => $access,
-					   error  => $error,
-					   no_stderr => 1,
-					   class => "debug");
+	if ($client->{'debug'}){
+		$client->info("request app:$app_name");
+		$client->info("request api key:" . $client->api_key());
+		$client->info("request app_path:" . $client->app_path());
+		$client->info("user canvas user:" . $client->canvas->get_user());
+	}
+	
+    return $client;
+}
 
-
-	$self->info("create new FB API from config:$cfg_file");
-	$self->info("api key:$config->{facebook}->{'api_key'}");
+sub required_login {
+	my ($self, ) = @_;
 	
-    return $self;
+	unless($self->canvas->get_user()){
+		print '<fb:redirect url="' . $self->get_login_url(canvas=>'1') . '" />'; 
+		return 1; 
+	}
+	
+	return 0;
 }
 
 sub update_session {
@@ -43,21 +68,6 @@ sub update_session {
 	
 	$self->info("user id:" . $self->session_uid());
 	$self->info("user canvas user:" . $self->canvas->get_user());
-}
-
-sub require_login {
-	my ($self, ) = @_;
-	
-    return '<fb:redirect url="' . $self->get_app_url . '" /><!-- in_fb_cavans -->'
-        unless $self->canvas->in_fb_canvas();	
-}
-
-sub require_add {
-	
-	my ($self, ) = @_;
-	
-    return '<fb:redirect url="' . $self->get_add_url . '" /><!-- get_user -->'
-        unless $self->canvas->get_user();	
 }
 
 sub info {
@@ -80,7 +90,7 @@ sub _load_config {
         my $filename;
         ($filename, $config) = each %$_;
     }
-    return $config;
+    return ($config, $cfg_file);
 }
 
   
@@ -88,3 +98,5 @@ sub _init_log {
 	my ($access, $error) = @_;
 			   
 }
+
+1;
