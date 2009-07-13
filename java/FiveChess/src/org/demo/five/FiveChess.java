@@ -55,10 +55,10 @@ public class FiveChess {
 			throw new Error(String.format("User '%s' not join game.", p.name()));
 		
 		if(!p.isActive()) 
-			new Error(String.format("User '%s' not active.", p.name()));
+			throw new Error(String.format("User '%s' not active.", p.name()));
 		
-		if(!this.data.isEmpty(x, y))
-			new Error(String.format("Invalid Position '%s,%s'.", x, y));
+		if(!this.data.isEmpty(x, y))return;
+			//throw new Error(String.format("Invalid Position '%s,%s'.", x, y));
 		
 		this.data.set(x, y, p.getChessMan().getValue());
 		this.listener.play(p, x, y);

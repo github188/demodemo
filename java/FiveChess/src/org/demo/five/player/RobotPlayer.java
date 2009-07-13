@@ -42,7 +42,7 @@ public class RobotPlayer extends AbstractPlayer{
 	
 	@Override
 	public void start(Player p, boolean isFirst) {
-		
+		super.start(p, isFirst);
 		this.competitor = p;
 		this.isFirst = isFirst;
 		int robot, human;

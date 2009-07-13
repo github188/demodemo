@@ -169,11 +169,13 @@ public class GameTree {
 				}
 			}
 		}else if(length + 1 == this.data.length * this.data.length) { //开局第二颗。
+			Position pre = null;
 			for (Position p = null; iter.hasNext();){
 				p = iter.next();
-				if(Math.abs(p.weight) != 70){
-					iter.remove();
+				if (pre != null && p.y == pre.y && p.x -1 != pre.x){
+					pre.weight *= 10;
 				}
+				pre = p;
 			}	
 		}
 		
@@ -296,6 +298,10 @@ public class GameTree {
 				i++;
 				space++; //边界上定义为活棋。这样可以简化后手防守算法。
 				break;
+			}
+			if(i == 1 && data[ix][iy] != 0 && data[ix][iy] != chess){
+				chess = data[ix][iy];
+				count -= 3;
 			}
 			if(data[ix][iy] == chess){
 				count++;
