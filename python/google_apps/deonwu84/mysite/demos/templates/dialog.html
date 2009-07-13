@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block body %}
+<script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#dialog1').draggable(
+				{
+					zIndex: 	20,
+					ghosting:	false,
+					opacity: 	0.7,
+					handle:	'#layer1_handle'
+				}
+		);
+		
+		$("#dialog1").show();
+	});
+</script>
+	
+<div id="dialog1">
+	<div id="layer1_handle">			
+		<a href="#" id="close">[ x ]</a>
+		Preferences
+	</div>
+	<div>
+		Hello world.
+	</div>
+</div>
+
+
+{% endblock %}
