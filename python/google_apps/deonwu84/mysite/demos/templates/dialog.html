@@ -3,22 +3,21 @@
 {% block body %}
 <script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js"></script>
 <script type="text/javascript">
-	$(document).ready(function(){
-		$('#dialog1').draggable(
-				{
-					zIndex: 	20,
-					ghosting:	false,
-					opacity: 	0.7,
-					handle:	'#layer1_handle'
-				}
-		);
-		
-		$("#dialog1").show();
+	
+	$.widget("ui.dialog", {
+		_init: function() {
+			this.element.draggable({handle:'.title'});
+		}, 
 	});
+	
+	$(document).ready(function(){
+		$("#dialog1").dialog();
+    });
+
 </script>
 	
-<div id="dialog1">
-	<div id="layer1_handle">			
+<div id="dialog1" style="background:#cccccc;border:1px solid #eee;width:200px;height:100px;">
+	<div class='title' style="background:#ffcc33;cursor:move;">			
 		<a href="#" id="close">[ x ]</a>
 		Preferences
 	</div>
