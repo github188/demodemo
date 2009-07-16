@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div>
+    <h2>Login to project</h2>
+    <div>
+        <form action="/rf_trac/create_project" method="POST">
+            <table>
+                <tr>
+                    <td style="width:80px;"><label for="name">Project Name:</label></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label for="email">Admin User:</label></td>
+                    <td><input type="text" name="admin_user" size="20" id="admin_user" value="" />&nbsp;
+                     </td>
+                </tr>
+                <tr>
+                    <td><label for="mobile">Admin Password:</label></td>
+                    <td><input type="text" name="admin_password" size="20" id="admin_user" value="" />&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td><input type="submit" value="Login" /></td>
+                </tr>                                                                           
+            </table>                        
+        </form>
+    </div>
+</div>
+
+<hr />
+
+
+{% endblock %}

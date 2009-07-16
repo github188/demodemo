@@ -82,6 +82,7 @@ INSTALLED_APPS = (
 	#'django.contrib.admin',
     'mysite.foo',
 	'mysite.demos',
+    'mysite.rf_trac',
 )
 
 DATA_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))

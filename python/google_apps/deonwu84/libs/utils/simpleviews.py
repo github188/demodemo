@@ -48,7 +48,14 @@ class SimpleViews(object):
         if self.cached.has_key(url):
             h = self.cached[url]
         else:
-            obj = getattr(self.view, url)
+            try:
+                obj = getattr(self.view, url)
+            except AttributeError, e:
+                try:
+                    obj = getattr(self.view, "default_view")
+                except:
+                    raise e
+                
             h = ViewHandler(obj)
             self.cached[url] = h
         

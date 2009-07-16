@@ -1,0 +1,11 @@
+
+$.widget("ui.dialog", {
+	_init: function() {
+		this.element.draggable({handle:'.title'});
+		this.originalTitle = this.element.attr('title');
+	}, 
+});
+
+$(document).ready(function(){
+	$("#dialog1").dialog();
+});
