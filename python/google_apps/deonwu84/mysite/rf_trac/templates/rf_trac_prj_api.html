@@ -1,11 +1,31 @@
 
-$.widget("ui.dialog", {
-	_init: function() {
-		this.element.draggable({handle:'.title'});
-		this.originalTitle = this.element.attr('title');
-	}, 
-});
+function load(url) {
+    var s = document.createElement("script");
+	s.src = url;
+	s.type = 'text/javascript';
 
-$(document).ready(function(){
-	$("#dialog1").dialog();
-});
+	var bodyRef = document.getElementsByTagName("head").item(0);
+	bodyRef.appendChild(s);	
+}
+
+if(typeof(jQuery) == typeof(undefined)){
+	load('/static/js/jquery-1.2.6.min.js');
+	load('/static/js/jquery-ui-1.6.custom.min.js');
+}
+
+//click 
+function click_handler(e){
+    var t = e.target || e.srcElement;
+    
+	alert(t.tagName);
+}
+
+function onEvent(o, name, handler){
+    if(window.addEventListener){
+        o.addEventListener(name, handler, false);
+    } else { // IE
+        o.attachEvent('on' + name, handler);
+    }
+}
+
+onEvent(document, "click", click_handler);
