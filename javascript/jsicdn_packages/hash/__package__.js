@@ -1,0 +1,1 @@
+this.addScript('md5.js', 'To_md5');
