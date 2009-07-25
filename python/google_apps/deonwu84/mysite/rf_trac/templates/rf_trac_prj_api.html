@@ -8,7 +8,7 @@ function load(url) {
 	bodyRef.appendChild(s);	
 }
 
-if(typeof(jQuery) == typeof(undefined)){
+if(typeof jQuery === 'undefined'){
 	load('/static/js/jquery-1.2.6.min.js');
 	load('/static/js/jquery-ui-1.6.custom.min.js');
 }
@@ -16,8 +16,12 @@ if(typeof(jQuery) == typeof(undefined)){
 //click 
 function click_handler(e){
     var t = e.target || e.srcElement;
-    
-	alert(t.tagName);
+	ready_event();
+}
+
+function ready_event(){
+	alert("ready........");
+	$("#dialog1").draggable({handle:'.title'});
 }
 
 function onEvent(o, name, handler){
@@ -29,3 +33,5 @@ function onEvent(o, name, handler){
 }
 
 onEvent(document, "click", click_handler);
+//onEvent(document, "load", ready_event);
+

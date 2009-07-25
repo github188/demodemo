@@ -1,24 +1,25 @@
 {% extends "rf_trac_base.html" %}
 
 {% block body %}
-
 <div>
-	<h2>Create new project</h2>
-	<div>
+	<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+		<span style="font-size:18px;">Create new project</span>
+	</div>
+	<div style="background:#f7f7ff;">
 		<form action="/rf_trac/create_project" method="POST">
 			<table>
 				<tr>
-					<td style="width:80px;"><label for="name">Project Name:</label></td>
+					<td style="width:120px;"><label for="name">Project Name:</label></td>
 					<td><input type="text" name="name" size="20" id="name" value="" />&nbsp;<span>project name</span></td>
 				</tr>
 				<tr>
-					<td><label for="email">Admin User:</label></td>
+					<td><label for="admin_user">Admin User:</label></td>
 					<td><input type="text" name="admin_user" size="20" id="admin_user" value="" />&nbsp;
 						<span>admin user name</span></td>
 				</tr>
 				<tr>
-					<td><label for="mobile">Admin Password:</label></td>
-					<td><input type="text" name="admin_password" size="20" id="admin_user" value="" />&nbsp;
+					<td><label for="admin_password">Admin Password:</label></td>
+					<td><input type="password" name="admin_password" size="20" id="admin_password" value="" />&nbsp;
 						<span>admin password</span></td>
 				</tr>
 				<tr>
@@ -31,10 +32,30 @@
 	</div>
 </div>
 
-<hr />
-<ul>
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+	<span style="font-size:18px;">Project list</span>
+</div>
+<table style="background:#fff;" width="100%">
+	<tr>
+		<th width="120px">Project name</th>
+		<th width="80px">Active</th>
+		<th>Last update</th>
+	</tr>
 {% for prj in prj_list %}
-<li> <a href="#">{{ prj.name }} </a> -- {{ prj.prj_key }}</li>
+	<tr>
+		<td><a href="/rf_trac/login_project?prj_name={{ prj.name }}">{{ prj.name }}</a></td>
+		<td>
+{% spaceless %}			
+			<img src='/static/images/star_on.gif'/>
+			<img src='/static/images/star_on.gif'/>
+			<img src='/static/images/star_on.gif'/>
+			<img src='/static/images/star_off.gif'/>
+			<img src='/static/images/star_off.gif'/>
+{% endspaceless %}				
+		</td>
+		<td>{{ prj.create_date }}</td>
+	</tr>
 {% endfor %}
-</ul>
+	
+</table>
 {% endblock %}

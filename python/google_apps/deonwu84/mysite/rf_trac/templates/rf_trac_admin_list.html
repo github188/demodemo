@@ -1,0 +1,53 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+
+<div>
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+		<span style="float:right;font-size:16px;">
+			   <a href="#">settings</a> &nbsp;&nbsp;
+			   <a href="#">login out</a>
+			</span>
+        <span style="font-size:18px;">Test project</span>
+    </div>
+    <div style="background:#f7f7ff;">
+		<table>
+			<tr>
+				<th style="color:#009900;">Project Name:</th>
+				<td>{{project.name}}</td>
+			</tr>
+            <tr>
+                <th style="color:#009900;">Admin user:</th>
+                <td>{{project.admin_user}}</td>
+            </tr>
+            <tr>
+                <th style="color:#009900;">Key:</th>
+                <td>{{project.prj_key}}</td>
+            </tr>
+		</table>		
+    </div>
+</div>
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+	<span style="font-size:18px;">Test log trac list</span>
+</div>
+<table style="background:#fff;" width="100%">
+    <tr>
+        <th>TestCase</th>
+        <th>Category</th>
+        <th>BugId</th>
+        <th>Text</th>
+        <th>Username</th>
+        <th>Create date</th>
+    </tr>
+{% for t in trac_list %}
+    <tr>
+        <th>{{t.uuid}}</th>
+        <th>{{t.action}}</th>
+        <th>{{t.bugid}}</th>
+        <th>{{t.text}}</th>
+        <th>{{t.username}}</th>
+        <th>{{t.create_date}}</th>
+    </tr>
+{% endfor %}    
+</table>
+{% endblock %}

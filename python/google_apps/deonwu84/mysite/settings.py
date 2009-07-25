@@ -85,6 +85,10 @@ INSTALLED_APPS = (
     'mysite.rf_trac',
 )
 
+SERIALIZATION_MODULES = {
+    "mixed_json"    : "utils.json",
+}
+
 DATA_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 #S_ROOT = os.path.join(DATA_ROOT, 'www_root')
 #UPLOADED_ROOT = os.path.join(DATA_ROOT, 'www_root')

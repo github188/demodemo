@@ -10,6 +10,8 @@ class RobotProject(db.Model):
     #a project key for distinguish project.
     prj_key = db.StringProperty()
     status_list = db.StringProperty(multiline=True)
+    create_date = db.DateTimeProperty(auto_now_add=True)
+    active = db.IntegerProperty(default=0)
 
 # parent is Project.
 class RobotResult(db.Model):
@@ -21,10 +23,15 @@ class RobotResult(db.Model):
     url = db.StringProperty()
     error = db.Text()
     status = db.StringProperty()
+    create_date = db.DateTimeProperty(auto_now_add=True)
     
-# parent is Project.    
+# parent is Project.
 class RobotTrac(db.Model):
     uuid = db.StringProperty(required=True)
+    
+    action = db.StringProperty()
+    
+    bugid = db.StringProperty() 
     text = db.Text()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)

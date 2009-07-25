@@ -329,8 +329,7 @@
     }
 </script>
 	
-<script type="text/javascript" src="/"></script>
-
+<script type="text/javascript" src="http://localhost:8888/cdn/boot.js"></script>	
 <title>Demo 4 & Demo 4 Test Log</title>
 </head>
 <body onload="open_element_by_url()">
@@ -651,6 +650,15 @@
 <tr><th>Tags:</th><td>manual</td></tr>
 <tr><th>Start&nbsp;/&nbsp;End&nbsp;/&nbsp;Elapsed:</th><td>20090714 11:10:22.063 / 20090714 11:10:22.063 / 00:00:00.000</td></tr>
 <tr><th>Status:</th><td class="pass">PASS (critical)</td></tr>
+<tr><th>RF Trac:</th><td>
+	<select>
+		<option>Test enviroment problem.</option>
+		<option>Software bug.</option>
+		<option>Script problem.</option>
+	</select>
+	&nbsp; <a href="#">comments</a>
+	&nbsp; <a href="#">history</a>
+</td></tr>	
 </table>
 <table class="keyword">
 <tr id="kw000002">
@@ -699,5 +707,9 @@
 </td>
 </tr>
 </table>
+<script type="text/javascript" >
+	var endpoint='', api_key='';
+	$import("rftrac:setup_robot_trac", function(e){setup_robot_trac(endpoint, api_key);});
+</script>
 </body>
 </html>

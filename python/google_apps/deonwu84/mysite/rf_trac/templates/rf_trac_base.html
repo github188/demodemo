@@ -4,11 +4,64 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Robot testcase log trac -- </title>
     {% block head %}{% endblock %}
+	<style media="all" type="text/css">
+		html{
+			text-align:center;
+			font-size:14px;
+			background:#6699ff;
+			margin:0px;
+		}
+		body{
+			width:750px;
+			text-align:left;
+			margin:auto;
+			padding:8px;
+			background:#fff;
+			color:#000;
+		}
+		
+		#context_head{
+			margin-bottom:10px;
+		}
+		
+		label{
+			font-weight:bolder;
+		}
+		
+		.error{
+			background:#ff99ff;
+			color:#ff0000;
+			border:1px solid #ff33ff;
+			margin:2px;
+			padding:2px;
+		}	
+	</style>
   </head>
   <body>
-    <div id="header">
-    <div id="body">{% block body %}{% endblock %}</div>
-    <div id="footer">
+{% block context_head %}
+    <div id="context_head">
+		<a href="/rf_trac">
+        <img border="0" src="/static/images/logo.png"></img>
+		</a>
+        <span style="font-size:24px;">RFTrac</span>
+        <span style="font-size:18px;">--a tools to manage robot test log</span>
     </div>
+{% endblock %}
+	  
+    <div id="body">{% block body %}{% endblock %}</div>
+	  
+{% block context_foot %}
+  <br/>	  
+  <div style="border-bottom: 1px solid #7799dd;margin-bottom:10px;"></div>
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign=center>
+  <td align="center" style="padding-right:1em;" >
+  <a style="color: #00c" target=_top href="#">feedback</a><font color="#333"> - </font>
+  <a style="color: #00c" target=_top href="#">develop doc</a><font color="#333"> - </font>
+  <a style="color: #00c" target=_top href="#">about robot</a>
+  </td>
+  </tr>
+  </table>
+{% endblock %}
   </body>
 </html>

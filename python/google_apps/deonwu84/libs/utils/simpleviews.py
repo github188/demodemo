@@ -2,6 +2,8 @@ import types
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.db.models.query import QuerySet
+import re
+from django.core import serializers
 
 class ViewHandler(object):
     def __init__(self, func):
@@ -42,8 +44,21 @@ class SimpleViews(object):
     def __init__(self, view):
         self.view = self.__import_views(view)
         self.cached = {}
-    
+        
+        self._pre_handler = None
+        if hasattr(self.view, "pre_handler"):
+            self._pre_handler = getattr(self.view, "pre_handler")        
+        
+    def pre_handler(self, r, url):
+        if self._pre_handler:
+            return self._pre_handler(r, url)
+        else:
+            return None
+            
     def __call__(self, request, url):
+        pre = self.pre_handler(request, url)
+        if pre is not None: return self.result_router(pre)
+        
         h = None
         if self.cached.has_key(url):
             h = self.cached[url]
@@ -55,20 +70,22 @@ class SimpleViews(object):
                     obj = getattr(self.view, "default_view")
                 except:
                     raise e
-                
+            
             h = ViewHandler(obj)
             self.cached[url] = h
         
         return self.result_router(h(request))
             
     def result_router(self, r):
+        
         if isinstance(r, HttpResponse):
             return r
         elif isinstance(r, types.TupleType):
             if isinstance(r[0], QuerySet):
                 return HttpResponse(serializers.serialize("mixed_json", r))
-            elif len(r) == 1 and str(r[0]).startswith("http:"):
-                return HttpResponseRedirect(r[0])
+            elif len(r) == 1 and re.match("^(http|redirect):", r[0]):
+                url = r[0].replace("redirect:","")
+                return HttpResponseRedirect(url)
                 
             return render_to_response(*r)
         elif isinstance(r, basestring):

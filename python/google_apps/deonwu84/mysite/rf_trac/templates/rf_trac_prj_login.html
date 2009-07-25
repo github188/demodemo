@@ -1,14 +1,17 @@
-{% extends "base.html" %}
+{% extends "rf_trac_base.html" %}
 
 {% block body %}
 <div>
-    <h2>Login to project</h2>
-    <div>
-        <form action="/rf_trac/create_project" method="POST">
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+        <span style="font-size:18px;">Login to project admin</span>
+    </div>
+    <div style="background:#f7f7ff;">
+{% if error %}<div class='error'>{{error}}</div>{% endif %}		
+        <form action="/rf_trac/login_project" method="POST">
             <table>
                 <tr>
-                    <td style="width:80px;"><label for="name">Project Name:</label></td>
-                    <td></td>
+                    <td style="width:120px;"><label for="name">Project Name:</label></td>
+                    <td><input type="text" name="prj_name" size="20" id="admin_user" value="{{prj_name}}" /></td>
                 </tr>
                 <tr>
                     <td><label for="email">Admin User:</label></td>
@@ -17,7 +20,7 @@
                 </tr>
                 <tr>
                     <td><label for="mobile">Admin Password:</label></td>
-                    <td><input type="text" name="admin_password" size="20" id="admin_user" value="" />&nbsp;
+                    <td><input type="password" name="admin_password" size="20" id="admin_user" value="" />&nbsp;
                     </td>
                 </tr>
                 <tr>
@@ -29,8 +32,5 @@
         </form>
     </div>
 </div>
-
-<hr />
-
 
 {% endblock %}
