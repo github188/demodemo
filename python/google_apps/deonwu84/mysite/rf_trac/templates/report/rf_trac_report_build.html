@@ -1,4 +1,4 @@
-{% extends "rf_trac_base.html" %}
+{% extends "report/report_base.html" %}
 
 {% block body %}
 
@@ -38,7 +38,7 @@
 <table style="background:#fff;" width="100%">
     <tr>
         <th>Name</th>
-        <th>Tags</th>		
+        <th>Tags</th>
         <th>Status</th>
         <th>Message</th>
 		<th>Start / End</th>
@@ -46,7 +46,7 @@
 {% for t in log_list %}
     <tr>
         <td>{{t.suitename}}.{{t.testname}}</td>
-        <td></td>
+        <td>{{t.tags}}</td>
         <td>{{t.status}}</td>
         <td>{{t.error}}</td>
         <td>{{t.starttime}}<br/>{{t.endtime}}</td>

@@ -46,9 +46,11 @@ class RobotResult(db.Model):
     
     starttime = db.StringProperty()
     endtime = db.StringProperty()
+    elapsed = db.IntegerProperty(default=0)
     url = db.StringProperty()
-    error = db.Text()
     status = db.StringProperty()
+    message = db.Text()
+    tags = db.StringProperty()
 
     create_date = db.DateTimeProperty(auto_now_add=True)
     

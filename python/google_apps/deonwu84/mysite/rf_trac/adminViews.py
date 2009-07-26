@@ -10,7 +10,7 @@ def trac_list(r, offset=0, limit=10, key=''):
     build_list = RobotTestBuild.all().ancestor(project).order("-create_date")
     
     
-    return ("rf_trac_admin_list.html", {"project":project,
+    return ("admin/rf_trac_admin_list.html", {"project":project,
                                         "trac_list": trac.fetch(limit, offset),
                                         "build_list": build_list.fetch(limit, offset)
                                         });

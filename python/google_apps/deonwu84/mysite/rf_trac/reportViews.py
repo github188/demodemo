@@ -9,7 +9,7 @@ def build(r, build=''):
     
     if build is not None:
         log_list = RobotResult.all().filter("build =", build)
-        return ("rf_trac_report_build.html", {"build":build,
+        return ("report/rf_trac_report_build.html", {"build":build,
                                           "log_list": log_list,
                                          });
     return ("redirect:/rf_trac/index", )

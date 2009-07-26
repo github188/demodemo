@@ -66,8 +66,19 @@ class RobotUtils(object):
 
         t.starttime = test.starttime
         t.endtime = test.endtime
-        t.error = test.message
+        t.message = test.message
         t.status = test.status
+        t.tags = ";".join(test.tags)
+        
+        def convert_to_time(s_time):
+            import re
+            t = re.match(r'(\d{4})(\d{2})(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{3})',
+                        str(s_time))
+            if t: return datetime(*map(int, t.groups()))
+            return None
+        _t = convert_to_time
+        elapse_time = _t(test.endtime) - _t(test.starttime)
+        t.elapsed = elapse_time.days * 86400 + elapse_time.seconds
         t.put()
         if t.status == "PASS":
             build.summary_pass += 1
