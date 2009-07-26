@@ -11,6 +11,13 @@ indexes:
 # your application using appcfg.py.
 
 # Used 6 times in query history.
+- kind: RobotTestBuild
+  ancestor: yes
+  properties:
+  - name: create_date
+    direction: desc
+
+# Used 30 times in query history.
 - kind: RobotTrac
   ancestor: yes
   properties:

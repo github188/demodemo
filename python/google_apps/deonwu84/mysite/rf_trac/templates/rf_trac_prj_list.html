@@ -38,7 +38,8 @@
 <table style="background:#fff;" width="100%">
 	<tr>
 		<th width="120px">Project name</th>
-		<th width="80px">Active</th>
+		<th width="120px">Active</th>
+		<th>Upload result</th>
 		<th>Last update</th>
 	</tr>
 {% for prj in prj_list %}
@@ -53,6 +54,7 @@
 			<img src='/static/images/star_off.gif'/>
 {% endspaceless %}				
 		</td>
+		<td><a href="/rf_trac/upload_build?key={{prj.prj_key}}">Upload result</a> </td>
 		<td>{{ prj.create_date }}</td>
 	</tr>
 {% endfor %}

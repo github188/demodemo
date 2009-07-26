@@ -18,7 +18,7 @@ def trac(uuid, action='comment', text='', username='', bugid='', key=''):
                   text=text, username=username, bugid=bugid)
     t.save()
     
-    return {"STATUS":"OK" }
+    return {"status":"OK" }
 
 def trac_list(r, uuid, offset=0, limit=10, key=''):
     project = __load_project(key)
@@ -39,6 +39,23 @@ def trac_list(r, uuid, offset=0, limit=10, key=''):
 
 def update(uuid, longname='', start_time='', end_time='', url='', error='', status=''):
     pass
+
+def upload_build(r, key=""):
+    
+    from robot_utils import RobotUtils
+    #from uploaded import UploadUtil
+    project = __load_project(key)
+    
+    error = ""    
+    if project is not None:
+        if r.method == 'POST':
+            RobotUtils.import_test_build(r.FILES['file'], 
+                                         r.REQUEST['build_name'], project)
+            return "uploaded ok!"
+    else:
+        error = """the project key '%s' is not registered!""" % key
+    
+    return ("rf_trac_prj_upload.html", {"prj_key": key, "error": error})
 
 
 def default_view(r):

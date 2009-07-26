@@ -1,0 +1,32 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+<div>
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+        <span style="font-size:18px;">Upload test result</span>
+    </div>
+    <div style="background:#f7f7ff;">
+{% if error %}<div class='error'>{{error}}</div>{% endif %}		
+        <form action="/rf_trac/upload_build" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="key" size="20" id="admin_user" value="{{prj_key}}" />
+            <table>
+                <tr>
+                    <td style="width:120px;"><label for="name">Build name:</label></td>
+                    <td><input type="text" name="build_name" size="32" id="name" value="{{prj_name}}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="file">Robot Output xml:</label></td>
+                    <td><input type="file" name="file" size="32" id="file" value="" />&nbsp;
+                     </td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td><input type="submit" value="Login" /></td>
+                </tr>                                                                           
+            </table>                      
+        </form>
+    </div>
+</div>
+
+{% endblock %}

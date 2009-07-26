@@ -27,6 +27,35 @@
 		</table>		
     </div>
 </div>
+
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+    <span style="font-size:18px;">Test build list</span>
+</div>
+<table style="background:#fff;" width="100%">
+    <tr>
+        <th>Build name</th>
+        <th>SUT name</th>
+        <th>SUT release</th>
+        <th>SUT version</th>
+        <th>Username</th>
+        <th>Test count</th>
+		<th>Test pass</th>
+		<th>Test fail</th>
+    </tr>
+{% for t in build_list %}
+    <tr>
+        <td><a href="/rf_trac/r/build?build={{t.id}}">{{t.build_name}}</a></td>
+        <td>{{t.sut_name}}</td>
+        <td>{{t.sut_release}}</td>
+        <td>{{t.ust_version}}</thd>
+        <td>{{t.execute_user}}</td>
+        <td>{{t.summary_count}}</td>
+		<td>{{t.summary_pass}}</td>
+		<td>{{t.summary_fail}}</td>			
+    </tr>
+{% endfor %}    
+</table>
+
 <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
 	<span style="font-size:18px;">Test log trac list</span>
 </div>
@@ -41,12 +70,12 @@
     </tr>
 {% for t in trac_list %}
     <tr>
-        <th>{{t.uuid}}</th>
-        <th>{{t.action}}</th>
-        <th>{{t.bugid}}</th>
-        <th>{{t.text}}</th>
-        <th>{{t.username}}</th>
-        <th>{{t.create_date}}</th>
+        <td>{{t.uuid}}</td>
+        <td>{{t.action}}</td>
+        <td>{{t.bugid}}</td>
+        <td>{{t.text}}</thd>
+        <td>{{t.username}}</td>
+        <td>{{t.create_date}}</td>
     </tr>
 {% endfor %}    
 </table>

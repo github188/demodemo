@@ -1,0 +1,57 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+
+<div>
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+        <span style="font-size:18px;">Robot build result</span>
+    </div>
+    <div style="background:#f7f7ff;">
+		<table>
+			<tr>
+				<th style="color:#009900;">Build Name:</th>
+				<td>{{build.build_name}}</td>
+			</tr>
+            <tr>
+                <th style="color:#009900;">SUT name:</th>
+                <td>{{build.sut_name}}</td>
+            </tr>
+            <tr>
+                <th style="color:#009900;">SUT version</th>
+                <td>{{build.sut_version}}</td>
+            </tr>
+            <tr>
+                <th style="color:#009900;">SUT release</th>
+                <td>{{build.sut_release}}</td>
+            </tr>
+            <tr>
+                <th style="color:#009900;">Count/Pass/Fail</th>
+                <td>{{build.summary_count}}/{{build.summary_pass}}/{{build.summary_fail}}</td>
+            </tr>
+		</table>		
+    </div>
+</div>
+
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+    <span style="font-size:18px;">Test case list</span>
+</div>
+<table style="background:#fff;" width="100%">
+    <tr>
+        <th>Name</th>
+        <th>Tags</th>		
+        <th>Status</th>
+        <th>Message</th>
+		<th>Start / End</th>
+    </tr>
+{% for t in log_list %}
+    <tr>
+        <td>{{t.suitename}}.{{t.testname}}</td>
+        <td></td>
+        <td>{{t.status}}</td>
+        <td>{{t.error}}</td>
+        <td>{{t.starttime}}<br/>{{t.endtime}}</td>
+    </tr>
+{% endfor %}    
+</table>
+
+{% endblock %}

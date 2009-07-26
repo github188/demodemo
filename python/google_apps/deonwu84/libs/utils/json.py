@@ -1,7 +1,7 @@
 
 from django.core.serializers.json import Serializer as BuitlInJsonSerializer
 from django.utils.encoding import smart_unicode
-import simplejson
+from django.utils import simplejson
 from django.db.models.query import QuerySet
 from django.db import models
 from StringIO import StringIO
