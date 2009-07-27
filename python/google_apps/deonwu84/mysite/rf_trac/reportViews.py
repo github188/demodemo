@@ -1,20 +1,13 @@
 
 from google.appengine.ext import db
 from models import *
-from trac.settings import diff_settings
-from diff.compare import diff_test_build
+from trac import diff_test_build, client_settings, DIFF_SETTING
+import logging
 
 def build(r, build=''):
     #project = project_session(r)
     
-    build = db.get(db.Key(build))
-    
-    if build is not None:
-        log_list = RobotResult.all().filter("build =", build)
-        return ("report/rf_trac_report_build.html", {"build":build,
-                                          "log_list": log_list,
-                                         });
-    return ("redirect:/rf_trac/index", )
+    return diff(r, build)
 
 def diff(r, build="", ajax='no'):
     """
@@ -36,14 +29,19 @@ def diff(r, build="", ajax='no'):
     PASS->PASS  ---> ignore --> dark
         
     """
+
     build = db.get(db.Key(build))
     if build is None: return ("redirect:/rf_trac/index", )
     
-    settings = diff_settings(r, build.parent)
+    settings = client_settings(r, build.parent, DIFF_SETTING)
     diff_result = diff_test_build(build, settings)
     
     log_list = RobotResult.all().filter("build =", build)
+    
+    log_list = [e for e in log_list]
+    for e in log_list:
+        e.diff = diff_result[e.uuid]
+    
     return ("report/rf_trac_report_build.html", {"build":build,
                                       "log_list": log_list,
-                                      "diff_result":diff_result
                                      });

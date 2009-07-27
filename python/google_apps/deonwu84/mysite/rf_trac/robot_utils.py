@@ -73,6 +73,8 @@ class RobotUtils(object):
         t.status = test.status
         t.tags = ";".join(test.tags)
         
+        t.caseid = RobotUtils.build_case_id(build, test, project)
+        
         def convert_to_time(s_time):
             import re
             t = re.match(r'(\d{4})(\d{2})(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{3})',
@@ -97,5 +99,11 @@ class RobotUtils(object):
         
         return hashlib.md5(logid.lower()).hexdigest()
         
+    @staticmethod
+    def build_case_id(build, test, project):
+        import hashlib
+        name = "%s.%s" %(test.parent.name, test.name)
+        
+        return hashlib.md5(name.lower()).hexdigest()
         
         

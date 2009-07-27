@@ -12,6 +12,9 @@ class RobotProject(db.Model):
     status_list = db.StringProperty(multiline=True)
     create_date = db.DateTimeProperty(auto_now_add=True)
     active = db.IntegerProperty(default=0)
+    
+    def __str__(self):
+        return self.name
 
 # parent is Project.
 class ProjectSetting(db.Model):
@@ -48,6 +51,7 @@ class RobotTestBuild(db.Model):
 class RobotResult(db.Model):
     build = db.ReferenceProperty(RobotTestBuild)
     uuid = db.StringProperty(required=True)
+    caseid = db.StringProperty()
     longname = db.StringProperty()
     testname = db.StringProperty()
     suitename = db.StringProperty()
@@ -68,7 +72,7 @@ class RobotTrac(db.Model):
     
     action = db.StringProperty()
     
-    bugid = db.StringProperty() 
+    bugid = db.StringProperty()
     text = db.Text()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)

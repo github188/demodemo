@@ -54,12 +54,12 @@
         <th class="col_msg">Message</th>
 		<th class="col_times" >Start / End</th>
     </tr>
-{% for t in log_list %}
-    <tr>
+{% for t in log_list %}	
+    <tr class="{{t.diff.info}}">
         <td class="col_name"><a href="">{{t.suitename}}.{{t.testname}}</a></td>
         <td class="col_tags">{{t.tags}}</td>
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
-		<td class="col_status {{t.status|lower}}"><a href="x">{{t.status}}</a> </td>
+		<td class="col_status {{t.diff.diff_status|lower}}"><a href="x">{{t.diff.diff_status}}</a> </td>
 		<td>
 			<select name="trac">
 				<option>Test Bed error</option>

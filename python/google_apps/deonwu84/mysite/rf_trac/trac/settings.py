@@ -1,6 +1,6 @@
 
 #def settings():
-from models import ProjectSetting
+from mysite.rf_trac.models import ProjectSetting
 
 SETTINGS = {
     "diff":(("sut_name", "0", "sut name"),
@@ -13,23 +13,26 @@ SETTINGS = {
             ),
 }
 
-def diff_settings(r, project):    
-    return Setting(r, project, "diff", SETTINGS["diff"])
-    
+DIFF_SETTING = "diff"
+
+def client_settings(r, project, name):
+    return Setting(r, project, name, SETTINGS[name])
 
 class Setting(object):
-    def __init__(self, r, project, name="", items):
+    def __init__(self, r, project, name, items):
         self.project = project
         self.request = r
         self.name = name
-        
-        self.items = self.__default_value(items)
         self.items_order = []
+        
+        self.items = {} 
         self.db = {}
         self.cookies = {}
+        self.__default_value(items)
     
     def __default_value(self, items):
         for e in items:
+            e = list(e)
             name, v = e.pop(0), e.pop(1)
             self.items[name] = v
             self.items_order.append(name)
