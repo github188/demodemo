@@ -12,18 +12,31 @@
             <table>
                 <tr>
                     <td style="width:120px;"><label for="name">Build name:</label></td>
-                    <td><input type="text" name="build_name" size="32" id="name" value="{{prj_name}}" /></td>
+                    <td><input type="text" name="build_name" size="32" id="name" value="{{build_name}}" /></td>
+					<td>the unique name for distingush result</td>
                 </tr>
                 <tr>
                     <td><label for="file">Robot Output xml:</label></td>
                     <td><input type="file" name="file" size="32" id="file" value="" />&nbsp;
                      </td>
+					<td>the robot output xml file.</td>
                 </tr>
                 <tr>
                     <td>
                     </td>
-                    <td><input type="submit" value="Login" /></td>
-                </tr>                                                                           
+                    <td><input type="submit" value="Uploaded" /></td>
+                </tr>
+                    <td></td>
+                    <td style="color:blue;">
+						1. the output xml should removed keywords details by 
+						rebot parameters "--removekeywords all"<br/><br/>
+						2. the output xml should include metadata.<br/>
+							&nbsp;&nbsp;sut_name -- the name of tested system.<br/>
+							&nbsp;&nbsp;sut_version -- the build version of SUT.<br/>
+							&nbsp;&nbsp;sut_release -- the release name of SUT.<br/>
+					</td>
+                </tr>                                                                         
+
             </table>                      
         </form>
     </div>

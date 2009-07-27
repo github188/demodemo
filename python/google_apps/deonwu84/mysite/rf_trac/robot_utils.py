@@ -4,6 +4,7 @@ import logging
 from robot.output.readers import TestSuite
 from robot import utils
 from models import RobotResult, RobotTestBuild
+from datetime import datetime
 #from models import RobotResult
 
 class RobotUtils(object):
@@ -27,6 +28,8 @@ class RobotUtils(object):
         build.put()
         
         logging.debug("successful to import %s test result" % (build.summary_count, ))
+        
+        return build
         
     @staticmethod
     def retrieve_robot_suite(data):

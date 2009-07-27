@@ -2,8 +2,10 @@
 from views import project_session
 from models import *
 
-def trac_list(r, offset=0, limit=10, key=''):
+def trac_list(r, offset=0, limit=10, name=''):
     project = project_session(r)
+    if name and name != project.name:
+        return ("redirect:/rf_trac/login_project?prj_name=%s" % name, )
     
     trac = RobotTrac.all().ancestor(project).order("-create_date")
     

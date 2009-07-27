@@ -1,6 +1,8 @@
 import logging
 from google.appengine.ext import db
 from models import *
+from datetime import datetime
+from robot_utils import RobotUtils
 
 def api(key=''):
     project = RobotProject.all().filter('prj_key =', key).get()
@@ -40,22 +42,24 @@ def trac_list(r, uuid, offset=0, limit=10, key=''):
 def update(uuid, longname='', start_time='', end_time='', url='', error='', status=''):
     pass
 
-def upload_build(r, key=""):
+def upload_build(r, key="", build_name=""):
     
-    from robot_utils import RobotUtils
     #from uploaded import UploadUtil
     project = __load_project(key)
-    
-    error = ""    
+    error = ""
     if project is not None:
         if r.method == 'POST':
-            RobotUtils.import_test_build(r.FILES['file'], 
-                                         r.REQUEST['build_name'], project)
-            return "uploaded ok!"
+            build = RobotUtils.import_test_build(r.FILES['file'], 
+                                                 build_name, project)
+            
+            return ("redirect:/rf_trac/r/build?build=%s" % build.id, )
     else:
         error = """the project key '%s' is not registered!""" % key
     
-    return ("rf_trac_prj_upload.html", {"prj_key": key, "error": error})
+    build_name = datetime.now().strftime('%Y%m%d%H%M%S')
+    return ("rf_trac_prj_upload.html", {"prj_key": key, 
+                                        "error": error,
+                                        "build_name": build_name})
 
 
 def default_view(r):

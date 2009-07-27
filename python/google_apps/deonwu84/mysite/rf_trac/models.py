@@ -14,6 +14,14 @@ class RobotProject(db.Model):
     active = db.IntegerProperty(default=0)
 
 # parent is Project.
+class ProjectSetting(db.Model):
+    name = db.StringProperty(required=True) #setting name
+    item_name = db.StringProperty()
+    item_value = db.StringProperty(multiline=True)
+    #description = db.StringProperty(multiline=True)
+        
+
+# parent is Project.
 class RobotTestBuild(db.Model):
     #uuid = db.StringProperty(required=True)
     build_name = db.StringProperty(required=True)
