@@ -45,3 +45,20 @@ def diff(r, build="", ajax='no'):
     return ("report/rf_trac_report_build.html", {"build":build,
                                       "log_list": log_list,
                                      });
+
+def log_st(r, uuid=''):
+    log = RobotResult.all().filter("uuid =", uuid).get()
+    
+    st = {}
+    if log is not None:
+        b = log.build
+        for e in ['build_name', 'sut_name', 'sut_version', 'execute_user']:
+            st[e] = getattr(b, e)
+        st['starttime'] = log.starttime
+        st['trac_status'] = "unknown"
+        st['elapsed'] = "elapsed"
+            
+    return st
+    
+    
+    

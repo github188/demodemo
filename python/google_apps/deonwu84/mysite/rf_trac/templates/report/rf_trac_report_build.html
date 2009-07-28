@@ -59,7 +59,7 @@
         <td class="col_name"><a href="">{{t.suitename}}.{{t.testname}}</a></td>
         <td class="col_tags">{{t.tags}}</td>
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
-		<td class="col_status {{t.diff.diff_status|lower}}"><a href="x">{{t.diff.diff_status}}</a> </td>
+		<td class="diff {{t.diff.diff_status|lower}}"><a href="/rf_trac/r/log_st?uuid={{t.diff.diff_uuid}}">{{t.diff.diff_status}}</a> </td>
 		<td>
 			<select name="trac">
 				<option>Test Bed error</option>
@@ -69,7 +69,10 @@
         <td class="col_msg">{{t.error}}</td>
         <td class="col_times">{{t.starttime}}<br/>{{t|rbtime}}</td>
     </tr>
-{% endfor %}    
+{% endfor %}
 </table>
-
+<script type="text/javascript" >
+    var endpoint='http://localhost:8080/rf_trac/', api_key='760c8ae45917ffd95be7bdf0f2238f05';
+    $import("rftrac:setup_diff_reporting", function(e){setup_diff_reporting(endpoint, api_key);});
+</script>
 {% endblock %}

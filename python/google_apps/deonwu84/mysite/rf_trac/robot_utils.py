@@ -18,7 +18,7 @@ class RobotUtils(object):
         for k, v in suite.metadata.iteritems():
             k = k.replace(" ", "_").lower()
             if k in ["build_name", "sut_name", "sut_version", 
-                     "sut_release", "sut_major"]:
+                     "sut_release", "sut_major", "execute_user"]:
                 setattr(build, k, v) 
         
         build.put()
