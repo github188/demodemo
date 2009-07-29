@@ -80,6 +80,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
 	#'django.contrib.admin',
+    'mysite.wiki',
     'mysite.foo',
 	'mysite.demos',
     'mysite.rf_trac',
