@@ -142,33 +142,41 @@ function on_click_event(e) {
 	rfTrac.curTestTrac = t.trac;
 }
 
+
  /**
    * @public
    * @param  <Event> e
    */
-function setup_robot_trac(endpoint, api_key){
+function setup_robot_trac(endpoint, api_key, settings){
 	//testcase_comments = show_testcase_comments;
 	
 	if (typeof rfTrac === 'undefined'){
-		rfTrac = {endpoint:endpoint, api_key:api_key};
+		rfTrac = {endpoint:endpoint, api_key:api_key, settings:settings};
 		$(document).click(on_click_event);
-		rfTrac.trac_panel = $("<tr><th>RF Trac:</th><td>" +
+		var   trac_panel = $("<tr><th>RF Trac:</th><td>" +
 							"<select class='trac_category' onchange='rfTrac.show_comments(event)'>" + 
-							"<option value='001'>Test enviroment problem.</option>" + 
-							"<option value='002'>Software bug.</option>" +
 							"</select>" +
 							'&nbsp; <a href="#">comments</a>' +
 							'&nbsp; <a href="#">history</a>' + 
 							"</td></tr>"
-							).get(0);
+							);
+		
+		var cate_list = $("select", trac_panel);
+		
+		$.each(settings.category, function(i, n){
+		    var d = $("<option value='" + n[0] + "'>" + n[1] + "</option>").
+		              appendTo(cate_list);
+        });
+		
+		rfTrac.trac_panel = trac_panel.get(0);
 		
 		rfTrac.comments_dialog = undefined;
 		rfTrac.show_comments = show_testcase_comments;
 		rfTrac.curTestTrac = undefined;
 		
 		var head = document.getElementsByTagName('head')[0];
-		head.appendChild($('<link type="text/css" href="http://localhost:8888/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />').get(0)); 
-		//alert(rfTrac.trac_panel);
+		head.appendChild($('<link type="text/css" href="http://jsicdn01.appspot.com/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />').get(0)); 
 	}
 }
+
 
