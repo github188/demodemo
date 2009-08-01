@@ -78,6 +78,8 @@ class SimpleViews(object):
             
     def result_router(self, r):
         
+        mime_types = ['text/javascript', ]
+        
         if isinstance(r, HttpResponse):
             return r
         elif isinstance(r, types.TupleType):
@@ -86,7 +88,8 @@ class SimpleViews(object):
             elif len(r) == 1 and re.match("^(http|redirect):", r[0]):
                 url = r[0].replace("redirect:","")
                 return HttpResponseRedirect(url)
-                
+            elif len(r) == 2 and r[0] in mime_types:
+                return HttpResponse(r[1], r[0])
             return render_to_response(*r)
         elif isinstance(r, basestring):
             return HttpResponse(r)

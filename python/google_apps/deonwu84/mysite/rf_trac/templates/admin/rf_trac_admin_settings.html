@@ -1,0 +1,57 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+
+<div>
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+		<span style="float:right;font-size:16px;">
+			   <a href="settings">settings</a> &nbsp;&nbsp;
+			   <a href="#">login out</a>
+			</span>
+        <span style="font-size:18px;">Test project</span>
+    </div>
+    <div style="background:#f7f7ff;">
+		<table>
+			<tr>
+				<th style="color:#009900;">Project Name:</th>
+				<td>{{project.name}}</td>
+			</tr>
+            <tr>
+                <th style="color:#009900;">Admin user:</th>
+                <td>{{project.admin_user}}</td>
+            </tr>
+            <tr>
+                <th style="color:#009900;">Key:</th>
+                <td>{{project.prj_key}}</td>
+            </tr>
+		</table>		
+    </div>
+</div>
+<form action="?" method="POST">
+<div class='c_title'>
+    <span>Result category</span>
+</div>
+<table>
+	<tr>
+		<td style="width:120px;"><label>Category:</label></td>
+		<td><textarea name="category" cols='40' rows='5'>{{category_setting.category}}</textarea></td>
+	</tr>
+</table>
+
+<div class='c_title'>
+    <span>Diff items</span>
+</div>
+<table>
+    <tr>
+        <td style="width:120px;"><label>Diff items:</label></td>
+        <td class='l_n'>
+			{%autoescape off %}
+			{{diff_form}}
+			{% endautoescape %}
+		</td>
+    </tr>
+</table>
+
+<input type="submit" value="submit" />
+</form>
+{% endblock %}

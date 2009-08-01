@@ -3,13 +3,54 @@ from google.appengine.ext import db
 from models import *
 from datetime import datetime
 from robot_utils import RobotUtils
+from trac.utils import urlread
+from google.appengine.api import memcache
+from trac import project_settings, CATEGORY_SETTING
 
-def api(key=''):
+def api(r, key=''):
     project = RobotProject.all().filter('prj_key =', key).get()
     if project:
-        return ("rf_trac_prj_api.html", {"prj": project})
+        host = (r.META["SERVER_NAME"])
+        port = (r.META["SERVER_PORT"])
+        port = port != '80' and ":%s" % port or ""
+        endpoint = "http://%s%s/rf_trac" % (host, port)
+        
+        if host.count("localhost") > 0:
+            return ("rf_trac_prj_api.html", {"project": project,
+                                             "endpoint": endpoint,
+                                             "settings": __build_setting_js(r, project)})
+        
+        plugin_js = memcache.get("trac_plugin_js", namespace='rftrac')
+        if not plugin_js or host.count("localhost"):
+            jscdn = host.count("deonwu84") and "jsicdn01.appspot.com" or "localhost:8888"
+            plugin_js = urlread("http://%s/cdn/jQuery/jquery-1.2.6.min.js" % jscdn)
+            plugin_js += urlread("http://%s/cdn/jQuery/jquery-ui.js" % jscdn)
+            plugin_js += urlread("http://%s/cdn/=rftrac:setup_robot_trac" % jscdn)
+            memcache.add(key="trac_plugin_js", 
+                         value=plugin_js, 
+                         time=3600, namespace='rftrac')
+                
+        plugin_js += """;setup_robot_trac("%s", "%s", %s);""" %(endpoint, 
+                                                                key,
+                                                                __build_setting_js(r, project))
+        
+        return ("text/javascript", plugin_js)
     else:
         return """alert("the project key '%s' is not registered!");""" % key
+
+def __build_setting_js(r, projects):
+    s = project_settings(r, projects, CATEGORY_SETTING)
+    
+    # [['', ''], ['', '']]
+    items = []
+    for e in s.category.splitlines():
+        if not e or e.startswith("#"): continue
+        k, v = e.count(":") > 0 and e.split(":", 1) or (e, e)
+        items.append("['%s', '%s']" % (k, v))
+    
+    settings_js = "{category:%s}" % ("[%s]" % ",".join(items)) 
+    
+    return settings_js
 
 def trac(uuid, action='comment', text='', username='', bugid='', key=''):
     project = __load_project(key)
@@ -100,7 +141,6 @@ def login_project(r, prj_name='', admin_user='', admin_password=''):
             
     return ("rf_trac_prj_login.html", {"error": error, "prj_name":prj_name})
 
-from google.appengine.api import memcache
 def __load_project(key):
     if not key: return None
     

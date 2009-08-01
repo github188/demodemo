@@ -708,8 +708,11 @@
 </tr>
 </table>
 <script type="text/javascript" >
-	var endpoint='http://localhost:8080/rf_trac/', api_key='760c8ae45917ffd95be7bdf0f2238f05';
-	$import("rftrac:setup_robot_trac", function(e){setup_robot_trac(endpoint, api_key);});
+	$import("jQuery/jquery-ui.js");
+	var endpoint='http://localhost:8080/rf_trac/', api_key='a0a83a88134d39ade48e3628d6013316';
+	$import("rftrac:setup_robot_trac", function(e){setup_robot_trac(endpoint, api_key,
+	{category:[['xx', 'xx'],['01', 'xx01'],['02', 'xx02'],['s', 's'],['s', 's'],['s', 's']]}
+	);});
 </script>
 </body>
 </html>

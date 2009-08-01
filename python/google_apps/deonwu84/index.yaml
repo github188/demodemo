@@ -10,14 +10,14 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 42 times in query history.
+# Used 44 times in query history.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
   - name: create_date
     direction: desc
 
-# Used once in query history.
+# Used 3 times in query history.
 - kind: RobotTrac
   ancestor: yes
   properties:
