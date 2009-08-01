@@ -48,13 +48,30 @@ class RobotTestBuild(db.Model):
         return str(self.key())
 
 # parent is Project.
-class RobotResult(db.Model):
-    build = db.ReferenceProperty(RobotTestBuild)
-    uuid = db.StringProperty(required=True)
-    caseid = db.StringProperty()
+class RobotTest(db.Model):
+    caseid = db.StringProperty(required=True)
+    suite = db.SelfReferenceProperty()
+    
+    reportid = db.StringProperty()
     longname = db.StringProperty()
     testname = db.StringProperty()
     suitename = db.StringProperty()
+
+    author = db.StringProperty()
+    documents = db.Text()
+    tags = db.StringProperty()
+    #last_build, 
+
+# parent is Project.
+class RobotResult(db.Model):
+    build = db.ReferenceProperty(RobotTestBuild)
+    uuid = db.StringProperty(required=True)
+    
+    case = db.ReferenceProperty(RobotTest)
+    reportid = db.StringProperty()
+    #longname = db.StringProperty()
+    #testname = db.StringProperty()
+    #suitename = db.StringProperty()
     
     starttime = db.StringProperty()
     endtime = db.StringProperty()
@@ -66,6 +83,13 @@ class RobotResult(db.Model):
 
     create_date = db.DateTimeProperty(auto_now_add=True)
     
+    def __getattr__(self, name):
+        #'caseid', 
+        if name in ['longname', 'suitename', 'testname']:
+            return self.case and getattr(self.case, name) or ""
+        else:
+            db.Model.__getattr__(self, name)
+    
 # parent is Project.
 class RobotTrac(db.Model):
     uuid = db.StringProperty(required=True)
@@ -76,9 +100,3 @@ class RobotTrac(db.Model):
     text = db.Text()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
-        
-    
-    
-    
-    
-    

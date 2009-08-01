@@ -13,7 +13,7 @@ def api(r, key=''):
         host = (r.META["SERVER_NAME"])
         port = (r.META["SERVER_PORT"])
         port = port != '80' and ":%s" % port or ""
-        endpoint = "http://%s%s/rf_trac" % (host, port)
+        endpoint = "http://%s%s/rf_trac/" % (host, port)
         
         if host.count("localhost") > 0:
             return ("rf_trac_prj_api.html", {"project": project,

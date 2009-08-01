@@ -56,14 +56,17 @@
     </tr>
 {% for t in log_list %}	
     <tr class="{{t.diff.info}}">
-        <td class="col_name"><a href="">{{t.suitename}}.{{t.testname}}</a></td>
+        <td class="col_name"><a href="/rf_trac/r/case?id={{t.reportid}}">{{t.suitename}}.{{t.testname}}</a></td>
         <td class="col_tags">{{t.tags}}</td>
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
-		<td class="diff {{t.diff.diff_status|lower}}"><a href="/rf_trac/r/log_st?uuid={{t.diff.diff_uuid}}">{{t.diff.diff_status}}</a> </td>
+		<td class="diff {{t.diff.diff_status|lower}}">
+{% ifequal t.diff.diff_uuid 'unknown' %}unknown
+	{% else %}<a href="/rf_trac/r/log_st?uuid={{t.diff.diff_uuid}}">{{t.diff.diff_status}}</a>						
+{% endifequal %}
+		</td>
 		<td>
 			<select name="trac">
-				<option>Test Bed error</option>
-				<option>Testcase script error</option>
+				{%autoescape off %}{{category_list}}{% endautoescape %}
 			</select> 
 		</td>
         <td class="col_msg">{{t.error}}</td>

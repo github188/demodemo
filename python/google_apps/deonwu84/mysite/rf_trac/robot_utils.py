@@ -3,8 +3,9 @@ import os
 import logging
 from robot.output.readers import TestSuite
 from robot import utils
-from models import RobotResult, RobotTestBuild
+from models import RobotResult, RobotTestBuild, RobotTest
 from datetime import datetime
+import hashlib
 #from models import RobotResult
 
 class RobotUtils(object):
@@ -22,7 +23,6 @@ class RobotUtils(object):
                 setattr(build, k, v) 
         
         build.put()
-        suite.parent = None
         RobotUtils.import_test_suite(build, suite, project)
         build.summary_count = build.summary_fail + build.summary_pass
         build.put()
@@ -44,6 +44,7 @@ class RobotUtils(object):
         
         suite = TestSuite(_get_suite_node(root), -1) 
         suite.set_names()
+        suite.parent = None
         
         return suite
     
@@ -63,9 +64,12 @@ class RobotUtils(object):
         uuid = RobotUtils.build_case_log_uuid(build, test)
         t = RobotResult(parent=project, uuid=uuid)
         t.build = build
-        t.testname = test.name
-        t.suitename = test.parent.name
-        t.longname = test.longname
+        
+        t.case = RobotUtils.import_robot_case(build, test, project)
+        t.reportid = t.case.reportid
+        #t.testname = test.name
+        #t.suitename = test.parent.name
+        #t.longname = test.longname
 
         t.starttime = test.starttime
         t.endtime = test.endtime
@@ -101,9 +105,35 @@ class RobotUtils(object):
         
     @staticmethod
     def build_case_id(build, test, project):
-        import hashlib
-        name = "%s.%s" %(test.parent.name, test.name)
-        
-        return hashlib.md5(name.lower()).hexdigest()
-        
+        if test.parent:
+            name = "%s.%s" %(test.parent.name, test.name)
+            case_id = md5(name.lower())
+            if RobotTest.all().ancestor(project).filter("caseid =", case_id).get() is None:
+                RobotTest(parent=project,
+                          caseid=case_id,
+                          testname=test.name,
+                          suitename=test.parent.name).put()
+            return case_id
+        else:
+            return ""
+    
+    @staticmethod
+    def import_robot_case(build, test, project):
+        uuid = md5(test.longname.lower())
+        t = RobotTest.all().ancestor(project).filter("caseid =", uuid).get()
+        if t is None:
+            t = RobotTest(parent=project, 
+                          caseid=uuid,
+                          longname=test.longname, 
+                          testname=test.name)
+            if test.parent:
+                t.suitename=test.parent.name
+                t.suite = RobotUtils.import_robot_case(build, test.parent, project)
+            t.reportid = RobotUtils.build_case_id(build, test, project)
+            t.put()
+        return t
+    
+def md5(str): return hashlib.md5(str).hexdigest()
+    
+    
         

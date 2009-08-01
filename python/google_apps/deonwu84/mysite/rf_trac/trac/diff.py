@@ -31,11 +31,14 @@ class DiffResult():
             
     def __getattr__(self, name):
         
-        if name.startswith("diff_") and self.diff:
+        if name.startswith("diff_"):
             try:
-                return getattr(self.diff, name[5:])
+                if self.diff:
+                    return getattr(self.diff, name[5:])
+                else:
+                    return "unknown"
             except AttributeError, e:
-                return "N/A"
+                return "unknown"
         else:
             raise AttributeError, "DiffResult has no attribute '%s'" % name
         
@@ -53,16 +56,17 @@ def diff_test_build(build, settings, param=""):
 
 def diff_multi_build(build, log_list, settings, max_build=10):
     
-    logging.info("diff build :%s, parent=%s" %(build.build_name, build.parent()))
-    
+    logging.info("search history build...")
     build_list = RobotTestBuild.all().ancestor(build.parent()).order("-create_date").\
             filter("create_date <", build.create_date) #exclude build self also.
     
     for e in ["sut_name", "sut_version", "sut_release", "sut_major", "execute_user"]:
         if getattr(settings, e) == "1":
             cur_value = getattr(build, e)
-            build_list = build_list.filter("sut_name =", cur_value)
-        
+            build_list = build_list.filter("%s =" % e, cur_value)
+            logging.info("setting diff filter '%s'=%s" %(e, cur_value))
+    
+    logging.info("matched %s history build." %(build_list.count(), ))
     #convert query interface.
     log_list = [ e for e in log_list ]
     result = {}
@@ -82,11 +86,11 @@ def diff_multi_build(build, log_list, settings, max_build=10):
 def fetch_diff_from_build(build, original_list, result):
     logging.info("fetch diff log:%s, %s" %(build.build_name, build.create_date))
     des_list = RobotResult.all().filter("build =", build)
-    testcase = dict(((e.caseid, e) for e in des_list))
+    testcase = dict(((e.reportid, e) for e in des_list))
     
     not_found = []
     for log in original_list:
-        matched = testcase.get(log.caseid, None)
+        matched = testcase.get(log.reportid, None)
         if matched is None: 
             not_found.append(log)
         else:

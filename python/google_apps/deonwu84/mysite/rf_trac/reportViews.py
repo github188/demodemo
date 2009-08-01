@@ -2,6 +2,8 @@
 from google.appengine.ext import db
 from models import *
 from trac import diff_test_build, client_settings, DIFF_SETTING
+from trac import project_settings, CATEGORY_SETTING
+
 import logging
 
 def build(r, build=''):
@@ -33,8 +35,16 @@ def diff(r, build="", ajax='no'):
     build = db.get(db.Key(build))
     if build is None: return ("redirect:/rf_trac/index", )
     
-    settings = client_settings(r, build.parent, DIFF_SETTING)
+    settings = client_settings(r, build.parent(), DIFF_SETTING)
     diff_result = diff_test_build(build, settings)
+    
+    s = project_settings(r, build.parent(), CATEGORY_SETTING)
+    
+    category_items = []
+    for e in s.category.splitlines():
+        if not e or e.startswith("#"): continue
+        k, v = e.count(":") > 0 and e.split(":", 1) or (e, e)
+        category_items.append("<option value='%s'>%s</option>" % (k, v))
     
     log_list = RobotResult.all().filter("build =", build)
     
@@ -44,6 +54,7 @@ def diff(r, build="", ajax='no'):
     
     return ("report/rf_trac_report_build.html", {"build":build,
                                       "log_list": log_list,
+                                      "category_list":"".join(category_items)
                                      });
 
 def log_st(r, uuid=''):
@@ -60,5 +71,7 @@ def log_st(r, uuid=''):
             
     return st
     
+def case(r, id="", key=""):
+    pass
     
     
