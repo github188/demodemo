@@ -1,6 +1,6 @@
 
 import logging
-from mysite.rf_trac.models import RobotTestBuild, RobotResult
+from mysite.rf_trac.models import TestBuildIndex, RobotResult
 
 class DiffResult():
     """testcase log diff result.
@@ -57,14 +57,20 @@ def diff_test_build(build, settings, param=""):
 def diff_multi_build(build, log_list, settings, max_build=10):
     
     logging.info("search history build...")
-    build_list = RobotTestBuild.all().ancestor(build.parent()).order("-create_date").\
+    build_list = TestBuildIndex.all().ancestor(build.parent()).order("-create_date").\
             filter("create_date <", build.create_date) #exclude build self also.
     
-    for e in ["sut_name", "sut_version", "sut_release", "sut_major", "execute_user"]:
-        if getattr(settings, e) == "1":
+    #["sut_name", "sut_release", "sut_major", "sut_version", "execute_user"]:
+    indexes = []
+    for e in settings.settings:
+        if getattr(settings, e) == "1" and hasattr(build, e):
             cur_value = getattr(build, e)
-            build_list = build_list.filter("%s =" % e, cur_value)
-            logging.info("setting diff filter '%s'=%s" %(e, cur_value))
+            #build_list = build_list.filter("%s =" % e, cur_value)
+            indexes.append("%s:%s" % (e, cur_value))
+    indexes = ";".join(indexes)
+    logging.info("build diff index:%s" % indexes)
+    build_list.filter("index =", indexes)
+    #build_list = [ e.build for e in build_list ]
     
     logging.info("matched %s history build." %(build_list.count(), ))
     #convert query interface.
@@ -74,7 +80,7 @@ def diff_multi_build(build, log_list, settings, max_build=10):
     for e in build_list:
         if max_build > 0 and len(log_list) > 0:
             max_build -= 1
-            log_list = fetch_diff_from_build(e, log_list, result)
+            log_list = fetch_diff_from_build(e.build, log_list, result)
         else:
             break
         

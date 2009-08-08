@@ -3,7 +3,7 @@ import os
 import logging
 from robot.output.readers import TestSuite
 from robot import utils
-from models import RobotResult, RobotTestBuild, RobotTest
+from mysite.rf_trac.models import RobotResult, RobotTestBuild, RobotTest
 from datetime import datetime
 import hashlib
 #from models import RobotResult
@@ -11,22 +11,29 @@ import hashlib
 class RobotUtils(object):
     
     @staticmethod
-    def import_test_build(f, build_name, project):
+    def import_test_build(f, build_name, project, param):
         logging.debug("uploaded image:%s, file size:%s" % (build_name, f.size))
         
         suite = RobotUtils.retrieve_robot_suite(f.read())
         build = RobotTestBuild(parent=project, build_name=build_name)
+
+        for n in ["build_name", "sut_name", "sut_version", 
+                   "sut_release", "sut_major", "execute_user"]:
+            if param.has_key(n):
+                setattr(build, n, param[n])
+        
         for k, v in suite.metadata.iteritems():
             k = k.replace(" ", "_").lower()
             if k in ["build_name", "sut_name", "sut_version", 
                      "sut_release", "sut_major", "execute_user"]:
-                setattr(build, k, v) 
+                setattr(build, k, v)
         
         build.put()
         RobotUtils.import_test_suite(build, suite, project)
         build.summary_count = build.summary_fail + build.summary_pass
         build.put()
         
+        build.build_index()
         logging.debug("successful to import %s test result" % (build.summary_count, ))
         
         return build

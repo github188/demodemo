@@ -9,18 +9,14 @@
 {% if error %}<div class='error'>{{error}}</div>{% endif %}		
         <form action="/rf_trac/upload_build" method="POST" enctype="multipart/form-data">
 			<input type="hidden" name="key" size="20" id="admin_user" value="{{prj_key}}" />
-            <table>
-                <tr>
-                    <td style="width:120px;"><label for="name">Build name:</label></td>
-                    <td><input type="text" name="build_name" size="32" id="name" value="{{build_name}}" /></td>
-					<td>the unique name for distingush result</td>
-                </tr>
-                <tr>
-                    <td><label for="file">Robot Output xml:</label></td>
-                    <td><input type="file" name="file" size="32" id="file" value="" />&nbsp;
-                     </td>
-					<td>the robot output xml file.</td>
-                </tr>
+			<table>
+			{% for f in form %}
+				<tr>
+					<th>{{f.label}}</th>
+					<td><input type="{{f.type}}" value="{{f.value}}" name="{{f.name}}" size="32"/> 
+						&nbsp;&nbsp;{{f.text}}</td>
+				</tr>
+			{% endfor %}
                 <tr>
                     <td>
                     </td>

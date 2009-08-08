@@ -35,15 +35,16 @@
 </div>
 
 <div>
-	<div style="float:right;">Diff option:
-		    <select name="trac">
-                <option>SUT name</option>
-                <option>SUT version</option>
-				<option>SUT release</option>
-            </select> 
-	</div>
 <h2>Test Details</h2>
 </div>
+<div>
+	{%autoescape off %}
+	<form action="diff">
+	<input type='hidden' name='build' value="{{build.key}}" />
+	Diff optional: {{diff_form}} <input name='submit' type='submit' value="Diff" />
+	</form>
+	{%endautoescape%}
+</div><br/>
 <table class="details" style="width:100%;">
     <tr>
         <th class="col_name">Name</th>
@@ -52,11 +53,11 @@
 		<th class="col_status">Diff</th>
 		<th width="120px;">Trac</th>
         <th class="col_msg">Message</th>
-		<th class="col_times" >Start / End</th>
+		<th class="col_times" >Start / Elapsed</th>
     </tr>
 {% for t in log_list %}	
     <tr class="{{t.diff.info}}">
-        <td class="col_name"><a href="/rf_trac/r/case?id={{t.reportid}}">{{t.suitename}}.{{t.testname}}</a></td>
+        <td class="col_name"><a href="/rf_trac/r/case?id={{t.reportid}}&key={{build.parent.prj_key}}">{{t.suitename}}.{{t.testname}}</a></td>
         <td class="col_tags">{{t.tags}}</td>
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
 		<td class="diff {{t.diff.diff_status|lower}}">

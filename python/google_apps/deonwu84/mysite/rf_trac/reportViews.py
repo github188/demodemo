@@ -3,6 +3,7 @@ from google.appengine.ext import db
 from models import *
 from trac import diff_test_build, client_settings, DIFF_SETTING
 from trac import project_settings, CATEGORY_SETTING
+from google.appengine.api import memcache
 
 import logging
 
@@ -36,6 +37,11 @@ def diff(r, build="", ajax='no'):
     if build is None: return ("redirect:/rf_trac/index", )
     
     settings = client_settings(r, build.parent(), DIFF_SETTING)
+    if r.REQUEST.has_key('submit'): 
+        settings.set_value(r.REQUEST, all='Y')
+    else:
+        settings.set_value({})
+        
     diff_result = diff_test_build(build, settings)
     
     s = project_settings(r, build.parent(), CATEGORY_SETTING)
@@ -46,6 +52,17 @@ def diff(r, build="", ajax='no'):
         k, v = e.count(":") > 0 and e.split(":", 1) or (e, e)
         category_items.append("<option value='%s'>%s</option>" % (k, v))
     
+    count = 0
+    diff_form = ""   
+    diff_setting = settings
+    for e in diff_setting.items_order:
+        check = diff_setting.value(e) == '1' and "checked" or ""
+        help = diff_setting.help(e)
+        diff_form += """<input id='%s' type='checkbox' name='%s' %s value='1'>
+        <label for="%s">%s</label>&nbsp;&nbsp;""" % (e, e, check, e, help)
+        count += 1
+        #if count % 4 == 0: diff_form += "<br/>"        
+    
     log_list = RobotResult.all().filter("build =", build)
     
     log_list = [e for e in log_list]
@@ -54,7 +71,8 @@ def diff(r, build="", ajax='no'):
     
     return ("report/rf_trac_report_build.html", {"build":build,
                                       "log_list": log_list,
-                                      "category_list":"".join(category_items)
+                                      "category_list":"".join(category_items),
+                                      "diff_form": diff_form,
                                      });
 
 def log_st(r, uuid=''):
@@ -72,6 +90,34 @@ def log_st(r, uuid=''):
     return st
     
 def case(r, id="", key=""):
-    pass
+    project = __load_project(key)
+    if project is None:
+        return ("redirect:/rf_trac/", )
     
+    case_list = RobotTest.all().filter("reportid =", id)
+    log_list = RobotResult.all().filter("reportid =", id)
+
+    return ("report/rf_trac_report_case.html", {"project":project,
+                                      "log_list": log_list,
+                                      "case_list": case_list
+                                     });
+    
+    
+def __load_project(key):
+    if not key: return None
+    
+    project = memcache.get(key)
+    if project is None: 
+        project = RobotProject.all().filter('prj_key =', key).get()
+        memcache.add(key, project, 60 * 60 * 2)
+        
+    return project
+    
+def rebuild_index(r):
+    logging.info("start rebuild all test build index....")
+    for b in RobotTestBuild.all():
+        b.build_index()
+    logging.info("done to index all test build.")
+    return "done to index all test build."
+
     

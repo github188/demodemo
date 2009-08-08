@@ -2,7 +2,7 @@ import logging
 from google.appengine.ext import db
 from models import *
 from datetime import datetime
-from robot_utils import RobotUtils
+from trac.robot_utils import RobotUtils
 from trac.utils import urlread
 from google.appengine.api import memcache
 from trac import project_settings, CATEGORY_SETTING
@@ -82,8 +82,26 @@ def trac_list(r, uuid, offset=0, limit=10, key=''):
 
 def update(uuid, longname='', start_time='', end_time='', url='', error='', status=''):
     pass
-
+    
+class F():
+    def __init__(self, label, name, type, value='', text='', ):
+        self.name = name
+        self.type = type
+        self.label = label
+        self.text = text
+        self.value = value
+    
 def upload_build(r, key="", build_name=""):
+    
+    build_name = datetime.now().strftime('%Y%m%d%H%M%S')
+    form  = (F('Build name', 'build_name', 'text', build_name),
+             F('SUT name', 'sut_name', 'text', '', 'test bed name or IP address, Meta:Sut Name'),
+             F('SUT version', 'sut_version', 'text', ''),
+             F('Relase version', 'sut_release', 'text', ''),
+             F('Major version', 'sut_major', 'text', ''),
+             F('Execute user', 'execute_user', 'text', ''),
+             F('XML Output', 'file', 'file', '', "robot output xml file"),
+             )
     
     #from uploaded import UploadUtil
     project = __load_project(key)
@@ -91,16 +109,17 @@ def upload_build(r, key="", build_name=""):
     if project is not None:
         if r.method == 'POST':
             build = RobotUtils.import_test_build(r.FILES['file'], 
-                                                 build_name, project)
+                                                 build_name, project, r.POST)
             
             return ("redirect:/rf_trac/r/build?build=%s" % build.id, )
     else:
         error = """the project key '%s' is not registered!""" % key
     
-    build_name = datetime.now().strftime('%Y%m%d%H%M%S')
+    #form = UploadFileForm({'build_name':build_name})
+    
     return ("rf_trac_prj_upload.html", {"prj_key": key, 
                                         "error": error,
-                                        "build_name": build_name})
+                                        "form": form})
 
 
 def default_view(r):
@@ -123,6 +142,7 @@ def create_project(r, ):
 def login_project(r, prj_name='', admin_user='', admin_password=''):
     
     project = RobotProject.all().filter('name =', prj_name).get()
+    cur_p = project_session(r)
     error = ""
     if r.method == 'POST':
         if project is not None:
@@ -138,8 +158,14 @@ def login_project(r, prj_name='', admin_user='', admin_password=''):
             #return ("redirect:/rf_trac/v/index", )
         else:
             error = "invalid project name"
+    elif cur_p and project and cur_p.name == project.name:
+        return ("redirect:/rf_trac/v/index", )
             
     return ("rf_trac_prj_login.html", {"error": error, "prj_name":prj_name})
+
+def logout(r):
+    project_session(r, None, True)
+    return ("redirect:/rf_trac/index", )
 
 def __load_project(key):
     if not key: return None

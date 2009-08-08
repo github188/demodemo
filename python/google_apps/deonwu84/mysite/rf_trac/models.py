@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #from django.db import models
 from google.appengine.ext import db
+import logging
 
 class RobotProject(db.Model):
     name = db.StringProperty(required=True)
@@ -46,6 +47,49 @@ class RobotTestBuild(db.Model):
     @property
     def id(self):
         return str(self.key())
+    
+    def build_index(self):
+        from trac import client_settings, DIFF_SETTING
+        project = self.parent()
+        oldIndex = TestBuildIndex.all().ancestor(project).filter("build =", self)
+        for e in oldIndex: e.delete()
+        
+        settings = client_settings(None, project, DIFF_SETTING)
+        
+        items = []
+        for f in settings.settings:
+            if not hasattr(self, f):continue
+            items.append("%s:%s" % (f, getattr(self, f)))
+        
+        from utils import md5
+        logging.debug("start build index for build '%s' in '%s'" % (self.build_name, project.name))
+        #indexes = self.__full_combine(items)
+        for i in self.__full_combine(items):
+            logging.debug("index:%s" % i)
+            TestBuildIndex(parent=project, build=self, 
+                           index=md5(i),
+                           create_date=self.create_date).put()
+            
+        logging.debug("done to build index.")
+        
+    def __full_combine(self, cells):
+        #r = list(cells)
+        cells = [ (e, cells[e]) for e in range(len(cells)) ]
+        results = list(cells)
+        for i, e in cells:
+            for j, r in list(results):
+                if i <= j: continue
+                results.append((i, "%s;%s" % (r, e)))
+        
+        return [ v for i, v in results ]
+        
+
+class TestBuildIndex(db.Model):
+    """a index for search test build.
+    """
+    build = db.ReferenceProperty(RobotTestBuild)
+    index = db.StringProperty()
+    create_date = db.DateTimeProperty()
 
 # parent is Project.
 class RobotTest(db.Model):
@@ -64,9 +108,8 @@ class RobotTest(db.Model):
 
 # parent is Project.
 class RobotResult(db.Model):
-    build = db.ReferenceProperty(RobotTestBuild)
     uuid = db.StringProperty(required=True)
-    
+    build = db.ReferenceProperty(RobotTestBuild)
     case = db.ReferenceProperty(RobotTest)
     reportid = db.StringProperty()
     #longname = db.StringProperty()

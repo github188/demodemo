@@ -1,0 +1,49 @@
+{% extends "report/report_base.html" %}
+{% load robot_tags %}
+{% block body %}
+<div>
+<h2>Test case list</h2>
+<table class="details" style="width:100%;">
+    <tr>
+        <th>Longname</th>
+        <th>Tags</th>
+        <th>Pass count</th>
+        <th>Fail count</th>
+		<th>Author</th>
+    </tr>
+{% for t in case_list %} 
+    <tr>
+        <td><a href="#">{{t.longname}}</a></td>
+		<td>{{t.tags}}</td>
+		<td></td>
+		<td></td>
+		<td><a href="#">{{t.author}}</a></td>
+    </tr>
+{% endfor %}
+</table>
+<div>
+<h2>Test History</h2>
+</div>
+<table class="details" style="width:100%;">
+    <tr>
+        <th>Build name</th>		
+        <th>SUT Release</th>
+		<th>SUT version</th>
+        <th>SUT name</th>
+		<th>Status</th>
+        <th>Start/Elapsed</th>
+		<th>Executed user</th>
+    </tr>
+{% for t in log_list %}	
+    <tr>
+        <td><a href="build?build={{t.build.key}}">{{t.build.build_name}}</a></td>
+        <td>{{t.build.sut_release}}</td>
+		<td>{{t.build.sut_version}}</td>
+		<td>{{t.build.sut_name}}</td>
+        <td class="col_status {{t.status|lower}}">{{t.status}}</td>
+        <td class="col_times">{{t.starttime}}<br/>{{t|rbtime}}</td>
+		<td>{{t.build.execute_user}}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

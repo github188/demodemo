@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>{% block title %}{{ application_name }}{% endblock %}</title>
+    <script type="text/javascript" src="/static/js/jquery-1.2.6.min.js"></script>
+    <link href="/static/css/base.css" rel="stylesheet" type="text/css"/>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+	{% block body %}
+    <div id="dialog1" style="background:#cccccc;border:1px solid #eee;width:200px;height:100px;">
+        <div class='title' style="background:#ffcc33;cursor:move;">         
+            <a href="#" id="close">[ x ]</a>
+            Preferences
+        </div>
+        <div>
+            Hello world.
+        </div>
+    </div>
+	  
+	<script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js"></script>
+	<script type="text/javascript">
+		
+		$.widget("ui.dialog", {
+			_init: function() {
+				this.element.draggable({handle:'.title'});
+				this.originalTitle = this.element.attr('title');
+			}, 
+		});
+		
+		$(document).ready(function(){
+			$("#dialog1").dialog();
+		});
+		
+		alert(document.baseURI);
+		
+		function hellworld(){
+			alert(document.baseURI);
+			alert(window.paraent.document.baseURI);
+		}
+	
+	</script>
+		
+	{% endblock %}
+    </div>
+  </body>
+</html>

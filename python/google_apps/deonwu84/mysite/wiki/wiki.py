@@ -32,6 +32,7 @@ import cgi
 from google.appengine.api import datastore
 from google.appengine.api import datastore_types
 from google.appengine.ext import webapp
+from google.appengine.api import users
 # Set to true if we want to have our webapp print stack traces, etc
 
 class Page(object):
@@ -97,7 +98,11 @@ class Page(object):
     entity['content'] = datastore_types.Text(self.content)
     entity['modified'] = now
     
-    entity['user'] = 'deonwu'
+    if users.get_current_user():
+      entity['user'] = users.get_current_user()
+    elif entity.has_key('user'):
+      del entity['user']    
+    #entity['user'] = 'deonwu'
     
     datastore.Put(entity)
 
@@ -122,6 +127,11 @@ class Page(object):
     """Returns true if the page with the given name exists in the datastore."""
     return Page.load(name).entity
 
+
+class Syntax(object):
+    
+    def run(self, content):
+        pass
 
 class Transform(object):
   """Abstraction for a regular expression transform.
@@ -164,7 +174,7 @@ class WikiWords(Transform):
   def replace(self, match):
     wikiword = match.group(0)
     if Page.exists(wikiword):
-      return '<a class="wikiword" href="/%s">%s</a>' % (wikiword, wikiword)
+      return '<a class="wikiword" href="/wiki/%s">%s</a>' % (wikiword, wikiword)
     else:
       return wikiword
 

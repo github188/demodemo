@@ -1,7 +1,7 @@
 
 from simpleviews import SimpleViews, SimpleUrl
 from logging import getLogger
-
+import hashlib
 
 def user_post_syncdb(sender, app, created_models, verbosity, interactive, **kvargs):
     logger = getLogger('sql.post_syncdb')
@@ -24,4 +24,6 @@ def trackable(msg):
 
 def list2table(list, cols=3):
     return [ list[i * cols: (i+1) * cols] for i in range(len(list) / cols) ]
+
+def md5(str): return hashlib.md5(str).hexdigest()
     

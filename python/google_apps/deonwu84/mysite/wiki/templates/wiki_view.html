@@ -22,5 +22,7 @@
 {% block buttons %}<span class="item"><input type="button" onclick="location.href='{{ page.edit_url|escape }}'" value="Edit This Page"/></span>{% endblock %}
 
 {% block body %}
+{%autoescape off %}
   {{ page.wikified_content }}
+{% endautoescape %}
 {% endblock %}
