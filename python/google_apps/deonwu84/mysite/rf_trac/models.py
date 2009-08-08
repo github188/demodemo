@@ -81,7 +81,7 @@ class RobotTestBuild(db.Model):
                 if i <= j: continue
                 results.append((i, "%s;%s" % (r, e)))
         
-        return [ v for i, v in results ]
+        return [ v for i, v in results ] + ['']
         
 
 class TestBuildIndex(db.Model):

@@ -1,6 +1,8 @@
 
 import logging
 from mysite.rf_trac.models import TestBuildIndex, RobotResult
+import hashlib
+def md5(str): return hashlib.md5(str).hexdigest()
 
 class DiffResult():
     """testcase log diff result.
@@ -60,20 +62,17 @@ def diff_multi_build(build, log_list, settings, max_build=10):
     build_list = TestBuildIndex.all().ancestor(build.parent()).order("-create_date").\
             filter("create_date <", build.create_date) #exclude build self also.
     
-    #["sut_name", "sut_release", "sut_major", "sut_version", "execute_user"]:
     indexes = []
     for e in settings.settings:
         if getattr(settings, e) == "1" and hasattr(build, e):
             cur_value = getattr(build, e)
-            #build_list = build_list.filter("%s =" % e, cur_value)
             indexes.append("%s:%s" % (e, cur_value))
     indexes = ";".join(indexes)
-    logging.info("build diff index:%s" % indexes)
-    build_list.filter("index =", indexes)
-    #build_list = [ e.build for e in build_list ]
+    str_md5 = md5(indexes)
+    logging.info("build diff index:%s, md5:%s" % (indexes, str_md5))
+    build_list.filter("index =", str_md5)
     
     logging.info("matched %s history build." %(build_list.count(), ))
-    #convert query interface.
     log_list = [ e for e in log_list ]
     result = {}
     

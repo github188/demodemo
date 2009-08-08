@@ -82,6 +82,7 @@ def edit_build(r, build=""):
             if r.REQUEST.has_key(n):
                 setattr(b, n, r.REQUEST[n])
         b.put()
+        b.build_index()
         return ("redirect:/rf_trac/v/build_list", )
     
     return ("admin/rf_trac_build_edit.html", {"build": b, 
