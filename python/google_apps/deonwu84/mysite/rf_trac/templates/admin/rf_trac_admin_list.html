@@ -15,17 +15,21 @@
         <th>Test count</th>
 		<th>Test pass</th>
 		<th>Test fail</th>
+		<th>Actions</th>
     </tr>
 {% for t in build_list %}
     <tr>
         <td><a href="/rf_trac/r/build?build={{t.id}}">{{t.build_name}}</a></td>
         <td>{{t.sut_name}}</td>
         <td>{{t.sut_release}}</td>
-        <td>{{t.ust_version}}</thd>
+        <td>{{t.sut_version}}</thd>
         <td>{{t.execute_user}}</td>
         <td>{{t.summary_count}}</td>
 		<td>{{t.summary_pass}}</td>
-		<td>{{t.summary_fail}}</td>			
+		<td>{{t.summary_fail}}</td>
+		<td><a href="/rf_trac/v/edit_build?build={{t.id}}">edit</a>&nbsp;/&nbsp;
+			<a href="/rf_trac/v/remove_build?build={{t.id}}">remove</a>
+		</td>						
     </tr>
 {% endfor %}    
 </table>
@@ -38,7 +42,6 @@
         <th>TestCase</th>
         <th>Category</th>
         <th>BugId</th>
-        <th>Text</th>
         <th>Username</th>
         <th>Create date</th>
     </tr>
@@ -47,7 +50,6 @@
         <td>{{t.uuid}}</td>
         <td>{{t.action}}</td>
         <td>{{t.bugid}}</td>
-        <td>{{t.text}}</thd>
         <td>{{t.username}}</td>
         <td>{{t.create_date}}</td>
     </tr>

@@ -93,8 +93,7 @@ class F():
     
 def upload_build(r, key="", build_name=""):
     
-    build_name = datetime.now().strftime('%Y%m%d%H%M%S')
-    form  = (F('Build name', 'build_name', 'text', build_name),
+    form  = (F('Build name', 'build_name', 'text', ''),
              F('SUT name', 'sut_name', 'text', '', 'test bed name or IP address, Meta:Sut Name'),
              F('SUT version', 'sut_version', 'text', ''),
              F('Relase version', 'sut_release', 'text', ''),
@@ -109,7 +108,7 @@ def upload_build(r, key="", build_name=""):
     if project is not None:
         if r.method == 'POST':
             build = RobotUtils.import_test_build(r.FILES['file'], 
-                                                 build_name, project, r.POST)
+                                                 project, r.POST)
             
             return ("redirect:/rf_trac/r/build?build=%s" % build.id, )
     else:

@@ -1,0 +1,26 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+{% include "admin/include/rf_trac_project_header.html" %}
+<div>
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+    <span style="font-size:18px;">Project actions</span>
+</div>
+<table style="background:#fff;" width="100%">
+    <tr>
+        <th width="80px">Action</th>
+        <th>Text</th>
+		<th width="80px">User name</th>
+        <th width="120px">Date</th>
+    </tr>
+{% for l in logging %}
+    <tr>
+        <td>{{l.action}}</td>
+		<td>{{l.text}}</td>
+		<td>{{l.username}}</td>
+		<td>{{l.create_date}}</td>
+    </tr>
+{% endfor %}    
+</table>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "rf_trac_base.html" %}
+
+{% block body %}
+{% include "admin/include/rf_trac_project_header.html" %}
+<div>
+<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+    <span style="font-size:18px;">Project actions</span>
+</div>
+<table style="background:#fff;" width="100%">
+    <tr>
+		<th>case id</th>
+        <th>long name</th>
+        <th>suite name</th>
+		<th>test name</th>		
+		<th>Report id</th>
+    </tr>
+{% for c in caselist %}
+    <tr>
+        <td>{{c.caseid}}</td>
+		<td>{{c.longname}}</td>
+		<td>{{c.suitename}}</td>
+		<td>{{c.testname}}</td>
+		<td>{{c.reportid}}</td>
+    </tr>
+{% endfor %}    
+</table>
+
+{% endblock %}

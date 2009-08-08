@@ -112,9 +112,6 @@ class RobotResult(db.Model):
     build = db.ReferenceProperty(RobotTestBuild)
     case = db.ReferenceProperty(RobotTest)
     reportid = db.StringProperty()
-    #longname = db.StringProperty()
-    #testname = db.StringProperty()
-    #suitename = db.StringProperty()
     
     starttime = db.StringProperty()
     endtime = db.StringProperty()
@@ -143,3 +140,22 @@ class RobotTrac(db.Model):
     text = db.Text()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
+
+# parent is Project.
+class TracLogging(db.Model):
+    #uuid = db.StringProperty(required=True)    
+    action = db.StringProperty()
+    #text = db.Text()
+    text = db.StringProperty()
+    username = db.StringProperty()
+    create_date = db.DateTimeProperty(auto_now_add=True)
+    
+    @staticmethod
+    def log(project, text2, action="INFO", username="SYSTEM"):
+        logging.info("text:%s" % text2)
+        TracLogging(parent=project, action=action,
+                    text=text2,
+                    username=username).put()
+    
+    
+    
