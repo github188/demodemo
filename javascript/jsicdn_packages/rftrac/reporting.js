@@ -75,8 +75,69 @@ function show_diff_testcase(){
         rfTrac.show_diff.css({top:p.top, left:p.left + $(this).width() + 20}).
         show('fast', testcase_loading);
     }else {
+        rfTrac.show_diff.css({top:p.top, left:p.left + $(this).width() + 20});
         testcase_loading();
     }
+}
+
+ /**
+   * @param  <Event> e
+   */
+function show_testcase_comments(e){
+    //alert('show_testcase_comments ' + e.tagName); 
+    var t = e.target || e.srcElement;
+    function get_logid(t1) {
+        return $(t1).attr("uuid");
+    }
+
+    function get_tc_name(t1) {
+	    for(var i = t1; i; i = i.parentNode){
+	        if(typeof i.tagName != 'string'){
+	            return ""
+	        }
+	        if(i.tagName.toLowerCase() == 'tr') {
+	           return $('td', i).html();
+	        }
+	    }
+	    return "";    
+    }
+    
+    rfTrac.curTestTrac = {logid: get_logid(t), category:$(t).val()};
+    
+    if(!rfTrac.comments_dialog){
+        function post_comments_with_ajax(){
+            var d = rfTrac.comments_dialog.model;
+            var trac = rfTrac.curTestTrac;      
+            $.post(rfTrac.endpoint + "trac",
+                   {uuid: trac.logid,
+                    action: trac.category,
+                    text: d.comments(),
+                    username: d.user(),
+                    bugid: d.bugid(),
+                    key: rfTrac.api_key            
+                   }, function(e){
+                       if(e.status != "OK"){alert(e.message);}
+                       else{
+                           alert("update testcase successfully.");
+                           rfTrac.comments_dialog.dialog('close');
+                       }
+                   }, 
+                   "json");
+        };
+        rfTrac.comments_dialog = build_testcase_comments_dialog(post_comments_with_ajax);
+    }
+    
+    var d = rfTrac.comments_dialog.model;
+    var trac = rfTrac.curTestTrac;
+    
+    d.tcname(get_tc_name(t));
+    //d.category($(t).val());
+    var selIndex = t.selectedIndex;
+    d.category(t.options[selIndex].text);
+    //d.user = 'xx';
+    d.comments('');
+    
+    rfTrac.comments_dialog.dialog('open');
 }
 
  /**
@@ -90,7 +151,13 @@ function setup_diff_reporting(endpoint, api_key){
         rfTrac = {endpoint:endpoint, api_key:api_key};
         //$(document).click(on_click_event);
         rfTrac.show_diff = build_diff_dialog();
+        
+        rfTrac.comments_dialog = undefined;
+        rfTrac.show_comments = show_testcase_comments;        
                               
         $("td.diff a").hover(show_diff_testcase, function(){});
+        
+        var head = document.getElementsByTagName('head')[0];
+        head.appendChild($('<link type="text/css" href="http://jsicdn01.appspot.com/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />').get(0)); 
     }
 }

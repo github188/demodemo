@@ -42,7 +42,7 @@ function build_testcase_comments_dialog(submit_callback){
 									buttons: {
 										"Submit": function() {
 											submit_callback();
-											$(this).dialog("close"); 
+											//$(this).dialog("close"); 
 										}, 
 										"Cancel": function() {
 											$(this).dialog("close"); 

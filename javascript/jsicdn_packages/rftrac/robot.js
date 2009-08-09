@@ -97,7 +97,7 @@ function show_testcase_comments(){
 		    var trac = rfTrac.curTestTrac;	    
 	        $.post(rfTrac.endpoint + "trac",
 	               {uuid: trac.logid,
-	                action: d.category(),
+	                action: trac.category,
 	                text: d.comments(),
 	                username: d.user(),
 	                bugid: d.bugid(),
@@ -106,6 +106,7 @@ function show_testcase_comments(){
 	                   if(e.status != "OK"){alert(e.message);}
 	                   else{
 	                       alert("update testcase successfully.");
+	                       rfTrac.comments_dialog.dialog('close');
 	                   }
 	               }, 
 	               "json");
@@ -116,11 +117,12 @@ function show_testcase_comments(){
 	
     var d = rfTrac.comments_dialog.model;
     var trac = rfTrac.curTestTrac;
-	
+	trac.category = $("select", trac.panel).val();
+    
+    var cate = $("select", trac.panel).get(0);
+    d.category(cate.options[cate.selectedIndex].text);    	
 	d.tcname(trac.tcname);
-	//d.logid(trac.logid);
-	d.category($("select", trac.panel).val());
-	//d.user = 'xx';
+	d.category();
 	d.comments('');
 	
 	rfTrac.comments_dialog.dialog('open');
