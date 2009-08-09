@@ -1,5 +1,6 @@
 {% extends "report/report_base.html" %}
 {% load robot_tags %}
+{% load rftrac_tags %}
 {% block body %}
 <div>
 <h2>Test case list</h2>
@@ -26,7 +27,7 @@
 </div>
 <table class="details" style="width:100%;">
     <tr>
-        <th>Build name</th>		
+        <th>Build name</th>
         <th>SUT Release</th>
 		<th>SUT version</th>
         <th>SUT name</th>
@@ -41,9 +42,23 @@
 		<td>{{t.build.sut_version}}</td>
 		<td>{{t.build.sut_name}}</td>
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
-        <td class="col_times">{{t.starttime}}<br/>{{t|rbtime}}</td>
-		<td>{{t.build.execute_user}}</td>
+        <td>{{t.starttime}}&nbsp;{{t|rbtime}}</td>
+		<td width="120px;">{{t.build.execute_user}}</td>
+    </tr>
+{% for l in t.trac_list %}
+    <tr>
+        <td>&nbsp</td>
+        <td colspan="6">
+			<div style="background:#f7f7ff;"><b>Comments: </b><span style='color:#990066;'>{{l.action|category_label:project}}</span>
+				{% if l.bugid %} -> <a href="#">{{l.bugid}}</a> {% endif %}
+				by <span>{{l.username}}</span> at 
+				   <span>{{l.create_date}}</span>
+			</div> 
+			<div style="padding:2px;background:#fff;border:1px solid #7799dd;">{{l.text}}</div>
+		</td>
     </tr>
 {% endfor %}
+{% endfor %}	
 </table>
+
 {% endblock %}

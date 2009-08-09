@@ -94,14 +94,15 @@ def case(r, id="", key=""):
     if project is None:
         return ("redirect:/rf_trac/", )
     
-    case_list = RobotTest.all().filter("reportid =", id)
-    log_list = RobotResult.all().filter("reportid =", id)
-
+    case_list = RobotTest.all().ancestor(project).filter("reportid =", id)
+    log_list = RobotResult.all().ancestor(project).filter("reportid =", id)
+    log_list = [e for e in log_list]
+    for l in log_list: l.trac_list = RobotTrac.get_trac_list(l, 10)
+    
     return ("report/rf_trac_report_case.html", {"project":project,
                                       "log_list": log_list,
                                       "case_list": case_list
                                      });
-    
     
 def __load_project(key):
     if not key: return None
@@ -120,4 +121,37 @@ def rebuild_index(r):
     logging.info("done to index all test build.")
     return "done to index all test build."
 
+from trac.utils import urlread
+def plug_js(r, key=''):
+    project = RobotProject.all().filter('prj_key =', key).get()
+    if project:
+        host = (r.META["SERVER_NAME"])
+        port = (r.META["SERVER_PORT"])
+        port = port != '80' and ":%s" % port or ""
+        endpoint = "http://%s%s/rf_trac/" % (host, port)
+        
+        if host.count("localhost") > 0 or host.count("127.0.0.1") > 0:
+            return ("report/rf_trac_js_loader.html", {"project": project,
+                                             "endpoint": endpoint,
+                                             })
+        
+        cached_key = "trac_report_js"
+        
+        plugin_js = memcache.get(cached_key, namespace='rftrac')
+        if not plugin_js or host.count("localhost"):
+            jscdn = host.count("deonwu84") and "jsicdn01.appspot.com" or "localhost:8888"
+            plugin_js = urlread("http://%s/cdn/jQuery/jquery-1.2.6.min.js" % jscdn)
+            plugin_js += urlread("http://%s/cdn/jQuery/jquery-ui.js" % jscdn)
+            plugin_js += urlread("http://%s/cdn/=rftrac:setup_diff_reporting" % jscdn)
+            memcache.add(key=cached_key, 
+                         value=plugin_js, 
+                         time=3600, namespace='rftrac')
+                
+        plugin_js += """;setup_diff_reporting("%s", "%s");""" %(endpoint, 
+                                                                key,
+                                                                )
+        
+        return ("text/javascript", plugin_js)
+    else:
+        return """alert("the project key '%s' is not registered!");""" % key
     

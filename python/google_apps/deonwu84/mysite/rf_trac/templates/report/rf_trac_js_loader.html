@@ -1,0 +1,53 @@
+{%autoescape off %}
+(function() {
+	function waiting_to_ok(times, interval, func){
+	   var intervalId, retry_times;
+	   intervalId = retry_times = 0;
+	   interval = interval || 500;
+	   
+	   var lock = false;
+	   function interval_callback(){
+		   if(lock) return;
+		   lock = true;
+		   try {
+			   func();
+			   window.clearInterval(intervalId);
+		   }catch(e){
+				retry_times++;  
+				if(!intervalId){
+					intervalId = window.setInterval(interval_callback, interval);
+				}else if(retry_times > times){
+					window.clearInterval(intervalId);
+				}
+		   }finally{
+			   lock = false;
+		   }
+	   }
+	   
+	   interval_callback();
+	}
+	
+	function load_js(url) {
+		var s = document.createElement("script");
+			s.src = url;
+			s.type = 'text/javascript';
+			var bodyRef = document.getElementsByTagName("head").item(0);
+			bodyRef.appendChild(s); 
+	}
+	
+	function initial_rftrac(){
+		if($import){
+			$import("jQuery/jquery-ui.js");
+			$import("rftrac:setup_diff_reporting", 
+					function(e){
+						setup_diff_reporting("{{endpoint}}", 
+										 "{{project.prj_key}}"
+										 );
+					});
+		}
+	}
+	
+	load_js("http://localhost:8888/cdn/boot.js");
+	waiting_to_ok(3, 500, initial_rftrac);
+})();
+{% endautoescape %}

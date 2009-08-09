@@ -2,8 +2,14 @@
 
 {% block body %}
 {% include "admin/include/rf_trac_project_header.html" %}
-<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
-    <span style="font-size:18px;">Test build list</span>
+<div style="background:#f7f7ff;">
+	Robot html log plug-in scorce, <a href="#">more detail</a> integrate rftrac and robot.	
+    <div style="padding:10px;margin:10px;background:#fff;border:1px solid #7799dd;">
+        &lt;script type="text/javascript" src="{{js_plugin}}" &gt;&lt;/script&gt;
+    </div>
+</div>
+<div class="b_title">
+    <span>Test build list</span>
 </div>
 <table style="background:#fff;" width="100%">
     <tr>
@@ -34,8 +40,8 @@
 {% endfor %}    
 </table>
 
-<div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
-	<span style="font-size:18px;">Test log trac list</span>
+<div class="b_title">
+	<span>Test log trac list</span>
 </div>
 <table style="background:#fff;" width="100%">
     <tr>

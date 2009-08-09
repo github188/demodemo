@@ -35,7 +35,7 @@ class RobotUtils(object):
         if build is None: 
             build = RobotTestBuild(parent=project, build_name=build_name)
         else:
-            TracLogging.log(project, "re-upload build '%s' last uploading in %s" % 
+            TracLogging.log(project, "re-upload build '%s' created in %s" % 
                             (build.build_name, build.create_date))
         
         for k, v in build_info.iteritems(): setattr(build, k, v)
@@ -92,7 +92,7 @@ class RobotUtils(object):
         t = RobotResult.all().ancestor(project).filter("uuid =", uuid).get()
         if t is None: t = RobotResult(parent=project, uuid=uuid)
         
-        if t.build and t.build != build:
+        if t.build and t.build.build_name != build.build_name:
             TracLogging.log(project, "the test result '%s' is uploaded in build '%s', current build '%s'." % 
                             (uuid, t.build.build_name, build.build_name),
                             "WARN")
@@ -101,7 +101,7 @@ class RobotUtils(object):
         t.reportid = t.case.reportid
         t.starttime = test.starttime
         t.endtime = test.endtime
-        t.message = test.message
+        t.message = db.Text(test.message or "")
         t.status = test.status
         t.tags = ";".join(test.tags)
         

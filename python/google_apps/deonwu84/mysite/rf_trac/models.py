@@ -102,7 +102,7 @@ class RobotTest(db.Model):
     suitename = db.StringProperty()
 
     author = db.StringProperty()
-    documents = db.Text()
+    documents = db.TextProperty()
     tags = db.StringProperty()
     #last_build, 
 
@@ -118,7 +118,7 @@ class RobotResult(db.Model):
     elapsed = db.IntegerProperty(default=0)
     url = db.StringProperty()
     status = db.StringProperty()
-    message = db.Text()
+    message = db.TextProperty()
     tags = db.StringProperty()
 
     create_date = db.DateTimeProperty(auto_now_add=True)
@@ -137,16 +137,25 @@ class RobotTrac(db.Model):
     action = db.StringProperty()
     
     bugid = db.StringProperty()
-    text = db.Text()
+    text = db.TextProperty()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
+    
+    @staticmethod
+    def get_trac(t):
+        return RobotTrac.all().ancestor(t.parent()).filter("uuid =", t.uuid)\
+                .order("-create_date").get()
+    
+    @staticmethod
+    def get_trac_list(t, limit=100):
+        return RobotTrac.all().ancestor(t.parent()).filter("uuid =", t.uuid)\
+                .order("-create_date").fetch(limit)
 
 # parent is Project.
 class TracLogging(db.Model):
     #uuid = db.StringProperty(required=True)    
     action = db.StringProperty()
-    #text = db.Text()
-    text = db.StringProperty()
+    text = db.TextProperty()
     username = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
     
@@ -154,8 +163,5 @@ class TracLogging(db.Model):
     def log(project, text2, action="INFO", username="SYSTEM"):
         logging.info("text:%s" % text2)
         TracLogging(parent=project, action=action,
-                    text=text2,
+                    text=db.Text(text2),
                     username=username).put()
-    
-    
-    

@@ -15,9 +15,14 @@ def build_list(r, offset=0, limit=10, name=''):
     build_list = RobotTestBuild.all().ancestor(project)\
             .filter("status IN", ["", None,]).order("-create_date")
     
+    host, port = (r.META["SERVER_NAME"], r.META["SERVER_PORT"])
+    port = port != '80' and ":%s" % port or ""
+    js_plugin = "http://%s%s/rf_trac/api?key=%s" % (host, port, project.prj_key)
+    
     return ("admin/rf_trac_admin_list.html", {"project":project,
                                         "trac_list": trac.fetch(limit, offset),
-                                        "build_list": build_list.fetch(limit, offset)
+                                        "build_list": build_list.fetch(limit, offset),
+                                        "js_plugin":js_plugin,
                                         });
 
 def settings(r, ):

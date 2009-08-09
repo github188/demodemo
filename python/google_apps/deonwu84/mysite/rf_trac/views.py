@@ -58,7 +58,7 @@ def trac(uuid, action='comment', text='', username='', bugid='', key=''):
         return {"status":"404", "message":"""the project key '%s' is not registered!""" % key}
     
     t = RobotTrac(parent=project, uuid=uuid, action=action, 
-                  text=text, username=username, bugid=bugid)
+                  text=db.Text(text), username=username, bugid=bugid)
     t.save()
     
     return {"status":"OK" }
@@ -113,9 +113,7 @@ def upload_build(r, key="", build_name=""):
             return ("redirect:/rf_trac/r/build?build=%s" % build.id, )
     else:
         error = """the project key '%s' is not registered!""" % key
-    
-    #form = UploadFileForm({'build_name':build_name})
-    
+        
     return ("rf_trac_prj_upload.html", {"prj_key": key, 
                                         "error": error,
                                         "form": form})

@@ -1,5 +1,6 @@
 {% extends "report/report_base.html" %}
 {% load robot_tags %}
+{% load rftrac_tags %}
 
 {% block body %}
 <div>
@@ -44,6 +45,10 @@
 	Diff optional: {{diff_form}} <input name='submit' type='submit' value="Diff" />
 	</form>
 	{%endautoescape%}
+		&nbsp;<span class='fatal'>PASS==>FAIL</span>&nbsp;
+		<span class='warn'>FAIL==>FAIL</span>&nbsp;
+		<span class='info'>FAIL==>PASS</span>&nbsp;
+		<span class='ignore'>PASS==>PASS</span>&nbsp;
 </div><br/>
 <table class="details" style="width:100%;">
     <tr>
@@ -62,21 +67,19 @@
         <td class="col_status {{t.status|lower}}">{{t.status}}</td>
 		<td class="diff {{t.diff.diff_status|lower}}">
 {% ifequal t.diff.diff_uuid 'unknown' %}unknown
-	{% else %}<a href="/rf_trac/r/log_st?uuid={{t.diff.diff_uuid}}">{{t.diff.diff_status}}</a>						
+	{% else %}<a onclick="return false;" href="/rf_trac/r/log_st?uuid={{t.diff.diff_uuid}}">{{t.diff.diff_status}}</a>						
 {% endifequal %}
 		</td>
 		<td>
-			<select name="trac">
-				{%autoescape off %}{{category_list}}{% endautoescape %}
+			<select name="trac" uuid='{{t.uuid}}' onchange='rfTrac.show_comments(event)'>
+				{%autoescape off %}{{t|category_status}}{% endautoescape %}
 			</select> 
 		</td>
-        <td class="col_msg">{{t.error}}</td>
+        <td class="col_msg">{{t.message}}</td>
         <td class="col_times">{{t.starttime}}<br/>{{t|rbtime}}</td>
     </tr>
 {% endfor %}
 </table>
-<script type="text/javascript" >
-    var endpoint='http://localhost:8080/rf_trac/', api_key='760c8ae45917ffd95be7bdf0f2238f05';
-    $import("rftrac:setup_diff_reporting", function(e){setup_diff_reporting(endpoint, api_key);});
+<script type="text/javascript" src="/rf_trac/r/plug_js?key={{build.parent.prj_key}}" >
 </script>
 {% endblock %}
