@@ -20,34 +20,40 @@ class BookDetailView(object):
         self.__fb_record_column_view = None
         self.__user_list_column_view = None
         
+        self.fb_record_details = {}
+        
         #self.user_list.insert(0, account)
     
-    def user_active_in_fb(self, user, fb_record):
-        cached_key = "%s_%s_%s" % (fb_record.__class__.__name__, 
-                                   fb_record.id,
-                                   user.name, )
-        from google.appengine.api import memcache
-        
+    def user_active_in_fb(self, user, fb_record):        
         if user.name == 'dummy' or fb_record.action == 'dummy':
             return BookUserRecord(parent=self.book, 
                                   bookrecord=fb_record, 
                                   user=user,
                                   action='dummy')
-        user_details = memcache.get(cached_key)
-        if user_details is None:
-            user_details = BookUserRecord.all().ancestor(self.book)\
-                            .filter("bookrecord =", fb_record)\
-                            .filter("user =", user)\
-                            .get()
+            
+        cached_key = "%s_%s" % (fb_record.__class__.__name__, 
+                                fb_record.id,)
+        record_details = self.fb_record_details.get(cached_key, None)
+        if record_details is None:
+            from google.appengine.api import memcache
+            record_details = memcache.get(cached_key)
+            if record_details is None:
+                record_details = BookUserRecord.all().ancestor(self.book)\
+                                .filter("bookrecord =", fb_record)
+                record_details = dict(((e.user.name, e) for e in record_details))
+                memcache.set(key=cached_key, value=record_details, time=3600, 
+                                         namespace='fb_book')
+            
+            self.fb_record_details[cached_key] = record_details
+            
+        user_details = record_details.get(user.name, None)
         if user_details is None:
             user_details = BookUserRecord(parent=self.book, 
                                           bookrecord=fb_record, 
                                           user=user,
                                           action='dummy')
-        if user_details is not None:
-            self.__build_details_view(user_details)
-            memcache.set(key=cached_key, value=user_details, time=3600, 
-                         namespace='fb_book')
+            record_details[user.name] = user_details
+        user_details = self.__build_details_view(user_details)
         
         return user_details
 

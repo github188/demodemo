@@ -11,6 +11,7 @@
 <table class='book_list'>
 {%autoescape off %}	
 	<tr class='name_list'>
+		<th></th>
         <th width="70px;">&nbsp;</th>
 {% for u in fb_views.user_list_column_view %}
 		<th>
@@ -25,7 +26,8 @@
 		<th width="80px;">备注</th>
 	</tr>
     <tr class='balance'>
-        <td>结算</td>   
+		<td>0</td>
+        <td>结算</td> 
 {% for u in fb_views.user_list_column_view %}
 		<td>{{u.balance_view}}</td>
 {% endfor %}
@@ -34,6 +36,7 @@
     </tr>
 {% for record in fb_views.fb_record_row_view %}
 	<tr class="{% cycle 'a' 'b' %}">
+		<td>{{forloop.counter}}</td>
 		<td>{{record.record_view.book_date_view}}</td>		
 {% for u in record.user_details %}
         <td>{{u.expense_view}}</td>

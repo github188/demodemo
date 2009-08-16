@@ -51,13 +51,13 @@ def initalize_demo_book(book):
     add_fb_record_log(book, "2008-03-23", "transfer", "7", u"唐伯虎",
                   u"张三", "", u"午饭")
     add_fb_record_log(book, "2008-04-23", "expense", "20", "",
-                  u"张三,李四", u"唐伯虎", u"外婆家")
+                  u"张三 李四", u"唐伯虎", u"外婆家")
     add_fb_record_log(book, "2008-03-23", "transfer", "10", u"唐伯虎",
-                  u"张三,李四,秋香", "", u"红包")
+                  u"张三，李四，秋香", "", u"红包")
     
 def add_fb_record(book, date, fb_type="", money="", master="", user_list="", other="", comments=""):
     error = ""
-    user_list = re.split(r"[;,]", "%s,%s" % (user_list, other))
+    user_list = re.split(r"[;,\s]", "%s,%s" % (user_list, other))
     user_list = set([ e.strip() for e in user_list if e.strip() ])
     #list book users
     bookusers = BookUser.all().ancestor(book).filter("name IN", list(user_list)).fetch(1000)
@@ -204,20 +204,22 @@ def _create_fb_record_update_balance(book, date, type, expense, sum_discount,
 
 def list_book_details(book, start_date="", limit=31, user_count=15, user_name_in_row='N'):
     
-    if user_name_in_row == 'No':    
-        bookusers = BookUser.all().ancestor(book).order("-lastupdate").fetch(user_count)
+    if user_name_in_row == 'N':
+        bookusers = BookUser.all().ancestor(book).order("-lastupdate").fetch(12)
         bookusers = [ e for e in bookusers if e.name != book.account.name]
         bookusers.sort(lambda x, y: cmp(x.name, y.name))
         fb_list = BookAccountRecord.all().ancestor(book).order("-book_date")\
             .order("-create_date").fetch(limit)
+        min_col = 12
     else:
         bookusers = BookUser.all().ancestor(book).filter("name !=", 
             book.account.name).order("name").fetch(limit)
         fb_list = BookAccountRecord.all().ancestor(book).order("-book_date")\
-            .order("-create_date").fetch(user_count)
+            .order("-create_date").fetch(10)
+        min_col = 9
         
     from book_views import BookDetailView
-    return BookDetailView(book, bookusers, fb_list)
+    return BookDetailView(book, bookusers, fb_list, min_col=min_col)
 
 def list_user_details(book, user, limit=100):
     user_action = BookUserRecord.all().ancestor(book).filter("user =", user)\

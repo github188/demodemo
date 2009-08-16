@@ -1,6 +1,6 @@
 var FB = {};
 $(document).ready(function(){
-    var default_other = "逗号分隔名字."
+    var default_other = "空格分隔名字."
     $("#fb_plane_record .other").val(default_other);
     $("div.menu a.dialog").click(function(){
         $("#fb_plane_record .other").val(default_other);
