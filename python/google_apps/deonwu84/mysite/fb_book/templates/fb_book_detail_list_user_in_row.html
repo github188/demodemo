@@ -1,0 +1,42 @@
+{% extends "fb_book_base.html" %}
+{% block head %}
+<link type="text/css" href="/static/css/book/default/main.css" rel="stylesheet" />
+<link type="text/css" href="http://jsicdn01.appspot.com/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>
+<script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js" ></script>
+<script type="text/javascript" src="/static/js/fb_book.js" ></script>
+{% endblock %}
+{% block body %}
+{% include "include/fb_book_action_menu.html" %}
+<table class='book_list'>
+{%autoescape off %}	
+	<tr class='name_list'>
+        <th>名字</th>
+		<th>余额</th>
+{% for fb in fb_views.fb_record_column_view %}
+		<th>
+			{{fb.book_date_view}}
+		</th>
+{% endfor %}
+	</tr>
+    <tr class='balance'>
+        <td>总额</td>
+		<td></td>
+{% for u in fb_views.fb_record_column_view %}
+		<td>{{u.expense_view}}</td>
+{% endfor %}
+    </tr>
+	
+{% for user in fb_views.user_list_row_view %}
+	<tr class="{% cycle 'a' 'b' %}">
+		<td>{{user.user_view.name_view}}</td>
+		<td>{{user.user_view.balance_view}}</td>	
+{% for u in user.fb_records %}
+        <td>{{u.expense_view}}</td>
+{% endfor %}
+	</tr>
+{% endfor %}
+{% endautoescape %}	
+</table>
+{% include "include/fb_book_action_plane.html" %}
+{% endblock %}

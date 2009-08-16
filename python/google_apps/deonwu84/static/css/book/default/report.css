@@ -1,0 +1,77 @@
+  /* Background color (green or red) */
+  body {
+  }
+  /* Generic Table Styles */
+  table {
+    background: white;
+    border: 1px solid black;
+    border-collapse: collapse;
+    empty-cells: show;
+    margin: 0px 1px;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 1px 5px;
+  }
+  th {
+    background: #C6C6C6;
+    color: black;
+  }
+        
+  a:link, a:visited {
+    text-decoration: none;
+    color: blue;
+  }
+  a:hover, a:active {
+    text-decoration: underline;
+    color: purple;
+  } 
+
+  /* Test by Suite/Tag Tables */
+  .col_name {
+    width: 13em;
+    font-weight: bold;
+  }
+  .col_doc {
+    min-width: 13em;
+  }
+  .col_tags {
+    width: 10em;
+  }
+  .col_crit {
+    width: 2em;
+    text-align: center;
+  }
+  .col_status {
+    width: 3.5em;
+    text-align: center;
+  }
+  .col_msg {
+    min-width: 13em;
+  }
+  .col_times {
+    width:150px;
+  }
+  td.col_times{
+    text-align: right;    
+  }
+  /* Metadata */
+  .meta_name {
+    font-weight: bold;
+  }
+
+  .fail {
+    color: red;
+  }        
+  .pass {
+    color: #009900;
+  }
+        
+  table.meta th{
+    text-align: left;
+  }
+        
+  .fatal{background: #ff6666;}
+  .info{background: #33ff33;}
+  .warn{background: #ffff99;}
+  .ignore{background: #ccffcc;}

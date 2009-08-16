@@ -1,0 +1,84 @@
+html{
+    text-align:center;
+    font-size:12px;
+    background:#6699ff;
+    margin:0px;
+}
+body{
+    width:750px;
+    text-align:left;
+    margin:auto;
+    padding:8px;
+    background:#fff;
+    color:#000;
+}
+
+#context_head{
+    margin-bottom:10px;
+}
+
+label{
+    font-weight:bolder;
+}
+
+.error{
+    background:#ff99ff;
+    color:#ff0000;
+    border:1px solid #ff33ff;
+    margin:2px;
+    padding:2px;
+}
+
+div.b_title{
+    background:#c6d8ff;padding:4px;
+    border-top:1px solid #7799dd;
+}
+
+div.b_title span{
+    font-size:14px;
+}
+
+div.b_title a, div.b_title a:visited {
+    color: #000;
+}
+
+div.c_title{
+  background-color: #e5ecf9;
+  margin: 4px 4px 0 4px;
+  border-top: 1px solid #3366cc;
+  padding:2px;
+}
+
+td.l_n label{
+    font-weight:normal;
+}
+
+table.book_list{
+    border:1px #000 solid; 
+    background-color:#fafafa;
+    border-spacing: 1px;
+    width:98%;
+    font-size:12px;
+}
+table.book_list tr.name_list {background-color:#9999CC; border:1px #000 solid;color:#330066;}
+table.book_list a:visited, table.book_list tr.name_list a{color:#330066;}   
+    
+table.book_list tr.balance{background-color:#ddbbff;
+        font-weight:bolder;
+    }
+table.book_list .owe{color:red;}
+    
+table.book_list tr{color:#660099;}
+table.book_list .master{color:red;}
+
+table.book_list tr.a{background-color:#ffffdd;}
+table.book_list tr.b{background-color:#ffeeff;}
+    
+table.book_list tr.a:hover, table.book_list tr.b:hover{background-color:#ffddbb;}
+div.menu {
+    margin-bottom:5px;
+}
+    
+div.menu a:visited, div.menu a{
+    color:#0000ff;
+}

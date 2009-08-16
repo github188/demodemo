@@ -17,6 +17,7 @@
 				if(!intervalId){
 					intervalId = window.setInterval(interval_callback, interval);
 				}else if(retry_times > times){
+					alert("xx:" + times);
 					window.clearInterval(intervalId);
 				}
 		   }finally{

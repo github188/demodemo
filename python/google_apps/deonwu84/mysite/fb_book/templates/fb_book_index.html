@@ -1,0 +1,36 @@
+{% extends "fb_book_base.html" %}
+
+{% block body %}
+<div>
+    <div style="background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;">
+        <span style="font-size:14px;">登录FB账本</span>
+		--首次登录不存在时,自动创建一个新的账本.
+    </div>	
+	<div>
+{% if error %}<div class='error'>{{error}}</div>{% endif %}     		
+		<form action="/fb_book/login" method="POST">
+            <table>
+                <tr>
+                    <td style="width:120px;"><label for="admin_user">账本代号:</label></td>
+                    <td><input type="text" name="name" size="20" value="{{name}}" /></td>
+                </tr>
+                <tr>
+                    <td><label>管理账户:</label></td>
+                    <td><input type="text" name="admin_user" size="20" value="{{admin_user}}" />&nbsp;
+                     </td>
+                </tr>
+                <tr>
+                    <td><label>管理密码:</label></td>
+                    <td><input type="password" name="admin_password" size="20" value="{{admin_password}}" />&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td><input type="submit" value="登录FB账本" /></td>
+                </tr>
+            </table>
+		</form>
+	</div>
+</div>
+{% endblock %}

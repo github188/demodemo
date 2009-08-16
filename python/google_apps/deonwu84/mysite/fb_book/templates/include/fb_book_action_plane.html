@@ -1,0 +1,47 @@
+<style>
+#fb_plane_record table.plane{
+    font-size:12px;
+}
+#fb_plane_record table.plane th{
+    width:70px;
+}
+</style>
+<div id="fb_plane_record" title="FB信息记录" style="display:hidden;">
+    <table class='plane' border="0">
+        <tr><th>记录日期</th><td><input type='text' class='date' name='date' value="{{fb_date}}"/></td>
+        </tr>
+        <tr><th>记录类型</th><td><select name="action_type" class='fb_type'>
+            <option value="expense" selected>消费</option>
+            <option value="save_money">充值</option>
+            <option value="fetch">套现</option>
+            <option value="transfer">转账</option>
+            </select>
+        </td>
+        </tr>
+        <tr><th>账务金额</th><td><input type='text' value='0.00' name='money' class='money'/></td>
+        </tr>
+        <tr><th>资金账户</th><td><select name="money_account" class='master'>
+            <option value="" selected>--银行--</option>
+{% for u in fb_views.user_list %}
+            <option value="{{u.name}}">{{u.name}}</option>         
+{% endfor %}
+            </select>
+        </td>
+        </tr>
+        <tr><th>人员列表</th><td>
+            <input type='checkbox' id="c_all" name='xxx' value="1"/><label for="c_all">所有人员</label><br/>
+            <div class="name_list">
+{% for u in fb_views.user_list %}
+<input type='checkbox' id="c_{{forloop.counter}}" name='list' value="{{u.name}}"/><label for="c_{{forloop.counter}}">{{u.name}}</label>&nbsp;&nbsp;         
+{% endfor %}
+            </div>
+            <br/>
+            其他:<input class='other' type='text' name="other" size="30" value="逗号分隔名字,"/>
+        </td>
+        </tr>
+        <tr><th>备注说明</th><td>
+            <textarea name="comments" class='comments' id="cd_comments" rows="4" cols="40"></textarea>
+        </td>
+        </tr>
+    </table>
+</div>

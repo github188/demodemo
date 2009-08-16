@@ -1,0 +1,36 @@
+{% extends "fb_book_base.html" %}
+{% block head %}
+<link type="text/css" href="/static/css/book/default/main.css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+<div class="b_title">
+    <span>个人FB详细记录列表</span>
+</div>
+<div style="background:#f7f7ff;">
+	<div><label>FB账本：</label><span><a href="/fb_book/list_book?book={{fb_book.id}}&key={{fb_book.book_key}}">{{fb_book.name}}</a></span></div>
+    <div><label>用户名：</label><span>{{current_user.name}}</span></div>
+    <div><label>当前余额：</label><span>{{current_user.balance|floatformat:2}}</span></div>
+</div>
+<table class='book_list'>
+{%autoescape off %}	
+	<tr class='name_list'>
+        <th></th>
+		<th>收支类型</th>		
+		<th>收支记录</th>
+		<th>余额记录</th>
+		<th>备注</th>
+		<th>记账日期</th>
+	</tr>
+{% for fb in user_fb_list %}
+	<tr class="{% cycle 'a' 'b' %}">
+		<td>{{fb.bookrecord.book_date|date:"Y-m-d"}}</td>
+		<td>{{fb.action}}</td>
+		<td>{{fb.expense|floatformat:2}}</td>
+		<td>{{fb.balance|floatformat:2}}</td>
+		<td>{{fb.bookrecord.comment}}</td>
+		<td>{{fb.create_date|date:"Y-m-d"}}</td>
+	</tr>
+{% endfor %}
+{% endautoescape %}	
+</table>
+{% endblock %}

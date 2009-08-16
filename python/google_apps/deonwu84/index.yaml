@@ -10,6 +10,43 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+# Used once in query history.
+- kind: BookAccountRecord
+  ancestor: yes
+  properties:
+  - name: book_date
+    direction: desc
+  - name: create_date
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: BookAccountRecord
+  ancestor: yes
+  properties:
+  - name: create_date
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: BookUser
+  ancestor: yes
+  properties:
+  - name: lastupdate
+    direction: desc
+
+# Used 2 times in query history.
+- kind: BookUser
+  ancestor: yes
+  properties:
+  - name: name
+
+# Unused in query history -- copied from input.
+- kind: BookUserRecord
+  ancestor: yes
+  properties:
+  - name: user
+  - name: create_date
+    direction: desc
+
 # Unused in query history -- copied from input.
 - kind: RobotTest
   ancestor: yes
@@ -39,7 +76,7 @@ indexes:
   properties:
   - name: status
 
-# Used 100 times in query history.
+# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
@@ -57,14 +94,14 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 50 times in query history.
+# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
   - name: create_date
     direction: desc
 
-# Used 118 times in query history.
+# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
@@ -72,7 +109,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 4 times in query history.
+# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
@@ -81,7 +118,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 134 times in query history.
+# Unused in query history -- copied from input.
 - kind: TestBuildIndex
   ancestor: yes
   properties:
@@ -89,7 +126,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 7 times in query history.
+# Unused in query history -- copied from input.
 - kind: TracLogging
   ancestor: yes
   properties:

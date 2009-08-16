@@ -1,0 +1,177 @@
+{% extends "fb_book_base.html" %}
+{% block head %}
+<link type="text/css" href="/static/css/book/default/main.css" rel="stylesheet" />
+<link type="text/css" href="http://jsicdn01.appspot.com/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>
+<script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js" ></script>
+<script type="text/javascript" src="/static/js/fb_book.js" ></script>
+{% endblock %}
+{% block body %}
+<style>
+table.book_list{
+	border:1px #000 solid; 
+	background-color:#fafafa;
+	border-spacing: 1px;
+	width:98%;
+	font-size:12px;
+}
+table.book_list tr.name_list{background-color:#9999CC; border:1px #000 solid;color:#330066;}
+table.book_list tr.balance{background-color:#ddbbff;
+		font-weight:bolder;
+	}
+table.book_list	.owe{color:red;}
+	
+table.book_list tr{color:#660099;}
+table.book_list .master{color:red;}
+
+table.book_list tr.a{background-color:#ffffdd;}
+table.book_list tr.b{background-color:#ffeeff;}
+	
+table.book_list tr.a:hover, table.book_list tr.b:hover{background-color:#ffddbb;}
+
+div.menu {
+	margin-bottom:5px;
+}
+</style>
+<div class="b_title">
+	<span>FB记录列表</span>
+</div>
+<div style="background:#f7f7ff;">
+    复制下面地址给需要查看账本的用户：
+    <div style="padding:4px;margin:4px;background:#fff;border:1px solid #7799dd;">
+		http://127.0.0.1:8080/fb_book/xx?book_key=xxxxxxxxx&book_id=xxxx
+    </div>
+</div>
+<div class='menu'>
+	<span><a href="#">充值</a></span>
+	<span><a href="#">记帐</a></span>
+	<span><a href="#">修改管理密码</a></span>
+	<span><a href="#">生成公共密码</a></span>
+	<span><a href="logout">注销登录</a></span>
+</div>
+<table class='book_list'>
+	<tr class='name_list'>
+        <th></th>
+		<th>钱庄</th>
+		<th>张三</th>
+		<th>李四</th>
+		<th>王五</th>
+		<th>孙钱</th>
+		<th>唐伯虎</th>
+		<th>秋香</th>
+		<th>总额</th>
+		<th>备注</th>
+	</tr>
+    <tr class='balance'>
+        <td>结算</td>       
+        <td>0</td>
+        <td>0</td>
+        <td>-5</td>
+        <td>-10</td>
+        <td>-8</td>
+        <td>-9</td>
+        <td><span class='owe'>-35</span></td>
+        <td></td>
+		<td></td>
+    </tr>
+	<tr class='a'>
+        <td>2009-08-05</td>       
+        <td>0</td>
+        <td>0</td>
+        <td>-5</td>
+        <td>-10</td>
+        <td>-8</td>
+        <td>-9</td>
+        <td>-35</td>
+		<td>-35</td>
+		<td>外婆家</td>
+    </tr>
+    <tr class='b'>
+        <td>2009-08-05</td>       
+        <td>0</td>
+        <td>0</td>
+        <td>-5</td>
+        <td><span class='master'>-100.00</span></td>
+        <td>-8</td>
+        <td>-9</td>
+        <td>-35</td>
+		<td>-35</td>
+        <td>外婆家</td>
+    </tr>
+    <tr class='a'>
+        <td>2009-08-05</td>       
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>100.00</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+		<td>-35</td>
+        <td>充值</td>
+    </tr>
+    <tr class='b'>
+        <td>2009-08-05</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>100.00</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>-35</td>
+        <td>充值</td>
+    </tr>	
+</table>
+<style>
+#fb_plane_record table.plane{
+	font-size:12px;
+}
+#fb_plane_record table.plane th{
+    width:70px;
+}
+
+</style>
+<div id="fb_plane_record" title="FB信息记录">
+	<table class='plane' border="0">
+		<tr><th>记录日期</th><td><input type='text' name='money' value="2009-10-10"/></td>
+        </tr>
+		<tr><th>记录类型</th><td><select name="action_type">
+				<option value="1">充值</option>
+			<option value="1">套现</option>
+			<option value="1">转账</option>
+			<option value="1" selected>消费</option>
+			</select>
+		</td>
+		</tr>
+        <tr><th>账务金额</th><td><input type='text' name='money'/></td>
+        </tr>
+        <tr><th>资金账户</th><td><select name="money_account">
+                <option value="1">王五</option>
+            <option value="1">王五1</option>
+            <option value="1">王五2</option>
+            <option value="1" selected>王五3</option>
+            </select>
+		</td>
+        </tr>
+        <tr><th>人员列表</th><td>
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">所有人员</label><br/>
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<input type='checkbox' id="xx_01" name='list' value="1"/><label for="xx_01">王五</label>&nbsp;&nbsp;
+			<br/>
+			其他:<input type='text' name="other" size="30" value="逗号分隔名字,"/>
+		</td>
+        </tr>
+		<tr><th>备注说明</th><td>
+			<textarea name="comments" id="cd_comments" rows="4" cols="40"></textarea>
+		</td>
+		</tr>
+	</table>
+</div>
+{% endblock %}

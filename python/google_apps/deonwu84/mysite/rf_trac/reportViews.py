@@ -95,7 +95,7 @@ def case(r, id="", key=""):
         return ("redirect:/rf_trac/", )
     
     case_list = RobotTest.all().ancestor(project).filter("reportid =", id)
-    log_list = RobotResult.all().ancestor(project).filter("reportid =", id)
+    log_list = RobotResult.all().ancestor(project).filter("reportid =", id).order("-create_date")
     log_list = [e for e in log_list]
     for l in log_list: l.trac_list = RobotTrac.get_trac_list(l, 10)
     
