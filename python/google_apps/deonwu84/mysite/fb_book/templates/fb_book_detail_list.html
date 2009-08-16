@@ -1,7 +1,9 @@
 {% extends "fb_book_base.html" %}
 {% block head %}
 <link type="text/css" href="/static/css/book/default/main.css" rel="stylesheet" />
+<!--
 <link type="text/css" href="http://jsicdn01.appspot.com/styles/css/ui-lightness/ui.all.css" rel="stylesheet" />
+-->
 <script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>
 <script type="text/javascript" src="/static/js/jquery-ui-1.6.custom.min.js" ></script>
 <script type="text/javascript" src="/static/js/fb_book.js" ></script>
@@ -11,10 +13,10 @@
 <table class='book_list'>
 {%autoescape off %}	
 	<tr class='name_list'>
-        <th></th>
+        <th width="70px;">&nbsp;</th>
 {% for u in fb_views.user_list_column_view %}
 		<th>
-{% ifnotequal u.name_view '&nbsp;' %}
+{% ifnotequal u.name 'dummy' %}
 	<a href="/fb_book/user_fb_list?id={{u.path_id}}&key={{book_key}}">{{u.name_view}}</a>
 	{% else %}
 	{{u.name_view}}
@@ -22,10 +24,10 @@
 		</th>
 {% endfor %}
 		<th>总额</th>
-		<th>备注</th>
+		<th width="80px;">备注</th>
 	</tr>
     <tr class='balance'>
-        <td>结算</td>       
+        <td>结算</td>   
 {% for u in fb_views.user_list_column_view %}
 		<td>{{u.balance_view}}</td>
 {% endfor %}
@@ -34,12 +36,12 @@
     </tr>
 {% for record in fb_views.fb_record_row_view %}
 	<tr class="{% cycle 'a' 'b' %}">
-		<td>{{record.book_date_view}}</td>		
+		<td>{{record.record_view.book_date_view}}</td>		
 {% for u in record.user_details %}
-        <td>{{u.balance_view}}</td>
+        <td>{{u.expense_view}}</td>
 {% endfor %}
-		<td>{{record.expense_view}}</td>
-		<td>{{record.comment}}</td>
+		<td>{{record.record_view.expense_view}}</td>
+		<td>{{record.record_view.comment}}</td>
 	</tr>
 {% endfor %}
 {% endautoescape %}	

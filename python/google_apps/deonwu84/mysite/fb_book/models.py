@@ -58,6 +58,10 @@ class BookAccountRecord(db.Model):
         
     create_date = db.DateTimeProperty(auto_now_add=True)
     #lastupdate = db.DateTimeProperty()
+    
+    @property
+    def id(self): return self.is_saved() and self.key().id() or None
+    
 
 # parent is Project.
 class BookUserRecord(db.Model):
@@ -70,3 +74,6 @@ class BookUserRecord(db.Model):
     comment = db.TextProperty(default="")
     create_date = db.DateTimeProperty(auto_now_add=True)
     #lastupdate = db.DateTimeProperty()
+    
+    @property
+    def id(self): return self.is_saved() and self.key().id() or None

@@ -12,11 +12,11 @@ class BookDetailView(object):
         
         #the book is cached, to refresh account balance from database.
         self.book_account = db.get(self.book.account.key())
-        self.dummy_fb = BookAccountRecord.all().ancestor(self.book)\
+        self.dummy_fb = BookAccountRecord.all()\
                         .filter("action =", "dummy").get()
-        self.dummy_user = BookUser.all().ancestor(self.book)\
+        self.dummy_user = BookUser.all()\
                         .filter("name =", "dummy").get()
-        
+        self.__build_user_view(self.dummy_user)
         self.__fb_record_column_view = None
         self.__user_list_column_view = None
         
@@ -51,6 +51,9 @@ class BookDetailView(object):
             user_details = []
             for u in self.user_list_column_view():
                 user_details.append(self.user_active_in_fb(u, record))
+            
+            record = self.__build_fb_record_view(record)
+            
             return {"record_view": record,
                     "user_details":user_details}
             
@@ -82,6 +85,7 @@ class BookDetailView(object):
             for i in range(self.min_col - len(self.__fb_record_column_view)):
                 self.__build_fb_record_view.append(self.dummy_fb)
         
+        #logging.info("__fb_record_column_view:%s" % len(self.__fb_record_column_view))
         return self.__fb_record_column_view
         
     
@@ -89,12 +93,12 @@ class BookDetailView(object):
         if self.__user_list_column_view is None:
             self.__user_list_column_view = list(self.user_list)
             self.__user_list_column_view.insert(0, self.book_account)
-            
             for e in self.__user_list_column_view:
                 self.__build_user_view(e)
-            for i in range(self.min_col - len(self.__fb_record_column_view)):
+            for i in range(self.min_col - len(self.__user_list_column_view)):
                 self.__user_list_column_view.append(self.dummy_user)
         
+        #logging.info("__user_list_column_view:%s" % len(self.__user_list_column_view))
         return self.__user_list_column_view
     
     def __build_details_view(self, details):
@@ -102,27 +106,33 @@ class BookDetailView(object):
             details.expense_view = "<span class='master'>%0.2f</span>" % details.expense            
         else:
             details.expense_view = "%0.2f" % details.expense
+        if details.action == 'dummy':
+            details.expense_view = '0'
+        if details.user.name == 'dummy' or details.bookrecord.action == 'dummy':
+            details.expense_view = ''
                 
         return details
     
     def __build_fb_record_view(self, record):
-        if record.is_saved():
+        if record.action != "dummy":
             record.book_date_view = record.book_date.strftime("%Y-%m-%d")
+            record.expense_view = "%0.2f" % record.expense
         else:
             record.book_date_view = "&nbsp;"
-        
-        record.expense_view = "%0.2f" % record.expense
+            record.expense_view = "&nbsp;"
         
         return record
 
     def __build_user_view(self, user):
         if user.name == "dummy":
             user.balance_view = "&nbsp;"
-            user.name_view = "&nbsp;"
-        elif user.balance >= 0:
-            user.balance_view = "%0.2f" % user.balance
+            user.name_view = "&nbsp;&nbsp;&nbsp;&nbsp;"
         else:
-            user.balance_view = "<span class='master'>%0.2f</span>" % user.balance
+            user.name_view = user.name            
+            if user.balance >= 0:
+                user.balance_view = "%0.2f" % user.balance
+            else:
+                user.balance_view = "<span class='master'>%0.2f</span>" % user.balance
         
         return user
 

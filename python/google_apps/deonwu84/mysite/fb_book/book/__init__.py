@@ -13,13 +13,13 @@ def initalize_book(book):
     book.book_key = hashlib.md5(str(uuid.uuid4())).hexdigest()
     book.put()
     
-    if BookAccountRecord.all().ancestor(book).filter("action =", "dummy").get() is None:        
+    if BookAccountRecord.all().filter("action =", "dummy").get() is None:        
         dummy_date = datetime.strptime("2001-01-01", "%Y-%m-%d")
-        BookAccountRecord(parent=book, book_date=dummy_date,
+        BookAccountRecord(book_date=dummy_date,
                           action='dummy', host='dummy',
                           people='dummy').put()
-    if BookUser.all().ancestor(book).filter("name =", "dummy").get() is None:
-        BookUser(parent=book, name='dummy').put()
+    if BookUser.all().filter("name =", "dummy").get() is None:
+        BookUser(name='dummy').put()
     
     if book.name.startswith("demo"):
         initalize_demo_book(book)
