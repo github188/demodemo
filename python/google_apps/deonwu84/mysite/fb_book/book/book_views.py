@@ -27,8 +27,13 @@ class BookDetailView(object):
                                    fb_record.id,
                                    user.name, )
         from google.appengine.api import memcache
-        user_details = memcache.get(cached_key)
         
+        if user.name == 'dummy' or fb_record.action == 'dummy':
+            return BookUserRecord(parent=self.book, 
+                                  bookrecord=fb_record, 
+                                  user=user,
+                                  action='dummy')
+        user_details = memcache.get(cached_key)
         if user_details is None:
             user_details = BookUserRecord.all().ancestor(self.book)\
                             .filter("bookrecord =", fb_record)\
@@ -67,6 +72,8 @@ class BookDetailView(object):
             user_details = []
             for record in self.fb_record_column_view():
                 user_details.append(self.user_active_in_fb(user, record))
+            user = self.__build_user_view(user)
+            
             return {"user_view": user,
                     "fb_records":user_details}
             
@@ -77,15 +84,15 @@ class BookDetailView(object):
             yield build_row_view(self.dummy_user)
 
     def fb_record_column_view(self):
+        #logging.info("create column_view:%s" % len(self.__fb_record_column_view))
         if self.__fb_record_column_view is None:
             self.__fb_record_column_view = list(self.fb_record_list)
             for e in self.__fb_record_column_view:
                 self.__build_fb_record_view(e)
                 
             for i in range(self.min_col - len(self.__fb_record_column_view)):
-                self.__build_fb_record_view.append(self.dummy_fb)
+                self.__fb_record_column_view.append(self.dummy_fb)
         
-        #logging.info("__fb_record_column_view:%s" % len(self.__fb_record_column_view))
         return self.__fb_record_column_view
         
     

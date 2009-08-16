@@ -9,10 +9,11 @@
 </div>
 {% if show_menu %}
 <div class='menu'>
-    <span><a href="#">充值</a></span>
-    <span><a href="#">记帐</a></span>
-    <span><a href="#">修改管理密码</a></span>
-    <span><a href="#">生成公共密码</a></span>
+    <span><a href="#" class="dialog">充值/记帐</a></span>
+	<span><a href="?user_name_in_row=N" >按列显示名字</a></span>
+	<span><a href="?user_name_in_row=Y" >按行显示名字</a></span>
+    <span><a href="">修改管理密码</a></span>
+    <span><a href="update_key">生成公共密码</a></span>
     <span><a href="logout">注销登录</a></span>
 </div>
 {% endif %}

@@ -18,8 +18,10 @@ def list_book(r, book='', key="", date="", limit=60, user_name_in_row='N'):
         port = port != '80' and ":%s" % port or ""
         account_list_url = "http://%s%s/fb_book/list_book?book=%s&key=%s" % (host, port, 
                 cur_book.id, cur_book.book_key)
+        
+        book_template = user_name_in_row == 'Y' and "fb_book_detail_list_user_in_row.html" or "fb_book_detail_list.html"
                 
-        return ("fb_book_detail_list.html", {"fb_views": fb_views, 
+        return (book_template, {"fb_views": fb_views, 
                                              "account_list_url":account_list_url,
                                              "fb_date": datetime.now().strftime("%Y-%m-%d"),
                                              "show_menu": book_session(r) is not None,

@@ -29,7 +29,13 @@
 	
 {% for user in fb_views.user_list_row_view %}
 	<tr class="{% cycle 'a' 'b' %}">
-		<td>{{user.user_view.name_view}}</td>
+		<td>
+{% ifnotequal user.user_view.name 'dummy' %}
+    <a href="/fb_book/user_fb_list?id={{user.user_view.path_id}}&key={{book_key}}">{{user.user_view.name_view}}</a>
+    {% else %}
+    {{user.user_view.name_view}}
+{% endifnotequal %}
+		</td>
 		<td>{{user.user_view.balance_view}}</td>	
 {% for u in user.fb_records %}
         <td>{{u.expense_view}}</td>

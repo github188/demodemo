@@ -10,7 +10,7 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 19 times in query history.
+# Used 60 times in query history.
 - kind: BookAccountRecord
   ancestor: yes
   properties:
@@ -33,13 +33,13 @@ indexes:
   - name: lastupdate
     direction: desc
 
-# Used 38 times in query history.
+# Used 120 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
   - name: name
 
-# Used once in query history.
+# Used 3 times in query history.
 - kind: BookUserRecord
   ancestor: yes
   properties:
