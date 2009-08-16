@@ -116,6 +116,12 @@ def login(r, name='', admin_user='', admin_password=''):
 def logout(r):
     book_session(r, None, True)
     return ("redirect:/fb_book/index", )
+
+def about_fb(r):
+    return ("fb_book_faq.html", {})
+
+def agreement(r):
+    return ("fb_book_agreement.html", {})
     
 def book_session(r, book=None, remove=None):
     sessionId = r.COOKIES.get('sessionid', None)
