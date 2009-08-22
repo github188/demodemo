@@ -6,7 +6,7 @@ from models import *
 from datetime import datetime
 import hashlib, uuid
 
-def list_book(r, book='', key="", date="", limit=60, user_name_in_row='N'):
+def list_book(r, book='', key="", date="", limit=60, user_name_in_row='N', ajax='N'):
     cur_book = book_session(r)
     if cur_book is None and str(book).isdigit():
         cur_book = BookAccount.load(book)
@@ -19,14 +19,24 @@ def list_book(r, book='', key="", date="", limit=60, user_name_in_row='N'):
         account_list_url = "http://%s%s/fb_book/list_book?book=%s&key=%s" % (host, port, 
                 cur_book.id, cur_book.book_key)
         
-        book_template = user_name_in_row == 'Y' and "fb_book_detail_list_user_in_row.html" or "fb_book_detail_list.html"
-                
+        if ajax != 'Y':
+            book_template = user_name_in_row == 'Y' and "fb_book_detail_list_user_in_row.html" or "fb_book_detail_list.html"
+        else:
+            book_template = user_name_in_row == 'Y' and "book_list_name_in_row.html" or "book_list_name_in_col.html"
+            book_template = "include/%s" % book_template
+        
+        if cur_book.name.startswith("demo"):
+            show_menu = True
+        else:
+            show_menu = book_session(r) is not None
+            
         return (book_template, {"fb_views": fb_views, 
-                                             "account_list_url":account_list_url,
-                                             "fb_date": datetime.now().strftime("%Y-%m-%d"),
-                                             "show_menu": book_session(r) is not None,
-                                             "book_key": cur_book.book_key
-                                             })
+                                 "account_list_url":account_list_url,
+                                 "fb_date": datetime.now().strftime("%Y-%m-%d"),
+                                 "show_menu": show_menu,
+                                 "book_key": cur_book.book_key,
+                                 "user_name_in_row": user_name_in_row
+                                 })
         
     return ("redirect:/fb_book/index", )
 
@@ -59,18 +69,31 @@ def user_fb_list(r, id='', key="", limit=60):
 def demo_book(r, book='', key=""):
     return ("fb_book_detail_list_demo.html", {})
 
-def action(r, date, fb_type="", money="", master="", user_list="", other="", comment=""):
+def action(r, date='', fb_type="", money="", master="", user_list="", other="", comment="",
+           user_name_in_row='N', ajax='N'
+           ):
     cur_book = book_session(r)
     logging.info("fb action:date=%s, fb_type=%s, money=%s, master=%s, user_list=%s, other=%s, comment=%s" %
                  (date, fb_type, money, master, user_list, other, comment))
+    date = date or datetime.now().strftime("%Y-%m-%d")
+    error_msg = None
     if cur_book is not None:
         error_msg = add_fb_record(cur_book, date, fb_type, money, 
                                   master, user_list, other, comment)
+    else:
+        error_msg = "登录账户过期，或没有登录。"
+    
+    def render_html():
+        if error_msg:
+            return "%s" % error_msg
+        return list_book(r, user_name_in_row=user_name_in_row, ajax=ajax)
+    
+    def render_json():
         if error_msg:
             return {"status":"ERR", "message": error_msg}
-        return {"status":"OK", "inner_html": ""}
-    else:
-        return {"status":"ERR", "message": "登录账户过期，或没有登录。"}
+        return {"status":"OK", "message": ""}
+    
+    return ajax == 'Y' and render_html() or render_json()
 
 def index(r, ):
     if book_session(r) is not None: 

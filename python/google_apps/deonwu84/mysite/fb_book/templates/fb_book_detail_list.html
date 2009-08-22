@@ -8,44 +8,8 @@
 {% endblock %}
 {% block body %}
 {% include "include/fb_book_action_menu.html" %}
-<table class='book_list'>
-{%autoescape off %}	
-	<tr class='name_list'>
-		<th></th>
-        <th width="70px;">&nbsp;</th>
-{% for u in fb_views.user_list_column_view %}
-		<th>
-{% ifnotequal u.name 'dummy' %}
-	<a href="/fb_book/user_fb_list?id={{u.path_id}}&key={{book_key}}">{{u.name_view}}</a>
-	{% else %}
-	{{u.name_view}}
-{% endifnotequal %}
-		</th>
-{% endfor %}
-		<th>总额</th>
-		<th width="80px;">备注</th>
-	</tr>
-    <tr class='balance'>
-		<td>0</td>
-        <td>结算</td> 
-{% for u in fb_views.user_list_column_view %}
-		<td>{{u.balance_view}}</td>
-{% endfor %}
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-    </tr>
-{% for record in fb_views.fb_record_row_view %}
-	<tr class="{% cycle 'a' 'b' %}">
-		<td>{{forloop.counter}}</td>
-		<td>{{record.record_view.book_date_view}}</td>		
-{% for u in record.user_details %}
-        <td>{{u.expense_view}}</td>
-{% endfor %}
-		<td>{{record.record_view.expense_view}}</td>
-		<td>{{record.record_view.comment}}</td>
-	</tr>
-{% endfor %}
-{% endautoescape %}	
-</table>
+<div id="book_list_table">
+{% include "include/book_list_name_in_col.html" %}
+</div>
 {% include "include/fb_book_action_plane.html" %}
 {% endblock %}

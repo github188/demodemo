@@ -102,6 +102,7 @@ def add_fb_record(book, date, fb_type="", money="", master="", user_list="", oth
     else:
         error = "Not supported fb action %s" % fb_type
         
+    if error: return error
     for u in bookusers:
         u.lastupdate = datetime.now()
         u.put()

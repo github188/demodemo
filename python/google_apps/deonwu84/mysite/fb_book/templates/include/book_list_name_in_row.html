@@ -1,0 +1,39 @@
+<table class='book_list'>
+{%autoescape off %} 
+    <tr class='name_list'>
+        <th>序号</th>
+        <th>名字</th>
+        <th>余额</th>
+{% for fb in fb_views.fb_record_column_view %}
+        <th>
+            {{fb.book_date_view}}
+        </th>
+{% endfor %}
+    </tr>
+    <tr class='balance'>
+        <td>0</td>
+        <td>总额</td>
+        <td></td>
+{% for u in fb_views.fb_record_column_view %}
+        <td>{{u.expense_view}}</td>
+{% endfor %}
+    </tr>
+    
+{% for user in fb_views.user_list_row_view %}
+    <tr class="{% cycle 'a' 'b' %}">
+        <td>{{forloop.counter}}</td>
+        <td>
+{% ifnotequal user.user_view.name 'dummy' %}
+    <a href="/fb_book/user_fb_list?id={{user.user_view.path_id}}&key={{book_key}}">{{user.user_view.name_view}}</a>
+    {% else %}
+    {{user.user_view.name_view}}
+{% endifnotequal %}
+        </td>
+        <td>{{user.user_view.balance_view}}</td>    
+{% for u in user.fb_records %}
+        <td>{{u.expense_view}}</td>
+{% endfor %}
+    </tr>
+{% endfor %}
+{% endautoescape %} 
+</table>
