@@ -23,7 +23,8 @@ def pre_handler(r, page_name="MainPage"):
     if r.method == 'POST':
         page.content = r.POST.get('content', "")
         page.save()
-        mode = "view"
+        return ("redirect:/wiki/%s" % page_name, )
+        #mode = "view"
 
     return ("wiki_%s.html" % mode, {'page': page,
                                     'user': users.get_current_user(),

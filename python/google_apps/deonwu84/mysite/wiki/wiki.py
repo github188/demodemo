@@ -77,9 +77,11 @@ class Page(object):
     go outside of the Wiki.
     """
     transforms = [
-      AutoLink(),
+      BlockHtmlFormat(),
+      SimpleHtmlFormat(),
       WikiWords(),
       HideReferers(),
+      AutoLink(),
     ]
     content = self.content
     for transform in transforms:
@@ -189,6 +191,33 @@ class AutoLink(Transform):
     url = match.group(2)
     return match.group(1) + '<a class="autourl" href="%s">%s</a>' % (url, url)
 
+class SimpleHtmlFormat(Transform):
+  """A transform that auto-links URLs."""
+  def __init__(self):
+    self.regexp = re.compile(r'(\n)')
+    #/^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/  
+
+  def replace(self, match):
+    return "<br/>"
+
+class BlockHtmlFormat(Transform):
+  """A transform that auto-links URLs."""
+  def __init__(self):
+    self.regexp = re.compile(r'(={1,3}|\*|~)(.*?)\1')
+    #/^$/  
+
+  def replace(self, match):
+    mark = match.group(1)
+    tag = {"=":"h1",
+           "==":"h2",
+           "===":"h3",
+           "*":"b",
+           "~":"i",
+           }.get(mark, "div")
+    
+    context = match.group(2)
+    
+    return "<%s>%s</%s>" % (tag, context, tag)
 
 class HideReferers(Transform):
   """A transform that hides referers for external hyperlinks."""
