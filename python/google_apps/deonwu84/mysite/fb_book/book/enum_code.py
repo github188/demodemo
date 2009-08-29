@@ -27,7 +27,7 @@ class Enum(object):
     def value(self, val):
         for v in self.values:
             if v.value == str(val): return v
-        return None        
+        return None
 
 class EnumValue(object):
     def __init__(self, val, val_name, desc):
@@ -43,9 +43,9 @@ class EnumValue(object):
         return result
 
 #the coding used in client views
-enum('bill_type', "save_money", '充值', "")
-enum('bill_type', "fetch", '提取', "")
-enum('bill_type', "expense", 'FB消费', "")
-enum('bill_type', "transfer", '转账', "")
-enum('bill_type', "check", '校对', "")
+enum('bill_type', "save_money", '充值', "充值")
+enum('bill_type', "fetch", '提取', "提取")
+enum('bill_type', "expense", 'FB消费', "FB消费")
+enum('bill_type', "transfer", '转账', "转账")
+enum('bill_type', "check", '校对', "校对")
 

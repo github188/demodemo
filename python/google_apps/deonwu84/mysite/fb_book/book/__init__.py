@@ -77,6 +77,8 @@ def add_fb_record(book, date, fb_type="", money="", master="", user_list="", oth
         master = BookUser.all().ancestor(book).filter("name =", master).get()
     else:
         master = db.get(book.account.key())
+        book.account = master
+        
     if not isinstance(master, BookUser): error="not found fb master."
     
     try:
@@ -122,7 +124,7 @@ def _transfer_update_balance(book, date, type, expense, master,
                                     people=people, comment=comments)
     book_record.put()
     for u in users_list:
-        if u.name == master.name: raise RuntimeError, "Can't transfer money to self!"
+        if u.name == master.name: raise RuntimeError, "不能自己到自己转账!"
         u.balance += expense
         BookUserRecord(parent=book, bookrecord=book_record, user=u,
                        expense=expense,
@@ -149,7 +151,7 @@ def _save_money_update_balance(book, date, type, expense,
                                     people=people, comment=comments)
     book_record.put()
     for u in users_list:
-        if u == book.account: raise RuntimeError, "Can't save money in book account!"
+        if u == book.account: raise RuntimeError, "存款人员不能包含银行!"
         u.balance += expense
         BookUserRecord(parent=book, bookrecord=book_record, user=u,
                        expense=expense,
@@ -198,6 +200,13 @@ def _create_fb_record_update_balance(book, date, type, expense, sum_discount,
         master.balance -= expense
         BookUserRecord(parent=book, bookrecord=book_record, user=master,
                        expense=expense * -1,
+                       balance=master.balance,
+                       action=type, ).put()
+        master.put()
+    elif master.name not in name_list:
+        master.balance += expense
+        BookUserRecord(parent=book, bookrecord=book_record, user=master,
+                       expense=expense,
                        balance=master.balance,
                        action=type, ).put()
         master.put()

@@ -78,8 +78,11 @@ def action(r, date='', fb_type="", money="", master="", user_list="", other="", 
     date = date or datetime.now().strftime("%Y-%m-%d")
     error_msg = None
     if cur_book is not None:
-        error_msg = add_fb_record(cur_book, date, fb_type, money, 
-                                  master, user_list, other, comment)
+        try:
+            error_msg = add_fb_record(cur_book, date, fb_type, money, 
+                                      master, user_list, other, comment)
+        except Exception, e:
+            error_msg = str(e)
     else:
         error_msg = "登录账户过期，或没有登录。"
     
@@ -163,3 +166,10 @@ def book_session(r, book=None, remove=None):
     book = memcache.get(sessionId, namespace='fb_book')
     logging.debug("retrieve current book:%s" % book)
     return book
+
+def test(v='save_money'):
+    from mysite.fb_book.book.enum_code import enum as load_enum
+    import logging
+    logging.warning(load_enum("bill_type"))
+    
+    return load_enum("bill_type").value(v).desc 
