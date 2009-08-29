@@ -85,6 +85,7 @@ INSTALLED_APPS = (
 	'mysite.demos',
     'mysite.rf_trac',
     'mysite.fb_book',
+    'mysite.deonwu',
 )
 
 SERIALIZATION_MODULES = {

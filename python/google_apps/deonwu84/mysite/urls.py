@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     (r'^rf_trac/(.*)', SimpleViews("mysite.rf_trac.views")),
     
     (r'^fb_book/(.*)', SimpleViews("mysite.fb_book.views")), 
-    
+
+    (r'(.*)', SimpleViews("mysite.deonwu.views")),     
 )
