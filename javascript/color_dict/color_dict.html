@@ -1,0 +1,137 @@
+<HTML><HEAD><TITLE>Web Color Visualizer</TITLE>
+
+<body>
+<style>
+table.w a{text-decoration:none;color:white;}
+table.b a{text-decoration:none;color:black;}
+</style>
+<div id="color_plane">
+</div>
+<div id="color_demo">
+Instructions:
+1. Click on a swatch to set the background color. Works best at 1024X768.
+2. To visualize color combinations, roll over the swatches to change the color of the elements below.
+
+Current color combination:
+BACKGROUND: #66ccff
+TEXT AND SQUARE: #3300FF
+</div>
+<script language='javascript'>
+
+
+function EL(str){
+	if(str.charAt(0) == '<'){
+		var el = document.createElement("div");
+		el.innerHTML = str;
+		return el.firstChild;
+	}else {
+		return document.createElement(str);
+	}
+}
+
+function decorated_table(t, cls) {
+	t.style.fontFamily = 'Tahoma,Verdana,Helvetica';
+	t.style.fontSize = '11px';
+	//t.style.color = color; //'#fff';
+	t.style.fontWeight = 'bolder';
+	t.cellSpacing = '4px';
+	t.className = cls;
+}
+
+function build_color_plane(){
+	var color_level = ['00', '33', '66', '99', 'CC', 'FF'];
+	
+	var plane = EL("<table style='border:1px solid red;' />");
+	plane.style.display = 'block';
+	plane.style.width = '200px';
+	plane.style.height = '200px';
+	
+	var table, tr, td;
+	var plane_tr = EL('tr'); plane.appendChild(plane_tr);
+	for(var r = 0; r < color_level.length; r++){
+		if(r % 3 == 0){
+			table = EL('table'); plane.appendChild(table);
+			decorated_table(table, r?'b':'w');
+			var ttd = EL('td');
+			ttd.appendChild(table);
+			plane_tr.appendChild(ttd);
+		}
+		for(var g = 0; g < color_level.length; g++){
+			tr = EL('tr'); table.appendChild(tr);
+			for(var b = 0; b < color_level.length; b++){
+				td = EL('td'); tr.appendChild(td);				
+				var color = "#" + color_level[b] + color_level[r] + color_level[g];
+				var span = EL("<a href='" +color+ "'><span>" + color + "</span></a>");
+				td.appendChild(span);
+				td.width = '30px'; td.height = '20px'; td.bgColor = color;
+			}
+		}
+	}
+	
+	return plane;
+}
+
+function onEvent(o, name, handler){
+	if(window.addEventListener){
+		o.addEventListener(name, handler, false);
+	} else { // IE
+		o.attachEvent('on' + name, handler);
+	}
+}
+
+//function for mouse click
+function color_click(e){
+	var t = e.target || e.srcElement;
+	if(t.tagName.toLowerCase() === 'span'){
+		var color_demo = document.getElementById('color_demo');
+		//alert(t.tagName);
+		color_demo.style.backgroundColor = t.innerHTML; //'#fff';
+		preventbubble(e);
+		return false;
+	}
+}
+
+//function for mouse click
+function color_mouseover(e){
+	var t = e.target || e.srcElement;
+	//alert(t.tagName.toLowerCase());
+	if(t.tagName.toLowerCase() === 'span'){
+		var color_demo = document.getElementById('color_demo');
+		//alert(t.tagName);
+		color_demo.style.color = t.innerHTML; //'#fff';
+		preventbubble(e);
+		return false;
+	}
+}
+
+function preventbubble(e){
+	 if (e && e.stopPropagation) //if stopPropagation method supported
+	  e.stopPropagation();
+	 else
+	  e.cancelBubble=true;
+	 
+	 if(e && e.preventDefault){
+		e.preventDefault();
+	 }else {
+		e.returnValue = false;
+	 }
+}
+
+var main = document.getElementsByTagName('body')[0];
+
+plane = build_color_plane()
+
+
+var color_demo = document.getElementById('color_plane');
+onEvent(color_demo, "click", color_click);
+onEvent(color_demo, "mouseover", color_mouseover);
+
+//color_demo.innerHTML = plane.innerHTML;
+color_demo.innerHTML = "<table>" + plane.innerHTML + "</table>";
+//main.appendChild(plane);
+//main.insertBefore(plane,color_demo);
+//main.innerHTML = plane.innerHTML;
+</script>
+
+</body>
+</html>
