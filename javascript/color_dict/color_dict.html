@@ -83,7 +83,8 @@ function onEvent(o, name, handler){
 function color_click(e){
 	var t = e.target || e.srcElement;
 	if(t.tagName.toLowerCase() === 'span'){
-		var color_demo = document.getElementById('color_demo');
+		var color_demo = document.getElementsByTagName('body')[0];
+		//var color_demo = document.getElementById('color_demo');
 		//alert(t.tagName);
 		color_demo.style.backgroundColor = t.innerHTML; //'#fff';
 		preventbubble(e);

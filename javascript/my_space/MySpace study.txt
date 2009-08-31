@@ -1,0 +1,158 @@
+1. what's the container?
+
+opensocial.Container.get()? 
+
+
+2. Ajax process.
+
+function init() {
+    os = opensocial.Container.get();
+    dataReqObj = os.newDataRequest();
+ 
+        // 0.8 Container - Use of IdSpec
+        if (MyOpenSpace.Version === "0.8") {
+                var viewerReq = os.newFetchPersonRequest(opensocial.IdSpec.PersonId.VIEWER);
+        // 0.7 Container
+        } else if (MyOpenSpace.Version === "0.7") {
+                var viewerReq = os.newFetchPersonRequest(opensocial.DataRequest.PersonId.VIEWER);
+        }
+    dataReqObj.add(viewerReq, "viewer");
+    dataReqObj.send(viewerResponse);
+}
+ 
+function viewerResponse(data) {
+    var viewer = data.get("viewer").getData();
+    heading = 'Hello, ' + viewer.getDisplayName();
+    document.getElementById('heading').innerHTML = heading;
+}
+init();
+
+
+var friendRequest = dataRequest.newFetchPeopleRequest(opensocial.IdSpec.Group.VIEWER_FRIENDS);
+
+<script>
+function init()
+{
+    var url = "http://www.w3c.com/json";
+    os_params = {
+    }
+    ;
+    gadgets.io.makeRequest(url, makeRequest_Callback, os_params);
+    function makeRequest_Callback(data){
+        var responseText = data.responseText;
+        var jsonedResponseObject = data.responseText.evalJSON();
+    }
+}
+init();
+</script>
+
+<div id='main'></div>
+<script type="text/javascript">
+function init() {
+    MYOS_TRACE = true;
+    var os = opensocial.Container.get();
+    var dataReqObj = os.newDataRequest();
+    var param = {};
+    param[opensocial.DataRequest.PeopleRequestFields.PROFILE_DETAILS] = [opensocial.Person.Field.ID, MyOpenSpace.Person.Field.HEROES, MyOpenSpace.Person.Field.MOVIES];
+    var viewerReq = os.newFetchPersonRequest(opensocial.IdSpec.PersonId.VIEWER, param); 
+    dataReqObj.add(viewerReq, "viewer");
+    dataReqObj.send(dataLoadCallback);
+}
+function dataLoadCallback(data) {
+    var viewer = data.get("viewer").getData();
+    heading = 'Hello, ' + viewer.getDisplayName();
+    var thumb = viewer.getField(opensocial.Person.Field.THUMBNAIL_URL);
+    var profile = viewer.getField(opensocial.Person.Field.PROFILE_URL);
+    var heroes = viewer.getField(MyOpenSpace.Person.Field.HEROES);
+    var movies = viewer.getField(MyOpenSpace.Person.Field.MOVIES);
+    document.getElementById('main').innerHTML += heading + '<br> <img src=' + thumb + '> <br> <a href=' + profile + '> <br> ' + heroes + '<br> ' + movies + '<br>';
+}
+init();
+</script>
+
+
+
+
+
+
+
+<div id='message' style='margin: 4px'></div>
+<script type='text/javascript'>
+function init() {
+    MYOS_TRACE = true;  trace('Init...');
+    var os = opensocial.Container.get();
+    var dataReqObj = os.newDataRequest();
+ 
+    var viewerReq = os.newFetchPersonRequest(opensocial.IdSpec.PersonId.VIEWER);
+    dataReqObj.add(viewerReq, "viewer");
+	
+    //var req = opensocial.newDataRequest();
+   
+    params = {};
+    params[opensocial.IdSpec.Field.USER_ID] = opensocial.IdSpec.PersonId.VIEWER;
+    params[opensocial.IdSpec.Field.GROUP_ID] = opensocial.IdSpec.GroupId.FRIENDS;
+
+    var opt_params = {};
+    opt_params[opensocial.DataRequest.PeopleRequestFields.FIRST] = 1;
+    opt_params[opensocial.DataRequest.PeopleRequestFields.MAX] = 40;
+
+    var idspec = opensocial.newIdSpec(params);
+    dataReqObj.add(dataReqObj.newFetchPeopleRequest(idspec, opt_params), 'viewerFriends');
+	
+    trace('Sending...');
+    dataReqObj.send(dataLoadCallback);
+}
+ 
+function dataLoadCallback(dataResponse) {
+    trace('Got data...');
+	
+    if (dataResponse.hadError()) {
+        var data = dataResponse.get("friends");
+        trace(data.getErrorCode() + '\n' + data.getErrorMessage());
+    } else {
+        var viewerData = dataResponse.get("viewer").getData();
+        var viewerName = viewerData.getDisplayName();
+ 
+        trace('<p><h3>Friends Of "' + viewerName + '":</h3><hr>');
+ 
+        var friendsData = dataResponse.get("viewerFriends").getData();
+        friendsData.each(
+	        function(friendData) {
+	            var friendName = friendData.getDisplayName();
+	            var friendThumbnailUrl = friendData.getField(opensocial.Person.Field.THUMBNAIL_URL);
+	            trace(friendName + '<br>' + '<image src="' + friendThumbnailUrl + '"/><hr>');
+	        }
+        );
+    }
+}
+ 
+function trace(msg) {
+    document.getElementById('message').innerHTML += msg + '<br>';
+}
+ 
+init();
+</script>
+
+
+function doMakeRequest()
+{
+    var param = {};
+    gadgets.io.makeRequest("http://deonwu84.appspot.com/foo/myip", gotMakeRequest, param);
+}
+function gotMakeRequest(response, url, errored)
+{
+    if(!errored)
+    {
+		trace(response.text);
+    }
+    else
+    {
+		trace("makeRequest failed:(" + response.text + ")(" + url + ")(" + errored + ")" + "\r\n");
+    }
+}
+doMakeRequest();
+
+
+
+
+
