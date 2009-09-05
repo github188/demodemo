@@ -1,0 +1,131 @@
+<style>
+.head-menu ul {list-style: none;margin:0; padding: 0;}
+.head-menu ul li{display:inline;}
+.head-menu li{
+background:#666699;
+font-weight:bolder;
+margin:0;
+padding:3px;
+}
+.head-menu li.cur{background:#669999;}
+.head-menu li a{color:#fff;}
+.head-menu li a:hover{color:#ff0;}
+</style>
+<script type="text/javascript" src="http://api.msappspace.com/AppRendering/js/jquery-1.2.1.min.js"></script>
+
+<script type='text/javascript'>
+var app_menu = [];
+$(document).ready(function(){
+	$(".head-menu a").each(function(e){
+		//var tab_id = this.href.split("#")[1]
+		//alert(tab_id);
+		var tab_id = $(this).attr('href');
+		//alert(tab_id);
+		app_menu.push($(tab_id));
+	});
+	$(".head-menu a").click(function(e){
+		$(".head-menu li").attr('className', '');
+		$(this).parent('li').attr('className', 'cur');
+		var cur_menu_name = $(this).attr('href').substring(1);
+		$.each(app_menu, function(i, e){
+			if(e.attr('id') == cur_menu_name){
+				e.css({display:'block'});
+			}else {
+				e.css({display:'none'});
+			}
+		});
+		gadgets.window.adjustHeight();
+		//alert(this.href);
+		return false;
+	});
+}
+);
+</script>
+<script type='text/javascript'>
+	function show_add_tips(show){
+		if(show){
+			if($.browser.msie){
+				$('#add_mask_layer').attr('className', 'alpha1');
+			}
+			$('#add_mask_layer').css({display:'block', height:$('#container').height()});
+			$('#add_mask_layer2').css({display:'block'});
+			
+		}else {
+			$('#add_mask_layer').css({display:'none'});
+			$('#add_mask_layer2').css({display:'none'});
+		}
+	}
+
+	var MSAPP = {};
+	MSAPP.is_added = null;
+    MSAPP.isAdded = function(){
+        if(null === MSAPP.is_added){
+            return ("1" === gadgets.views.getParams().installState + "");
+        }else{
+            return MSAPP.is_added;
+        }
+    };
+    MSAPP.loadingViewer = function(callback){
+        var request = opensocial.newDataRequest();
+        var id = opensocial.IdSpec.PersonId.VIEWER;
+        request.add(request.newFetchPersonRequest(id), "viewer");
+        request.send(callback);
+    };
+	
+	MSAPP.init = function() {
+		show_add_tips(!MSAPP.isAdded())
+		gadgets.window.adjustHeight();
+	}
+	gadgets.util.registerOnLoadHandler(MSAPP.init);
+</script>
+<style>
+.alpha1, .alpha2{
+	width:100%;
+    min-height:250px;
+    _height:250px;
+    overflow:hidden;
+	display:none;
+}
+.alpha1{
+	background-color:#FF0000;
+    filter:alpha(opacity=10);
+}
+.alpha2{
+    background-color:#FF0000;
+    -moz-opacity:0.1; 
+    opacity: 0.1;
+}
+
+#add_mask_layer2{
+	font-size:36px;
+	font-weight:bolder;
+	color:#ff0066;
+	text-align:center;
+}
+</style>
+<div id="add_mask_layer" class='alpha2' style="position:absolute;z-index:20;top:0;left:0;right:0;bottom:0;border:1px solid red;">
+</div>
+<div id="add_mask_layer2" style="position:absolute;z-index:22;left:100px;display:none;">
+	<br/><br/>
+	Please click "Add App" to add this application.
+</div>
+
+<div id='container' style="width:900px;">
+<div class='head-menu'>
+  <ul>
+  <li class='cur'><a href="#home_tab">Home</a></li>
+  <li><a href="#search_tab" >Seniors Search</a></li>
+  <li><a href="#profile_tab">My Senior Profile</a></li>      
+  <li><a href="#invite_tab">Tell Friends About Us</a></li>
+  </ul>
+</div>
+<div id='myspace_context'>
+	{% include "myspace/sm_home.html" %}
+	{% include "myspace/sm_search.html" %}
+	{% include "myspace/sm_profile.html" %}
+	{ include "myspace/sm_invite.html" }
+	<div id='invite_tab' style='display:none'>
+	.........
+	</div>
+</div>
+</div>
