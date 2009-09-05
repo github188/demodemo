@@ -10,7 +10,7 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 121 times in query history.
+# Used 122 times in query history.
 - kind: BookAccountRecord
   ancestor: yes
   properties:
@@ -26,7 +26,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 37 times in query history.
+# Used 38 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
@@ -101,7 +101,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 42 times in query history.
 - kind: RobotTrac
   ancestor: yes
   properties:
@@ -118,7 +118,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 2 times in query history.
 - kind: TestBuildIndex
   ancestor: yes
   properties:

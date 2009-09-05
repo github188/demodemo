@@ -10,6 +10,11 @@ for k in [k for k in sys.modules if k.startswith('django')]:
 # Force sys.path to have our own directory first, in case we want to import
 # from it.
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'libs'))
+def add_eggs_to_sys_path(arg, dirname, names):
+  for f in names:
+    path = os.path.join(dirname, f)
+    if path.endswith('.egg'): sys.path.insert(0, path)
+os.path.walk(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'eggs'), add_eggs_to_sys_path, None)
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # Force Django to reload its settings.
