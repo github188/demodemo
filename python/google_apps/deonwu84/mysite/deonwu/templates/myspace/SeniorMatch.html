@@ -76,7 +76,7 @@ $(document).ready(function(){
 		show_add_tips(!MSAPP.isAdded())
 		gadgets.window.adjustHeight();
 	}
-	gadgets.util.registerOnLoadHandler(MSAPP.init);
+	//gadgets.util.registerOnLoadHandler(MSAPP.init);
 </script>
 <style>
 .alpha1, .alpha2{
@@ -123,9 +123,6 @@ $(document).ready(function(){
 	{% include "myspace/sm_home.html" %}
 	{% include "myspace/sm_search.html" %}
 	{% include "myspace/sm_profile.html" %}
-	{ include "myspace/sm_invite.html" }
-	<div id='invite_tab' style='display:none'>
-	.........
-	</div>
+	{% include "myspace/sm_invite.html" %}
 </div>
 </div>
