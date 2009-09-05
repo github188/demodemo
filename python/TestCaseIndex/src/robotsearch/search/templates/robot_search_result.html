@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>Robot search.....</title>
+	</head>
+	<body>
+		<div>search count:{{count}} elasped {{elaspe}}</div>
+{% if error %}
+		<b>{{error}}</b>
+{% endif %}
+		<table border='1'>
+			<tr><td>Hits</td>
+				<td>Path</td>
+				<td>Name</td>
+				<td>Keywords</td>
+			</tr>
+
+{% for doc in result %}
+			<tr>
+				<td>{{doc.hits}}</td>
+				<td>{{doc.path}}</td>
+				<td>{{doc.name}}</td>
+				{%autoescape off %}
+				<td>{{doc.context}}</td>
+				{%endautoescape%}
+			</tr>
+{% endfor %}
+		</table>
+	</body>
+</html>
