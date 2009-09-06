@@ -1,4 +1,39 @@
 <div id='search_tab' style='display:none'>
-	search .................
-	
+<style>
+.sm_divider{margin-bottom:10px; margin-top:10px; border-bottom:solid 1px black;}
+.label{font-weight:bolder;}
+</style>
+<br/>
+<div style="width:100%;text-align:center;"> <b>Quick Search</b></div>
+<div class='sm_divider'></div>
+<div class='label'>Gender</div>
+<div>I want to find <select name='gender'>
+						<option value='1'>Woman</option>
+						<option  value='2'>Man</option>
+					</select>
+who is seeking  <select name='match_gender'>
+						<option value='1'>Woman</option>
+						<option  value='2'>Man</option>
+					</select>
+</div>
+<div class='sm_divider'></div>
+<div class='label'>Age</div>
+<div>From <select name='match_age_min'>
+						<option>18</option>
+						<option>19</option>
+					</select>
+To <select name='match_age_max'>
+						<option>18</option>
+						<option>19</option>
+					</select>
+</div>
+<div class='sm_divider'></div>
+
+<div class='label'>Country</div>
+<div>Country <select name=''> <option>18</option> <option>19</option>
+			  </select>
+</div>
+<div class='sm_divider'></div>
+<div> <button onclick="MSAPP.xxxx();">Search</button>  </div>
+
 </div>

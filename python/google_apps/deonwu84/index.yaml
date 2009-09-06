@@ -47,6 +47,12 @@ indexes:
   - name: create_date
     direction: desc
 
+# Used once in query history.
+- kind: MySpaceProfile
+  properties:
+  - name: data_type
+  - name: -created
+
 # Unused in query history -- copied from input.
 - kind: RobotTest
   ancestor: yes

@@ -1,4 +1,6 @@
 
+import datetime
+from google.appengine.api import datastore
 
 def index(r):
     return "hello, index"
@@ -24,3 +26,30 @@ def featured(r):
 					]
 	return dummy_feature
 	
+    
+def import_profile(r):
+    
+    data = r.POST or r.GET  
+    
+    if not data.has_key('id'): 
+        return {"stauts": 'ERR', 
+                "message":"The ID is must required!"}
+    
+    profile = datastore.Entity('MySpaceProfile')
+    for k, v in data.iteritems():
+        profile[k] = v
+    profile['data_type'] = 'MySpaceProfile'
+    profile['created'] = datetime.datetime.now()
+    datastore.Put(profile)
+    
+    return {"stauts": 'OK'}
+
+
+def list_myspace(r):
+    query = datastore.Query('MySpaceProfile')
+    query['data_type ='] = 'MySpaceProfile'
+    result = query.Get(100)
+        
+    return ("myspace/my_profile_list.html", {"profiles":result})
+
+

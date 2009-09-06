@@ -94,7 +94,7 @@ class SimpleViews(object):
         elif isinstance(r, basestring):
             return HttpResponse(r)
         else:
-            return HttpResponse(serializers.serialize("mixed_json", r))
+            return HttpResponse(serializers.serialize("mixed_json", r), 'application/json')
         
     def __import_views(self, v):
         

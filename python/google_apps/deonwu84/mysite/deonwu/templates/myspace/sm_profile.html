@@ -1,4 +1,91 @@
-<div id='profile_tab' style='display:none'>
+<script type="text/javascript" src="http://api.msappspace.com/AppRendering/js/jquery-1.2.1.min.js"></script>
+<div id='profile_tab' style='display:block'>
 	profile_tab .................
+	<div id="profile">x</div>
+	<div id="trace">x</div>
+	<script type="text/javascript">
+		var MSAPP = {};
+		
+		function MyProfile(o) {
+			this.id = o.getField(opensocial.Person.Field.ID);
+			
+			var name = o.getField(opensocial.Person.Field.NAME);		
+			this.nickname = o.getDisplayName();				
+			this.family_name =  name.getField(opensocial.Name.Field.FAMILY_NAME);
+			this.given_name =  name.getField(opensocial.Name.Field.GIVEN_NAME);
+			this.additional_name =  name.getField(opensocial.Name.Field.ADDITIONAL_NAME);
+			this.honorific_name =  name.getField(opensocial.Name.Field.HONORIFIC_PREFIX);
+			this.unstructured_name =  name.getField(opensocial.Name.Field.UNSTRUCTURED);
+			
+			var gender = o.getField(opensocial.Person.Field.GENDER);
+			this.gender_id = gender.getKey();
+			this.gender_value = gender.getDisplayValue();
+			
+			var look_for = o.getField(opensocial.Person.Field.LOOKING_FOR);
+			this.look_for_id = look_for.getKey();
+			this.look_for_value = look_for.getDisplayValue();
+			
+			var dob = o.getField(opensocial.Person.Field.DATE_OF_BIRTH);			
+			this.birthday = dob.toDateString();
+			
+			var location = o.getField(opensocial.Person.Field.CURRENT_LOCATION);
+			this.country = location.getField(opensocial.Address.Field.COUNTRY);
+			this.region = location.getField(opensocial.Address.Field.REGION);
+			this.postal = location.getField(opensocial.Address.Field.POSTAL_CODE);
+			
+			this.about_me = o.getField(opensocial.Person.Field.ABOUT_ME);
+			
+			this.age = o.getField(opensocial.Person.Field.AGE);
+			
+			this.image = o.getField(opensocial.Person.Field.THUMBNAIL_URL);
+			
+		};
+		
+		var profile_fields = [opensocial.Person.Field.ID,
+							  opensocial.Person.Field.NAME,
+							  opensocial.Person.Field.THUMBNAIL_URL,
+							  opensocial.Person.Field.NICKNAME, 
+							  opensocial.Person.Field.DATE_OF_BIRTH,
+							  opensocial.Person.Field.GENDER,
+							  opensocial.Person.Field.AGE,
+							  opensocial.Person.Field.CURRENT_LOCATION,
+							  opensocial.Person.Field.LOOKING_FOR,
+							  opensocial.Person.Field.ABOUT_ME
+							  ];
 	
+		MSAPP.load_my_profile = function(callback){
+			var os = opensocial.Container.get();
+			var request = os.newDataRequest();
+			var params = {};
+			params[opensocial.DataRequest.PeopleRequestFields.PROFILE_DETAILS] =  profile_fields;			
+			var viewerReq = os.newFetchPersonRequest(opensocial.IdSpec.PersonId.VIEWER, params);
+			
+			request.add(viewerReq, "my_profile");
+			function request_callback(response){
+				$("#trace").html("hadErrorxxxxxxxxxxx");
+				var data = response.get("my_profile")
+				if(data.hadError()){
+					$("#trace").html(data.getErrorCode() + "," + data.getErrorMessage());
+					return;
+				}
+				callback(response.get("my_profile").getData());
+			}
+			request.send(request_callback);
+		}
+		
+		MSAPP.my_profile_init = function(){
+			$("#trace").html("xxxxxxxxxxxxxxxxxxxxxx");
+			MSAPP.load_my_profile(function(data){
+				$("#trace").html("process data");
+			    var profile = 'Hello, ' + data.getDisplayName();
+				$.each(new MyProfile(data), function(i, e){
+					profile += "<br/>" + i + ":" + e;
+				});
+				$("#profile").html(profile);
+			});
+		};
+		
+		$("#trace").html("my_profile_initxxxxxx");
+		gadgets.util.registerOnLoadHandler(MSAPP.my_profile_init);		
+	</script>
 </div>
