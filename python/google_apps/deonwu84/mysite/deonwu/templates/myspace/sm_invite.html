@@ -2,8 +2,7 @@
 
 <style>
 #outer{font-family:Verdana;font-size:0.7em;padding:5px;}
-#spinner{color:Red;font-size:1.3em;}
-#friends_callout, app_friends_callout{display:none;}
+#spinner{color:#000;font-size:1.3em;}
 .divider{margin-bottom:5px; border-bottom:solid 1px black;}
 .float{float:left;}
 .clear{clear:both;}
@@ -38,96 +37,50 @@
         Loading...
     </div>
     <div id="content" style="display:none;"> 
-        <div id="friends_callout" class="callout">
-            <button onclick="MSAPP.multipleRSAWrapper();">Invite</button> some friends!
-        </div>
-		<div><b>Not installed SeniorMatch</b></div>
+		<div><b>Select friends to share this application,</b> 
+		and click <button onclick="MSAPP.multipleRSAWrapper();">share with friends</button> to send request.</div>
         <div id="friends" class="divider"></div>
-		<div><b>installed SeniorMatch</b></div>
-        <div id="app_friends" class="divider"></div>
     </div>
 </div>
  
 <script type="text/javascript"> 
     // global variable used to hold the ID of the clicked users
 	MSAPP.Friends = {}
+	MSAPP.Friends.friends = {};
     MSAPP.Friends.friend_clicked = [];
-    MSAPP.Friends.app_friend_clicked = [];
 	
-	MSAPP.init_invite = function() {
-		//if(!MSAPP.isAdded()){return;};
-		alert("init_invite init_invite");
+	MSAPP.freinds_list = function(callback){
 		var os = opensocial.Container.get();
 		var request =  os.newDataRequest();	
+	
 		params = {};
 		params[opensocial.IdSpec.Field.USER_ID] = opensocial.IdSpec.PersonId.VIEWER;
 		params[opensocial.IdSpec.Field.NETWORK_DISTANCE] = 1;
+		params[opensocial.DataRequest.PeopleRequestFields.FIRST] = 1;
+		params[opensocial.DataRequest.PeopleRequestFields.MAX] = 40;
 		var idspec = opensocial.newIdSpec(params);
-		request.add(request.newFetchPeopleRequest(idspec), "friends");
-
-		// filter by users with the app
-		params[opensocial.DataRequest.PeopleRequestFields.FILTER] = opensocial.DataRequest.FilterType.HAS_APP;
-		// add the fetch friends with the app request to the queue
-		request.add(request.newFetchPeopleRequest(idspec, params), "app_friends");
 		
-		request.send(MSAPP.process_friends_list);
-	//gadgets.window.adjustHeight();
+		request.add(request.newFetchPeopleRequest(idspec), "friends");
+		function request_callback(response){
+			if(response.hadError()){return;}
+			callback(response.get("friends").getData().asArray());
+		}
+		request.send(request_callback);
 	}
 	
-    MSAPP.Friends.friends = {};
-    MSAPP.Friends.app_friends = {};	
-	
-	MSAPP.process_friends_list = function(response){
-        var parse_friends = true;
-        var parse_app_friends = true;	
-		if(response.hadError()){
-            var friends = response.get("friends");
-            var app_friends = response.get("app_friends");
-            var checkForError = function(ri){
-                if(!ri){
-                    return false;
-                }
-                else if(ri.hadError()){
-                    if(ri.getErrorCode() === opensocial.ResponseItem.Error.INTERNAL_ERROR){
-                        // retry the request?
-                    }
-                    return false;
-                }
-                return true;
-            }			
-            parse_friends = checkForError(friends);
-            parse_app_friends = checkForError(app_friends);			
-		}else {
-            if(!response.get("friends")) parse_friends = false;
-            if(!response.get("app_friends")) parse_app_friends = false;		
-		}
-		
-        if(parse_friends){
-            MSAPP.Friends.friends.array = response.get("friends").getData().asArray();
-            MSAPP.Friends.drawFriends(MSAPP.Friends.friends.array, "friends");
-        }
- 
-        if(parse_app_friends){
-            MSAPP.Friends.app_friends.array = response.get("app_friends").getData().asArray();
-            MSAPP.Friends.drawFriends(MSAPP.Friends.app_friends.array, "app_friends");
-        }
-		$("#spinner").css({display:'none'});
-		$("#content").css({display:'block'});
-			
+	MSAPP.init_invite = function() {		
+		MSAPP.freinds_list(
+			function(freinds_list){				
+				$("#spinner").css({display:'none'});
+				$("#content").css({display:'block'});
+				MSAPP.Friends.drawFriends(freinds_list, "friends");
+			}	
+		);
 	}
  
     // wrapper for requestShareApp
     MSAPP.Friends.friendClicked = function(id, type){
-        var friends_array;
-        switch (type){
-            case "friends":
-                friends_array = MSAPP.Friends.friend_clicked;
-                break;
-            case "app_friends":
-                friends_array = MSAPP.Friends.app_friend_clicked;
-                break;
-        }
- 
+        var friends_array = MSAPP.Friends.friend_clicked; 
         // look for duplicates
         for(var i = 0; i < friends_array.length; i++){
             if(friends_array[i] === id){
@@ -152,22 +105,12 @@
  
         var params = {};
         params[opensocial.Message.Field.TITLE] = title;
- 
         // create an opensocial.Message object
         var reason = opensocial.newMessage(body, params);
- 
         // initiate requestShareApp
         opensocial.requestShareApp(MSAPP.Friends.friend_clicked, reason, MSAPP.rsaCallback);
     }
  
-     MSAPP.notiPermCB = function(){
-        // re-check perms
-        // or does the response contain the new perms?
-        if(opensocial.hasPermission(MyOpenSpace.Permission.VIEWER_SEND_NOTIFICATIONS)){
-            ProfileDeluxe.multipleNotificationWrapper();
-        }
-    }
-	
     // callback for requestShareApp
     MSAPP.rsaCallback = function(response){
         if(response && !response.hadError()){
@@ -199,23 +142,11 @@
  
     // parses the friends response and outputs it to the page
     MSAPP.Friends.drawFriends = function(friends, friend_type){
-        var friends_div, activity_friend = null;
-        switch(friend_type){
-            case "app_friends":
-                //document.getElementById("app_friends_callout").style.display = "block";
-                friends_div = document.getElementById("app_friends");
-                break;
-            case "friends":
-                document.getElementById("friends_callout").style.display = "block";
-                friends_div = document.getElementById("friends");
-                break;
-        }
- 
+        var friends_div = document.getElementById("friends");
         var clear_div = '<div class="clear"></div>';
         var friend_format = '<center><img src="{0}" /><div>{1}</div></center>';
- 
         var container = document.createElement("div");
- 
+		
         var id, image, name;
         for(var i = 0; i < friends.length; i++){
             id = friends[i].getId();
@@ -238,7 +169,6 @@
  
             container.appendChild(div);
         }
- 
         friends_div.appendChild(container);
  
         if(friends.length > 0){
