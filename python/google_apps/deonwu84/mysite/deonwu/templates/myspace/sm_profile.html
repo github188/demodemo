@@ -1,10 +1,23 @@
-<script type="text/javascript" src="http://api.msappspace.com/AppRendering/js/jquery-1.2.1.min.js"></script>
-<div id='profile_tab' style='display:block'>
+<div id='profile_tab' style='display:none'>
 	profile_tab .................
+	<div><button onclick="MSAPP.ImportProfile();">Import to dating sites</button> </div>
 	<div id="profile">x</div>
 	<div id="trace">x</div>
-	<script type="text/javascript">
-		var MSAPP = {};
+	<script type="text/javascript">		
+		MSAPP.ImportProfile = function(){
+			function import_status(response, url, errored)
+			{
+				if(errored){return;}
+			        //trace(response.text);
+				$("#trace").html(response.data.stauts);
+			}
+		    var param = {};
+			param[gadgets.io.RequestParameters.POST_DATA] = gadgets.io.encodeValues(MSAPP.profile);
+			param[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+			param[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+			
+		    gadgets.io.makeRequest("http://deonwu84.appspot.com/deonwu/import_profile", import_status, param);		
+		}
 		
 		function MyProfile(o) {
 			this.id = o.getField(opensocial.Person.Field.ID);
@@ -78,7 +91,8 @@
 			MSAPP.load_my_profile(function(data){
 				$("#trace").html("process data");
 			    var profile = 'Hello, ' + data.getDisplayName();
-				$.each(new MyProfile(data), function(i, e){
+				MSAPP.profile = new MyProfile(data);
+				$.each(MSAPP.profile , function(i, e){
 					profile += "<br/>" + i + ":" + e;
 				});
 				$("#profile").html(profile);
