@@ -7,6 +7,7 @@ class SessionMiddleware(object):
         if not sessionid:
             request.COOKIES['sessionid'] = self._new_session()
         #request.sessionId = sessionid or self._new_session()
+        request.NEW_COOKIES = []
 
     def _new_session(self):
         import hashlib
@@ -25,4 +26,12 @@ class SessionMiddleware(object):
                 expires=None, domain=None,
                 path='/',
                 secure=None)
+        for k, v, age in request.NEW_COOKIES:
+            age = age or SESSION_COOKIE_AGE
+            response.set_cookie(k, v, 
+                    max_age = age,
+                    expires=None, domain=None,
+                    path='/',
+                    secure=None)
+        
         return response

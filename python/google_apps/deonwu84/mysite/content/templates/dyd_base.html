@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>{{site_title}} -道非道- </title>
+    {% block head %}
+    <link type="text/css" href="/static/dyd/css/content/default/main.css" rel="stylesheet" />	  
+	{% endblock %}
+  </head>
+  <body>
+{% block context_head %}
+    <div id="context_head">
+		<div style="width:100%;">2009-09-15 20:06:43</div>
+		<img border="0" style="float:right;" src="/static/dyd/images/logo.png"></img>
+		<a href="/dyd/index">
+        <img border="0" src="/static/images/logo.png"></img>
+		</a>
+        <span style="font-size:24px;">-道非道-</span>
+    </div>
+{% endblock %}
+
+<div id="body">
+	<div id="content_body">
+	{% block content_body %}
+		xxxxxxxxxxxxxx
+	{% endblock %}
+	</div>
+	<div id='tag_nav'>
+		<div>标签:</idv>
+		<div>
+{% for t in tags_list %}
+		<a href="?tag={{t.name}}">{{t.name}}</a>
+{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% block context_foot %}
+  <br/>	  
+  <div style="border-bottom: 1px solid #7799dd;margin-bottom:10px;"></div>
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign=center>
+  <td align="center" style="padding-right:1em;" >
+  <a style="color: #00c" target=_top href="#">道非道</a><font color="#333"> - </font>
+  <a style="color: #00c" target=_top href="#">联系</a><font color="#333"> - </font>
+  <a style="color: #00c" target=_top href="#">关于</a>
+  
+  </td>
+  </tr>
+  </table>
+{% endblock %}
+  </body>
+</html>

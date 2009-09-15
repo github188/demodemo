@@ -47,7 +47,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used once in query history.
+# Used 3 times in query history.
 - kind: MySpaceProfile
   properties:
   - name: data_type

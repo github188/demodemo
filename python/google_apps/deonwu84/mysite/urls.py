@@ -16,5 +16,8 @@ urlpatterns = patterns('',
     (r'^fb_book/(.*)', SimpleViews("mysite.fb_book.views")), 
 
 	(r'^deonwu/(.*)', SimpleViews("mysite.deonwu.views")),
-    (r'(.*)', SimpleViews("mysite.deonwu.views")),     
+    
+    (r'^dyd/',      include('mysite.content.urls')),
+    #(r'^/dyd/(.*)', SimpleViews("mysite.deonwu.views")),
+    (r'(.*)', SimpleViews("mysite.deonwu.views")),
 )

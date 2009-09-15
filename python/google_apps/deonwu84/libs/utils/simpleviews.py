@@ -6,7 +6,7 @@ import re
 from django.core import serializers
 
 class ViewHandler(object):
-    def __init__(self, func):
+    def __init__(self, func, param_validator=None):
         self.target = func
         if func.func_defaults:
             reqiured_args_count = func.func_code.co_argcount - len(func.func_defaults)
@@ -16,9 +16,9 @@ class ViewHandler(object):
         var_names = func.func_code.co_varnames
         self.reqiured_args = var_names[:reqiured_args_count]
         self.options_args = var_names[reqiured_args_count:]
+        self.param_validator = param_validator
         
     def __parse_args(self, r, args):
-            
         param = []
         for name in self.reqiured_args:
             if name in ['r', 'request']:
@@ -33,10 +33,13 @@ class ViewHandler(object):
             if args.has_key(name):
                 kw_param[str(name)] = args[name]
         
-        return (param, kw_param)    
+        return (param, kw_param)
     
     def __call__(self, r):
         param, kw_args = self.__parse_args(r, r.REQUEST)
+        if callable(self.param_validator):
+            self.param_validator(r, self.target, param, kw_args)
+        
         return self.target(*param, **kw_args)
 
 class SimpleViews(object):
@@ -46,8 +49,13 @@ class SimpleViews(object):
         self.cached = {}
         
         self._pre_handler = None
+        self.__param_validator = None
         if hasattr(self.view, "pre_handler"):
-            self._pre_handler = getattr(self.view, "pre_handler")        
+            self._pre_handler = getattr(self.view, "pre_handler")
+                 
+        if hasattr(self.view, "__validation__"):
+            self.__param_validator = getattr(self.view, "__validation__")
+
         
     def pre_handler(self, r, url):
         if self._pre_handler:
@@ -71,7 +79,7 @@ class SimpleViews(object):
                 except:
                     raise e
             
-            h = ViewHandler(obj)
+            h = ViewHandler(obj, self.__param_validator)
             self.cached[url] = h
         
         return self.result_router(h(request))
