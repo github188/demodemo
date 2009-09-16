@@ -29,7 +29,7 @@ def parameter_checking(r, func, args, kwargs):
         if name not in func.func_code.co_varnames: return
         if not kwargs.has_key(name):
             value = r.COOKIES.get(name, None)
-            if track is not None: kwargs[name] = value
+            if value is not None: kwargs[name] = value
         elif kwargs.has_key(name):
             r.NEW_COOKIES.append((name, value, None))
     
@@ -40,8 +40,10 @@ class ContentManage(object):
     
     def tag_list(self, category, offset=0, limit=100, mode='list', track='', ipaddr=''):
         #offset, limit = int(offset), int(limit)
-        if not category: return None
-        logging.info("tag list: category=%s,lang=%s, mode=%s, track=%s, ippaddr=%s" % (category.name,
+        if not category: 
+            logging.info("tag list: category is None")
+            return (0, [])
+        logging.info("tag list: category=%s,lang=%s, mode=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, mode, track, ipaddr))
         
         cache_key = "tag_list_%s_%s_%s_%s" % (category.id, mode, offset, limit)
@@ -61,23 +63,23 @@ class ContentManage(object):
         return (count, tag_list)
 
     def cate_list(self, lang='', track='', ipaddr=''):
-        if not lang: return None
-        logging.info("cate list: lang=%s, track=%s, ippaddr=%s" % (category.name,
-                     category.lang, track, ipaddr))
+        logging.info("cate list: lang=%s, track=%s, ippaddr=%s" % (
+                     lang, track, ipaddr))
+        if not lang: return (0, [])
         
         cache_key = "cate_list_%s" % lang
         cate_list = self.__cache(cache_key)
         if cate_list is not None: return cate_list
         
-        count = ContentCategory.all().filter("language =", lang).count()
-        cate_list = ContentCategory.all().filter("language =", lang).fetch(100)
+        count = ContentCategory.all().filter("lang =", lang).count()
+        cate_list = ContentCategory.all().filter("lang =", lang).fetch(100)
         self.__cache(cache_key, (count, cate_list))
         return (count, cate_list)
     
     def tag_message(self, category, tag='', offset=0, limit=50, mode='list', track='', ipaddr=''):
         #offset, limit = int(offset), int(limit)
         if not category: return None        
-        logging.info("tag: category=%s,lang=%s, tag=%s, mode=%s, track=%s, ippaddr=%s" % (category.name,
+        logging.info("tag: category=%s,lang=%s, tag=%s, mode=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, tag, mode, track, ipaddr))
                 
         cache_key = "tag_message_%s_%s_%s_%s" % (category.id, mode, offset, limit, tag)
@@ -94,8 +96,10 @@ class ContentManage(object):
         
     def category_message(self, category, offset=0, limit=50, mode='list', track='', ipaddr=''):
         #offset, limit = int(offset), int(limit)
-        if not category: return None        
-        logging.info("cate: category=%s, lang=%s, mode=%s, track=%s, ippaddr=%s" % (category.name,
+        if not category: 
+            logging.info("category_message: category is None")
+            return (0, [])
+        logging.info("cate: category=%s, lang=%s, mode=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, mode, track, ipaddr))
                 
         cache_key = "cate_message_%s_%s_%s_%s" % (category.id, mode, offset, limit)
@@ -112,7 +116,7 @@ class ContentManage(object):
     def __query_message(self, query, offset, limit, mode):
         order_by = {'hot':'-vote_weight',
                     'new':'-create_date',
-                    'active':'-update_date',}.get(smode, "")
+                    'active':'-update_date',}.get(mode, "")
         
         if order_by: query = query.order(order_by) 
         return query.fetch(limit, offset)
@@ -123,7 +127,7 @@ class ContentManage(object):
     
     def vote(self, category, msg_id='', v='', msg='', user=None, track='', ipaddr=''):
         if not category: return None
-        logging.info("vote: category=%s, lang=%s, msg_id=%s, v=%s, track=%s, ippaddr=%s" % (category.name,
+        logging.info("vote: category=%s, lang=%s, msg_id=%s, v=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, msg_id, v, mode, track, ipaddr))
                 
         if not str(v).isdigit(): return (ErrorCode.ERROR_VALUE, "vote value '%s'" % v)
@@ -145,7 +149,7 @@ class ContentManage(object):
     def post(self, category, message='', tags='', user=None, track='', ipaddr=''):
         if not category: return None
         if user is None: user = self.load_user("guest")
-        logging.info("post: category=%s, lang=%s, track=%s, ippaddr=%s" % (category.name,
+        logging.info("post: category=%s, lang=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, track, ipaddr))        
         
         md5msg = md5(message)
@@ -168,7 +172,7 @@ class ContentManage(object):
 
     def update_tag(self, category, msg_id='', tags=''):
         if not category: return None
-        logging.info("update tag: category=%s, lang=%s, msg_id=%s, tags=%s, track=%s, ippaddr=%s" % (category.name,
+        logging.info("update tag: category=%s, lang=%s, msg_id=%s, tags=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, msg_id, tags, track, ipaddr))               
         message = ContentMessage.load(cate, msg_id)
         if message is None: return (ErrorCode.NO_MESSAGE, "msg_id=%s" % msg_id)
@@ -178,19 +182,22 @@ class ContentManage(object):
     
     def load_category(self, code='', lang='', name='', desc=''):
         #ContentCategory.all().filter("") .order("-lastupdate").fetch(12)
-        if not name: return None
+        logging.info("load_category: code=%s, lang=%s, name=%s" % (code, lang, name))
+        if not code: return None
         cache_key = "category_%s_%s" % (code, lang)
         category = self.__cache(cache_key)
         if category is not None: return category
         
-        category = ContentCategory.all().filter("code =", code).filter("language =", lang).get(1)
+        category = ContentCategory.all().filter("code =", code).filter("lang =", lang).get()
         if category is None and name:
             category = ContentCategory(code=code, name=name, lang=lang, desc=desc)
             category.put()
+            
         self.__cache(cache_key, category)
         return category
     
     def load_tag(self, cate, tag):
+        logging.info("load_tag: code=%s, lang=%s, name=%s" % (cate.code, cate.lang, tag))
         return ContentTag.load_by_name(cate, tag)
         
     
@@ -200,7 +207,7 @@ class ContentManage(object):
         user = self.__cache(cache_key)
         if user is not None: return user
         
-        user = ContentUser.all().filter("name =", name).get(1)
+        user = ContentUser.all().filter("name =", name).get()
         if user is None:
             user = ContentUser(name=name, track=track)
             user.put()

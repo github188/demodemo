@@ -15,7 +15,7 @@ class ContentUser(db.Model):
     
 
 class ContentCategory(db.Model):
-    language = db.StringProperty() #zh, en    
+    lang = db.StringProperty() #zh, en    
     code = db.StringProperty() #x
     name = db.StringProperty() #x
     desc = db.StringProperty() #哲理， QQ签名， 雷人

@@ -35,12 +35,15 @@ class ViewHandler(object):
         
         return (param, kw_param)
     
-    def __call__(self, r):
+    def __call__(self, r, **kwargs):
         param, kw_args = self.__parse_args(r, r.REQUEST)
         if callable(self.param_validator):
             self.param_validator(r, self.target, param, kw_args)
         
-        return self.target(*param, **kw_args)
+        for k, v in kw_args.iteritems():
+            kwargs[k] = v
+        
+        return self.target(*param, **kwargs)
 
 class SimpleViews(object):
     
@@ -63,7 +66,7 @@ class SimpleViews(object):
         else:
             return None
             
-    def __call__(self, request, url):
+    def __call__(self, request, url, **kwargs):
         pre = self.pre_handler(request, url)
         if pre is not None: return self.result_router(pre)
         
@@ -82,7 +85,7 @@ class SimpleViews(object):
             h = ViewHandler(obj, self.__param_validator)
             self.cached[url] = h
         
-        return self.result_router(h(request))
+        return self.result_router(h(request, **kwargs))
             
     def result_router(self, r):
         
@@ -118,18 +121,15 @@ class SimpleViews(object):
 class SimpleUrl(SimpleViews):
     
     def __init__(self, handler):
-        self.target = ViewHandler(self.__import_url(handler))
-    
-    def __call__(self, request,):
-        return self.result_router(self.target(request))
-    
-    
-    def __import_url(self, v):
-        if isinstance(v, basestring):
-            handler = v.split(".")
-            module_name, handler = ".".join(handler[:-1]), handler[-1]
-            module = __import__(module_name, globals(), locals(), [handler, ], -1)
-            return getattr(module, handler)
+        handler = handler.split(".")
+        module_name, handler = ".".join(handler[:-1]), handler[-1]
+        SimpleViews.__init__(self, module_name)
         
-        raise Exception, "Not supported views '%s'." % v    
+        self.action_url = handler
+        
+        #self.target = ViewHandler(self.__import_url(handler))
+    
+    def __call__(self, request, **kwargs):
+        return SimpleViews.__call__(self, request, self.action_url, **kwargs)
+    
     

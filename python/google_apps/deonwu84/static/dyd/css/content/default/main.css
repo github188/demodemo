@@ -7,7 +7,6 @@ body{
     width:900px;
     text-align:left;
     margin:auto;
-    padding:8px;
     background:#fff;
     color:#000;
 }
@@ -53,8 +52,34 @@ td.l_n label{
 }
 
 #content_body {
+    width:640px;
+    float:left;
+    border:1px solid red;
 }
 
 #tag_nav{
-    
+    border:1px solid red;
+    width:250px;
+    float:right;
 }
+
+#tag_nav .hd{background:#c6e8ff;color: #000; font-size:14px; padding:4px;}
+#tag_nav .tags{padding:10px;line-height:20px;}
+
+#tag_nav .tags a{margin:5px;}
+
+
+div.nav-menu{
+    background:#c6e8ff;padding:4px;
+    color: #6600ff;
+    font-size:13px;
+    font-weight:bolder;
+}
+
+div.nav-menu a, div.nav-menu a:visited {
+    color: #6600ff;
+    margin:0 5px;
+}
+
+
+
