@@ -54,7 +54,7 @@ td.l_n label{
 #content_body {
     width:640px;
     float:left;
-    border:1px solid red;
+    #border:1px solid red;
 }
 
 #tag_nav{
@@ -81,5 +81,26 @@ div.nav-menu a, div.nav-menu a:visited {
     margin:0 5px;
 }
 
+.message img{border:0px;}
 
+.message{border:1px solid #7799dd; margin-bottom:4px;}
+
+.message div.hd {padding:4px 0; background:#e5ecf9;} 
+
+.message div.ct1, .message div.row1{
+    padding:10px;
+    background:#ffffcc;
+    font-size:16px;
+    letter-spacing:4px;
+    word-spacing:4px;
+    line-height:22px;
+}
+
+.message div.row2{
+    background:#ffff99;
+}
+
+.message div.ft {
+    padding:4px 0;
+}
 

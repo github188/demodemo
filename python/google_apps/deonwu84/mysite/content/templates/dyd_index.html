@@ -2,24 +2,64 @@
 
 {% block content_body %}
 <div class="head">
-	标签:xxx
-
-	<a href="#">流行经典</a>
-	<a href="#">最近发布</a>	
-	<a href="#">最近更新</a>
+	
+	<div style="font-size:16px;float:left;"><b>标签:</b>xxx</div>
+	<div style="float:right;margin-top:6px;">
+		<a href="#">流行经典</a>
+		<a href="#">最近发布</a>	
+		<a href="#">最近更新</a>
+	</div>
+	<div style="clear:both;margin-bottom:10px;"></div>
 </div>
 
 <div class="message">
 	<div  class='hd'>
-	|1000 | 1000 	
+		<div style="float:left;width:100px;margin-left:10px;">#0001</div>
+		<div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>20</span>
+			&nbsp;&nbsp;
+			<img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>20</span> 
+		</div>
+		<div style="float:right;margin-right:10px;">2009-09-15 20:06:43</div>
+		<div style="clear:both;"></div>
 	</div>
-    <div class='ct'>
+    <div class='ct1 row2'>
 		男人攒私房钱是为了将来花在其他女人身上，女人攒私房钱是为了将来花在老公身上。
     </div>
     <div class='ft'>
-	Tags: x x x  投票:X X        
+		<div style="float:left;width:100px;margin-left:10px;">Tags: x x x </div>
+		<div style="float:right;margin-right:50px;">
+		投票:   
+		<a href="xx"><img src="/static/dyd/images/dialog-ok.png" /></a>
+            &nbsp;&nbsp;
+        <a href="xx"><img src="/static/dyd/images/dialog-cancel.png" /></a>
+		</div> 
+		<div style="clear:both;"></div>
     </div>
+</div>
 
+<div class="message">
+    <div  class='hd'>
+        <div style="float:left;width:100px;margin-left:10px;">#0001</div>
+        <div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>20</span>
+            &nbsp;&nbsp;
+            <img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>20</span> 
+        </div>
+        <div style="float:right;margin-right:10px;">2009-09-15 20:06:43</div>
+        <div style="clear:both;"></div>
+    </div>
+    <div class='ct2 row1'>
+        男人攒私房钱是为了将来花在其他女人身上，女人攒私房钱是为了将来花在老公身上。
+    </div>
+    <div class='ft'>
+        <div style="float:left;width:100px;margin-left:10px;">Tags: x x x </div>
+        <div style="float:right;margin-right:50px;">
+        投票:   
+        <a href="xx"><img src="/static/dyd/images/dialog-ok.png" /></a>
+            &nbsp;&nbsp;
+        <a href="xx"><img src="/static/dyd/images/dialog-cancel.png" /></a>
+        </div> 
+        <div style="clear:both;"></div>
+    </div>
 </div>
 
 {% endblock %}
