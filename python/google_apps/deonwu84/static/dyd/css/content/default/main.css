@@ -54,11 +54,9 @@ td.l_n label{
 #content_body {
     width:640px;
     float:left;
-    #border:1px solid red;
 }
 
 #tag_nav{
-    border:1px solid red;
     width:250px;
     float:right;
 }

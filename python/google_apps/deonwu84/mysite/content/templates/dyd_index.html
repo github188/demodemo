@@ -2,8 +2,9 @@
 
 {% block content_body %}
 <div class="head">
-	
-	<div style="font-size:16px;float:left;"><b>标签:</b>xxx</div>
+{% if cur_tag %}
+	<div style="font-size:16px;float:left;"><b>标签:</b>cur_tag</div>
+{% endif %}
 	<div style="float:right;margin-top:6px;">
 		<a href="#">流行经典</a>
 		<a href="#">最近发布</a>	
@@ -11,47 +12,48 @@
 	</div>
 	<div style="clear:both;margin-bottom:10px;"></div>
 </div>
-
+{% for m in message_list %}
 <div class="message">
 	<div  class='hd'>
-		<div style="float:left;width:100px;margin-left:10px;">#0001</div>
-		<div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>20</span>
+		<div style="float:left;width:100px;margin-left:10px;">#{{m.id}}</div>
+		<div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>{{m.vote_up}}</span>
 			&nbsp;&nbsp;
-			<img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>20</span> 
+			<img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>{{m.vote_down}}</span> 
 		</div>
-		<div style="float:right;margin-right:10px;">2009-09-15 20:06:43</div>
+		<div style="float:right;margin-right:10px;">{{m.create_date|date:"Y-m-d H:i:s" }}</div>
 		<div style="clear:both;"></div>
 	</div>
-    <div class='ct1 row2'>
-		男人攒私房钱是为了将来花在其他女人身上，女人攒私房钱是为了将来花在老公身上。
+    <div class='ct1 {% cycle 'row1' 'row2' %}'>
+		{{m.text}}
     </div>
     <div class='ft'>
-		<div style="float:left;width:100px;margin-left:10px;">Tags: x x x </div>
+		<div style="float:left;width:100px;margin-left:10px;">Tags:{{m.tags}}</div>
 		<div style="float:right;margin-right:50px;">
 		投票:   
-		<a href="xx"><img src="/static/dyd/images/dialog-ok.png" /></a>
+		<a href="#"><img src="/static/dyd/images/dialog-ok.png" /></a>
             &nbsp;&nbsp;
-        <a href="xx"><img src="/static/dyd/images/dialog-cancel.png" /></a>
+        <a href="#"><img src="/static/dyd/images/dialog-cancel.png" /></a>
 		</div> 
 		<div style="clear:both;"></div>
     </div>
 </div>
-
+{% endfor %}
+{% ifequal message_count 0 %}
 <div class="message">
     <div  class='hd'>
-        <div style="float:left;width:100px;margin-left:10px;">#0001</div>
-        <div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>20</span>
+        <div style="float:left;width:100px;margin-left:10px;">#0000</div>
+        <div style="float:left;width:100px;"><img src="/static/dyd/images/dialog-ok.png" /><span class='good'>0</span>
             &nbsp;&nbsp;
-            <img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>20</span> 
+            <img src="/static/dyd/images/dialog-cancel.png" /><span class='bad'>0</span> 
         </div>
         <div style="float:right;margin-right:10px;">2009-09-15 20:06:43</div>
         <div style="clear:both;"></div>
     </div>
     <div class='ct2 row1'>
-        男人攒私房钱是为了将来花在其他女人身上，女人攒私房钱是为了将来花在老公身上。
-    </div>
+没有找到相关纪录！
+	</div>
     <div class='ft'>
-        <div style="float:left;width:100px;margin-left:10px;">Tags: x x x </div>
+        <div style="float:left;width:100px;margin-left:10px;">Tags: </div>
         <div style="float:right;margin-right:50px;">
         投票:   
         <a href="xx"><img src="/static/dyd/images/dialog-ok.png" /></a>
@@ -61,5 +63,8 @@
         <div style="clear:both;"></div>
     </div>
 </div>
+{% endifequal %}
+
+{% include "include/dyd_post_form.html" %}
 
 {% endblock %}

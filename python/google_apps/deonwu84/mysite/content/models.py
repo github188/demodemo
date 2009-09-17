@@ -31,6 +31,8 @@ class ContentMessage(db.Model):
     
     user = db.ReferenceProperty(ContentUser)
     vote_weight = db.IntegerProperty(default=0)
+    vote_up = db.IntegerProperty(default=0)
+    vote_down = db.IntegerProperty(default=0)
     tags = db.StringProperty()
     summary = db.StringProperty(multiline=True)
     text = db.TextProperty()
@@ -73,7 +75,8 @@ class ContentTag(db.Model):
         return message.fetch(limit, offset)
     
     def message_query(self, ):
-        return ContentMessage.gql("WHERE tags_keys = :1", self.key()).ancestor(self.parent())
+        return ContentMessage.gql("WHERE tags_keys = :1", self.key()) #.ancestor(self.parent())
+        #return ContentMessage.all().ancestor(self.parent()).filter("tags_keys =", self.key())
 
     @staticmethod
     def load_by_name(cate, name):

@@ -6,6 +6,7 @@
     {% block head %}
     <link type="text/css" href="/static/dyd/css/content/default/main.css" rel="stylesheet" />	  
 	{% endblock %}
+	<script type="text/javascript" src="/static/js/jquery-1.2.6.min.js" ></script>  
   </head>
   <body>
 {% block context_head %}
@@ -41,7 +42,7 @@
 		<div class='hd'><b>标签列表</b></div>
 		<div class='tags'>
 {% for t in tags_list %}
-		<a href="tag/{{t.name}}" {% if t.shape %} class='{{t.shape}}'{%endif%}>{{t.name}}</a>
+		<a href="/dyd/tag/{{cur_cate.code}}/{{t.name}}" {% if t.shape %} class='{{t.shape}}'{%endif%}>{{t.name}}</a>
 {% endfor %}
 		</div>
 	</div>

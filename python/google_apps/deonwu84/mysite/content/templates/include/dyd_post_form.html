@@ -1,0 +1,27 @@
+<div class="post_form">
+	<form action="/dyd/post" method="post">
+		<input type="hidden" name="cate" value="{{cur_cate.code}}" />
+		<input type="hidden" name="lang" value="{{cur_cate.lang}}" />
+	<table>
+		<tr>
+			<td>发布内容：</td>
+			<td><textarea name="message" rows="5" cols="60"></textarea></td>
+		</tr>
+        <tr>
+            <td>内容标签：</td>
+            <td><input type="text" id="tags_input" name="tags" value="空格分隔多个标签" size="60"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" name="submit" value="提交内容"/> &nbsp;&nbsp;
+				<input type="reset" name="cancel" value="取消"/>
+			</td>
+        </tr>
+	</table>
+	</form>
+</div>
+<script type="text/javascript">
+    $(function(){
+		$("#tags_input").focus(function(){$(this).val("");});
+    }); 
+</script>

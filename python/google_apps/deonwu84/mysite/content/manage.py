@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from google.appengine.api import memcache
 from models import *
+from google.appengine.ext import db
 import logging
 """
 
@@ -13,7 +14,7 @@ list mode:
 
 """
 import hashlib
-def md5(str): return hashlib.md5(str).hexdigest()
+def md5(str): return hashlib.md5(str.encode("utf-8")).hexdigest()
 
 class ErrorCode:
     ERROR_VALUE = 'err_value'
@@ -31,7 +32,7 @@ def parameter_checking(r, func, args, kwargs):
             value = r.COOKIES.get(name, None)
             if value is not None: kwargs[name] = value
         elif kwargs.has_key(name):
-            r.NEW_COOKIES.append((name, value, None))
+            r.NEW_COOKIES.append((name, kwargs[name], None))
     
     retrieval_or_save_cookies('track')
     retrieval_or_save_cookies('lang')
@@ -82,11 +83,11 @@ class ContentManage(object):
         logging.info("tag: category=%s,lang=%s, tag=%s, mode=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, tag, mode, track, ipaddr))
                 
-        cache_key = "tag_message_%s_%s_%s_%s" % (category.id, mode, offset, limit, tag)
+        cache_key = "tag_message_%s_%s_%s_%s_%s" % (category.id, mode, offset, limit, tag)
         message_list = self.__cache(cache_key)
-        if message_list is not None: return message_list
+        #if message_list is not None: return message_list
 
-        query = ContentTag.load_by_name(category, tag).message_query().filter("status >", 0)
+        query = ContentTag.load_by_name(category, tag).message_query() #.filter("status >", 0).order("status")
         
         count = query.count()
         message_list = self.__query_message(query, offset, limit, mode)
@@ -106,7 +107,7 @@ class ContentManage(object):
         message_list = self.__cache(cache_key)
         if message_list is not None: return message_list
         
-        query = ContentMessage.all().ancestor(category).filter("status >", 0)
+        query = ContentMessage.all().ancestor(category).filter("status >=", 0).order("status")
         count = query.count()
         message_list = self.__query_message(query, offset, limit, mode)
         self.__cache(cache_key, (count, message_list))
@@ -147,10 +148,13 @@ class ContentManage(object):
         return (ErrorCode.OK, "")
     
     def post(self, category, message='', tags='', user=None, track='', ipaddr=''):
-        if not category: return None
-        if user is None: user = self.load_user("guest")
-        logging.info("post: category=%s, lang=%s, track=%s, ippaddr=%s" % (category.code,
-                     category.lang, track, ipaddr))        
+        if not category: 
+            logging.info("post: category is None")
+            return (0, [])
+        if not isinstance(user, ContentUser): user = self.load_user(user or "guest")
+        message, tags = unicode(message), unicode(tags)
+        logging.info("post: category=%s, lang=%s, tags=%s, user=%s, track=%s, ippaddr=%s" % (category.code,
+                     category.lang, tags, user.name, track, ipaddr))
         
         md5msg = md5(message)
         cache_key = "new_message_%s_%s_%s" % (category.id, ipaddr, user.name)
@@ -160,11 +164,14 @@ class ContentManage(object):
         
         message = ContentMessage(parent=category,
                                  user=user,
-                                 text=message,
+                                 text=db.Text(message),
                                  track=track,
                                  ipaddr=ipaddr)
         message.add_tags(tags)
         message.put()
+        
+        #clean up all the cache....
+        memcache.flush_all()
         
         self.__cache(cache_key, md5msg)
         
