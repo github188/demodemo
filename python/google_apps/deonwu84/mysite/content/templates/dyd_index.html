@@ -12,6 +12,10 @@
 	</div>
 	<div style="clear:both;margin-bottom:10px;"></div>
 </div>
+
+<div class="page_nav">
+	总共:{{message_count}} {% autoescape off %}{{message_page_nav.output_html}}{% endautoescape %}
+</div>
 {% for m in message_list %}
 <div class="message">
 	<div  class='hd'>
@@ -80,7 +84,7 @@
 		});
     }); 
 </script>
-
+<div style="display:none;">
 {% include "include/dyd_post_form.html" %}
-
+</div>
 {% endblock %}

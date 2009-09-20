@@ -102,3 +102,6 @@ div.nav-menu a, div.nav-menu a:visited {
     padding:4px 0;
 }
 
+div.page_nav{margin-bottom:4px;}
+div.page_nav a{margin:0 4px;}
+div.page_nav a.cur{font-weight:bolder; text-decoration:none;}

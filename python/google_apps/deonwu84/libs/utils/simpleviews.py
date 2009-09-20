@@ -37,11 +37,10 @@ class ViewHandler(object):
     
     def __call__(self, r, **kwargs):
         param, kw_args = self.__parse_args(r, r.REQUEST)
-        if callable(self.param_validator):
-            self.param_validator(r, self.target, param, kw_args)
-        
         for k, v in kw_args.iteritems():
             kwargs[k] = v
+        if callable(self.param_validator):
+            self.param_validator(r, self.target, param, kwargs)
         
         return self.target(*param, **kwargs)
 

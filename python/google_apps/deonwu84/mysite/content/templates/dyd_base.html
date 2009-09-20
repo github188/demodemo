@@ -38,7 +38,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<div class='nav-menu'>
 			&nbsp;&nbsp;&nbsp;| <a href="/dyd/index">首页</a> |
 {% for c in cate_list %}
-			<a href="/dyd/cate/{{c.code}}">{{c.name}}</a>{% ifnotequal c.code 'qq' %}·{%endifnotequal%}
+			<a href="/dyd/cate/{{c.code}}/1">{{c.name}}</a>{% ifnotequal c.code 'qq' %}·{%endifnotequal%}
 {% endfor %} 
 			|
 		<a>语言</a>·<a href="/dyd/index">简体中文</a>·<a href="/dyd/index">English</a> 
@@ -69,25 +69,20 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<div class='hd'><b>标签列表</b></div>
 		<div class='tags'>
 {% for t in tags_list %}
-		<a href="/dyd/tag/{{cur_cate.code}}/{{t.name}}" {% if t.shape %} class='{{t.shape}}'{%endif%}>{{t.name}}</a>
+		<a href="/dyd/tag/{{cur_cate.code}}/{{t.name}}/1" {% if t.shape %} class='{{t.shape}}'{%endif%}>{{t.name}}</a>
 {% endfor %}
 		</div>
+		<div style="margin-bottom:4px;">
+			<embed src="http://a.alimama.cn/widget/yr1/yr1fixed_250_250.swf" flashvars="catid=1626&count=20&sz=34&type=1&i=mm_14119115_0_0" width="250" height="250" quality="high" wmode="transparent" bgcolor="#ffffff" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+		</div>					
 		<div>
-<script type="text/javascript"><!--
-google_ad_client = "pub-3966926275582588";
-/* 250x250, 创建于 09-9-20 */
-google_ad_slot = "5258711593";
-google_ad_width = 250;
-google_ad_height = 250;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>			
+			<iframe frameborder="0" marginheight="0" marginwidth="0" border="0" id="alimamaifrm" name="alimamaifrm" scrolling="no" height="142px" width="192px" style="width:192px;height:142px" src="http://a.alimama.cn/cpscode.php?pid=mm_10011550_0_0&w=192&h=142&uid=11004378&m=41&t=1000&bgc=FFFFFF&bdc=E6E6E6&tc=0000FF&sc=1055"></iframe>
 		</div>
 	</div>
 </div>
-
+<div>
+<embed src="http://a.alimama.cn/widget/yr1/yr1fixed_760_90.swf" flashvars="catid=50006247&count=20&sz=11&type=1&i=mm_14119115_0_0" width="760" height="90" quality="high" wmode="transparent" bgcolor="#ffffff" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+</div>	
 {% block context_foot %}
   <br/>
   <div style="clear:both;margin-bottom:10px;"></div>
@@ -98,10 +93,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <a style="color: #00c" target=_top href="#">道非道</a><font color="#333"> - </font>
   <a style="color: #00c" target=_top href="#">联系</a><font color="#333"> - </font>
   <a style="color: #00c" target=_top href="/deonwu/about">关于</a>
-  
   </td>
   </tr>
   </table>
+  <div style="clear:both;margin-bottom:10px;"></div>	  
 {% endblock %}
   </body>
 </html>

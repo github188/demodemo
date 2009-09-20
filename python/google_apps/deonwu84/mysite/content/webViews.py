@@ -3,33 +3,43 @@
 from manage import ContentManage
 import logging
 from manage import parameter_checking as __validation__
+from utils.paging import Paging
 manage = ContentManage()
+
 
 def IP(r): return r.META["REMOTE_ADDR"]
 
 def index(r, cate='lei', lang='', tag='', mode='list', track='web'):
     return list_message(r, "lei", lang, mode=mode)
 
-def list_message(r, cate='lei', lang='', tag='', offset=0, limit=10, mode='list', track=''):
+def list_message(r, cate='lei', lang='', tag='', offset=1, limit=10, mode='list', track=''):
     cate = cate or 'lei'
     lang = lang or 'zh'
     
     cate_count, cate_list = manage.cate_list(lang)
     cate = manage.load_category(cate, lang)
-    tag_count, tags_list = manage.tag_list(cate, 0, 100,)
+    tag_count, tags_list = manage.tag_list(cate, 1, 100,)
     
+    page_url = ""
     if tag:
         message_count, message_list = manage.tag_message(cate, tag, offset, limit, mode, track, IP(r))
+        page_url = "/dyd/tag/%s/%s/PAGE" % (cate.code, tag)
     else:
         message_count, message_list = manage.category_message(cate, offset, limit, mode, track, IP(r))
+        page_url = "/dyd/cate/%s/PAGE" % (cate.code, )
         
     site_title = "%s-%s" % (cate.name, tag)
     
     keywords = [ e.name for e in tags_list[:10] ]
     
+    #message_count 
+    message_page = Paging(message_count, offset, page_url, limit)
+    logging.info(message_page.output_html())
+    
     return ("dyd_index.html", {"lang": lang,
                                "site_title": site_title,
-                               "keywords": ",".join(keywords), 
+                               "keywords": ",".join(keywords),
+                               "message_page_nav": message_page,
                                "cur_cate": cate,
                                "cur_tag": tag,
                                "tags_list": tags_list,
@@ -98,3 +108,4 @@ def init_data(r, ):
     #ContentTag
     
     return "init data ok!"
+

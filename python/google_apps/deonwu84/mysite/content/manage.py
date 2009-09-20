@@ -25,8 +25,9 @@ class ErrorCode:
     OK = 'ok'
     
 def parameter_checking(r, func, args, kwargs):
-    if kwargs.has_key('limit'): kwargs = int(kwargs['limit'])
-    if kwargs.has_key('offset'): kwargs = int(kwargs['offset'])
+    if kwargs.has_key('limit'): kwargs['limit'] = int(kwargs['limit'])
+    if kwargs.has_key('offset'): kwargs['offset'] = int(kwargs['offset'])
+    logging.info("offset: %s " % kwargs['offset'])
     
     def retrieval_or_save_cookies(name):
         if name not in func.func_code.co_varnames: return
@@ -91,7 +92,7 @@ class ContentManage(object):
                     'active':'-order',}.get(mode, "-order")
         
         count = ContentTag.all().ancestor(category).count()
-        tag_list = ContentTag.all().ancestor(category).order(order_by).fetch(limit, offset)
+        tag_list = ContentTag.all().ancestor(category).order(order_by).fetch(limit, (offset -1) * limit)
         
         return (count, tag_list)
 
@@ -140,7 +141,7 @@ class ContentManage(object):
                     'active':'-update_date',}.get(mode, "")
         
         if order_by: query = query.order(order_by) 
-        return query.fetch(limit, offset)
+        return query.fetch(limit, (offset -1) * limit)
     
     def random(self, list):
         index = random.randrange(0, len(list))
