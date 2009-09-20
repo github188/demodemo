@@ -3,7 +3,7 @@
 {% block content_body %}
 <div class="head">
 {% if cur_tag %}
-	<div style="font-size:16px;float:left;"><b>标签:</b>cur_tag</div>
+	<div style="font-size:16px;float:left;"><b>标签:</b>{{cur_tag}}</div>
 {% endif %}
 	<div style="float:right;margin-top:6px;">
 		<a href="#">流行经典</a>
@@ -27,12 +27,12 @@
 		{{m.text}}
     </div>
     <div class='ft'>
-		<div style="float:left;width:100px;margin-left:10px;">Tags:{{m.tags}}</div>
+		<div style="float:left;width:300px;margin-left:10px;">Tags:{{m.tags}}</div>
 		<div style="float:right;margin-right:50px;">
 		投票:   
-		<a href="#"><img src="/static/dyd/images/dialog-ok.png" /></a>
+		<a class='vote' href="/dyd/vote/{{cur_cate.code}}/{{m.id}}?v=1"><img src="/static/dyd/images/dialog-ok.png" /></a>
             &nbsp;&nbsp;
-        <a href="#"><img src="/static/dyd/images/dialog-cancel.png" /></a>
+        <a class='vote' href="/dyd/vote/{{cur_cate.code}}/{{m.id}}?v=-1"><img src="/static/dyd/images/dialog-cancel.png" /></a>
 		</div> 
 		<div style="clear:both;"></div>
     </div>
@@ -64,6 +64,22 @@
     </div>
 </div>
 {% endifequal %}
+
+<script type="text/javascript">
+    $(function(){
+        $("a.vote").click(function(e){
+			if($(this).attr('href') != '') {
+				$.getJSON(this.href, function(json){
+					alert("投票成功!");
+				});
+				$(this).attr('href', '');
+			}else{
+				alert("只能投一次!");
+			}
+			return false;
+		});
+    }); 
+</script>
 
 {% include "include/dyd_post_form.html" %}
 

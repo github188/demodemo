@@ -7,7 +7,7 @@ manage = ContentManage()
 
 def IP(r): return r.META["REMOTE_ADDR"]
 
-def index(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list', track=''):
+def index(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list', track='web'):
     return list_message(r, "lei", lang, mode=mode)
 
 def list_message(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list', track=''):
@@ -42,7 +42,15 @@ def post(r, cate='', lang='', message='', tags='', user='', session='', track=''
     if ajax == 'N':
         return ("redirect:/dyd/cate/%s?mode=new" % cate.code,);
     
-    return {"status": error, "message": err_msg}
+    return {"status": status, "message": err_msg}
+
+def vote(r, cate='', lang='', msg_id='', v='', msg='', user='', track=''):
+    
+    cate = manage.load_category(cate, lang)
+    (status, err_msg) = manage.vote(cate, msg_id, v, msg, user, track, IP(r))
+    
+    return {"status": status, "message": err_msg}
+    #return {"status": error, "message": err_msg}
 
 def init_data(r, ):
     geyan = manage.load_category("geyan", "zh", u"格言")

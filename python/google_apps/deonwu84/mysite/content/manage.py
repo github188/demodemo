@@ -14,7 +14,9 @@ list mode:
 
 """
 import hashlib
-def md5(str): return hashlib.md5(str.encode("utf-8")).hexdigest()
+def md5(str):
+    if isinstance(str, unicode): str = str.encode("utf-8")
+    return hashlib.md5(str).hexdigest()
 
 class ErrorCode:
     ERROR_VALUE = 'err_value'
@@ -29,8 +31,8 @@ def parameter_checking(r, func, args, kwargs):
     def retrieval_or_save_cookies(name):
         if name not in func.func_code.co_varnames: return
         if not kwargs.has_key(name):
-            value = r.COOKIES.get(name, None)
-            if value is not None: kwargs[name] = value
+            value = r.COOKIES.get(name, 'zh')
+            kwargs[name] = value
         elif kwargs.has_key(name):
             r.NEW_COOKIES.append((name, kwargs[name], None))
     
@@ -38,7 +40,7 @@ def parameter_checking(r, func, args, kwargs):
     retrieval_or_save_cookies('lang')
     
 
-def cached(key_length=1, timeout=24 * 60 * 60):
+def cached(key_length=1, timeout=5 * 60 * 60):
     def check_cache(f):
         reqiured_args_count = f.func_code.co_argcount - len(f.func_defaults)
         def _wrapper(*args, **kwargs):
@@ -49,13 +51,13 @@ def cached(key_length=1, timeout=24 * 60 * 60):
                 else:
                     v = args[i]
                 if isinstance(v, basestring):
-                    keys.append(v.encode("utf-8"))
+                    keys.append(unicode(v))
                 elif hasattr(v, 'id'):
                     keys.append(str(v.id))
                 else:
                     keys.append(str(v))
     
-            cache_key = "_".join(keys)            
+            cache_key = u"_".join(keys)
             if len(cache_key) > 32: cache_key = md5(cache_key)
             
             logging.info("hit cache key:%s" % cache_key)
@@ -93,7 +95,7 @@ class ContentManage(object):
         
         return (count, tag_list)
 
-    @cached(key_length=1)
+    @cached(key_length=1, timeout=5 * 60)
     def cate_list(self, lang='', track='', ipaddr=''):
         logging.info("cate list: lang=%s, track=%s, ippaddr=%s" % (
                      lang, track, ipaddr))
@@ -104,7 +106,7 @@ class ContentManage(object):
 
         return (count, cate_list)
     
-    @cached(key_length=5)
+    @cached(key_length=5, timeout=5 * 60)
     def tag_message(self, category, tag='', offset=0, limit=50, mode='list', track='', ipaddr=''):
         #offset, limit = int(offset), int(limit)
         if not category: return None        
@@ -147,21 +149,35 @@ class ContentManage(object):
     def vote(self, category, msg_id='', v='', msg='', user=None, track='', ipaddr=''):
         if not category: return None
         logging.info("vote: category=%s, lang=%s, msg_id=%s, v=%s, track=%s, ippaddr=%s" % (category.code,
-                     category.lang, msg_id, v, mode, track, ipaddr))
-                
-        if not str(v).isdigit(): return (ErrorCode.ERROR_VALUE, "vote value '%s'" % v)
+                     category.lang, msg_id, v, track, ipaddr))
         
-        if user is None: user = self.load_user("guest")
+        try:
+            v = int(v)
+        except: 
+            return (ErrorCode.ERROR_VALUE, "vote value '%s'" % v)
+        
+        if not isinstance(user, ContentUser): user = self.load_user(unicode(user) or "guest")
+        #if user is None: user = self.load_user("guest")
         
         cache_key = "vote_%s_%s_%s_%s" % (category.id, msg_id, ipaddr, user.name)
-        count = memcache.incr(cache_key, namespace='content', initial_value=0)
+        count = memcache.incr(cache_key, namespace='content', )
+        if count is None:
+            memcache.set(cache_key, value=1, namespace='content', )
+            count = 1
+        logging.info("%s-->%s" % (cache_key, count))
         if (user.name != 'guest' and count > 1) or count > 10:
             return (ErrorCode.TOO_FAST, "")
         
-        message = ContentMessage.load(cate, msg_id)
+        message = ContentMessage.load(category, msg_id)
         if message is None: return (ErrorCode.NO_MESSAGE, "msg_id=%s" % msg_id)
         
-        ContentVote(parent=message, voter=user, summary=msg, track=track, ipaddr=ipaddr, ).put()
+        message.vote_weight += v
+        if v > 0:
+            message.vote_up += v
+        else:
+            message.vote_down += v
+        message.put()    
+        ContentVote(parent=message, value=v, voter=user, summary=msg, track=track, ipaddr=ipaddr,).put()
         
         return (ErrorCode.OK, "")
     
@@ -169,8 +185,9 @@ class ContentManage(object):
         if not category: 
             logging.info("post: category is None")
             return (0, [])
-        if not isinstance(user, ContentUser): user = self.load_user(user or "guest")
+        if not isinstance(user, ContentUser): user = self.load_user(unicode(user) or "guest")
         message, tags = unicode(message), unicode(tags)
+        if tags.count(u"空格") > 0: tags = ''
         logging.info("post: category=%s, lang=%s, tags=%s, user=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, tags, user.name, track, ipaddr))
         
@@ -206,7 +223,7 @@ class ContentManage(object):
         message.add_tags(tags)
         return (ErrorCode.OK, "")
     
-    @cached(key_length=1)
+    @cached(key_length=2)
     def load_category(self, code='', lang='', name='', desc=''):
         #ContentCategory.all().filter("") .order("-lastupdate").fetch(12)
         logging.info("load_category: code=%s, lang=%s, name=%s" % (code, lang, name))
