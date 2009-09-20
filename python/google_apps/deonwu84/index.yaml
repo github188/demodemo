@@ -47,13 +47,13 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 41 times in query history.
+# Used 59 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
   - name: status
 
-# Used 2 times in query history.
+# Used 4 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -68,11 +68,11 @@ indexes:
   - name: tags_keys
   - name: status
 
-# Used 21 times in query history.
+# Used 29 times in query history.
 - kind: ContentTag
   ancestor: yes
 
-# Used 21 times in query history.
+# Used 29 times in query history.
 - kind: ContentTag
   ancestor: yes
   properties:

@@ -132,4 +132,25 @@ class SimpleUrl(SimpleViews):
     def __call__(self, request, **kwargs):
         return SimpleViews.__call__(self, request, self.action_url, **kwargs)
     
+def anti_crack(r, *args):
+    from anticrack.image import picChecker 
+    (code, image) = c.createChecker()
+    
+    sessionId = r.COOKIES.get('sessionid', None)
+    if sessionId is not None:
+        cache_key = "anti_%s" % sessionId
+        memcache.add(key=cache_key, value=code, time=60 * 5, namespace='global')   
+        logging.debug("save anti-crack code for:%s-->%s" % (sessionId, code))
+    
+    return HttpResponse(image.getdata, mimetype='image/gif')
+    
+def anti_verify(r, code=""):    
+    old_code = None
+    sessionId = r.COOKIES.get('sessionid', None)
+    if sessionId is not None:
+        cache_key = "anti_%s" % sessionId
+        old_code = memcache.get(key=cache_key, namespace='global')   
+        logging.debug("get anti-crack code for:%s-->%s" % (sessionId, old_code))
+    
+    return code == old_code
     
