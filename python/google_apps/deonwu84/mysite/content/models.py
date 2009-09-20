@@ -55,7 +55,14 @@ class ContentMessage(db.Model):
     def load(cate, id):
         if not str(id).isdigit(): return None
         return db.get(db.Key.from_path('ContentCategory', cate.id, 
-                                       'ContentMessage', int(id)))    
+                                       'ContentMessage', int(id)))
+        
+    def __getattr__(self, name):
+        if name == 'htmlText':
+            self.htmlText = self.text.replace("\n", "<br/>")
+            return self.htmlText
+        
+        raise AttributeError, "no attribute %s in ContentMessage" % name
 
 # parent is ContentCategory.
 class ContentTag(db.Model):

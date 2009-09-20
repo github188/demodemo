@@ -7,10 +7,10 @@ manage = ContentManage()
 
 def IP(r): return r.META["REMOTE_ADDR"]
 
-def index(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list', track='web'):
+def index(r, cate='lei', lang='', tag='', mode='list', track='web'):
     return list_message(r, "lei", lang, mode=mode)
 
-def list_message(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list', track=''):
+def list_message(r, cate='lei', lang='', tag='', offset=0, limit=10, mode='list', track=''):
     cate = cate or 'lei'
     lang = lang or 'zh'
     
@@ -22,8 +22,14 @@ def list_message(r, cate='lei', lang='', tag='', offset=0, limit=50, mode='list'
         message_count, message_list = manage.tag_message(cate, tag, offset, limit, mode, track, IP(r))
     else:
         message_count, message_list = manage.category_message(cate, offset, limit, mode, track, IP(r))
+        
+    site_title = "%s-%s" % (cate.name, tag)
+    
+    keywords = [ e.name for e in tags_list[:10] ]
     
     return ("dyd_index.html", {"lang": lang,
+                               "site_title": site_title,
+                               "keywords": ",".join(keywords), 
                                "cur_cate": cate,
                                "cur_tag": tag,
                                "tags_list": tags_list,
@@ -51,6 +57,14 @@ def vote(r, cate='', lang='', msg_id='', v='', msg='', user='', track=''):
     
     return {"status": status, "message": err_msg}
     #return {"status": error, "message": err_msg}
+
+def clear_cache(r, ):
+    from google.appengine.api import memcache
+    memcache.flush_all()
+    return "OK"
+
+def default_view(r):
+    return list_message(r, "lei", 'zh')
 
 def init_data(r, ):
     geyan = manage.load_category("geyan", "zh", u"格言")

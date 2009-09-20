@@ -24,7 +24,7 @@
 		<div style="clear:both;"></div>
 	</div>
     <div class='ct1 {% cycle 'row1' 'row2' %}'>
-		{{m.text}}
+		{% autoescape off %}{{m.htmlText}}{% endautoescape %}
     </div>
     <div class='ft'>
 		<div style="float:left;width:300px;margin-left:10px;">Tags:{{m.tags}}</div>
