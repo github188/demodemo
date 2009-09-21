@@ -1,0 +1,29 @@
+{% extends "dyd_admin_base.html" %}
+
+{% block content_body %}
+<div class="head">
+{% if cur_tag %}
+	<div style="font-size:16px;float:left;"><b>标签:</b>{{cur_tag}}</div>
+{% endif %}
+	<div style="float:right;margin-top:6px;">
+		<a href="#">流行经典</a>
+		<a href="#">最近发布</a>	
+		<a href="#">最近更新</a>
+	</div>
+	<div style="clear:both;margin-bottom:10px;"></div>
+</div>
+
+{% for t in tags_list %}
+	<div class="message">
+	<form action="/dyd/admin/update_tag">
+		<input type='hidden' name='cate' value="{{cur_cate.code}}" />
+		<input type='hidden' name='tag' value="{{t.name}}" />
+        <a href="/dyd/tag/{{cur_cate.code}}/{{t.name}}/1" {% if t.shape %} class='{{t.shape}}'{%endif%}>{{t.name}}</a>
+		<input name='shape' value="{{t.shape}}" />
+		<input type="submit" value="save" />
+	</form>
+	</div>
+{% endfor %}
+
+
+{% endblock %}

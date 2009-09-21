@@ -105,3 +105,6 @@ div.nav-menu a, div.nav-menu a:visited {
 div.page_nav{margin-bottom:4px;}
 div.page_nav a{margin:0 4px;}
 div.page_nav a.cur{font-weight:bolder; text-decoration:none;}
+
+a.shape1{font-size:20px;color:red;}
+a.shape2{font-size:16px;font-weight:bolder;color:#ccff66;}

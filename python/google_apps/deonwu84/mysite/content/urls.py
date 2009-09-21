@@ -10,5 +10,8 @@ urlpatterns = patterns('',
     (r'^cate/(?P<cate>.*)', SimpleUrl("mysite.content.webViews.list_message")),
     
     (r'^vote/(?P<cate>.*)/(?P<msg_id>\d+)', SimpleUrl("mysite.content.webViews.vote")),
+    
+    (r'admin/(.*)', SimpleViews("mysite.content.adminViews")),
+    
     (r'(.*)', SimpleViews("mysite.content.webViews")),
 )
