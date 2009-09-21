@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from google.appengine.ext import db
 import logging
+import re
 
 class ContentUser(db.Model):
     track = db.StringProperty()
@@ -44,8 +45,8 @@ class ContentMessage(db.Model):
     update_date = db.DateTimeProperty()
     
     def add_tags(self, tags):
-        tags = list(set(tags.split(" ")))
-        self.tags_keys = [ ContentTag.load_by_name(self.parent(), t).key() for t in tags ]
+        tags = list(set(re.split(u"(\s+|　)", tags)))
+        self.tags_keys = [ ContentTag.load_by_name(self.parent(), t).key() for t in tags if t.strip() ]
         self.tags = " ".join(tags)
         
     @property
