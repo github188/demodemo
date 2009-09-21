@@ -34,7 +34,6 @@ def list_message(r, cate='lei', lang='', tag='', offset=1, limit=10, mode='list'
     
     #message_count 
     message_page = Paging(message_count, offset, page_url, limit)
-    logging.info(message_page.output_html())
     
     return ("dyd_index.html", {"lang": lang,
                                "site_title": site_title,

@@ -27,7 +27,6 @@ class ErrorCode:
 def parameter_checking(r, func, args, kwargs):
     if kwargs.has_key('limit'): kwargs['limit'] = int(kwargs['limit'])
     if kwargs.has_key('offset'): kwargs['offset'] = int(kwargs['offset'])
-    logging.info("offset: %s " % kwargs['offset'])
     
     def retrieval_or_save_cookies(name):
         if name not in func.func_code.co_varnames: return
