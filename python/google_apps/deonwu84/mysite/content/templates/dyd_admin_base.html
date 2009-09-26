@@ -41,7 +41,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<a href="/dyd/admin/tag_list?cate={{c.code}}">{{c.name}}</a>{% ifnotequal c.code 'qq' %}·{%endifnotequal%}
 {% endfor %} 
 			|
-		<a>语言</a>·<a href="/dyd/index">简体中文</a>·<a href="/dyd/index">English</a> 
+		<a href="/dyd/admin/admin_post">发布</a> |
+		<a href="/dyd/clear_cache">清除缓存</a>
 		</div>
     </div>
 {% endblock %}

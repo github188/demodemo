@@ -3,6 +3,7 @@ from google.appengine.api import memcache
 from models import *
 from google.appengine.ext import db
 import logging
+from datetime import datetime
 """
 
 list mode:
@@ -112,10 +113,20 @@ class ContentManage(object):
         if not category: return None        
         logging.info("tag: category=%s,lang=%s, tag=%s, mode=%s, track=%s, ippaddr=%s" % (category.code,
                      category.lang, tag, mode, track, ipaddr))
-                
-        query = ContentTag.load_by_name(category, tag).message_query() #.filter("status >", 0).order("status")
+        
+        order_by = {'hot':'vote_weight desc',
+                    'new':'create_date desc',
+                    'active':'update_date desc',}.get(mode, "")
+        
+        if order_by: 
+            order_by = "status desc, %s" % order_by
+        else:
+            order_by = "status desc"
+        
+        query = ContentTag.load_by_name(category, tag).message_query("status >= 0", order_by)
         count = query.count()
-        message_list = self.__query_message(query, offset, limit, mode)
+        message_list = query.fetch(limit, (offset -1) * limit)
+        # self.__query_message(query, offset, limit, mode)
         
         return (count, message_list)
     
@@ -176,7 +187,11 @@ class ContentManage(object):
             message.vote_up += v
         else:
             message.vote_down += v
-        message.put()    
+        message.update_date = datetime.now()
+        status = message.vote_weight / 10
+        if status > message.status: message.status = status
+        
+        message.put()
         ContentVote(parent=message, value=v, voter=user, summary=msg, track=track, ipaddr=ipaddr,).put()
         
         return (ErrorCode.OK, "")

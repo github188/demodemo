@@ -6,9 +6,9 @@
 	<div style="font-size:16px;float:left;"><b>标签:</b>{{cur_tag}}</div>
 {% endif %}
 	<div style="float:right;margin-top:6px;">
-		<a href="#">流行经典</a>
-		<a href="#">最近发布</a>	
-		<a href="#">最近更新</a>
+		<a href="?mode=hot">流行经典</a>
+		<a href="?mode=new">最近发布</a>
+		<a href="?mode=active">最近更新</a>
 	</div>
 	<div style="clear:both;margin-bottom:10px;"></div>
 </div>
@@ -68,6 +68,9 @@
     </div>
 </div>
 {% endifequal %}
+<div class="page_nav">
+    总共:{{message_count}} {% autoescape off %}{{message_page_nav.output_html}}{% endautoescape %}
+</div>
 
 <script type="text/javascript">
     $(function(){

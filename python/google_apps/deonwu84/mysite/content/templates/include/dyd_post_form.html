@@ -22,6 +22,7 @@
 </div>
 <script type="text/javascript">
     $(function(){
-		$("#tags_input").focus(function(){$(this).val("");});
+		$("#tags_input").focus(function(){
+			if($(this).val() == "空格分隔多个标签") $(this).val("");});
     }); 
 </script>

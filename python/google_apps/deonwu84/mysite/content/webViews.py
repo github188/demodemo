@@ -33,6 +33,7 @@ def list_message(r, cate='lei', lang='', tag='', offset=1, limit=10, mode='list'
     keywords = [ e.name for e in tags_list[:10] ]
     
     #message_count 
+    if mode != 'list': page_url += "?mode=%s" % mode
     message_page = Paging(message_count, offset, page_url, limit)
     
     return ("dyd_index.html", {"lang": lang,

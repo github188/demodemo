@@ -77,13 +77,12 @@ class ContentTag(db.Model):
     update_date = db.DateTimeProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
     
-    def message_list(self, offset, limit, order):
-        message = ContentMessage.gql("WHERE tags_keys = :1", self.key())
-        if order: message = message.order(order)
-        return message.fetch(limit, offset)
-    
-    def message_query(self, ):
-        return ContentMessage.gql("WHERE tags_keys = :1", self.key()) #.ancestor(self.parent())
+    def message_query(self, where="", order = ""):
+        GQL = "WHERE tags_keys = :1 "
+        if where: GQL += "AND %s" % where
+        if order: GQL += "ORDER BY %s" % order
+        
+        return ContentMessage.gql(GQL, self.key()) #.ancestor(self.parent())
         #return ContentMessage.all().ancestor(self.parent()).filter("tags_keys =", self.key())
 
     @staticmethod

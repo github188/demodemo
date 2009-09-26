@@ -1,0 +1,38 @@
+{% extends "dyd_admin_base.html" %}
+
+{% block content_body %}
+<div>
+	{{result.status}}/{{result.message}}
+</div>
+<div class="post_form">
+    <form action="/dyd/admin/admin_post" method="post">
+        <input type="hidden" name="cate" value="{{cur_cate.code}}" />
+    <table>
+        <tr>
+            <td>分类：</td>
+            <td>
+				<select name="cate">
+					{% for c in cate_list %}
+						<option value='{{c.code}}'>{{c.name}}</option>
+					{% endfor %}
+				</select>
+			</td>
+        </tr>		
+        <tr>
+            <td>发布内容：</td>
+            <td><textarea name="message" rows="5" cols="60"></textarea></td>
+        </tr>
+        <tr>
+            <td>内容标签：</td>
+            <td><input type="text" id="tags_input" name="tags" value="{{tags}}" size="60"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" name="submit" value="提交内容"/> &nbsp;&nbsp;
+                <input type="reset" name="cancel" value="取消"/>
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>
+{% endblock %}
