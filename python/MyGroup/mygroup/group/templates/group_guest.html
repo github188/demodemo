@@ -1,0 +1,44 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+
+        <div class='circle_b' >
+            <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+            <div class="f" style='padding:4px;'>
+                <div class="span-11">
+					<cpan style="font-weight:bolder;font-size:18px;">{{v.group.name}}</cpan>
+					---由"{{v.author.truename_v}}"创建。&nbsp;
+				</div>
+                <div class="clear">
+					{{v.group.description}}
+				</div>
+				<div class="clear">
+					<br/><br/>
+					<div class='notice'>目前你还不是这个圈子成员. 不能访问圈子内的活动. 请与圈子创建者联系后,
+						<a class='join' href="/group/join/{{v.group.id}}">加入</a>圈子.
+					</div>
+<script type="text/javascript">
+    $(function(){            
+        $("a.join").click(function(){
+            var cur = this;
+            $.get(this.href + '?' + (new Date()).getTime(), function(data){
+                            if (data == 'OK'){
+                                alert("加入成功，请刷新页面。");
+                            }else{
+								alert("加入失败请与创建者联系。");
+                            }
+                        }, "html");
+        
+             return false;
+        });             
+                
+    }); 
+</script>					
+					<a href="/my">返回我的首页</a>
+				</div>
+            </div>
+            <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+        </div>
+        <hr class="space">
+{% endblock %}
+

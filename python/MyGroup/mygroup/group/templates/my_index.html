@@ -1,0 +1,35 @@
+{% extends "mygroup/logined_site.html" %}
+
+{% block mid_content %}
+<div class='circle_b' >
+    <div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+    <div class="f">
+		<span style="font-size:14px;font-weight:bolder;">我的圈子</span>--<a href="/group/create">创建我的圈子</a>
+        <hr class="space">
+        <div id="new_groups">
+        {% for g in v.my_groups %}
+            <a href="/group/actives/{{g.group.id}}">{{g.group.name}}</a>&nbsp;
+        {% endfor %}
+        </div>                                                  
+    </div>
+    <div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+<hr class="space">
+<div class='circle_b' >
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+	<div class="f" style='padding:4px;'>
+		<div class="span-11" style="font-weight:bolder;font-size:24px;">圈子最近动态</div>
+		<hr class="space">
+	</div>
+	<div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+<hr class="space"> 
+<div class='circle_b' >
+	<div class="a"></div><div class="b"></div><div class="c"></div><div class="d"></div>
+	<div class="f">
+        <div class="span-11" style="font-weight:bolder;font-size:24px;">关注你的人</div>
+		<hr class="space">
+	</div>          
+	<div class="d"></div><div class="c"></div><div class="b"></div><div class="a"></div>
+</div>
+{% endblock %}

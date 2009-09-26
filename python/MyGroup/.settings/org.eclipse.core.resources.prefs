@@ -1,3 +1,7 @@
-#Fri May 29 12:00:20 CST 2009
+#Tue Jun 02 08:40:21 CST 2009
 eclipse.preferences.version=1
-encoding/<project>=UTF-8
+encoding//mygroup/data/init_data.py=UTF-8
+encoding//mygroup/group/group_views.py=UTF-8
+encoding//mygroup/group/models.py=UTF-8
+encoding//mygroup/group/user_views.py=UTF-8
+encoding//mygroup/group/views.py=UTF-8

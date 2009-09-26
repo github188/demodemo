@@ -3,7 +3,7 @@
 {% block header %}
 <hr class="space">
         <div class="span-4">
-            <img src="/images/my.jpg" style="float:left;" />
+            <img src="/static/images/my.jpg" style="float:left;" />
         </div>
         <br/>
         <div class="span-15" >
@@ -50,8 +50,8 @@
 					{% for g in my.my_groups %}
 						<div><a href="/group/actives/{{g.group.id}}">{{g.group.name}}</a> -- {{g.truename_v}}</div>
 					{% endfor %}
-                </div> 
-				<br/>  
+                </div>
+				<br/>
 				{% endblock %}
 				
 				{% block user_favorite %}				
@@ -70,7 +70,7 @@
                 <div class='clear color2'>
 					<br/>
 					<div style="color:#000;"><b>发送链接邀请朋友...</b></div>
-                    <p>复制下面的网址发送给朋友，当你的朋友接受邀请并注册后，你们将自动的相互关注。</p>
+                    <p>{{invate_url}}</p>
                 </div>
 				{% endblock %}      
             <div class='clear'></div>   
