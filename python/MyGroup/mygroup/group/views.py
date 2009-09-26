@@ -69,6 +69,10 @@ def reg(r):
         gid = r.REQUEST['gid']
     else:
         gid = ""
+    
+    if cur_user(r):
+        return HttpResponseRedirect('/my')
+    
     if r.method == 'POST':
         f = r.REQUEST
         name = f['name']
@@ -82,7 +86,9 @@ def reg(r):
         if not name: error_msg = "名字不能为空"
         elif not password: error_msg = "密码不能为空"
         elif not truename: error_msg = "真实姓名不能为空"
-        
+        elif User.all().filter('name =', name).count() >0:
+            error_msg = "用户名已存在."
+                        
         if not error_msg:
             u = User(name=name, truename=truename, password=password, 
                      email=email, mobile=mobile, qq=qq)
@@ -92,15 +98,16 @@ def reg(r):
             try:
                 if gid.isdigit():
                     g = Group.load(gid)
-                    GroupMember(parent=g, member=user).put()
+                    GroupMember(parent=g, member=u).put()
                     group.group_doing(r, u, g, message=u"我来啦。。。")
             except Exception, e:
-                logging.error(str(e))
+                logging.exception(str(e))
             
             return HttpResponseRedirect('/my')
         else:
             return render_to_response('group_reg.html', {'error_msg':error_msg,
-                                                         "gid":gid
+                                                         "gid":gid,
+                                                         "f":r.REQUEST
                                                         })
     else:
         return render_to_response('group_reg.html', {"gid":gid})
