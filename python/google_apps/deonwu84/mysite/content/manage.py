@@ -231,7 +231,7 @@ class ContentManage(object):
     def update_tag(self, category, msg_id='', tags=''):
         if not category: return None
         logging.info("update tag: category=%s, lang=%s, msg_id=%s, tags=%s, track=%s, ippaddr=%s" % (category.code,
-                     category.lang, msg_id, tags, track, ipaddr))               
+                     category.lang, msg_id, tags, track, ipaddr))
         message = ContentMessage.load(cate, msg_id)
         if message is None: return (ErrorCode.NO_MESSAGE, "msg_id=%s" % msg_id)
         

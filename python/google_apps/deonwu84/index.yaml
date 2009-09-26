@@ -53,14 +53,14 @@ indexes:
   - name: tags_keys
   - name: status
 
-# Used 2 times in query history.
+# Used 6 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
   - name: status
     direction: desc
 
-# Used 5 times in query history.
+# Used 7 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -69,7 +69,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 4 times in query history.
+# Used 6 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -78,7 +78,7 @@ indexes:
   - name: update_date
     direction: desc
 
-# Used 2 times in query history.
+# Used 4 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -87,13 +87,13 @@ indexes:
   - name: vote_weight
     direction: desc
 
-# Used 33 times in query history.
+# Used 40 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
   - name: status
 
-# Used 6 times in query history.
+# Used 7 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -101,7 +101,7 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 3 times in query history.
+# Used 4 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -109,7 +109,7 @@ indexes:
   - name: update_date
     direction: desc
 
-# Used 4 times in query history.
+# Used 5 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -124,11 +124,11 @@ indexes:
   - name: tags_keys
   - name: status
 
-# Used 14 times in query history.
+# Used 16 times in query history.
 - kind: ContentTag
   ancestor: yes
 
-# Used 14 times in query history.
+# Used 16 times in query history.
 - kind: ContentTag
   ancestor: yes
   properties:
