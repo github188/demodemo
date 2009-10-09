@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from google.appengine.api import memcache
 from book import initalize_book, list_book_details, add_fb_record, list_user_details
 from models import * 
 from datetime import datetime
@@ -150,22 +149,15 @@ def agreement(r):
     return ("fb_book_agreement.html", {})
     
 def book_session(r, book=None, remove=None):
-    sessionId = r.COOKIES.get('sessionid', None)
-    if not sessionId: return None
-    logging.debug("cur book account session id:%s" % sessionId)
-    
     if book is not None:
-        logging.debug("save current book:%s" % book)
-        memcache.set(key=sessionId, value=book, time=3600, namespace='fb_book')
+        r.session.add("cur_user", book, 3600)
     
     if remove is True:
-        memcache.delete(key=sessionId, namespace='fb_book')
+        r.session.remove("cur_user")
         #r.COOKIES['sessionid'] = ''
         return None
     
-    book = memcache.get(sessionId, namespace='fb_book')
-    logging.debug("retrieve current book:%s" % book)
-    return book
+    return r.session.get("cur_user")
 
 def test(v='save_money'):
     from mysite.fb_book.book.enum_code import enum as load_enum

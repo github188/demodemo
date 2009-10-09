@@ -10,7 +10,7 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Unused in query history -- copied from input.
+# Used 7 times in query history.
 - kind: BookAccountRecord
   ancestor: yes
   properties:
@@ -26,14 +26,14 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 5 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
   - name: lastupdate
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 4 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
@@ -87,7 +87,7 @@ indexes:
   - name: vote_weight
     direction: desc
 
-# Used 40 times in query history.
+# Used 42 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -124,11 +124,11 @@ indexes:
   - name: tags_keys
   - name: status
 
-# Used 16 times in query history.
+# Used 17 times in query history.
 - kind: ContentTag
   ancestor: yes
 
-# Used 16 times in query history.
+# Used 17 times in query history.
 - kind: ContentTag
   ancestor: yes
   properties:
