@@ -1,0 +1,1 @@
+from simpleviews import SimpleViews, SimpleUrl
