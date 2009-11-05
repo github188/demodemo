@@ -1,0 +1,8 @@
+bin\Debug\jisuanpanduan.exe
+bin\Debug\jisuanpanduan.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\jisuanpanduan.Form1.resources
+obj\Debug\jisuanpanduan.Properties.Resources.resources
+obj\Debug\jisuanpanduan.csproj.GenerateResource.Cache
+obj\Debug\jisuanpanduan.exe
+obj\Debug\jisuanpanduan.pdb
