@@ -51,6 +51,8 @@ public class PhoneBookManager {
 	}
 
 	public ArrayList listContact(){
+		//返回所有电话记录。
+
 		string mySelectQuery = "SELECT * FROM PhoneBook";
 		OleDbCommand myCommand = new OleDbCommand(mySelectQuery, myAccessConn);
 		OleDbDataReader myReader = null;
@@ -119,6 +121,7 @@ public class PhoneBookManager {
 		Console.WriteLine("removeContact: {0}\n", result);
 		manager.printPhookBook();
 		
+		//关闭数据库连接，这个很重要。
 		manager.close();
 		Console.WriteLine("done...........");
    }
