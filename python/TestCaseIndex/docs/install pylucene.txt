@@ -1,0 +1,53 @@
+1. download source http://www.apache.org/dyn/closer.cgi/lucene/pylucene/
+2. install jdk1.6.0_17 to /usr/local/jdk1.6.0_17/bin
+
+/usr/local/python2.6/lib
+3. edit setup.py
+JDK = {
+    'darwin': '/System/Library/Frameworks/JavaVM.framework/Versions/Current',
+    'ipod': '/usr/include/gcc',
+    'linux2': '/usr/local/jdk1.6.0_17',
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    'sunos5': '/usr/jdk/instances/jdk1.6.0',
+    'win32': 'o:/Java/jdk1.6.0_02',
+}  
+
+LFLAGS = {
+    'darwin': ['-framework', 'JavaVM'],
+    'ipod': ['-ljvm', '-lpython%s.%s' %(sys.version_info[0:2]),
+             '-L/usr/lib/gcc/arm-apple-darwin9/4.0.1'],
+    'linux2/i386': ['-L%(linux2)s/jre/lib/i386' %(JDK), '-ljava',
+                    '-L%(linux2)s/jre/lib/i386/client' %(JDK), '-ljvm',
+                    '-Wl,-rpath=%(linux2)s/jre/lib/i386:%(linux2)s/jre/lib/i386/client' %(JDK)],
+    'linux2/i686': ['-L%(linux2)s/jre/lib/i386' %(JDK), '-ljava',
+                    '-L /usr/local/python2.6/lib',
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    '-L%(linux2)s/jre/lib/i386/client' %(JDK), '-ljvm',
+                    '-Wl,-rpath=%(linux2)s/jre/lib/i386:%(linux2)s/jre/lib/i386/
+
+#python setup.py build
+
+process error /usr/bin/ld: cannot find -lpython2.6 
+move -L /usr/local/python2.6/lib to front of -lpytho2.6 and run GCC in shell 
+g++ -pthread -shared build/temp.linux-i686-2.6/jcc/sources/jcc.o build/temp.linux-i686-2.6/jcc/sources/JCCEnv.o build/temp.linux-i686-2.6/jcc/sources/JObject.o build/temp.linux-i686-2.6/jcc/sources/JArray.o build/temp.linux-i686-2.6/jcc/sources/functions.o build/temp.linux-i686-2.6/jcc/sources/types.o build/temp.linux-i686-2.6/_jcc/boot.o build/temp.linux-i686-2.6/_jcc/java/io/StringWriter.o build/temp.linux-i686-2.6/_jcc/java/io/__init__.o build/temp.linux-i686-2.6/_jcc/java/io/PrintWriter.o build/temp.linux-i686-2.6/_jcc/java/io/Writer.o build/temp.linux-i686-2.6/_jcc/java/lang/RuntimeException.o build/temp.linux-i686-2.6/_jcc/java/lang/String.o build/temp.linux-i686-2.6/_jcc/java/lang/Boolean.o build/temp.linux-i686-2.6/_jcc/java/lang/Throwable.o build/temp.linux-i686-2.6/_jcc/java/lang/__init__.o build/temp.linux-i686-2.6/_jcc/java/lang/Exception.o build/temp.linux-i686-2.6/_jcc/java/lang/Class.o build/temp.linux-i686-2.6/_jcc/java/lang/Double.o build/temp.linux-i686-2.6/_jcc/java/lang/Long.o build/temp.linux-i686-2.6/_jcc/java/lang/Object.o build/temp.linux-i686-2.6/_jcc/java/lang/Integer.o build/temp.linux-i686-2.6/_jcc/java/lang/reflect/Modifier.o build/temp.linux-i686-2.6/_jcc/java/lang/reflect/__init__.o build/temp.linux-i686-2.6/_jcc/java/lang/reflect/Method.o build/temp.linux-i686-2.6/_jcc/java/lang/reflect/Field.o build/temp.linux-i686-2.6/_jcc/java/lang/reflect/Constructor.o build/temp.linux-i686-2.6/_jcc/java/util/Iterator.o build/temp.linux-i686-2.6/_jcc/java/util/Enumeration.o -L /usr/local/python2.6/lib -L. -lpython2.6 -o build/lib.linux-i686-2.6/jcc/_jcc.so -L/usr/local/jdk1.6.0_17/jre/lib/i386 -ljava -L/usr/local/jdk1.6.0_17/jre/lib/i386/client -ljvm -Wl,-rpath=/usr/local/jdk1.6.0_17/jre/lib/i386:/usr/local/jdk1.6.0_17/jre/lib/i386/client -Wl,-S
+
+#install apache-ant-1.7.1 to /usr/local/apache-ant-1.7.1/bin
+
+#edit Makefile to uncomments following code
+PREFIX_PYTHON=/usr/local/python2.6
+ANT=ant
+PYTHON=$(PREFIX_PYTHON)/bin/python
+JCC=$(PYTHON) -m jcc.__main__
+NUM_FILES=2
+
+
+#make  
+
+/usr/local/python2.6/bin/python -m jcc.__init__ --jar lucene-java-2.9.1/build/lucene-core-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/snowball/lucene-snowball-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/analyzers/common/lucene-analyzers-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/regex/lucene-regex-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/memory/lucene-memory-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/highlighter/lucene-highlighter-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/queries/lucene-queries-2.9.1.jar --jar lucene-java-2.9.1/build/contrib/instantiated/lucene-instantiated-2.9.1.jar --jar build/jar/extensions.jar --package java.lang java.lang.System java.lang.Runtime --package java.util java.util.Arrays java.text.SimpleDateFormat --package java.io java.io.StringReader java.io.InputStreamReader java.io.FileInputStream --exclude org.apache.lucene.queryParser.Token --exclude org.apache.lucene.queryParser.TokenMgrError --exclude org.apache.lucene.queryParser.QueryParserTokenManager --exclude org.apache.lucene.queryParser.ParseException --exclude org.apache.lucene.search.regex.JakartaRegexpCapabilities --exclude org.apache.regexp.RegexpTunnel --python lucene --mapping org.apache.lucene.document.Document 'get:(Ljava/lang/String;)Ljava/lang/String;' --mapping java.util.Properties 'getProperty:(Ljava/lang/String;)Ljava/lang/String;' --sequence org.apache.lucene.search.Hits 'length:()I' 'doc:(I)Lorg/apache/lucene/document/Document;' --rename org.apache.lucene.search.highlight.SpanScorer=HighlighterSpanScorer --version 2.9.1 --module python/collections.py --files 2 --build
+
+#remove --shared for complie
+shared mode is disabled becaused a error reported in linux.
+
+#make 
+/usr/local/jdk1.6.0_17/bin
+

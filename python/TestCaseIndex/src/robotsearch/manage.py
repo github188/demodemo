@@ -8,4 +8,7 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
+    from utils import log_setting
+    log_setting(settings.CONFIG.LOGGING_INI, settings.CONFIG.DATA_ROOT)
+            
     execute_manager(settings)

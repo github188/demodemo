@@ -1,40 +1,44 @@
 
-import sys, os, PyLucene, threading, time
+import sys, os, threading, time
 from datetime import datetime
 from robot.parsing import TestSuite as RobotTestSuite
 from robot.parsing.resourcefile import ResourceFile
 #from robot.conf.settings import RobotSettings
 import logging
 
+import lucene as PyLucene
+
 class RobotIndex(object):
     
     def __init__(self, root, storeDir):        
+        self.logger = logging.getLogger("robot_index")
         self.root = root
         
         if not os.path.exists(storeDir):
             os.mkdir(storeDir)
-            
-        store = PyLucene.FSDirectory.getDirectory(storeDir, True)
-        writer = PyLucene.IndexWriter(store, PyLucene.StandardAnalyzer(), True)
+        
+        self.analyzer = PyLucene.StandardAnalyzer()
+        store = PyLucene.FSDirectory.open(PyLucene.File(storeDir))
+        writer = PyLucene.IndexWriter(store, self.analyzer, True)
         writer.setMaxFieldLength(1024 * 4)
         self.writer = writer
-        self.logger = logging.getLogger("robot_index")
             
     def index_robot_script(self, action='A', path=''):
         self.logger.info("%s-->%s" % (action, path))
         data = RobotScriptData(self.root, path)
         if action != 'A':
             data.remove_from_index(self)
-            #self.__remove_index_suite(schema)
         if action != 'D':
             data.add_to_index(self)
-            #self.__add_index_suite(schema)
             
     def add_document(self, doc):
         self.writer.addDocument(doc)
-    
-    def __remove_index_suite(self, schema):
-        pass
+        
+    def remove_document(self, field, key):
+        #query = PyLucene.QueryParser(field, self.analyzer)
+        #query = query.parse('"%s"' % key)
+        self.logger.debug("remove documents:%s->%s" % (field, key))
+        self.writer.deleteDocuments(PyLucene.Term(field, key))
     
     def optimize(self):
         self.writer.optimize()
@@ -42,7 +46,7 @@ class RobotIndex(object):
     def close(self):
         self.writer.close()
 
-from Schema import TestSuite, TestCase, Keyword
+from Schema import TestSuite, TestCase, Keyword, md5
 class RobotScriptData(object):
     
     def __init__(self, root, path):
@@ -64,7 +68,9 @@ class RobotScriptData(object):
             self.logger.info("resource:%s" % self.path)
             resource = ResourceFile(self.path )
             self.__add_resource_to_index(resource, index, self.relative_path)
-
+    
+    def remove_from_index(self, index):
+        index.remove_document("path_code", md5(self.relative_path))
     
     def __add_resource_to_index(self, res, index, parent=""):
         for kw in res.user_keywords:
@@ -87,7 +93,7 @@ class RobotScriptData(object):
             self.__add_keyword_to_index(kw, index, schema.uuid)
     
     def __add_test_to_index(self, test, index, parent=""):
-        self.logger.debug("index test:%s" % (test.name, ))
+        #self.logger.debug("index test:%s" % (test.name, ))
         
         schema = TestCase(test, parent, self.relative_path)
         document = self.__build_index_document(schema.index_data())
@@ -97,7 +103,7 @@ class RobotScriptData(object):
         #    self.__add_keyword_to_index(kw, index, schema.uuid)
 
     def __add_keyword_to_index(self, keyword, index, parent=""):
-        self.logger.debug("index keyword:%s" % (keyword.name, ))
+        #self.logger.debug("index keyword:%s" % (keyword.name, ))
         
         schema = Keyword(keyword, parent, self.relative_path)
         document = self.__build_index_document(schema.index_data())
@@ -109,7 +115,7 @@ class RobotScriptData(object):
         doc = PyLucene.Document()
         for key, value, index in data:
             #store = store and PyLucene.Field.Store.YES or PyLucene.Field.Store.NO
-            self.logger.debug("field:%s-->%s" % (key, value))
+            #self.logger.debug("field:%s-->%s" % (key, value))
             index = {"NO": PyLucene.Field.Index.NO,
                      "NO_NORMS": PyLucene.Field.Index.NO_NORMS,
                      "TOKENIZED": PyLucene.Field.Index.TOKENIZED,

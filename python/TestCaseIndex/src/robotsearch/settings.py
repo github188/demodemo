@@ -79,5 +79,20 @@ INSTALLED_APPS = (
     'robotsearch.search'
 )
 # = 
-INDEX_ROOT = r"C:\USERS\_work\workspace_pydev\TestCaseIndex\data\index"
+
+import indexsettings_defaults
+try:
+    import indexsettings
+except ImportError:
+    indexsettings = None
+    
+class Settings(object):    
+    def __getattr__(self, name):
+        try:
+            return getattr(indexsettings, name)
+        except AttributeError:
+            return getattr(indexsettings_defaults, name)
+
+CONFIG = Settings()
+
 

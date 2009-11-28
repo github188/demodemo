@@ -1,9 +1,23 @@
 # Create your views here.
-from robotsearch.settings import INDEX_ROOT
 from django.shortcuts import render_to_response
-from PyLucene import QueryParser
 import re
-from time import time
+import time
+from settings import CONFIG
+
+class Benchmark(object):
+    def __init__(self, logger):
+        self.logger = logger
+        self.marks = []
+        
+    def start_mark(self, message=None):
+        self.marks.append((message, time.time()))
+        self.logger.debug("start %s ..." % message)
+        
+    def stop_mark(self, ):
+        message, st = self.marks.pop()
+        et = time.time() - st
+        self.logger.debug("since '%s' elapsed '%s'" % (message, et))
+        return et
 
 class SearchResult(object):
     def __init__(self, doc, i, search=""):
@@ -39,35 +53,40 @@ class SearchResult(object):
         #re.sub(r"\$([\$\w])", x, text)
 
 def search(r, keyword=""):
+    import logging
+    logger = logging.getLogger("search")
+    bench = Benchmark(logger)
+    from lucene import IndexSearcher, StandardAnalyzer, FSDirectory, QueryParser, File, Hit
+    import lucene, os
+    os.environ['JAVA_HOME'] = '/usr/local/jdk1.6.0_17'
+    lucene.initVM(lucene.CLASSPATH)         
     
-    keyword = keyword or r.GET['keyword']
-    
-    from PyLucene import IndexSearcher, StandardAnalyzer, FSDirectory
-    ROBOT_INDEX = IndexSearcher(FSDirectory.getDirectory(INDEX_ROOT, False))
+    directory = FSDirectory.open(File(CONFIG.INDEX_PATH))
+    ROBOT_INDEX = IndexSearcher(directory, True)
     ROBOT_ANALYZER = StandardAnalyzer()
-    
+
+    keyword = keyword or r.GET['keyword']
     query = QueryParser("context", ROBOT_ANALYZER)
     query = query.parse('"%s"' % keyword, )
     
-    print "starting search..."
-    st = time()
+    bench.start_mark("search")
     hits = ROBOT_INDEX.search(query)
-    
-    print "end search, count %s ." % len(hits)
-    
     count = len(hits)
-    
     result = [ ]
-    for i, doc in hits:
+    i = 0
+    for hit in hits:
+        i += 1
         if i > 100: break
+        doc = Hit.cast_(hit).getDocument()
         result.append(SearchResult(doc, i, keyword))
     ROBOT_INDEX.close()
     
-    elaspe = time() - st
-    
+    et = bench.stop_mark()
+
     return render_to_response("robot_search_result.html", {"result":result,
                                                            "count": count,
-                                                           "elaspe": elaspe})
+                                                           "elaspe": et})
+        
+    
 
-import threading
-INDEX_LOCK = threading.BoundedSemaphore(1)
+
