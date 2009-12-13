@@ -1,0 +1,5 @@
+<!ENTITY rfreader.label "Your localized menuitem">
+<!ENTITY rfreaderContext.label "Your Menuitem">
+<!ENTITY rfreaderContext.accesskey "Y">
+<!ENTITY rfreaderToolbar.label "Your Toolbar Button">
+<!ENTITY rfreaderToolbar.tooltip "This is your toolbar button!">

@@ -1,0 +1,5 @@
+content	rfreader	content/
+locale	rfreader	en-US	locale/en-US/
+skin	rfreader	classic/1.0	skin/
+overlay	chrome://browser/content/browser.xul	chrome://rfreader/content/firefoxOverlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://rfreader/skin/overlay.css
