@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<style type="text/css">
+html {
+  font-family: Arial,Helvetica,sans-serif;
+  background-color: white;
+  color: black;
+}
+p {
+  max-width: 60em;
+}
+table {
+  border-collapse: collapse;
+  empty-cells: show;
+  margin: 1em 0em;
+  border: 0.1em solid black;
+}
+th, td {
+  border-style: solid;
+  border-width: 0.05em 0.1em;
+  border-color: black;
+  padding: 0.1em 0.2em;
+  height: 1.5em;
+}
+th {
+  background-color: rgb(192, 192, 192);
+  color: black;
+  border-width: 0.1em;
+  font-weight: bold;
+  text-align: center;
+  text-transform: capitalize;
+  letter-spacing: 0.1em;
+}
+/* Widths of named columns */
+col.name {
+  width: 10em;
+}
+.action, .value, .arg {
+  width: 15em;
+}
+/* Properties for the name column 
+- td:first-child should work in CSS 2.1 avare browsers (tested in Firefox)
+- col.name is against specs but works in IE
+*/
+td:first-child, col.name {
+  background-color: rgb(240, 240, 240);
+  text-transform: capitalize;
+  letter-spacing: 0.1em;
+}
+/* required for IE */
+th {
+  font-style: normal;
+}
+</style>
+<title>Robot Test Cases</title></head>
+<body>
+<h1>SwitchOver</h1>
+
+<table border="1">
+<colgroup span="99"><col class="name"><col class="value" span="4"></colgroup>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Value</th>
+<th>value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Resource</td><td>IpaMml.html</td><td></td><td></td><td></td></tr><tr><td>Force Tags</td><td>not-ready</td><td>test</td><td>no-test</td><td></td></tr>
+
+</tbody>
+</table>
+
+<table border="1">
+<colgroup span="99"><col class="name"><col class="value" span="4"></colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>${HOST}</td><td>10.56.117.19</td><td></td><td></td><td></td></tr><tr><td>${aa}</td><td>list<br></td><td>2</td><td>3</td><td>4</td></tr><tr>
+<td>${MESSAGE}</td>
+<td><br></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>@{b}</td>
+<td>OMU</td>
+<td>1</td>
+<td>192.168.1.1</td>
+<td></td>
+</tr><tr><td>#...</td><td>OMU</td><td>2</td><td>192.168.1.2</td><td></td></tr><tr><td>#...</td><td>ICSU</td><td>3</td><td>192.168.1.3</td><td></td></tr><tr><td>${b}<br></td><td>2</td><td></td><td></td><td></td></tr><tr><td>${c}</td><td>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffddddddddddddddddddddddddddddddddddddd<br><br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd<br><br><br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd<br>fffffffffffddddddddddddddddddddddddddddddddddddd</td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+
+<table border="1">
+<colgroup span="99"><col class="name"><col class="action"><col class="arg" span="3"></colgroup>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Action</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Equals_demo</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>${aa}</td><td>Set variable</td><td>list</td><td></td><td></td><td></td></tr><tr><td></td><td>create&nbsp;xxx</td><td>${aa}</td><td>${b}</td><td></td><td></td><td></td></tr><tr><td></td><td>:For</td><td>${i}</td><td>In Range</td><td>10</td><td></td><td></td></tr><tr><td></td><td></td><td>log</td><td>${i}</td><td></td><td></td><td></td></tr><tr><td></td><td></td><td>Sleep</td><td>1</td><td></td><td></td><td></td></tr><tr><td></td><td>Sleep</td><td>10</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td>Log</td><td>${c}</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+
+<table border="1">
+<colgroup span="99"><col class="name"><col class="action"><col class="arg" span="3"></colgroup>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Action</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create xxx</td>
+<td>[Arguments]</td><td>${c}</td>
+
+<td>${b}</td>
+<td><br></td>
+</tr>
+<tr><td></td><td>${aa}</td><td>create list</td><td></td><td></td></tr><tr>
+<td>Test3</td><td></td><td></td>
+
+
+<td></td>
+<td></td>
+</tr><tr><td></td><td>Log</td><td>aa</td><td></td><td></td></tr><tr><td></td><td>Fail</td><td>test</td><td></td><td></td></tr><tr><td>Test4</td><td>test_output</td><td>Test4&nbsp;Test4&nbsp;Test4</td><td></td><td></td></tr>
+</tbody>
+</table>
+
+</body></html>

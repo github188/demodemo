@@ -1,0 +1,8 @@
+#logging setting.
+LOGGING_FILE = robot_debuger.log
+LOGGING_LEVEL = INFO
+
+#web interface setting.
+INTERFACE_LIST = rdb.interface.web.WebDebuger
+WEB_PORT = 8000
+WEB_BIND = 0.0.0.0

@@ -1,0 +1,5 @@
+BPS_LIST = create*
+BPS_LIST = dd*
+
+WATCHING_LIST = ${b}
+WATCHING_LIST = ${HOST}

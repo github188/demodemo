@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20100131 21:07:11.592" generator="Robot 2.1.2 (Python 2.5.2 on win32)">
+<suite source="c:\users\_work\workspace_pydev\robotdebuger\tests\robot" name="Robot">
+<doc></doc>
+<metadata>
+</metadata>
+<suite source="c:\users\_work\workspace_pydev\robotdebuger\tests\robot\large log demo.html" name="Large Log Demo">
+<doc></doc>
+<metadata>
+</metadata>
+<test critical="yes" name="Equals_demo" timeout="">
+<doc></doc>
+<kw type="set" name="${aa} = BuiltIn.Set Variable" timeout="">
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<arguments>
+<arg>list</arg>
+</arguments>
+<msg timestamp="20100131 21:07:18.062" html="no" level="INFO">${aa} = list</msg>
+<status status="PASS" endtime="20100131 21:07:18.062" starttime="20100131 21:07:18.062"></status>
+</kw>
+<kw type="kw" name="Create Xxx" timeout="">
+<doc></doc>
+<arguments>
+<arg>${aa}</arg>
+<arg>${b}</arg>
+</arguments>
+<kw type="set" name="${aa} = BuiltIn.Create List" timeout="">
+<doc>Returns a list containing given items.</doc>
+<arguments>
+</arguments>
+<msg timestamp="20100131 21:09:31.671" html="no" level="INFO">${aa} = [ ]</msg>
+<status status="PASS" endtime="20100131 21:09:31.671" starttime="20100131 21:07:47.500"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:31.671" starttime="20100131 21:07:18.062"></status>
+</kw>
+<kw type="for" name="${i} IN RANGE [ 10 ]" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="foritem" name="${i} = 0" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:31.671" html="no" level="INFO">0</msg>
+<status status="PASS" endtime="20100131 21:09:31.671" starttime="20100131 21:09:31.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:32.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:32.671" starttime="20100131 21:09:31.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:32.671" starttime="20100131 21:09:31.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 1" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:32.671" html="no" level="INFO">1</msg>
+<status status="PASS" endtime="20100131 21:09:32.671" starttime="20100131 21:09:32.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:33.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:33.671" starttime="20100131 21:09:32.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:33.671" starttime="20100131 21:09:32.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 2" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:33.671" html="no" level="INFO">2</msg>
+<status status="PASS" endtime="20100131 21:09:33.671" starttime="20100131 21:09:33.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:34.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:34.671" starttime="20100131 21:09:33.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:34.671" starttime="20100131 21:09:33.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 3" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:34.671" html="no" level="INFO">3</msg>
+<status status="PASS" endtime="20100131 21:09:34.671" starttime="20100131 21:09:34.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:35.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:35.671" starttime="20100131 21:09:34.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:35.671" starttime="20100131 21:09:34.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 4" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:35.671" html="no" level="INFO">4</msg>
+<status status="PASS" endtime="20100131 21:09:35.671" starttime="20100131 21:09:35.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:36.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:36.671" starttime="20100131 21:09:35.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:36.671" starttime="20100131 21:09:35.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 5" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:36.671" html="no" level="INFO">5</msg>
+<status status="PASS" endtime="20100131 21:09:36.671" starttime="20100131 21:09:36.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:37.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:37.671" starttime="20100131 21:09:36.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:37.671" starttime="20100131 21:09:36.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 6" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:37.671" html="no" level="INFO">6</msg>
+<status status="PASS" endtime="20100131 21:09:37.671" starttime="20100131 21:09:37.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:38.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:38.671" starttime="20100131 21:09:37.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:38.671" starttime="20100131 21:09:37.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 7" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:38.671" html="no" level="INFO">7</msg>
+<status status="PASS" endtime="20100131 21:09:38.671" starttime="20100131 21:09:38.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:39.671" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:39.671" starttime="20100131 21:09:38.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:39.671" starttime="20100131 21:09:38.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 8" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:39.671" html="no" level="INFO">8</msg>
+<status status="PASS" endtime="20100131 21:09:39.671" starttime="20100131 21:09:39.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:40.687" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:40.687" starttime="20100131 21:09:39.671"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:40.687" starttime="20100131 21:09:39.671"></status>
+</kw>
+<kw type="foritem" name="${i} = 9" timeout="">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${i}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:40.687" html="no" level="INFO">9</msg>
+<status status="PASS" endtime="20100131 21:09:40.687" starttime="20100131 21:09:40.687"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>1</arg>
+</arguments>
+<msg timestamp="20100131 21:09:41.687" html="no" level="INFO">Slept 1 second</msg>
+<status status="PASS" endtime="20100131 21:09:41.687" starttime="20100131 21:09:40.687"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:41.687" starttime="20100131 21:09:40.687"></status>
+</kw>
+<status status="PASS" endtime="20100131 21:09:41.687" starttime="20100131 21:09:31.671"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Sleep" timeout="">
+<doc>Pauses the test executed for the given time.</doc>
+<arguments>
+<arg>10</arg>
+</arguments>
+<msg timestamp="20100131 21:09:51.687" html="no" level="INFO">Slept 10 seconds</msg>
+<status status="PASS" endtime="20100131 21:09:51.687" starttime="20100131 21:09:41.687"></status>
+</kw>
+<kw type="kw" name="BuiltIn.Log" timeout="">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${c}</arg>
+</arguments>
+<msg timestamp="20100131 21:09:51.687" html="no" level="INFO">fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffdddddddddddddddddddddddddddddddddddddfffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd fffffffffffddddddddddddddddddddddddddddddddddddd</msg>
+<status status="PASS" endtime="20100131 21:09:51.687" starttime="20100131 21:09:51.687"></status>
+</kw>
+<tags>
+<tag>no-test</tag>
+<tag>not-ready</tag>
+<tag>test</tag>
+</tags>
+<status status="PASS" endtime="20100131 21:09:51.687" starttime="20100131 21:07:18.062"></status>
+</test>
+<status status="PASS" endtime="20100131 21:09:51.687" starttime="20100131 21:07:12.265"></status>
+</suite>
+<status status="PASS" endtime="20100131 21:09:51.687" starttime="20100131 21:07:11.842"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="0" pass="1">Critical Tests</stat>
+<stat fail="0" pass="1">All Tests</stat>
+</total>
+<tag>
+<stat info="" fail="0" pass="1">no-test</stat>
+<stat info="" fail="0" pass="1">not-ready</stat>
+<stat info="" fail="0" pass="1">test</stat>
+</tag>
+<suite>
+<stat fail="0" doc="Robot" pass="1">Robot</stat>
+<stat fail="0" doc="Robot.Large Log Demo" pass="1">Robot.Large Log Demo</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
