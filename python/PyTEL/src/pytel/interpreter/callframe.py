@@ -19,12 +19,11 @@ class CallFrame(object):
         self.stack = []
         
         self.vars = {}
-        
-        self.functions = {}
-        
+                
         self.registers = {'CO':None, 'C1':None, 'C2':None, 'C3':None, }
         
         self.operation_index = 0
+        self.return_value = None
         
     def pop(self):
         return self.stack.pop()
@@ -46,10 +45,12 @@ class CallFrame(object):
     def next_data(self, index = -1):
         if index != -1: self.operation_index = index
         
-        o = self.bytedata.code[self.operation_index]
-        self.operation_index += 1
-        
-        return o
+        if self.operation_index >= 0 and len(self.bytedata.code) > self.operation_index:
+            o = self.bytedata.code[self.operation_index]
+            self.operation_index += 1        
+            return o
+        else:
+            return None
         
     def var_reference(self, name, ref=None):
         if ref is not None:
@@ -59,16 +60,9 @@ class CallFrame(object):
             return self.vars[name]
         else:
             return None
-
-    def func_reference(self, name, func=None):
-        if ref is not None:
-            self.functions[name] = ref
-                
-        if self.functions.has_key(name):
-            return self.functions[name]
-        else:
-            return None
-    
+        
+    def load_code(self, code):
+        self.bytedata = code
     
     def register(self, name, value=None):
         if not self.registers.has_key(name):

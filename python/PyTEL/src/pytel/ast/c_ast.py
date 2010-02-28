@@ -431,6 +431,9 @@ class ID(Node):
 
         for c in self.children():
             c.show(buf, offset + 2, attrnames, showcoord)
+            
+    def __str__(self):
+        return "<ID>%s" % self.name
 
 
 class Goto(Node):

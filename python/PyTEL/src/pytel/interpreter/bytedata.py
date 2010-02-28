@@ -24,7 +24,7 @@ class ByteData(object):
         self.argConst = 0
         
         #nested function declare
-        self.functions = []
+        self.functions = {}
         
         #current coding fragment return type
         self.return_type = 'void'
@@ -33,7 +33,7 @@ class ByteData(object):
         self.name = 'void'
         
     def update_coord(self, coord):
-        self.coords.append((len(self.code), corrd))
+        self.coords.append((len(self.code), coord))
     
     def add_label(self, name=None):
         name = name or self.new_label()
@@ -48,6 +48,18 @@ class ByteData(object):
         
         return "label_%s" % self.labels
     
+    def add_operation(self, *args):
+        self.code.extend(args)
+    
+    def func_reference(self, name, func=None):
+        if func is not None:
+            self.functions[name] = func
+                
+        if self.functions.has_key(name):
+            return self.functions[name]
+        else:
+            return None
+
     def show(self, buf=sys.stdout):
 
         buf.write("name:%s\n" % self.name)
@@ -56,13 +68,21 @@ class ByteData(object):
         
         labels = [ (k, v) for k, v in self.labels.iteritems() ]
         labels.sort(lambda x, y: cmp(x[1], y[1]))
-        i = 0
-        while i < len(self.code):
+        labels.reverse()
+        
+        for i in range(len(self.code)):
             if len(labels) > 0 and labels[-1][1] == i:
                 buf.write("%s:\n" % labels[-1][0])
+                labels.pop()
             
-            buf.write("%s:\n" % self.code[i])
-            
+            buf.write("(%s, %s)," % (i, self.code[i]))
+        
+        if self.functions:
+            buf.write("\n----FUNC DECL----\n")
+            for name, code in self.functions.iteritems():
+                buf.write("Function:%s,\n" % name)
+                code.bytedata.show(buf)
+        
             
             
             
