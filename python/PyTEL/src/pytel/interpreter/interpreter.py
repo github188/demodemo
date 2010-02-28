@@ -301,11 +301,13 @@ class Interpreter(object):
     def _c_FuncCall(self, func_call, code):
         """
         """
+        len_args = 0
         #args is a ExprList object
-        args_expr = func_call.args.exprs
-        len_args = len(args_expr)
-        for expr in args_expr:
-            self.assemble_ast(expr, code)
+        if func_call.args:
+            args_expr = func_call.args.exprs
+            len_args = len(args_expr)
+            for expr in args_expr:
+                self.assemble_ast(expr, code)
         
         code.add_operation(OP.call, func_call.name.name, len_args)
             
@@ -376,7 +378,7 @@ class Interpreter(object):
         code.add_operation(OP.goto, end_label)
         code.add_label(false_label)
         
-        self.assemble_ast(stmt.iffalse, code)
+        if stmt.iffalse: self.assemble_ast(stmt.iffalse, code)
         code.add_label(end_label)
         code.add_operation(OP.pop) #pop the result of expression
         

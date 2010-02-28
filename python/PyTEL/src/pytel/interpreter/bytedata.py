@@ -8,7 +8,7 @@ class ByteData(object):
     def __init__(self):
         
         #a sequence used to generate label name
-        self.labels = 0
+        self.label_sep = 0
         
         #byte
         self.code = []
@@ -44,9 +44,9 @@ class ByteData(object):
         return name
         
     def new_label(self, ):
-        self.labels += 1
+        self.label_sep += 1
         
-        return "label_%s" % self.labels
+        return "label_%s" % self.label_sep
     
     def add_operation(self, *args):
         self.code.extend(args)

@@ -46,6 +46,38 @@ class TestPyTel_Compiler(unittest.TestCase):
         
         return func.bytedata.code
     
+    def _complie_with_label(self, code):
+        xx = "void function main() %s endfunction" % code
+        
+        ast = CParser().parse(xx, "#0")
+        interp = Interpreter()
+        bytedata = interp.assemble_ast(ast)
+        
+        func = bytedata.func_reference("main")
+        
+        return (func.bytedata.code, func.bytedata.labels) 
+    
+
+    def test_c_if_statement(self):
+        byte, labels = self._complie_with_label("if(1>2) hello(); endif")
+        self.assertEqual(byte, ['PUSH', 1, 'PUSH', 2, 'GT', 
+                                'UNLESS_GOTO', 'label_2', 
+                                'CALL', 'hello', 0, 
+                                'GOTO', 'label_3', 
+                                'POP'])
+        self.assertEqual(labels, {'label_2': 12, 'label_3': 12})
+
+    def test_c_if_else_statement(self):
+        byte, labels = self._complie_with_label("if(1) do_true();else do_false(); endif")
+        self.assertEqual(byte,  ['PUSH', 1, 
+                                 'UNLESS_GOTO', 'label_2', 
+                                 'CALL', 'do_true', 0, 
+                                 'GOTO', 'label_3', 
+                                 'CALL', 'do_false', 0, 
+                                 'POP'])
+        self.assertEqual(labels, {'label_2': 9, 'label_3': 12})
+        
+    
     def test_c_function_call(self):
         byte = self._complie_express_code("sayHello(abc, 123);")
         self.assertEqual(byte, ['LOAD_VAR', 'abc', 'PUSH', 123, 'CALL', 'sayHello', 2])
