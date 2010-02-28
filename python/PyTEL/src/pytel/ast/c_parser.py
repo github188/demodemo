@@ -352,7 +352,7 @@ class CParser(PLYParser):
         p[0] = c_ast.DoWhile(p[5], p[2], self._coord(p.lineno(1)))
 
     def p_iteration_statement_3(self, p):
-        """ iteration_statement : FOR LPAREN expression SEMI expression_opt SEMI expression_opt RPAREN compound_statement ENDFOR """
+        """ iteration_statement : FOR LPAREN expression_opt SEMI expression_opt SEMI expression_opt RPAREN compound_statement ENDFOR """
         p[0] = c_ast.For(p[3], p[5], p[7], p[9], self._coord(p.lineno(1)))
 
     def p_jump_statement_1(self, p):

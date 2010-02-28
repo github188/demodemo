@@ -79,7 +79,7 @@ selection_statement : IF LPAREN expression RPAREN statement ELSE statement ENDIF
 selection_statement : SWITCH LPAREN expression RPAREN statement ENDSWITCH
 iteration_statement : WHILE LPAREN expression RPAREN statement ENDWHILE
 iteration_statement : DO statement WHILE LPAREN expression RPAREN 
-iteration_statement : FOR LPAREN expression SEMI expression_opt SEMI expression_opt RPAREN statement ENDFOR
+iteration_statement : FOR LPAREN expression_opt SEMI expression_opt SEMI expression_opt RPAREN statement ENDFOR
 
 jump_statement  : GOTO ID SEMI     ?does supported?
 jump_statement  : BREAK SEMI

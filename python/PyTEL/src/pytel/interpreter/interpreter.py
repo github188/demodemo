@@ -123,7 +123,7 @@ class Interpreter(object):
         if hasattr(self, handler):
             getattr(self, handler)(ast, code)
         else:
-            self.error_msg("not found AST handler:%s" % ast)
+            self.error_msg("not found AST handler:%s" % handler, ast.coord)
         
         return code
     
@@ -336,7 +336,8 @@ class Interpreter(object):
         for var in decl.vars:
             op = OP.decl_array if var.name.type == 'array' else OP.decl_var
             if var.name.type == 'array':
-                length = eval(var.index) or len(var.init or [])
+                length = var.name.index and eval(var.name.index.value) or \
+                            len(var.init or [])
                 init_array(var.name.name.name, length, var.init)
             else:
                 init_var(var.name.name.name, var.init)
@@ -356,6 +357,20 @@ class Interpreter(object):
             code.add_operation(OP.push, const.value[1:-1])
         else:
             self.error_msg("invalid const", const.coord)
+
+    def _c_Assignment(self, assign, code):
+        """ a<-[0],
+            a[0]<-[0]
+        """
+        self.assemble_ast(assign.value, code)
+        
+        var = assign.var
+        if var.type == 'array':
+            self.assemble_ast(var.index, code)
+            code.add_operation(OP.pop_reg, "[C0]")
+            code.add_operation(OP.save_array, var.name.name, '[C0]', 1)
+        else:
+            code.add_operation(OP.save_var, var.name.name)
 
     def _c_Varible(self, var, code):
         if var.type == 'array':
@@ -386,7 +401,8 @@ class Interpreter(object):
         
         self.statement_stack.append(stmt)
         
-        self.assemble_ast(stmt.init, code)
+        if stmt.init:
+            self.assemble_ast(stmt.init, code)
 
         stmt.cond_label = code.new_label()
         stmt.next_label = code.new_label()
@@ -395,7 +411,12 @@ class Interpreter(object):
         
         #start condition expression
         code.add_label(stmt.cond_label)
-        self.assemble_ast(stmt.cond, code)
+        
+        if stmt.cond:
+            self.assemble_ast(stmt.cond, code)
+        else: #always is true, if omit condtion expression.
+            code.add_operation(OP.push, 1)
+
         code.add_operation(OP.unless_goto, stmt.pop_label)
         
         #start statement
@@ -404,7 +425,8 @@ class Interpreter(object):
         
         #start next statement
         code.add_label(stmt.next_label)
-        self.assemble_ast(stmt.next, code)
+        if stmt.next:
+            self.assemble_ast(stmt.next, code)
         code.add_operation(OP.goto, stmt.cond_label)
         
         #pop condition result.
