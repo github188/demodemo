@@ -117,12 +117,13 @@ class Interpreter(object):
     def assemble_ast(self, ast, code=None):
         """convert AST to byte code."""
         if code is None: code = ByteData()
+        assert ast, "AST object is required."
         
         handler = "_c_%s" % type(ast).__name__
         if hasattr(self, handler):
             getattr(self, handler)(ast, code)
         else:
-            error_msg("not found AST handler:%s" % ast)        
+            self.error_msg("not found AST handler:%s" % ast)
         
         return code
     
@@ -227,11 +228,14 @@ class Interpreter(object):
     
     def _c_FunctionDecl(self, funDecl, code):        
         func_code = ByteData()
-        self._c_ParamList(funDecl.param, code)
-        self.assemble_ast(funDecl.stmt, code)
+        param_len = 0
+        if funDecl.param:
+            self._c_ParamList(funDecl.param, func_code)
+            param_len = len(funDecl.param.params)
+            
+        self.assemble_ast(funDecl.stmt, func_code)
                 
-        param_list = funDecl.param.params
-        func = Function(funDecl.name.name, funDecl.type, len(param_list), func_code)
+        func = Function(funDecl.name.name, funDecl.type, param_len, func_code)
         code.func_reference(funDecl.name.name, func)
         
     def _c_FileAST(self, ast, code):
@@ -241,6 +245,10 @@ class Interpreter(object):
     def _c_ParamList(self, paramList, code):
         for param in paramList.children():
             self._c_Param(param, code)
+            
+    def _c_ExprList(self, expr, code):
+        for e in expr.children():
+            self.assemble_ast(e, code)
         
     def _c_Param(self, param, code):
         
@@ -286,8 +294,8 @@ class Interpreter(object):
             self.assemble_ast(node.right, code)
             code.add_label(false_label)
         else:
-            self._c_expression(node.left)
-            self._c_expression(node.right)
+            self.assemble_ast(node.left, code)
+            self.assemble_ast(node.right, code)
             code.add_operation(op.type)
             
     def _c_FuncCall(self, func_call, code):
@@ -507,7 +515,7 @@ class Interpreter(object):
                 
     def _op_SAVE_VAR(self, frame):
         name = frame.next_data()
-        value = frame.top()
+        value = frame.pop()
         
         var = self.var_reference(name)
         
@@ -540,7 +548,7 @@ class Interpreter(object):
         var.value[index: index + length] = value
 
     def _op_SAVE_REF(self, frame):
-        pass
+        name = frame.next_data()
                 
     def _op_CALL(self, frame):
         
