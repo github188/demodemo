@@ -61,7 +61,8 @@ class RobotScriptData(object):
         try:
             self.logger.info("suite:%s" % self.path)
             main_suite = RobotTestSuite(self.path)
-            self.__add_suite_to_index(main_suite, index, self.relative_path)
+            # 'trunk,%s' used to support branch, current only trunk is supported.
+            self.__add_suite_to_index(main_suite, index, "trunk,%s" % self.relative_path)
         except Exception, e:
             if str(e).count("contains no test cases") == 0: raise
             
@@ -70,7 +71,7 @@ class RobotScriptData(object):
             self.__add_resource_to_index(resource, index, self.relative_path)
     
     def remove_from_index(self, index):
-        index.remove_document("path_code", md5(self.relative_path))
+        index.remove_document("path_code", md5("trunk,%s" % self.relative_path))
     
     def __add_resource_to_index(self, res, index, parent=""):
         for kw in res.user_keywords:

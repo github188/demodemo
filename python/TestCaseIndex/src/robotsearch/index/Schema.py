@@ -11,7 +11,7 @@ class Schema(object):
         self.path = path
         self.parent = parent
         self.data = data
-        self.path_code = md5(path)
+        self.path_code = md5("trunk,%s" % path)
         #self.longname = None
         self.index_field = [('path', 'NO'),
                             #('uuid', 'UN_TOKENIZED'),

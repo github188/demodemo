@@ -1,7 +1,7 @@
-import logging, os, time, sys
+import logging, os, time, sys, datetime
 import indexsettings_defaults
 from common.ctlDaemon import ControllableDaemon
-from common.common import read_from_file, write_to_file, remove_path
+from common.common import read_from_file, write_to_file, remove_path, run_command
 from common.svnpy import CliClient
 
 try:
@@ -23,12 +23,14 @@ class TestCaseIndexer(ControllableDaemon):
         print "work dir:%s" % CONFIG.DATA_ROOT
         ControllableDaemon.__init__(self, 'testcase indexer daemon', 
                                     CONFIG.RUNNING_FLAG, 
-                                    CONFIG.CLOSING_FLAG)
+                                    CONFIG.CLOSING_FLAG,
+                                    CONFIG.RUN_DAEMON)
     
     def prepare(self):
         from utils import log_setting
         log_setting(CONFIG.LOGGING_INI, CONFIG.DATA_ROOT)
         self.logger = logging.getLogger("index_daemon")
+        self.logger.path = CONFIG.DATA_ROOT
         import lucene
         os.environ['JAVA_HOME'] = '/usr/local/jdk1.6.0_17'
         lucene.initVM(lucene.CLASSPATH)
@@ -40,11 +42,17 @@ class TestCaseIndexer(ControllableDaemon):
         self.last_index_version = None
         
         self.logger.info("test case path:%s" % CONFIG.TESTCASE_ROOT)
+        #self.logger.removeHandler(hdlr)
         
         self.run = self.update_subversion
         os.chdir(CONFIG.DATA_ROOT)
             
-    def update_subversion(self):
+    def update_subversion(self):        
+        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        log_file = 'logs/builds/%s.log' % timestamp
+        self.build_logging_handler = logging.handlers.IPATARotatingFileHandler(log_file, 'a', 20000000, 1)
+        logging.getLogger("").addHandler(self.build_logging_handler)
+        
         if CONFIG.AUTO_UPDATE:
             self.logger.info("auto updating testcase from subversion")
             self.new_updated_version = self.svnclient.update()
@@ -65,6 +73,7 @@ class TestCaseIndexer(ControllableDaemon):
         
         if os.path.isfile(self.last_index_trigger):
             self.last_index_version = read_from_file(self.last_index_trigger)
+            self.last_index_version = self.last_index_version.strip()
             self.logger.info("last index version:%s" % self.last_index_version)
             
             self.updated_items = None
@@ -91,6 +100,11 @@ class TestCaseIndexer(ControllableDaemon):
     
     def waiting_polling_interval(self):
         self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
+        if(self.build_logging_handler):
+            logging.getLogger("").removeHandler(self.build_logging_handler)
+            self.build_logging_handler.flush()
+            self.build_logging_handler.close()
+            
         for i in range(0, CONFIG.POLLING_INTERVAL + 5, 5):
             if self.is_closing(): break
             time.sleep(5)
@@ -117,6 +131,8 @@ class TestCaseIndexer(ControllableDaemon):
                 self.logger.warning("not exists file '%s' in local!" % item['path'])
                 continue
             indexer.index_robot_script(status, item['path'])
+            self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
+                                                           item['path']))
                         
         indexer.optimize()
         indexer.close()
@@ -159,14 +175,21 @@ class TestCaseIndexer(ControllableDaemon):
         indexer.close()
         
         self.run = self.update_index_trigger
+        
+    def run_once(self):
+        self.prepare()
+        self.run()
     
     def _create_indexer(self):
         from index.RobotIndex import RobotIndex
         return RobotIndex(CONFIG.TESTCASE_ROOT, CONFIG.INDEX_PATH)
-        
+
+    def _update_test_case_db(self, status, path):
+        scripts = CONFIG.UPDATE_TEST_CASE_DB % (path, status)
+        self.logger.info(run_command(scripts, self.logger, level=None))
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ['start', 'stop', 'forcestart']:
+    if len(sys.argv) != 2 or sys.argv[1] not in ['start', 'stop', 'forcestart', 'run_once']:
         print 'python index_svn_testcase start|stop|forcestart'
     else:
         import lucene

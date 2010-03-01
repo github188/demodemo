@@ -8,6 +8,10 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
+    import sys, os
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(cwd)
+    
     from utils import log_setting
     log_setting(settings.CONFIG.LOGGING_INI, settings.CONFIG.DATA_ROOT)
             

@@ -19,7 +19,7 @@ import os.path
 def log_setting(logging_ini, logging_path):
     import logging.config
     import logging.handlers
-    class __IPATARotatingFileHandler(logging.handlers.RotatingFileHandler):    
+    class __IPATARotatingFileHandler(logging.handlers.RotatingFileHandler):
         def __init__(self, filename, *args):
             filename = os.path.join(logging_path, filename)
             dir = os.path.dirname(filename)

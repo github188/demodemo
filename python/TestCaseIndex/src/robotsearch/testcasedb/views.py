@@ -65,7 +65,7 @@ def search(r, keyword=""):
     ROBOT_INDEX = IndexSearcher(directory, True)
     ROBOT_ANALYZER = StandardAnalyzer()
 
-    keyword = keyword or r.GET.get('keyword', '') or 'Get units'
+    keyword = keyword or r.GET['keyword']
     query = QueryParser("context", ROBOT_ANALYZER)
     query = query.parse('"%s"' % keyword, )
     
@@ -85,8 +85,7 @@ def search(r, keyword=""):
 
     return render_to_response("robot_search_result.html", {"result":result,
                                                            "count": count,
-                                                           "elaspe": et,
-                                                           "keyword":keyword})
+                                                           "elaspe": et})
         
     
 

@@ -10,6 +10,7 @@ CLOSING_FLAG = join_path(DATA_ROOT, ".index_closing")
 
 TESTCASE_ROOT = r"C:\USERS\_work\workspace_pydev\TestCaseIndex\data\TRM"
 INDEX_PATH = join_path(DATA_ROOT, "index_data")
+UPDATE_TEST_CASE_DB = r"/opt/extra_tools/rbtgrep/robotsearch/manage.py update_test_case_db --path %s --status %s"
 
 LAST_UPDATED = join_path(DATA_ROOT, ".last_update_svn")
 

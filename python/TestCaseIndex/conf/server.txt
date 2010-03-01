@@ -1,7 +1,7 @@
 python manage.py runfcgi method=threaded host=127.0.0.1 port=3033
 
 
-python manage.py runfcgi method=prefork maxchildren=2 socket=/opt/extra_tools/rbtgrep/fcgi.sock pidfile=django.pid
+python manage.py runfcgi method=prefork maxchildren=2 socket=/opt/extra_tools/rbtgrep/fcgi.sock pidfile=/opt/extra_tools/rbtgrep/django.pid
 python manage.py runfcgi daemonize=false socket=/opt/extra_tools/rbtgrep/fcgi.sock maxrequests=1
 
 FSDirectory.getDirectory("/opt/extra_tools/rbtgrep/data/index_data", False)
@@ -9,3 +9,5 @@ FSDirectory.getDirectory("/opt/extra_tools/rbtgrep/data/index_data", False)
 from lucene import IndexSearcher
 
 svn di --summarize -r 38256:HEAD /opt/extra_tools/testcase_for_rbtgrep/TestCase/FDT/TT/TRM
+
+http://10.56.126.77/rbtgrep/
