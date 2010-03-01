@@ -130,9 +130,13 @@ class TestCaseIndexer(ControllableDaemon):
             if not os.path.isfile(item['path']):
                 self.logger.warning("not exists file '%s' in local!" % item['path'])
                 continue
-            indexer.index_robot_script(status, item['path'])
-            self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
-                                                           item['path']))
+            try:
+                indexer.index_robot_script(status, item['path'])
+                self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
+                                                               item['path']))
+            except Exception, e:
+                logger.error("error path:%s" % item['path'])
+                logger.exception(e)
                         
         indexer.optimize()
         indexer.close()
@@ -158,7 +162,7 @@ class TestCaseIndexer(ControllableDaemon):
                     logger.info("elaspe time:%s" % (time.time() - tt))
                 except Exception, e:
                     logger.error("error path:%s" % path)
-                    logger.error("%s" % e)
+                    logger.exception(e)
         
         try:        
             os.path.walk(CONFIG.TESTCASE_ROOT, walker, None)
