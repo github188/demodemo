@@ -14,12 +14,14 @@ class RobotIndex(object):
         self.logger = logging.getLogger("robot_index")
         self.root = root
         
+        create_new = False
         if not os.path.exists(storeDir):
             os.mkdir(storeDir)
+            create_new = True
         
         self.analyzer = PyLucene.StandardAnalyzer()
         store = PyLucene.FSDirectory.open(PyLucene.File(storeDir))
-        writer = PyLucene.IndexWriter(store, self.analyzer, True)
+        writer = PyLucene.IndexWriter(store, self.analyzer, create_new)
         writer.setMaxFieldLength(1024 * 4)
         self.writer = writer
             

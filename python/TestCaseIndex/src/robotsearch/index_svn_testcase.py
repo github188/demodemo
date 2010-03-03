@@ -135,8 +135,8 @@ class TestCaseIndexer(ControllableDaemon):
                 self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
                                                                item['path']))
             except Exception, e:
-                logger.error("error path:%s" % item['path'])
-                logger.exception(e)
+                self.logger.error("error path:%s" % item['path'])
+                self.logger.exception(e)
                         
         indexer.optimize()
         indexer.close()
@@ -193,6 +193,8 @@ class TestCaseIndexer(ControllableDaemon):
         self.logger.info(run_command(scripts, self.logger, level=None))
 
 def main():
+    #fix robot version problem in 126.77
+    sys.path.insert(0, '/opt/extra_tools/rbtgrep/libs')
     if len(sys.argv) != 2 or sys.argv[1] not in ['start', 'stop', 'forcestart', 'run_once']:
         print 'python index_svn_testcase start|stop|forcestart'
     else:
