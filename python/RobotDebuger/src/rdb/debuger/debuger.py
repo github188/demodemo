@@ -108,13 +108,18 @@ class Debuger(object):
             raise        
     
     def check_break_points(self):
+        matched_bps = []
+        
         for bp in list(self.break_points):
             if bp.expired:
                 self.remove_breakpoint(bp)
                 continue
             if bp.active and bp.matched_context(self.call_stack):
-                self.pause(bp)
-                break
+                matched_bps.append(bp)
+        
+        #all break points should be checked, because the 'expired' need evaluated.
+        #but the program paused once.
+        if len(matched_bps) > 0: self.pause(matched_bps[0])
     
     def pause(self, breakpoint):
         self.active_break_point = breakpoint

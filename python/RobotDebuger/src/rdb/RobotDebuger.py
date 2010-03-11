@@ -3,20 +3,27 @@ from contextlib import closing
 import os
 
 from debuger.debuger import Debuger
-from debuger.breakpoints import KeywordBreakPoint
+from debuger.breakpoints import KeywordBreakPoint, CallStackBreakPoint
 from threading import Thread
-import logging
+import logging, types
 
 class DebugSetting(object):
     def __init__(self, path=None):
-        import pkg_resources        
-        logging_config = pkg_resources.resource_filename('rdb', "settings.rdb")
+        try:
+            import pkg_resources        
+            logging_config = pkg_resources.resource_filename('rdb', "settings.rdb")
+        except:
+            logging_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                          "settings.rdb")
+            
         self.load_from_file(logging_config)
         
         self.BPS_LIST = []
         self.WATCHING_LIST = []
+        self.source_file = None
     
     def load_from_file(self, path):
+        self.source_file = path
         with closing(open(path, 'r')) as records:
             for l in records:
                 l = l.strip()
@@ -31,6 +38,7 @@ class DebugSetting(object):
                         setattr(self, name, [value, ])
                 else:
                     setattr(self, name, value)
+        
 
 class DebugThread(Thread):
     def __init__(self, interface, args):
@@ -40,7 +48,36 @@ class DebugThread(Thread):
         self.args = args
     
     def run(self):
-        self.interface.start(self.args)
+        logger = logging.getLogger("rbt.int")
+        try:
+            self.interface.start(self.args)
+        except BaseException, e:
+            logger.exception(e)
+        
+class TelentMonitorProxy(object):
+    def __init__(self, rdb):
+        self.rdb = rdb
+        self.logger = logging.getLogger("tel.monitor")
+        
+    def write(self, c):
+        for m in self.rdb.telnet_monitor_list:
+            try:
+                m.write(c)
+            except Exception, e:
+                self.logger.warning("Exception:%s in %s" % (e, m))
+                
+class FileMonitor(object):
+    def __init__(self, path):
+        self.output = open(path,'w')
+    
+    def write(self, c):
+        for e in str(c):
+            if ord(e) > 128: continue
+            self.output.write(e)
+
+    def close(self):
+        self.output.flush()
+        self.output.close()
 
 class RobotDebuger(object):
     def __init__(self, settings):
@@ -49,6 +86,8 @@ class RobotDebuger(object):
         self.settings = DebugSetting()
         self.logger = None
         self.watched_variable = []
+        self.inteface_list = []
+        self.telnet_monitor_list = []
         
         if settings.endswith('.rdb'):
             self.settings.load_from_file(os.path.abspath(settings))
@@ -66,22 +105,48 @@ class RobotDebuger(object):
         for e in self.settings.WATCHING_LIST:
             self.watch_variable(e)
             
+        self.__inject_ipamml_telnet_monitor()
+        
+            
     def add_breakpoint(self, bps):
-        self.debugCtx.add_breakpoint(KeywordBreakPoint('bp%s' % self.bp_id,
-                                                       bps))
+        if not bps.strip(): return
+        if isinstance(bps, types.ListType):
+            self.debugCtx.add_breakpoint(CallStackBreakPoint('bp%s' % self.bp_id,
+                                                             bps))
+        elif ";" in bps:
+            self.debugCtx.add_breakpoint(CallStackBreakPoint('bp%s' % self.bp_id,
+                                                             bps.split(";")))
+        else:
+            self.debugCtx.add_breakpoint(KeywordBreakPoint('bp%s' % self.bp_id,
+                                                           bps))
         self.bp_id += 1
         #self.debugCtx.add_breakpoint(KeywordBreakPoint('', bps))
         
     def watch_variable(self, name):
+        if not name.strip(): return
         if name not in self.watched_variable:
             self.watched_variable.append(name)
     
     def remove_variable(self, name):
         if name in self.watched_variable:
             self.watched_variable.remove(name)
+            
+    def add_telnet_monitor(self, monitor):
+        self.telnet_monitor_list.append(monitor)
     
     @property
-    def watching_variable(self):return list(self.watched_variable)      
+    def watching_variable(self):return list(self.watched_variable)
+    
+    def run_keyword(self, name, *args):
+        """, """
+        import robot.output as output
+        from robot.running import Keyword, NAMESPACES
+        kw = Keyword(name, args)
+        def get_name(handler_name, variables):
+            return "RDB.%s" % handler_name
+        kw._get_name = get_name
+            
+        return kw.run(output.OUTPUT, NAMESPACES.current)
         
     def run(self):
         try:
@@ -90,7 +155,8 @@ class RobotDebuger(object):
                 module_name, handler = ".".join(handler[:-1]), handler[-1]
                 module = __import__(module_name, globals(), locals(), [handler, ], -1)
                 cls_int = getattr(module, handler)
-                DebugThread(cls_int(self), self.settings).start()
+                self.inteface_list.append(cls_int(self))
+                DebugThread(self.inteface_list[-1], self.settings).start()
         except Exception, e:
             self.logger and self.logger.exception(e)
             raise
@@ -102,7 +168,36 @@ class RobotDebuger(object):
                             datefmt='%m-%d %H:%M:%S',
                             filename=self.settings.LOGGING_FILE,
                             filemode='w')
+        
+    def __inject_ipamml_telnet_monitor(self):
+        """a hacker feature for monitor session of telnet in IpaMML,
+        """
+        import __main__
+        __main__.RDB_TELNET_HOOKER = TelentMonitorProxy(self)
+        if self.settings.MML_OUTPUT_FILE:
+            path = os.path.abspath(self.settings.MML_OUTPUT_FILE)
+            self.logger.info("dump telnet session to: %s" % path)
+            try:
+                self.add_telnet_monitor(FileMonitor(path))
+            except Exception, e:
+                self.logger.exception(e)
+                
+    def close_telnet_monitor(self):
+        for e in self.telnet_monitor_list:
+            if hasattr(e, 'close'):
+                try:
+                    e.close()
+                except Exception, e:
+                    self.logger.error("exception from monitor '%s'." % e)
+                    self.logger.exception(e)
     
     def close(self):
+        self.logger.info("shutdown telnet monitor...")
+        self.close_telnet_monitor()
+        
+        for e in self.inteface_list:
+            self.logger.info("shutdown interface. %s" % str(e))
+            e.close()
         self.logger.info("robot debuger is closed.")
+
     

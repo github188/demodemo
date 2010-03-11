@@ -114,7 +114,7 @@ _STYLE = """
     margin-top: 1.2em;
   }
   .panel{ width:98%%;}
-  .panel td{vertical-align: top; }
+  .panel td{vertical-align: top; padding:5px;}
 table.app {
   background: white;
   border: 1px solid #444444;
@@ -142,6 +142,13 @@ tr.active {background: #E6EFC2;}
 .paused {background-color:red;}
 .running {background-color:green;}
 
+div.mml_output{
+    border: 1px solid #444444;
+    width:100%%;
+    height:400px;
+    overflow:scroll;
+}
+
 %(BUTTON_STYLE)s
 </style>
 """ % {'BUTTON_STYLE':_BUTTON_STYLE}
@@ -152,12 +159,14 @@ CALL_STACK = """
   <th width="80px">Type</th>
   <th>Name</th>
   <th width="140px">Start time</th>
+  <th width="80px">State</th>
 </tr>
 <!-- FOR ${rt} IN ${call_stack} -->
 <tr class='${rt.css_class}'>
   <td>${rt.rt_type}</td>
   <td>${rt.name}</td>
   <td>${rt.starttime}</td>
+  <td>${rt.state}</td>
 </tr>
 <!-- END FOR -->
 </table> 
@@ -197,7 +206,36 @@ MESSAGES = """
     </div>
     <div><b>Command:</b> ${command}</div>
     <div><b>Result:</b> ${command_result}</div>
-    <div><b>Message:</b> ${msg}</div>
+    <div><b>Message:</b> 
+        <div id='status_msg' style='display:inline;'>${msg}</div>
+    </div>    
+    <!-- IF '${active_bp}' != 'None' -->
+    <div style='display:none;'>
+    class:${active_bp.__class__.__name__},
+    expired:${active_bp.expired},
+    str:${active_bp},
+    </div>
+    <!-- END IF -->
+"""
+
+CONSOLE = """
+<form action="/run_keyword?sid=${session}" method='GET'>
+    <input type='hidden' name="sid" value="${session}"/>
+<table class='app'>
+<tr>
+  <th width="100px">Name</th>
+  <th>Keyword</th>
+  <th></th>
+</tr>
+<tr>
+  <td><b>Run Keyword</b></td>
+  <td>
+    <input type='text' name="kw" size="45" value="${kw}"/>
+  </td>
+  <td><input type='submit' value="Run" /></td>
+</tr>
+</table>
+</form> 
 """
 
 VARIABLES = """
@@ -266,20 +304,40 @@ DEBUGER_TEMPLATE = """
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Expires" content="Mon, 20 Jan 2001 20:01:21 GMT" />
-<meta http-equiv="refresh" content="${refresh_interval};url=/refresh?sid=${session}" />
 %(STYLE)s
 <script type="text/javascript">
+    //stop to refresh page if have any click in page.
+    //Have not use 'meta http-equiv="refresh"', because it can't canceled by javascript.   
+    var reload_event;
+    var interval = ${refresh_interval} * 1000;
+    function stop_refresh(){
+        if(reload_event){
+            window.clearInterval(reload_event);
+            //refresh page if no action in 30 seconds.
+            reload_event = window.setInterval(xxxx, 30 * 1000);            
+            if(interval < 10 * 1000){
+                var msg = document.getElementById('status_msg');
+                msg.innerHTML = "<span style='color:#ff33cc;'><b>Robot is running, The page is stopped to refresh. Please click 'refresh' to check robot status.</b></span>";
+            }
+        }
+    }
+    function xxxx(){
+        window.location.href = '/refresh'
+    }
+    function schedule_reload(){
+        reload_event = window.setInterval(xxxx, interval);
+    }
 </script>
 <title>${title}</title>
 </head>
-<body>
+<body onclick='stop_refresh()' onload='schedule_reload()'>
     <h1>Robotframework web debuger...</h1>
     <div style="margin-left:100px;">
     <div class='buttons'>
         <a href="go_on?sid=${session}" class='positive'>Run</a>
         <a href="go_into?sid=${session}" class='positive'>Go into</a>
         <a href="go_over?sid=${session}" class='positive'>Go over</a>
-        <a href="go_return?sid=${session}" class='positive'>Go Result</a>
+        <a href="go_return?sid=${session}" class='positive'>Go Return</a>
         <a href="go_pause?sid=${session}" class='positive'>Pause</a>
         <a href="refresh?sid=${session}" class='regular'>Refresh</a>
     </div>
@@ -300,10 +358,18 @@ DEBUGER_TEMPLATE = """
                 <td>
                     <b>Debug status</b>
                     %(MESSAGES)s
+                    <div>
+                    <b>Output MML:</b>
+                    <div class='mml_output'>${mml_output}</div>
+                    </div>
                 </td>
                 <td>
                     <b>Variables</b>
                     %(VARIABLES)s
+                    <div>
+                        <b>Console</b>
+                        %(CONSOLE)s
+                    </div>
                 </td>            
             </tr>
             <tr>
@@ -318,4 +384,5 @@ DEBUGER_TEMPLATE = """
 </html>
 """ % {'CALL_STACK': CALL_STACK, 'BREAK_POINTS': BREAK_POINTS, 
        'MESSAGES':MESSAGES, 'VARIABLES':VARIABLES,
-       'STYLE':_STYLE, 'LISTENER':LISTENER}
+       'STYLE':_STYLE, 'LISTENER':LISTENER,
+       'CONSOLE': CONSOLE}

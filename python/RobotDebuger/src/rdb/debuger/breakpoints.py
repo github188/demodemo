@@ -1,7 +1,8 @@
 
 from runtime import BaseRuntime as RT
 from runtime import KeywordRuntime
-import re
+import re, fnmatch
+import logging
 
 class BreakPoint(object):
     def __init__(self, name):
@@ -37,6 +38,33 @@ class KeywordBreakPoint(BreakPoint):
     def __str__(self):
         return "break:%s, pattern=%s" % (self.name, self.kw_name)
     
+class CallStackBreakPoint(KeywordBreakPoint):
+    def __init__(self, name, stack, state=RT.START):
+        BreakPoint.__init__(self, name)
+        self.break_stack = stack
+        self.state = state
+        self.kw_name = ";".join(stack)
+        
+    def matched_context(self, stack):
+        if not self.active or len(stack) <= 0:
+            return False
+        
+        #return false, if the last runtime is not matched.
+        if not fnmatch.fnmatch(str(stack[-1]), self.break_stack[-1]):
+            return False
+        
+        cs = iter(stack)
+        bps = list(self.break_stack)
+        bps.reverse()
+        for e in stack:
+            if len(bps) == 0:break
+            if fnmatch.fnmatch(str(e), bps[-1]):bps.pop()
+        
+        return len(bps) == 0 and stack[-1].state == self.state
+    
+    def __str__(self):
+        return "break:%s, stack=%s" % (self.name, ";".join(self.break_stack))    
+    
 class RuntimeBreakPoint(BreakPoint):
     def __init__(self, name, rt, state=RT.START):
         BreakPoint.__init__(self, name)
@@ -49,7 +77,8 @@ class RuntimeBreakPoint(BreakPoint):
         if not self.active or len(stack) <= 0:
             return False 
         
-        if self.rt_done and self.state == RT.DONE:
+        if self.rt_done and self.state == RT.DONE and \
+            stack[-1].state == RT.START: #go over, go return only paused at keyword starting.
             self.expired = True
             return True
         
@@ -57,8 +86,7 @@ class RuntimeBreakPoint(BreakPoint):
             if stack[-1].state == self.state:
                 return True
             elif self.state == RT.DONE and stack[-1].state == RT.END:
-                """it's active at next step
-                """
+                """it's active at next step"""
                 self.rt_done = True
                 return False
         else:
@@ -66,7 +94,7 @@ class RuntimeBreakPoint(BreakPoint):
         
     def __str__(self):
         xx = str(self.rt)
-        return "Runtime break:%s, rt=%s" % (self.name, xx)
+        return "Runtime break:%s, rt=%s, state=%s" % (self.name, xx, self.state)
         
 
 class SemaphoreBreakPoint(BreakPoint):
