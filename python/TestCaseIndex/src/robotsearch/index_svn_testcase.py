@@ -1,8 +1,8 @@
 import logging, os, time, sys, datetime
 import indexsettings_defaults
-from common.ctlDaemon import ControllableDaemon
-from common.common import read_from_file, write_to_file, remove_path, run_command
-from common.svnpy import CliClient
+from ipa4daemon.ctlDaemon import ControllableDaemon
+from ipa4common.common import read_from_file, write_to_file, remove_path, run_command
+from ipa4common.svnpy import CliClient
 
 try:
     import indexsettings
@@ -48,11 +48,6 @@ class TestCaseIndexer(ControllableDaemon):
         os.chdir(CONFIG.DATA_ROOT)
             
     def update_subversion(self):        
-        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        log_file = 'logs/builds/%s.log' % timestamp
-        self.build_logging_handler = logging.handlers.IPATARotatingFileHandler(log_file, 'a', 20000000, 1)
-        logging.getLogger("").addHandler(self.build_logging_handler)
-        
         if CONFIG.AUTO_UPDATE:
             self.logger.info("auto updating testcase from subversion")
             self.new_updated_version = self.svnclient.update()
@@ -100,10 +95,6 @@ class TestCaseIndexer(ControllableDaemon):
     
     def waiting_polling_interval(self):
         self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
-        if(self.build_logging_handler):
-            logging.getLogger("").removeHandler(self.build_logging_handler)
-            self.build_logging_handler.flush()
-            self.build_logging_handler.close()
             
         for i in range(0, CONFIG.POLLING_INTERVAL + 5, 5):
             if self.is_closing(): break
@@ -118,6 +109,11 @@ class TestCaseIndexer(ControllableDaemon):
         for item in self.updated_items:
             if self.is_closing(): break
             if item['kind'] != 'file': continue
+            name, ext = os.path.splitext(item['path'])
+            if ext not in ['.html', '.htm', '.tsv']:
+                self.logger.warning("ignore not supported file '%s'" % item['path'])
+                continue
+            
             #'modified', 'added', 'deleted', 'conflicted'
             status = {"modified": "U",
                       "added": "A",
@@ -130,13 +126,9 @@ class TestCaseIndexer(ControllableDaemon):
             if not os.path.isfile(item['path']):
                 self.logger.warning("not exists file '%s' in local!" % item['path'])
                 continue
-            try:
-                indexer.index_robot_script(status, item['path'])
-                self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
-                                                               item['path']))
-            except Exception, e:
-                self.logger.error("error path:%s" % item['path'])
-                self.logger.exception(e)
+            indexer.index_robot_script(status, item['path'])
+            self._update_test_case_db(status, os.path.join(CONFIG.TESTCASE_ROOT,
+                                                           item['path']))
                         
         indexer.optimize()
         indexer.close()
@@ -182,7 +174,8 @@ class TestCaseIndexer(ControllableDaemon):
         
     def run_once(self):
         self.prepare()
-        self.run()
+        while self.run.func_name != 'waiting_polling_interval':
+            self.run()
     
     def _create_indexer(self):
         from index.RobotIndex import RobotIndex
@@ -190,13 +183,13 @@ class TestCaseIndexer(ControllableDaemon):
 
     def _update_test_case_db(self, status, path):
         scripts = CONFIG.UPDATE_TEST_CASE_DB % (path, status)
-        self.logger.info(run_command(scripts, self.logger, level=None))
+        self.logger.info(run_command(scripts, self.logger, ))
 
 def main():
     #fix robot version problem in 126.77
     sys.path.insert(0, '/opt/extra_tools/rbtgrep/libs')
     if len(sys.argv) != 2 or sys.argv[1] not in ['start', 'stop', 'forcestart', 'run_once']:
-        print 'python index_svn_testcase start|stop|forcestart'
+        print 'python index_svn_testcase start|stop|forcestart|run_once'
     else:
         import lucene
         os.environ['JAVA_HOME'] = '/usr/local/jdk1.6.0_17'
