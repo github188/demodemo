@@ -16,7 +16,7 @@ class Schema(object):
         self.index_field = [('path', 'NO'),
                             #('uuid', 'UN_TOKENIZED'),
                             #('parent', 'UN_TOKENIZED'),
-                            ('name', 'UN_TOKENIZED'),
+                            ('name', 'TOKENIZED'),
                             ('context', 'TOKENIZED'),
                             ('path_code', 'TOKENIZED'),
                             ]

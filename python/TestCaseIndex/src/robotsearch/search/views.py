@@ -66,7 +66,8 @@ def search(r, keyword=""):
     ROBOT_ANALYZER = StandardAnalyzer()
 
     keyword = keyword or r.GET.get('keyword', '') or 'Get units'
-    query = QueryParser("context", ROBOT_ANALYZER)
+    field = r.GET.get('field', 'context')
+    query = QueryParser(field, ROBOT_ANALYZER)
     query = query.parse('"%s"' % keyword, )
     
     bench.start_mark("search")
