@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load pypi_tags %}
+
+{% block title %}Testing tools shop{% endblock %}
+{% block content_nav %}
+{% endblock %}
+
+{% block content_body %}
+    {% autoescape off %}
+	{% for cate in categors %}
+    <h2>{{cate.name}}</h2>
+		{% for prj in cate.projects %}
+			<table class='results'>
+				<tr>
+					<td><b>Name:</b> {{prj.name}}</td>
+					<td><b>Lastest version:</b> {{prj.last_version}}</td>
+					<td><b>Dev status:</b> {{prj.get_dev_status_display}}</td>
+					<td><b>Dev type:</b> {{prj.get_dev_type_display}}</td>
+				</tr>
+                <tr>
+                    <td><b>Language:</b> {{prj.language}}</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan=4>
+						<b>Description:</b>
+						{{prj.summary}}
+						<br/><br/>
+					</td>
+                </tr>	
+                <tr>
+                    <td colspan='4'>
+						<div class='buttons' style="margin:4px auto;margin-left:100px;">
+							{% if prj.online_install %}
+								<a href="{%app_root%}/static/{{prj.online_install}}" class='regular'>Install</a>
+							{% endif %}
+                            {% if prj.online_start %}
+                                <a href="{%app_root%}/static/{{prj.online_start}}" class='regular'>Start on-line</a>
+                            {% endif %}
+                            {% if prj.online_try_use %}
+                                <a href="{{prj.online_try_use}}" target='_blank' class='regular'>Trial on-line</a>
+                            {% endif %}
+							<a href="{%app_root%}/dist/{{prj.name}}/{{prj.active_release.path}}" class='regular'>Download</a>
+							{% if prj.user_guide %}
+								<a href="{{prj.user_guide}}" target='_blank' class='positive'>User Guide</a>
+							{% endif %}
+						</div>
+                    </td>
+                </tr>							
+				
+			</table>	
+		{% endfor %}
+	{% endfor %}
+    {% endautoescape %}
+{% endblock %}
+

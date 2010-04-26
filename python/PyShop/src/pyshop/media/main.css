@@ -1,0 +1,116 @@
+html{
+    text-align:center;
+    font-size:14px;
+    background:#fff;
+    margin:0px;
+    font-family: Arial;
+}
+body{
+    text-align:left;
+    margin:auto;
+    padding:8px;
+    background:#fff;
+    color:#000;
+    width:860px;
+}
+
+a img{border:0px;}
+
+a:hover {
+  color: #444444;
+  text-decoration: underline;
+}
+
+#context_head{
+    font-size:20px;
+}
+
+#main {
+    width:90%;
+    height:400px;
+    margin:10px auto;
+}
+
+#main td{
+    margin:10px;
+    padding:10px;
+    text-align:center;
+}
+
+#main td div{
+    width:100%;
+    display:block;
+    text-align:center;
+}
+
+
+#main img{
+    border:0;
+    width:128px;
+    height:128px;
+}
+        
+div.content-main{
+    align:center;
+    width:100%;
+}
+
+.clear{clear:both;}
+
+table.results, table.statistics {
+  background: white;
+  border: 1px solid #444444;
+  border-collapse: collapse;
+  empty-cells: show;
+  font-size: 0.9em;
+  margin: 0em 0em;
+  width: 100%;
+  margin-bottom:5px;
+}
+table.results th, table.results td {
+  border:1px solid #444444;
+  padding: 0.2em 0.3em;
+}
+table.results th{
+  background:#eeeeee;
+  font-weight: normal;
+  color: black;
+}
+table.results td {
+  vertical-align: top;
+}
+table.results td.pass{background:#009900;}
+table.results td.fail{background:red;}
+table.results td.notrun{background:#FFCC00;}
+span.hl{background: yellow;}
+
+table.results tr.bg_light {background:#eeeeee;}
+table.results tr.removed td {text-decoration:line-through;}
+table.results a{color:blue;}
+table.results th a{color:#000;}
+
+div.page_nav{margin-bottom:4px;}
+div.page_nav a{margin:0 4px;color:blue;}
+div.page_nav a.cur{font-weight:bolder; text-decoration:none;}
+div.nav_title{background:#c6d8ff;padding:4px;border-top:1px solid #7799dd;clear:both;}
+
+form{margin:0; padding:0;}
+
+div.plane{
+    margin:auto;
+    width:600px;
+    border:1px outset #cccccc;
+}
+
+div.plane div.t{
+  padding: 0.2em 0.3em;
+  background:#eeeeee;
+  font-weight: bolder;
+  color: black;     
+}
+
+
+div.plane div.error{
+    padding:10px;
+}
+

@@ -1,0 +1,57 @@
+{% load pypi_tags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="" >
+<head>
+<title>{% block title %}IPA TA{% endblock %}| Testing tools shop</title>
+
+<meta name="robots" content="NONE,NOARCHIVE" />
+<link type="text/css" href="{% app_root %}/static/main.css" rel="stylesheet" />
+<link type="text/css" href="{% app_root %}/static/buttons.css" rel="stylesheet" />	
+	
+</head>
+<body>
+<!-- Container -->
+<div id="container">
+    <!-- Header -->
+    {% block report_head %}
+    <div id="header">
+        <div id="branding" style="float:left;">
+			<img border="0" src="{% app_root %}/static/logo_nokia.gif"></img>
+			-- Testing tool shop
+			
+        </div>
+		<br class="clear" />
+    </div>
+    {% endblock %}
+    <!-- END Header -->	
+<div style="border-bottom: 1px solid #7799dd;"></div>
+    <!-- Content -->
+<div class="content-main">
+	<div id="content_nav">
+		{% block content_nav %}{% endblock %}
+	</div>
+	
+	<div id="content_body">
+		{% block content_body %}
+			<img src="{% app_root %}/report/resource/reportserver/loading66.gif" />
+			Loading...... <b>Please be patient. It may take few seconds (less than 30 seconds) in case query condition is not specific given.</b>
+		{% endblock %}
+	</div>
+   <br class="clear" />
+</div>
+    <!-- END Content -->
+<div style="border-bottom: 1px solid #7799dd;margin-bottom:10px;"></div>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="center">
+  <td align="center" style="padding-right:1em;" >
+  <a style="color: #00c" target=_top href="#">feedback</a><font color="#333"> - </font>
+  <a style="color: #00c" target=_top href="#">develop doc</a><font color="#333"> - </font>
+  </td>
+  </tr>
+</table> 
+	
+</div>
+<!-- END Container -->
+
+</body>
+</html>
