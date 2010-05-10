@@ -1,7 +1,9 @@
 1. http://www.bokecc.com/ 一个视频服务提供商.
 
 
-2. Flex + Flash Media Server 
+2. Flash + OSMF + Flash Media Server 
 
 3. http://www.adobe.com/products/flashmediastreaming/  # Buy US$995
 https://www.adobe.com/cfusion/tdrc/index.cfm?product=flashmediaserver&loc=en%5Fus
+
+Flash + OSMF + Flash Media Server
