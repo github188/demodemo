@@ -1,0 +1,30 @@
+
+#house_form {
+    width:800px;
+    margin:auto;
+}
+
+#house_form li{
+    list-style:none;
+    float:left;
+    display:inline;
+}
+
+#house_form .form-row{
+    padding:0px;
+}
+
+#house_form label{
+    display:inline;
+    width:auto;
+    padding-right:20px;
+}
+
+.kfzq, .kgsj, .kpsj, .zdmz, .rjl, .lczk, .qj, .jj,
+.cwsl, .cwb, .wyglf, 
+.zbxx, .yh, .yy,
+.jcjg, .jcwq, .jcnq, .jcgq, .jcdtfs, .jcdtfs, .jccf, .jcchuf, .jcznss 
+ {
+    width:400px;
+    float:left;
+}

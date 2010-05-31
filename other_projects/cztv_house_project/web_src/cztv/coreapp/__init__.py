@@ -12,9 +12,28 @@ def init_field(category, name, label, field_type, values='',
         f.visiable_order = visiable_order
         f.save()
 
+def init_field_category(name, label, visiable_order=0):        
+    from cztv.coreapp.models import FieldCategory
+    f, c = FieldCategory.objects.get_or_create(name=name)
+    if c:
+        f.label = label
+        f.visiable_order = visiable_order
+        f.save()
+
 def initialize():
     # Create your models here.
-    pass
+    f = init_field_category
+    f("wysx", "物业属性", 1)
+    f("dlwz", "地理位置", 2)
+    f("jtzk", "交通状况", 3)
+    f("xmts", "项目特色", 4)
+    f("gcjd", "工程进度", 5)
+    f("wygm", "物业规模", 6)
+    f("zxjg", "最新价格", 7)
+    f("wyfw", "物业服务", 8)
+    f("zbpt", "周边配套", 9)
+    f("jcsb", "建材设备", 10)
+
     f = init_field
     
     #物业属性
