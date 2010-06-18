@@ -237,6 +237,13 @@ class WebDebuger(BaseDebugInterface):
         
         if cfg.WEB_PROXY == 'Y':
             self.register_rdb_proxy()
+            
+        if cfg.WEB_PORT == '0':
+            import sys
+            sys.__stderr__.write("=" * 80 + "\n")
+            sys.__stderr__.write("Open 'http://%s:%s' in browser to monitor robot status.\n"
+                                 % self.local_address)
+            sys.__stderr__.write("=" * 80 + "\n")
         
         httpd.serve_forever()
         

@@ -1,8 +1,8 @@
 from __future__ import with_statement
 from contextlib import closing
-import os
+import os, sys
 
-from debuger.debuger import Debuger
+from debuger.debuger import Debuger, Listener
 from debuger.breakpoints import KeywordBreakPoint, CallStackBreakPoint
 from threading import Thread
 import logging, types
@@ -79,6 +79,23 @@ class FileMonitor(object):
         self.output.flush()
         self.output.close()
 
+class FileCaseStatus(Listener):
+    def __init__(self, path):
+        self.output = open(path,'w')
+        
+    def start_keyword(self, rt):
+        if rt.rt_type == 'case':
+            self.output.write("%s run '%s' ... " %(rt.attrs['starttime'],
+                                                     rt.attrs['longname']))
+
+    def end_keyword(self, rt):
+        if rt.rt_type == 'case':
+            self.output.write("%s\n" % (rt.attrs['status']))
+
+    def close(self):
+        self.output.flush()
+        self.output.close()
+
 class RobotDebuger(object):
     def __init__(self, settings):
         self.bp_id = 0
@@ -88,6 +105,7 @@ class RobotDebuger(object):
         self.watched_variable = []
         self.inteface_list = []
         self.telnet_monitor_list = []
+        self.debug_listener = []
         
         if settings.endswith('.rdb'):
             self.settings.load_from_file(os.path.abspath(settings))
@@ -106,6 +124,8 @@ class RobotDebuger(object):
             self.watch_variable(e)
             
         self.__inject_ipamml_telnet_monitor()
+        self.__set_case_status()
+        self._exit_code = 0
         
             
     def add_breakpoint(self, bps):
@@ -145,7 +165,10 @@ class RobotDebuger(object):
         def get_name(handler_name, variables):
             return "RDB.%s" % handler_name
         kw._get_name = get_name
-            
+        
+        if self._exit_code > 0:
+            sys.exit(self._exit_code)
+        
         return kw.run(output.OUTPUT, NAMESPACES.current)
         
     def run(self):
@@ -182,6 +205,18 @@ class RobotDebuger(object):
             except Exception, e:
                 self.logger.exception(e)
                 
+    def __set_case_status(self):
+        """output case status in file"""
+        if self.settings.CASE_STATUS_FILE:
+            path = os.path.abspath(self.settings.CASE_STATUS_FILE)
+            self.logger.info("output case status to: %s" % path)
+            try:
+                l = FileCaseStatus(path)
+                self.debug_listener.append(l)
+                self.debugCtx.add_listener(l)
+            except Exception, e:
+                self.logger.exception(e)
+                
     def close_telnet_monitor(self):
         for e in self.telnet_monitor_list:
             if hasattr(e, 'close'):
@@ -190,14 +225,27 @@ class RobotDebuger(object):
                 except Exception, e:
                     self.logger.error("exception from monitor '%s'." % e)
                     self.logger.exception(e)
+
+    def close_debug_listener(self):
+        for e in self.debug_listener:
+            if hasattr(e, 'close'):
+                try:
+                    e.close()
+                except Exception, e:
+                    self.logger.error("exception from listener '%s'." % e)
+                    self.logger.exception(e)
+
     
     def close(self):
         self.logger.info("shutdown telnet monitor...")
         self.close_telnet_monitor()
+        self.close_debug_listener()
         
         for e in self.inteface_list:
             self.logger.info("shutdown interface. %s" % str(e))
             e.close()
         self.logger.info("robot debuger is closed.")
 
+    def sys_exit(self, err_code=255):
+        self._exit_code = err_code
     

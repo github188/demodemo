@@ -16,6 +16,8 @@ class BaseRuntime(object):
         self.attrs = attrs
                 
     def __getattr__(self, name):
+        if name.startswith('__'):
+            raise AttributeError, 'Internal Attribute %s.'%name
         return self.attrs.get(name, "")
 
 class KeywordRuntime(BaseRuntime):
