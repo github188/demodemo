@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load rfdoc_filters %}
+
+{% block title %}RFdoc -- help documentation{% endblock title %}
+{% block content %}
+<style>
+ul.help li{
+margin-bottom:4px;
+}
+ul.help li strong{color:#000;}
+</style>
+	<ul class='help'>
+		<li>
+			<strong>Q: How to search keyword by name?</strong>
+			<div>
+				A: Inputing <b>lower-case</b> string can search out all the keywords which name contains the input string in all libraries.<br>
+				keyword name should match the whole string, not one of split word.<br>
+				e.g. "get units",<br/> 
+				can match "<b>Get Units</b> Pair By Plugin Unit" and "<b>Get Units</b> By Rcj",<br/>
+				but can not match "<b>Get</b> spare <b>Units</b>."			
+			</div>
+		</li>
+		<br>
+        <li>
+            <strong>Q: How to search keyword by MML?</strong>
+            <div>
+                A: Input <b>upper-case</b> MML command, all the relative keywords will be displayed.<br>
+				e.g. ZUSI can search out all the commands which contain ZUSI command.
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: How to search DMX keyword by STE name?</strong>
+            <div>
+                A: Input <b>upper-case</b> STE name can search out all the specified DMX commands.<br>
+                e.g. "POM" "RCJ"<br>
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: How to search Chorus keyword by command?</strong>
+            <div>
+                A: Inputing "STE:prefix" can search out all the specified chorus commands.<br>
+                e.g. "STE:arun" can match "Start Rmd Register Port Name"				
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: What's means the '@{xx}' suffix in keyword name? (e.g. Add Default Active Unit For Revertive Switchover @{cb_9_9_15} )</strong>
+            <div>
+                A: '@{version_RNC|MGW}' means that keyword use 'keyword wrapper' and may have many versions. <br/>
+				Use the keyword name before @ in test case, IpaMml library will find out the most suitable keyword for you.
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: How to deprecated a keyword?</strong>
+            <div>
+                A: add '*DEPRECATED*' in the doc of keyword. RFdoc will searching 
+				the doc to generate deprecated keyword list. 
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: When the keyword doc be updated?</strong>
+            <div>
+                A: There is a hudson project to check IpaMml/Testcase svn per 15 minutes. the RFdoc will updated if
+				the SVN have new change. you can trigger the updating task by clicking following link manually too.
+				<br/><br/>
+				<a href="/hudson/job/RFdoc_ipamml_update/build?delay=0sec">
+					Update IpaMml doc now
+				</a>&nbsp;
+                <a href="/hudson/job/RFdoc_testcase_resource_update/build?delay=0sec">
+                    Update test case resources doc now
+                </a>&nbsp;
+				<br/><br/>
+				<b>Note:</b>
+				The updating action will starting in the backgroupd, please click 
+				<a href="/hudson/view/RFdoc/">
+					here
+				</a>
+				to view the process of doc updating.
+				
+            </div>
+        </li>
+        <br>
+        <li>
+            <strong>Q: How to search test case as example by keyword?</strong>
+            <div>
+                A: Search a keyword, click the <b>Example: Search In Testcases</b> link to get test cases list used this keyword.
+            </div>
+        </li>			
+	</ul>
+{% endblock content %}

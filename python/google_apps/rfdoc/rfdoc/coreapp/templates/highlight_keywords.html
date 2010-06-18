@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load rfdoc_filters %}
+
+{% block title %}RFdoc -- help documentation{% endblock title %}
+{% block content %}
+<style>
+ul.help li{
+margin-bottom:4px;
+}
+ul.help li strong{color:#000;}
+</style>
+	<ul class='help'>
+		<li>
+			<strong>1. Keyword parallel running</strong>
+			<div>
+				<a target='blank' href="http://wikis.inside.nokiasiemensnetworks.com/bin/view/TestAutomationinIPA/HowToUseParallelKeywords">
+					See Wiki for Case Instruction
+				</a> 
+			</div>
+			
+		</li>
+		<br>
+        <li>
+            <strong>2. Testcase parallel running</strong>
+            <div>
+                <a target='blank' href="http://wikis.inside.nokiasiemensnetworks.com/bin/view/TestAutomationinIPA/ShortenTestcaseExecutionTime#Parallel_execution_testcase">
+                    See Wiki for shorten testcase execution time
+                </a> 
+            </div>
+            
+        </li>
+		<br>
+        <li>
+            <strong>3. Configurate IP network by XML</strong>
+            <div>
+                <a target='blank' href="http://wikis.inside.nokiasiemensnetworks.com/bin/view/TestAutomationinIPA/ResourceManager">
+                    See Wiki for IPA Resource Manager library
+                </a> 
+            </div>
+        </li>
+        <br>	
+		<li>
+            <strong>4. Select Entries From List</strong>
+            <div>
+				<a href="{% app_root %}/search?search_term=Select Entries From List">
+					Select Entries From List
+				</a>
+				-- It's a powerful keyword for list filtering, more detail see doc.
+            </div>
+        </li>
+        <br>
+	</ul>
+{% endblock content %}
