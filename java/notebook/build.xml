@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?> 
+ <!-- ***** BEGIN LICENSE BLOCK ***** 
+    - Version: MPL 1.1/GPL 2.0 
+    - 
+    - The contents of this file are subject to the Mozilla Public License Version 
+    - 1.1 (the "License"); you may not use this file except in compliance with 
+    - the License. You may obtain a copy of the License at 
+    - http://www.mozilla.org/MPL/ 
+    - 
+    - Software distributed under the License is distributed on an "AS IS" basis, 
+    - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License 
+    - for the specific language governing rights and limitations under the 
+    - License. 
+    - 
+    - The Original Code is Rhino code, released May 6, 1999. 
+    - 
+    - The Initial Developer of the Original Code is 
+    - Netscape Communications Corporation. 
+    - Portions created by the Initial Developer are Copyright (C) 1997-1999 
+    - the Initial Developer. All Rights Reserved. 
+    - 
+    - Contributor(s): 
+    - 
+    - Alternatively, the contents of this file may be used under the terms of 
+    - the GNU General Public License Version 2 or later (the "GPL"), in which 
+    - case the provisions of the GPL are applicable instead of those above. If 
+    - you wish to allow use of your version of this file only under the terms of 
+    - the GPL and not to allow others to use your version of this file under the 
+    - MPL, indicate your decision by deleting the provisions above and replacing 
+    - them with the notice and other provisions required by the GPL. If you do 
+    - not delete the provisions above, a recipient may use your version of this 
+    - file under either the MPL or the GPL. 
+    - 
+    - ***** END LICENSE BLOCK ***** --> 
+  
+  
+ <!-- 
+     Build file for Rhino using Ant (see http://jakarta.apache.org/ant/index.html) 
+     Requires Ant version 1.2 or later 
+  
+     Compilation currently requires JDK 1.5 or later. Can cross-compile to 
+     support JDK 1.4. 
+ --> 
+  
+ <project name="fivechess" default="help" basedir="."> 
+  
+   <target name="properties"> 
+     <!-- Allow user to override default settings from build.properties --> 
+     <property file="build.local.properties" /> 
+     <tstamp> 
+       <!-- Specify date part of Context#getImplementationVersion() --> 
+       <format property="build.date" pattern="yyyy-MM-dd-hhmm"/> 
+     </tstamp> 
+     <property file="build.properties"/> 
+         <property name="version" value="0.1"/> 
+            
+         <property name="night.build.name" value="notebook-${build.date}"/> 
+         <property name="night.build.dir" value="${build.dir}/${night.build.name}"/> 
+   </target> 
+  
+         <target name="init" depends="properties"> 
+                 <mkdir dir="${build.dir}"/> 
+                 <mkdir dir="${build.dir}/classes"/> 
+                 <mkdir dir="${build.dir}/lib"/> 
+                 <mkdir dir="${build.dir}/lib/ext-lib"/> 
+                 <mkdir dir="${build.dir}/docs"/> 
+                 <mkdir dir="${build.dir}/examples"/> 
+                 <mkdir dir="${build.dir}/bin"/> 
+                 <mkdir dir="${build.dir}/unittest"/>             
+                 <mkdir dir="${build.dir}/testclasses"/>          
+                  
+                 <mkdir dir="${dist.dir}"/> 
+                                  
+         </target> 
+          
+         <target name="compile-shell" depends="properties, init"> 
+                 <javac srcdir="src" 
+                            destdir="${build.dir}/classes" 
+                            includes="**/*.java" 
+                            deprecation="on" 
+                            debug="${debug}" 
+                            target="${target-jvm}" 
+                            source="${source-level}" 
+                            classpath="" 
+                            encoding="utf-8" 
+                 > 
+                 </javac> 
+                 <copy todir="${build.dir}/classes"> 
+                         <fileset dir="src" includes="**/*.*" /> 
+                 </copy> 
+         </target> 
+          
+         <target name="compile-test" depends="properties, init"> 
+                 <javac srcdir="testcase" 
+                            destdir="${build.dir}/testclasses" 
+                            includes="**/*.java" 
+                            deprecation="on" 
+                            debug="${debug}" 
+                            target="${target-jvm}" 
+                            source="${source-level}" 
+                            classpath="${build.dir}/classes" 
+                            encoding="utf-8" 
+                 > 
+                 </javac> 
+         </target>        
+    
+         <target name="jar" depends="compile-shell"> 
+                 <jar jarfile="${build.dir}/lib/${dist.name}" 
+                          basedir="${build.dir}/classes" 
+                          compress="${jar-compression}" 
+                  >
+					<manifest>
+						  <attribute name="Main-Class" value="org.notebook.gui.Main"/>
+					</manifest>
+				</jar>
+         </target> 
+  
+         <target name="dist" depends="jar"> 
+         </target> 
+          
+     <target name="test" depends="jar, compile-test"> 
+                 <junit printsummary="yes" haltonfailure="yes"> 
+                   <classpath> 
+                     <pathelement location="build/lib/five-0.1.jar"/> 
+                         <pathelement location="build/testclasses"/> 
+                   </classpath> 
+  
+                   <formatter type="plain"/> 
+  
+                   <batchtest fork="yes" todir="${reports.tests}"> 
+                     <fileset dir="testcase"> 
+                       <include name="**/TestGame**.java"/> 
+                     </fileset> 
+                   </batchtest> 
+                 </junit>         
+     </target> 
+  
+   <target name="clean" depends="properties"> 
+     <delete quiet="true" dir="${build.dir}"/> 
+   </target> 
+  
+   <target name="deepclean" depends="properties"> 
+     <delete quiet="true" dir="${build.dir}"/> 
+   </target> 
+  
+   <target name="help" depends="properties"> 
+ <echo>The following targets are available with this build file: 
+  
+  clean       remove all compiled classes and copied property files 
+  
+  compile     compile classes and copy all property files 
+              into ${classes} directory 
+              excluding deprecated code 
+  
+  deepclean   remove all generated files and directories 
+  
+  dist        create ${dist.file} with full Rhino distribution 
+  
+  help        print this help 
+  
+  jar         create runtime.jar in ${build.dir}/lib 
+  
+  unit-test   run unit test. 
+          
+  night-build   night-build 
+          
+  docs        create jsdoc        
+  
+ </echo> 
+   </target> 
+  
+ </project> 
