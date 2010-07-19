@@ -24,44 +24,40 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.net.*;
 
-public class Main extends JFrame {
-
-	public Main(){
-		super("Deon的记事本"); 
-		setLayout(new BorderLayout());
-		this.initGui();
-		pack(); 
-		setSize(670,548);  
-	}
- 	
-    public static void main(String[] args){ 
-		try{
-		UIManager.setLookAndFeel(
-			"com.sun.java.swing.plaf." +
-			"windows.WindowsLookAndFeel");
-		}catch(Exception e){
-			System.out.println(e.toString());
+public class MenuToolbar {
+	static class BookAction extends AbstractAction {
+		public BookAction() {
+			//getResource(String name) 
+			super("New ...", new ImageIcon(_("org/notebook/gui/star_off.gif")));
 		}
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("new...");
+		}
+	}	
+	
+	private static Action[] actions = {
+		new BookAction(),
+	};
 
-		Main main = new Main(); 
-		main.setVisible(true); 
-	}  
+	public static JMenuBar menuBar(){
+		JMenuBar menubar = new JMenuBar();
+		JMenu fileMenu = new JMenu("File");
 
-	protected void initGui() {
-		this.getRootPane().setJMenuBar(MenuToolbar.menuBar());
+		fileMenu.add(actions[0]);
 
-		Container contentPane = getContentPane();
-
-		JSplitPane splitPane = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, 
-				new JScrollPane(new NavigationTree()),
-				new JScrollPane(new DocumentEditor())
-		);
-
-		contentPane.add(MenuToolbar.toolBar(), BorderLayout.NORTH);
-		contentPane.add(splitPane, BorderLayout.CENTER);
-		contentPane.add(new StatusBar(), BorderLayout.SOUTH);
+		menubar.add(fileMenu);
+		return menubar;
 	}
 
+	public static JToolBar toolBar(){
+		JToolBar toolbar = new JToolBar();
+
+		toolbar.add(actions[0]);
+		return toolbar;
+	}
+
+	protected static URL _(String name){
+		return MenuToolbar.class.getClassLoader().getResource(name);
+	}
 }
 
