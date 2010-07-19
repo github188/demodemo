@@ -18,14 +18,13 @@
 package org.notebook.gui;
 
 import javax.swing.*;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*; 
 import javax.swing.event.*;
 import java.net.*;
 
 public class Main extends JFrame {
-
-	private	JList actionList = null;
 
 	public Main(){
 		super("Deon的记事本"); 
@@ -67,23 +66,24 @@ public class Main extends JFrame {
 				fileMenu.addSeparator();
 			}
 		}
+
 		Container contentPane = getContentPane();
-		menubar.add(fileMenu);
 		contentPane.add(toolbar, BorderLayout.NORTH);
+
+		menubar.add(fileMenu);
 		getRootPane().setJMenuBar(menubar);
 
 		JTextArea textArea = createTextArea();
 
-		Action[] actions2 = textArea.getActions();
-
-		actionList = createActionList(actions2);
-
 		JSplitPane splitPane = new JSplitPane(
-			JSplitPane.HORIZONTAL_SPLIT, 
-			new JScrollPane(textArea),
-			new JScrollPane(actionList));
+				JSplitPane.HORIZONTAL_SPLIT, 
+				new JScrollPane(createJTree()),
+				new JScrollPane(textArea)
+		);
 
 		contentPane.add(splitPane, BorderLayout.CENTER);
+
+		contentPane.add(new StatusBar(), BorderLayout.SOUTH);
 	}
 
 	class NewAction extends AbstractAction {
@@ -109,44 +109,60 @@ public class Main extends JFrame {
 		return textArea;
 	}
 
-	private JList createActionList(Action[] actions) {
-		DefaultListModel model = new DefaultListModel();
-		final JList list = new JList(model);
+	private JTree createJTree() {
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("JTree");
+		DefaultMutableTreeNode parent = new DefaultMutableTreeNode("colors");
+		root.add(parent);
+		parent.add(new DefaultMutableTreeNode("blue"));
+		parent.add(new DefaultMutableTreeNode("violet"));
+		parent.add(new DefaultMutableTreeNode("red"));
+		parent.add(new DefaultMutableTreeNode("yellow"));
 
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		DefaultTreeModel model = new DefaultTreeModel(root);
 
-		for(int i=0; i < actions.length; ++i) {
-			model.addElement(actions[i]);
-		}
-
-		list.setCellRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(
-				JList list, Object value,
-				int index, boolean isSelected,
-				boolean cellHasFocus) {
-					super.getListCellRendererComponent(list, value,
-					index, isSelected, cellHasFocus);
-
-					Action action = (Action)value;
-					setText((String)action.getValue(Action.NAME));
-
-					return this;
-			}
-		});
-
-		list.addListSelectionListener(new ListSelectionListener(){
-			public void valueChanged(ListSelectionEvent e) {
-				if(!e.getValueIsAdjusting()) {
-					Action source = (Action)actionList.getSelectedValue();	
-					System.out.println("Action: " +  (String)source.getValue(Action.NAME));
-				}
-			}
-			}
-		);
-
-		return list;
+		return new JTree(model);
 	}
 
+	class StatusBar extends JPanel {
+		public StatusBar() {
+			setLayout(new BorderLayout());
+			setPreferredSize(new Dimension(10, 23));
 
+			JPanel rightPanel = new JPanel(new BorderLayout());
+			rightPanel.add(new JLabel("xxx"), BorderLayout.SOUTH);
+			rightPanel.setOpaque(false);
+
+			add(rightPanel, BorderLayout.EAST);
+			setBackground(SystemColor.control);
+		}
+
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+
+			int y = 0;
+			g.setColor(new Color(156, 154, 140));
+			g.drawLine(0, y, getWidth(), y);
+			y++;
+			g.setColor(new Color(196, 194, 183));
+			g.drawLine(0, y, getWidth(), y);
+			y++;
+			g.setColor(new Color(218, 215, 201));
+			g.drawLine(0, y, getWidth(), y);
+			y++;
+			g.setColor(new Color(233, 231, 217));
+			g.drawLine(0, y, getWidth(), y);
+
+			y = getHeight() - 3;
+			g.setColor(new Color(233, 232, 218));
+			g.drawLine(0, y, getWidth(), y);
+			y++;
+			g.setColor(new Color(233, 231, 216));
+			g.drawLine(0, y, getWidth(), y);
+			y = getHeight() - 1;
+			g.setColor(new Color(221, 221, 220));
+			g.drawLine(0, y, getWidth(), y);
+		}
+	}
 
 }
+
