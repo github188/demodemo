@@ -33,7 +33,7 @@ public class SessionManager {
 	 * @param block
 	 * @return
 	 */
-	public int newSession(boolean block){
+	public synchronized int newSession(boolean block){
 		int sessionId = -1;
 		
 		if(block){

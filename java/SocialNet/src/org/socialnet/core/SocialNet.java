@@ -3,10 +3,12 @@ package org.socialnet.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class SocialNet {
 	public static final int[] EMPTY = new int[0];
-	private SessionManager sm = null;
+	protected SessionManager sm = null;
+	protected NodeHeap pool = null; 
 	
 	/**
 	 * 搜索节点路径，通过开始节点，和结束节点，指定搜索的深度。
@@ -16,8 +18,36 @@ public class SocialNet {
 	 * @return 返回节点的最短路径。如果节点不存在，或再指定深度内没有找到路径，
 	 * 返回空数组。
 	 */
-	public int[] searchPath(int start, int end, int deep){
-		return EMPTY;
+	public int[] searchPath(int start, int end, int deep) throws SearchException{
+		DataNode srcNode = null, desNode = null;
+		int[] result = EMPTY;
+		int session = -1;
+		    
+		srcNode = pool.fetch(start, true);
+		desNode = pool.fetch(end, true);
+		if(srcNode == null || desNode == null){
+			return EMPTY;
+		}
+		
+		session = sm.newSession(false);
+		if (session < 0) throw new SearchException(SearchException.NO_SESSION);
+		
+		try{
+			Collection<DataNode> tmp = new ArrayList<DataNode>(1);
+			tmp.add(srcNode);
+			
+			//如果deep为-1,没有搜索深度限制。
+			deep = deep == -1 ? Integer.MAX_VALUE : deep;
+			desNode = this.searchNode(session, desNode, tmp.iterator(), null, deep);
+			if (desNode != null){
+				result = this.retrievePath(session, desNode);
+			}
+			this.cleanSearch(session, srcNode);		
+		}finally{
+			sm.releaseSession(session);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -50,8 +80,12 @@ public class SocialNet {
 	 * @param start
 	 */
 	
-	private void cleanSearch(DataNode start){
-		
+	private void cleanSearch(int session, DataNode start){
+		LinkedList<DataNode> cleanList = new LinkedList<DataNode>();
+		while(start != null){
+			cleanList.addAll(start.resetVisitChildren(session));
+			start = cleanList.poll();
+		}		
 	}
 	
 	/**
@@ -69,14 +103,21 @@ public class SocialNet {
 		if(nextList == null) nextList = new ArrayList<DataNode>(100);
 		
 		DataNode node = null;
+		
 		for(;curList.hasNext(); ){
 			node = curList.next();
-			if(node.equals(desNode)){
-				return node;
-			}
 			nextList.addAll(node.visitChildren(session));
+			
+			//visiChildren把所有相关的节点标志为已访问。
+			if(desNode.sessionArrived(session)){
+				return desNode;
+			}
 		}
 		
 		return searchNode(session, desNode, nextList.iterator(), null, deep-1);
 	}
+	
+	private int[] retrievePath(int session, DataNode node){
+		return EMPTY;
+	} 
 }

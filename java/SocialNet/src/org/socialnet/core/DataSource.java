@@ -9,4 +9,5 @@ public interface DataSource {
 	public int[] loadEdges(int nodeId);
 	public boolean saveEdges(int start, int end);
 	public boolean removeEdges(int start, int end);
+	public boolean isExist(int nodeId);
 }
