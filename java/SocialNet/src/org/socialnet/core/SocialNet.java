@@ -118,6 +118,16 @@ public class SocialNet {
 	}
 	
 	private int[] retrievePath(int session, DataNode node){
-		return EMPTY;
-	} 
+		ArrayList<Integer> path = new ArrayList<Integer>(10);
+		
+		while(node != null){
+			path.add(0, node.id());
+		}
+		//arriveFrom
+		int[] x = new int[path.size()];
+		for (int i = 0; i < x.length; i++){
+			x[i] = path.get(i);
+		}
+		return x;
+	}
 }

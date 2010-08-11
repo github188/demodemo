@@ -52,6 +52,10 @@ public class DataNode {
 		if(this.refs == null)this.initRefs();
 		return this.visitFrom[session] != null;
 	}
+	
+	public DataNode arriveFrom(int session){
+		return this.visitFrom[session];
+	} 
 
 	/**
 	 * 清除遍历标志。
@@ -76,6 +80,10 @@ public class DataNode {
 		
 		return children;
 	}	
+	
+	public int id(){
+		return this.nodeId;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void initRefs(){
