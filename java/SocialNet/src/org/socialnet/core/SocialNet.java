@@ -8,7 +8,18 @@ import java.util.LinkedList;
 public class SocialNet {
 	public static final int[] EMPTY = new int[0];
 	protected SessionManager sm = null;
-	protected NodeHeap pool = null; 
+	protected NodeHeap pool = null;
+	private static SocialNet ins = null;
+	
+	public SocialNet(SessionManager sm, NodeHeap pool){
+		this.sm = sm;
+		this.pool = pool;
+		ins = this;
+	} 
+	
+	public static SocialNet curInstance(){
+		return ins;		
+	}	
 	
 	/**
 	 * 搜索节点路径，通过开始节点，和结束节点，指定搜索的深度。

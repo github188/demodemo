@@ -23,7 +23,8 @@ public class NodeHeap {
 	}
 	
 	public NodeHeap(DataSource ds){
-		
+		this.ds = ds;
+		ins = this;
 	}
 	
 	/**

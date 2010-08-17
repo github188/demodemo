@@ -123,16 +123,21 @@ public class JDBCDataLoader implements DataSource {
 		String driver = settings.getProperty(DB_DRIVER);
 		sql_relation = settings.getProperty(RELATION_SQL);
 		sql_check_id = settings.getProperty(ID_EXIST_SQL);
-		log.info("sql_relation:" + sql_relation);
-		log.info("sql_check_id:" + sql_check_id);
+		log.info("db_driver:" + driver);
 		try {
 			Class.forName(driver);
+			this.getConnection();
+			log.info("sql_relation:" + sql_relation);
+			log.info("sql_check_id:" + sql_check_id);			
 			this.isExist(0);
 			if(conn == null) System.exit(-1); //SQL错误，conn被置为空。
 			this.loadEdges(0);
 			if(conn == null) System.exit(-1); //SQL错误，conn被置为空。
 		} catch (ClassNotFoundException e) {
-			log.error(e);
+			log.error(e, e.getCause());
+			System.exit(-1);
+		} catch(SQLException e){
+			log.error(e, e.getCause());
 			System.exit(-1);
 		}
 	}
@@ -141,6 +146,9 @@ public class JDBCDataLoader implements DataSource {
 		String url = this.settings.getProperty(DB_URL);
 		String username = this.settings.getProperty(DB_USERNAME);
 		String password = this.settings.getProperty(DB_PASSWORD);
+		log.info("db_url:" + url);
+		log.info("username:" + username);
+		log.info("password:" + password);
 		return DriverManager.getConnection(url, username, password);		
 	}
 
