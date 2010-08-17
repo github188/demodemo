@@ -34,7 +34,7 @@ public class DataNode {
 				node = pool.fetch(this.edges[i], false);
 				this.refs[i] = new SoftReference<DataNode>(node);
 			}
-			if(node.visitFrom[session] != this){
+			if(node.arriveFrom(session) != this){
 				node.visitFrom[session] = this;
 				children.add(node);
 			}
@@ -54,6 +54,7 @@ public class DataNode {
 	}
 	
 	public DataNode arriveFrom(int session){
+		if(this.refs == null)this.initRefs();
 		return this.visitFrom[session];
 	} 
 

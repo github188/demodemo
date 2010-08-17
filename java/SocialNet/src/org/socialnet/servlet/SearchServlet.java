@@ -1,7 +1,9 @@
 package org.socialnet.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -35,7 +37,7 @@ public class SearchServlet extends HttpServlet{
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		//response.getWriter().println("hello!");
-		response.setContentType("plain/text");
+		response.setContentType("text/plain");
 		response.setCharacterEncoding("utf8");
 		
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -53,10 +55,10 @@ public class SearchServlet extends HttpServlet{
 		if(start == null || end == null){
 			data.put("code", PARAM_ERR);
 			data.put("mesg", "参数错误!, int s -- 开始节点, int e -- 结束节点, int d -- 搜索深度(default 0)");
+		}else {		
+			processSearch(start, end, deep, data, result);
 		}
-		
-		processSearch(start, end, deep, data, result);		
-		JSONValue.writeJSONString("", response.getWriter());
+		JSONValue.writeJSONString(data, response.getWriter());
 	}
 	
 	private void processSearch(String start, String end, String deep, 
@@ -74,14 +76,14 @@ public class SearchServlet extends HttpServlet{
 		
 		SocialNet net = SocialNet.curInstance();
 		
-		int [] path = SocialNet.EMPTY;
+		List<Integer> path = SocialNet.EMPTY;
 		try{			
 			path = net.searchPath(intStart, intEnd, intDeep);
 			result.put("path", path);
-			if(path.length == 0){
+			if(path.size() == 0){
 				data.put("code", NOT_FOUND);
 			}else {
-				result.put("deep", path.length - 2);
+				result.put("deep", path.size() - 2);
 			}
 		}catch(SearchException e){
 			data.put("code", SEARCH_EXCEPTION);

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SocialNet {
-	public static final int[] EMPTY = new int[0];
+	public static final List<Integer> EMPTY = new ArrayList<Integer>(0);
 	protected SessionManager sm = null;
 	protected NodeHeap pool = null;
 	private static SocialNet ins = null;
@@ -29,9 +30,9 @@ public class SocialNet {
 	 * @return 返回节点的最短路径。如果节点不存在，或再指定深度内没有找到路径，
 	 * 返回空数组。
 	 */
-	public int[] searchPath(int start, int end, int deep) throws SearchException{
+	public List<Integer> searchPath(int start, int end, int deep) throws SearchException{
 		DataNode srcNode = null, desNode = null;
-		int[] result = EMPTY;
+		List<Integer> result = null;
 		int session = -1;
 		    
 		srcNode = pool.fetch(start, true);
@@ -128,17 +129,13 @@ public class SocialNet {
 		return searchNode(session, desNode, nextList.iterator(), null, deep-1);
 	}
 	
-	private int[] retrievePath(int session, DataNode node){
+	private List<Integer> retrievePath(int session, DataNode node){
 		ArrayList<Integer> path = new ArrayList<Integer>(10);
 		
 		while(node != null){
 			path.add(0, node.id());
 		}
-		//arriveFrom
-		int[] x = new int[path.size()];
-		for (int i = 0; i < x.length; i++){
-			x[i] = path.get(i);
-		}
-		return x;
+		
+		return path;
 	}
 }

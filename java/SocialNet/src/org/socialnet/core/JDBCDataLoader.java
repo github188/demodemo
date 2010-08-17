@@ -120,7 +120,7 @@ public class JDBCDataLoader implements DataSource {
 	}
 	
 	private void initDBConnection(){
-		String driver = settings.getProperty(DB_DRIVER);
+		String driver = settings.getProperty(DB_DRIVER).trim();
 		sql_relation = settings.getProperty(RELATION_SQL);
 		sql_check_id = settings.getProperty(ID_EXIST_SQL);
 		log.info("db_driver:" + driver);
