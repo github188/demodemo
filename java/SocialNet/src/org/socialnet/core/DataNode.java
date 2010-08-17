@@ -34,11 +34,13 @@ public class DataNode {
 				node = pool.fetch(this.edges[i], false);
 				this.refs[i] = new SoftReference<DataNode>(node);
 			}
-			if(node.arriveFrom(session) != this){
+			if(node.arriveFrom(session) == null){
 				node.visitFrom[session] = this;
 				children.add(node);
 			}
 		}
+		
+		System.out.println("visitChildren:" + this.id() + ",session" + session + ",children:" + children.size());
 		
 		return children;
 	}
@@ -56,7 +58,17 @@ public class DataNode {
 	public DataNode arriveFrom(int session){
 		if(this.refs == null)this.initRefs();
 		return this.visitFrom[session];
-	} 
+	}
+	
+	public void startedNode(int session){
+		if(this.refs == null)this.initRefs();
+		this.visitFrom[session] = this;
+	}
+	
+	public void cleanStartedNode(int session){
+		if(this.refs == null)this.initRefs();
+		this.visitFrom[session] = null;
+	}
 
 	/**
 	 * 清除遍历标志。
@@ -73,11 +85,12 @@ public class DataNode {
 			ref = this.refs[i];
 			node = ref.get();
 			if(node == null){ continue;}
-			if(node.visitFrom[session] != null){
+			if(node.arriveFrom(session) != null){
 				node.visitFrom[session] = null;
 				children.add(node);
 			}
 		}
+		System.out.println("resetVisitChildren:" + this.id() + ",session" + session + ",children:" + children.size());
 		
 		return children;
 	}	
@@ -95,5 +108,9 @@ public class DataNode {
 		}
 		
 		visitFrom = new DataNode[pool.maxSession()];
+	}
+	
+	public int hashCode(){
+		return this.nodeId;
 	}
 }

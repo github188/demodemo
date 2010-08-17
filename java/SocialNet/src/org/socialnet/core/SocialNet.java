@@ -32,7 +32,7 @@ public class SocialNet {
 	 */
 	public List<Integer> searchPath(int start, int end, int deep) throws SearchException{
 		DataNode srcNode = null, desNode = null;
-		List<Integer> result = null;
+		List<Integer> result = EMPTY;
 		int session = -1;
 		    
 		srcNode = pool.fetch(start, true);
@@ -50,11 +50,15 @@ public class SocialNet {
 			
 			//如果deep为-1,没有搜索深度限制。
 			deep = deep == -1 ? Integer.MAX_VALUE : deep;
+			srcNode.startedNode(session); //加一个标志，为开始节点。
+			
 			desNode = this.searchNode(session, desNode, tmp.iterator(), null, deep);
 			if (desNode != null){
 				result = this.retrievePath(session, desNode);
 			}
-			this.cleanSearch(session, srcNode);		
+			this.cleanSearch(session, srcNode);
+			
+			srcNode.cleanStartedNode(session); //清除开始节点标志。
 		}finally{
 			sm.releaseSession(session);
 		}
@@ -95,8 +99,10 @@ public class SocialNet {
 	private void cleanSearch(int session, DataNode start){
 		LinkedList<DataNode> cleanList = new LinkedList<DataNode>();
 		while(start != null){
+			System.out.println("cleanList:" + start.id());
 			cleanList.addAll(start.resetVisitChildren(session));
 			start = cleanList.poll();
+
 		}		
 	}
 	
@@ -118,8 +124,10 @@ public class SocialNet {
 		
 		for(;curList.hasNext(); ){
 			node = curList.next();
+			System.out.println("Search:" + node.id() + " deep:" + deep);
 			nextList.addAll(node.visitChildren(session));
 			
+			System.out.println("Search2:" + node.id());
 			//visiChildren把所有相关的节点标志为已访问。
 			if(desNode.sessionArrived(session)){
 				return desNode;
@@ -134,6 +142,12 @@ public class SocialNet {
 		
 		while(node != null){
 			path.add(0, node.id());
+			System.out.println("retrievePath:" + node.id());
+			if(node != node.arriveFrom(session)){
+				node = node.arriveFrom(session);
+			}else {
+				node = null;
+			}
 		}
 		
 		return path;

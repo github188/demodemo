@@ -127,6 +127,7 @@ public class Startup {
 		int maxSession = Integer.parseInt(settings.getProperty(MAX_SESSION, "10"));
 		SessionManager sm = new SessionManager(maxSession);
 		NodeHeap pool = new NodeHeap(loader);
+		pool.setMaxSession(maxSession);
 		new SocialNet(sm, pool);
 	}
 	

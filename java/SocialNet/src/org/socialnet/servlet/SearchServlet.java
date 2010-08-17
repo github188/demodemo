@@ -77,7 +77,8 @@ public class SearchServlet extends HttpServlet{
 		SocialNet net = SocialNet.curInstance();
 		
 		List<Integer> path = SocialNet.EMPTY;
-		try{			
+		try{	
+			System.out.println("s:" + intStart +" s:" + intEnd + " d:" + intDeep);
 			path = net.searchPath(intStart, intEnd, intDeep);
 			result.put("path", path);
 			if(path.size() == 0){

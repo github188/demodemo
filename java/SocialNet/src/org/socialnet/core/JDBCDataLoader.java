@@ -93,6 +93,9 @@ public class JDBCDataLoader implements DataSource {
 	    try
 	    {
 	    	if(conn == null) conn = this.getConnection();
+			if(sql_check_id == null || "".equals(sql_check_id.trim())){
+				return true;
+			}	    	
 	    	pstm = conn.prepareStatement(sql_check_id,
 	    			 	ResultSet.TYPE_FORWARD_ONLY,
 	    			 	ResultSet.CONCUR_READ_ONLY
