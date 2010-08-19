@@ -28,7 +28,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.jfree.chart.ChartUtilities;
 
+import com.nsn.reporting.chart.http.SimpleHTTPServer;
 import com.nsn.reporting.data.ChartInfomation;
+import com.nsn.reporting.data.GroupedStackedBarChartInfomation;
 import com.nsn.reporting.data.PieChartInfomation;
 import com.nsn.reporting.data.StackedChartInfomation;
 import com.nsn.reporting.data.StackedLineChartInfomation;
@@ -45,7 +47,11 @@ public class ChartReport {
 	public static final String VARIABLE = "var";
 	public static final String DATEXT = "data_suffix";
 	public static final String OUTEXT = "out_suffix";
+	public static final String TMPEXT = "tmp_suffix";
 	public static final String CHARTSIZE = "size";
+	
+	public static final String HTTPPORT = "http_port";
+	
 	
 	public static final String version = "0.0.1";
 	public static final String defaultSize = "600x400";
@@ -62,6 +68,7 @@ public class ChartReport {
 	
 	private String datExt = null;
 	private String outExt = null;
+	private String tmpExt = null;
 	
 	private boolean debug = true;
 	
@@ -85,7 +92,9 @@ public class ChartReport {
 		options.addOption(VARIABLE, true, "set global parameter to all charts.");
 		options.addOption(DATEXT, true, "the data file suffix");
 		options.addOption(OUTEXT, true, "the output file suffix");
+		options.addOption(TMPEXT, true, "the temp file suffix");
 		options.addOption(CHARTSIZE, true, "the size of output chart, default is 600x400");
+		options.addOption(HTTPPORT, true, "It's run as http server, if the http port is provided.");
 		
 		options.addOption("d", false, "dummy option");
 		
@@ -112,20 +121,31 @@ public class ChartReport {
 			return;
 		}
 		
-		if(cmd.hasOption(STDIN) || cmd.getArgs().length > 0){
+		tmpExt = cmd.getOptionValue(TMPEXT, null);
+		
+		if(cmd.hasOption(STDIN) || cmd.hasOption(HTTPPORT) || cmd.getArgs().length > 0){
 			datExt = cmd.getOptionValue(DATEXT, ".dat");
-			outExt = cmd.getOptionValue(OUTEXT, ".jpg");
+			outExt = cmd.getOptionValue(OUTEXT, ".png");
 	
-			if(!initDirectory())return;
+			if(!cmd.hasOption(HTTPPORT) && !initDirectory())return;
 			globalHeader = initGlobalChartHeader(cmd.getOptionValues(VARIABLE));
-			globalHeader.put(HEADER_SIZE, 
-							 cmd.getOptionValue(CHARTSIZE, defaultSize));
-			globalHeader.put(HEADER_QUALITY, 
-							 cmd.getOptionValue(QUALITY, defaultQuality));
+			
+			if (cmd.hasOption(CHARTSIZE)){
+				globalHeader.put(HEADER_SIZE, 
+								 cmd.getOptionValue(CHARTSIZE, defaultSize));
+			}
+			
+			if (cmd.hasOption(QUALITY)){
+				globalHeader.put(HEADER_QUALITY, 
+								 cmd.getOptionValue(QUALITY, defaultQuality));
+			}
 		}
 		
 		if(cmd.hasOption(STDIN)){
 			generateReport(System.in);
+		}else if(cmd.hasOption(HTTPPORT)){
+			int port = Integer.parseInt(cmd.getOptionValue(HTTPPORT));
+			new SimpleHTTPServer(port, globalHeader, cmd).run();
 		}else if(cmd.getArgs().length > 0){
 			generateReport(cmd.getArgs());
 		}else {
@@ -136,7 +156,12 @@ public class ChartReport {
 	
 	public void generateReport(String[] dataSources){				
 		for(String input: dataSources){
-			File inputFile = new File(workRoot, input);
+			File inputFile = null;//new File(workRoot, input);
+			if (input.indexOf(":") > 0 || input.charAt(0) == File.separatorChar){
+				inputFile = new File(input);
+			}else {
+				inputFile = new File(workRoot, input);
+			}
 			if(inputFile.isDirectory()){
 				this.generateReportDirectory(inputFile);
 			}else {
@@ -222,13 +247,26 @@ public class ChartReport {
 		}
 		
 		FileOutputStream os = null;
+		File tempFile = null;
+		File outputFile = null;
 		try {
-			os = new FileOutputStream(outputChartFile(info));
+			outputFile = outputChartFile(info);
+			if (this.tmpExt != null){
+				tempFile = tmpOutputChartFile(outputFile, this.tmpExt);
+			}else {
+				tempFile = outputFile;
+			}
+			
+			os = new FileOutputStream(tempFile);
 			String[] size = info.getSize().split("x", 2);
 			int width = Integer.parseInt(size[0]);
 			int height = Integer.parseInt(size[1]);
 			
-			ChartUtilities.writeChartAsJPEG(os, info.getQuality(), info.createChart(), width, height, null);
+			if(outputFile.getName().endsWith(".jpg")){
+				ChartUtilities.writeChartAsJPEG(os, info.getQuality(), info.createChart(), width, height, null);
+			}else if(outputFile.getName().endsWith(".png")) {
+				ChartUtilities.writeChartAsPNG(os, info.createChart(), width, height, null);
+			}
 		}catch(Exception e){
 			exception(e);
 			echo("error:" + e.getMessage());
@@ -237,6 +275,28 @@ public class ChartReport {
 				os.close();
 			} catch (Exception e) {}
 		}
+		if (this.tmpExt != null){
+			if(!renameTmpChartFile(tempFile, outputFile)){
+				echo("failed to rename cache file to chart file.");
+			}
+		}
+	}
+	
+	private File tmpOutputChartFile(File f, String tmpExt){
+		tmpExt = tmpExt == null ? ".tmp": tmpExt;
+		return new File(f.getParentFile(), f.getName() + tmpExt);
+	}
+	
+	private boolean renameTmpChartFile(File temp, File dest){
+		if(temp.equals(dest)){
+			return true;
+		}
+		
+		if (dest.isFile()){
+			dest.delete();
+		}
+		
+		return temp.renameTo(dest);
 	}
 	
 	private boolean filter(String name){
@@ -263,7 +323,13 @@ public class ChartReport {
 		}
 		
 		echo("output:" + outfile);
-		File file = new File(outputRoot, outfile);
+		File file = null; //new File(outputRoot, outfile);
+		if (outfile.indexOf(":") > 0 || outfile.charAt(0) == File.separatorChar){
+			file = new File(outfile);
+		}else {
+			file = new File(outputRoot, outfile);
+		}
+		
 		if(!file.getParentFile().isDirectory()){
 			file.mkdirs();
 		}
@@ -285,7 +351,7 @@ public class ChartReport {
 		return result;
 	}
 	
-	private ChartInfomation createChartInformation(String header){
+	public static ChartInfomation createChartInformation(String header){
 		if(header.startsWith("Chart:")){
 			String style = header.substring(6);
 			style = style.trim().toLowerCase();
@@ -295,6 +361,8 @@ public class ChartReport {
 				return new PieChartInfomation();
 			}else if(style.equals(ChartInfomation.STYLE_STACK_LINE)){
 				return new StackedLineChartInfomation();
+			}else if(style.equals(ChartInfomation.STYLE_GROUP_STACK)){
+				return new GroupedStackedBarChartInfomation();
 			}
 			
 			echo("Not supported chart:" + header.substring(6));
@@ -350,7 +418,7 @@ public class ChartReport {
 		}
 	}
 	
-	private void echo(String s){
+	private static void echo(String s){
 		System.out.println(s);
 	}
 

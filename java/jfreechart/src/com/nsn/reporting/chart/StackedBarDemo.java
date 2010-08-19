@@ -112,7 +112,7 @@ public class StackedBarDemo {
 			throw new IllegalArgumentException("Null 'orientation' argument.");
 		}
 
-		CategoryAxis categoryAxis = new FixedCategoryAxis(domainAxisLabel, 10);
+		CategoryAxis categoryAxis = new FixedCategoryAxis(domainAxisLabel, 10, 2);
 		ValueAxis valueAxis = new NumberAxis(rangeAxisLabel);
 
 		StackedBarRenderer renderer = new FixedDomainStackBarRenderer();

@@ -12,12 +12,12 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.CategoryItemRendererState;
-import org.jfree.chart.renderer.category.StackedBarRenderer;
+import org.jfree.chart.renderer.category.GroupedStackedBarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
 import com.nsn.reporting.chart.axis.FixedCategoryAxis;
 
-public class FixedDomainStackBarRenderer extends StackedBarRenderer {
+public class FixedDomainStackBarRenderer extends GroupedStackedBarRenderer {
 	
     protected void calculateBarWidth(CategoryPlot plot, Rectangle2D dataArea,
 			int rendererIndex, CategoryItemRendererState state) {

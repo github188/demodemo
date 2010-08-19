@@ -30,8 +30,8 @@ public class StackedChartInfomation extends ChartInfomation {
 	
 	public StackedChartInfomation(){
 		super(STYLE_STACK);	
-		this.labels.add("Build Date");
-		this.labels.add("Build Count");
+		this.labels.add(new AxisData("Build Date"));
+		this.labels.add(new AxisData("Build Count"));
 	}
 
 	@Override
@@ -52,8 +52,9 @@ public class StackedChartInfomation extends ChartInfomation {
 
 	@Override
 	public JFreeChart createChart() {
-		CategoryAxis categoryAxis = new FixedCategoryAxis(this.labels.get(0), getFixedLength());
-		ValueAxis valueAxis = new NumberAxis(this.labels.get(1));
+		CategoryAxis categoryAxis = new FixedCategoryAxis(this.labels.get(0).label, getFixedLength(),
+				dataset.getRowCount());
+		ValueAxis valueAxis = this.labels.get(1).buildAxis();
 
 		StackedBarRenderer renderer = new FixedDomainStackBarRenderer();
 
