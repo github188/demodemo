@@ -34,9 +34,13 @@ public class NodeHeap {
 	 * @return
 	 */
 	public synchronized DataNode fetch(int nodeId, boolean exists){
+		DataNode node = null;
 		WeakReference<DataNode> ref = this.cache.get(nodeId);
 		if(ref != null && ref.get() != null){
-			return ref.get();	//缓存命中。
+			node = ref.get();	//缓存命中。
+			if(!node.expired()){ //未过期。
+				return node;
+			}
 		}
 		
 		if(exists && !this.ds.isExist(nodeId)){
@@ -44,9 +48,19 @@ public class NodeHeap {
 		}
 		
 		int[] edges = this.ds.loadEdges(nodeId);
-		DataNode node = new DataNode(nodeId, edges);
+		node = new DataNode(nodeId, edges);
 		this.cache.put(nodeId, new WeakReference<DataNode>(node));
 		
+		return node;
+	}
+	
+	public synchronized DataNode expireNode(int nodeId){
+		DataNode node = null;
+		WeakReference<DataNode> ref = this.cache.get(nodeId);
+		if(ref != null && ref.get() != null){
+			node = ref.get();	//缓存命中。
+			node.setExpired();
+		}
 		return node;
 	}
 

@@ -9,6 +9,7 @@ public class DataNode {
 	private int[] edges = null; //related DataNode from current Node.
 	public DataNode[] visitFrom = null; //标识访问该节点的来源节点, 数组的最大值是Max Session数。
 	private SoftReference<DataNode>[] refs = null;
+	private boolean expired = false;
 	
 	public DataNode(int nodeId, int[] edges){
 		this.nodeId = nodeId;
@@ -30,7 +31,7 @@ public class DataNode {
 		for(int i=0; i < this.refs.length; i++){
 			ref = this.refs[i];
 			node = ref.get();
-			if(node == null){
+			if(node == null || node.expired()){
 				node = pool.fetch(this.edges[i], false);
 				this.refs[i] = new SoftReference<DataNode>(node);
 			}
@@ -43,6 +44,14 @@ public class DataNode {
 		System.out.println("visitChildren:" + this.id() + ",session" + session + ",children:" + children.size());
 		
 		return children;
+	}
+	
+	public boolean expired(){
+		return this.expired;
+	}
+	
+	public void setExpired(){
+		this.expired = true;
 	}
 	
 	/**

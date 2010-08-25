@@ -73,14 +73,17 @@ public class SocialNet {
 	 * @return
 	 */
 	public boolean createRelation(int start, int end){
+		pool.expireNode(start);
 		return false;
 	}
 	
 	public boolean removeRelation(int start, int end){
+		pool.expireNode(start);
 		return false;
 	}
 	
 	public boolean removeNode(int nodeId){
+		pool.expireNode(nodeId);
 		return false;
 	}
 	
