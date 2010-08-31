@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONValue;
+import org.socialnet.core.Relation;
 import org.socialnet.core.SearchException;
 import org.socialnet.core.SocialNet;
 
@@ -76,15 +77,24 @@ public class SearchServlet extends HttpServlet{
 		
 		SocialNet net = SocialNet.curInstance();
 		
-		List<Integer> path = SocialNet.EMPTY;
-		try{	
+		List<Relation> path = SocialNet.EMPTY;
+		try{
 			System.out.println("s:" + intStart +" s:" + intEnd + " d:" + intDeep);
 			path = net.searchPath(intStart, intEnd, intDeep);
-			result.put("path", path);
+			List<List<Integer>> xxx = new ArrayList<List<Integer>>();
+			for(Relation r: path){
+				List<Integer> rel = new ArrayList<Integer>();
+				rel.add(r.start.id());
+				rel.add(r.end_id);
+				rel.add(r.relationType);
+				xxx.add(rel);
+			}
+			result.put("path", xxx);
+			result.put("path_help", "<start>,<end>,<type>");
 			if(path.size() == 0){
 				data.put("code", NOT_FOUND);
 			}else {
-				result.put("deep", path.size() - 2);
+				result.put("deep", path.size() - 1);
 			}
 		}catch(SearchException e){
 			data.put("code", SEARCH_EXCEPTION);

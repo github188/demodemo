@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -33,10 +34,12 @@ public class JDBCDataLoader implements DataSource {
 	}
 
 	@Override
-	public int[] loadEdges(int nodeId) {
+	public Collection<Relation> loadEdges(int nodeId) {
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
-		ArrayList<Integer> result = new ArrayList<Integer>(100);
+		ArrayList<Relation> result = new ArrayList<Relation>(100);
+		int friend, role;
+		float weight;
 	    try
 	    {
 	    	if(conn == null) conn = this.getConnection();
@@ -49,7 +52,10 @@ public class JDBCDataLoader implements DataSource {
 	    	
 	    	rs.setFetchSize(100);
 			while (rs.next()){
-				result.add(rs.getInt("friend"));
+				friend = rs.getInt("friend");
+				role = rs.getInt("relation");
+				weight = rs.getFloat("weight");
+				result.add(new Relation(friend, role, weight));
 			}
 	    }catch (SQLException ex){
 	      log.error(ex);
@@ -66,13 +72,8 @@ public class JDBCDataLoader implements DataSource {
 				log.error(e);
 			}}
 	    }
-		// TODO Auto-generated method stub
-		//arriveFrom
-		int[] x = new int[result.size()];
-		for (int i = 0; i < x.length; i++){
-			x[i] = result.get(i);
-		}
-		return x;
+	    result.trimToSize();
+		return result;
 	}
 
 	@Override

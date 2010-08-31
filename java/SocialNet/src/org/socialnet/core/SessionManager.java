@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 public class SessionManager {
 	private BlockingQueue<Integer> sessionQueue = null;
 	private Log log = LogFactory.getLog(SessionManager.class);
+	private int maxSession = 0;
 	
 	public SessionManager(int maxSession){
 		sessionQueue = new ArrayBlockingQueue<Integer>(maxSession);
@@ -26,6 +27,7 @@ public class SessionManager {
 				log.error(e);
 			}
 		}
+		this.maxSession = maxSession;
 	}
 	
 	/**
@@ -57,6 +59,10 @@ public class SessionManager {
 		} catch (InterruptedException e) {			
 			log.error(e);
 		}
+	}
+	
+	public int maxSession(){
+		return this.maxSession;
 	}
 
 }

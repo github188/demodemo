@@ -23,7 +23,7 @@ public class Startup {
 	public static final String HTTP_PORT = "http_port";
 	public static final String MAX_SESSION = "max_session";
 	
-	public static final String VERSION = "0.1.0";
+	public static final String VERSION = "0.1.1";
 	private static Log log = LogFactory.getLog(Startup.class);
 	private String conf = "sns.conf";
 	protected Properties settings = System.getProperties();
@@ -127,7 +127,6 @@ public class Startup {
 		int maxSession = Integer.parseInt(settings.getProperty(MAX_SESSION, "10"));
 		SessionManager sm = new SessionManager(maxSession);
 		NodeHeap pool = new NodeHeap(loader);
-		pool.setMaxSession(maxSession);
 		new SocialNet(sm, pool);
 	}
 	

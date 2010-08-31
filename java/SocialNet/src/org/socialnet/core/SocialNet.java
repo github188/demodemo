@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SocialNet {
-	public static final List<Integer> EMPTY = new ArrayList<Integer>(0);
+	public static final List<Relation> EMPTY = new ArrayList<Relation>(0);
 	protected SessionManager sm = null;
 	protected NodeHeap pool = null;
 	private static SocialNet ins = null;
@@ -30,9 +30,9 @@ public class SocialNet {
 	 * @return 返回节点的最短路径。如果节点不存在，或再指定深度内没有找到路径，
 	 * 返回空数组。
 	 */
-	public List<Integer> searchPath(int start, int end, int deep) throws SearchException{
+	public List<Relation> searchPath(int start, int end, int deep) throws SearchException{
 		DataNode srcNode = null, desNode = null;
-		List<Integer> result = EMPTY;
+		List<Relation> result = EMPTY;
 		int session = -1;
 		    
 		srcNode = pool.fetch(start, true);
@@ -87,6 +87,10 @@ public class SocialNet {
 		return false;
 	}
 	
+	public int maxSession(){
+		return sm.maxSession();
+	}	
+	
 	/**
 	 * 清楚所有加载资源，锁，节点缓存。
 	 */
@@ -140,19 +144,14 @@ public class SocialNet {
 		return searchNode(session, desNode, nextList.iterator(), null, deep-1);
 	}
 	
-	private List<Integer> retrievePath(int session, DataNode node){
-		ArrayList<Integer> path = new ArrayList<Integer>(10);
-		
-		while(node != null){
-			path.add(0, node.id());
-			System.out.println("retrievePath:" + node.id());
-			if(node != node.arriveFrom(session)){
-				node = node.arriveFrom(session);
-			}else {
-				node = null;
-			}
+	private List<Relation> retrievePath(int session, DataNode node){
+		ArrayList<Relation> path = new ArrayList<Relation>(10);		
+		Relation rel = node.arriveFrom(session);		
+		while(rel != null && rel.start != null){
+			path.add(0, rel);
+			rel = rel.start.arriveFrom(session);
 		}
-		
+		path.trimToSize();
 		return path;
 	}
 }

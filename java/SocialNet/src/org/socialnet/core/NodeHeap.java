@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class NodeHeap {
 	private static NodeHeap ins = null;
-	private int maxSession = 0;
 	//使用Weak引用，支持GC回收不再使用的节点。
 	protected Map<Integer, WeakReference<DataNode>> cache = new HashMap<Integer, WeakReference<DataNode>>();
 	protected DataSource ds = null;
@@ -47,8 +46,7 @@ public class NodeHeap {
 			return null;
 		}
 		
-		int[] edges = this.ds.loadEdges(nodeId);
-		node = new DataNode(nodeId, edges);
+		node = new DataNode(nodeId, this.ds.loadEdges(nodeId));
 		this.cache.put(nodeId, new WeakReference<DataNode>(node));
 		
 		return node;
@@ -63,17 +61,7 @@ public class NodeHeap {
 		}
 		return node;
 	}
-
-	/**
-	 * 把SocialNet中的maxSession保存到这儿，方便在DataNode中使用。纯属无奈，为了避免DataNode依赖SocialNet.
-	 */	
-	public void setMaxSession(int i){
-		this.maxSession = i;
-	}
 	
-	public int maxSession(){
-		return this.maxSession;
-	}
 }
 
 
