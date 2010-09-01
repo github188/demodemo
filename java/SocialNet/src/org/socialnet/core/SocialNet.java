@@ -6,7 +6,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class SocialNet {
+	private static Log log = LogFactory.getLog(SocialNet.class);
 	public static final List<Relation> EMPTY = new ArrayList<Relation>(0);
 	protected SessionManager sm = null;
 	protected NodeHeap pool = null;
@@ -34,7 +38,7 @@ public class SocialNet {
 		DataNode srcNode = null, desNode = null;
 		List<Relation> result = EMPTY;
 		int session = -1;
-		    
+		log.info(String.format("searchPath, start:%s, end:%s, deep:%s", start, end, deep));
 		srcNode = pool.fetch(start, true);
 		desNode = pool.fetch(end, true);
 		if(srcNode == null || desNode == null){
@@ -98,6 +102,39 @@ public class SocialNet {
 		
 	}
 	
+	public Collection<NodePath> listRelatedNode(int start, int minDeep, 
+			int maxDeep, int maxCount) throws SearchException{
+		log.info(String.format("listRelatedNode, start:%s, min:%s, max:%s, count:%s", 
+				start, minDeep, maxDeep, maxCount));
+		final DataNode srcNode = pool.fetch(start, true);		
+		int session = -1;
+		if(srcNode == null){
+			return new ArrayList<NodePath>(0);
+		}
+		
+		Collection<NodePath> result = null;
+		
+		session = sm.newSession(false);
+		if (session < 0) throw new SearchException(SearchException.NO_SESSION);
+		
+		try{
+			srcNode.startedNode(session); //加一个标志，为开始节点。
+			Collection<DataNode> nodeList = this.listRelatedNodeInSession(session, srcNode, minDeep, maxDeep, maxCount);			
+			
+			result = new ArrayList<NodePath>(nodeList.size());
+			for(DataNode node: nodeList){
+				result.add(new NodePath(node, this.retrievePath(session, node)));
+			}
+			this.cleanSearch(session, srcNode);
+			
+			srcNode.cleanStartedNode(session); //清除开始节点标志。
+		}finally{
+			sm.releaseSession(session);
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * 清除搜索时的标识位。
 	 * @param start
@@ -106,12 +143,11 @@ public class SocialNet {
 	private void cleanSearch(int session, DataNode start){
 		LinkedList<DataNode> cleanList = new LinkedList<DataNode>();
 		while(start != null){
-			System.out.println("cleanList:" + start.id());
 			cleanList.addAll(start.resetVisitChildren(session));
 			start = cleanList.poll();
-
-		}		
+		}
 	}
+	
 	
 	/**
 	 * 按层次搜索目标节点，返回查找到得目标节点。
@@ -131,10 +167,10 @@ public class SocialNet {
 		
 		for(;curList.hasNext(); ){
 			node = curList.next();
-			System.out.println("Search:" + node.id() + " deep:" + deep);
+			//System.out.println("Search:" + node.id() + " deep:" + deep);
 			nextList.addAll(node.visitChildren(session));
 			
-			System.out.println("Search2:" + node.id());
+			//System.out.println("Search2:" + node.id());
 			//visiChildren把所有相关的节点标志为已访问。
 			if(desNode.sessionArrived(session)){
 				return desNode;
@@ -143,6 +179,37 @@ public class SocialNet {
 		
 		return searchNode(session, desNode, nextList.iterator(), null, deep-1);
 	}
+	
+	private Collection<DataNode> listRelatedNodeInSession(int session, DataNode srcNode, 
+			int minDeep, int maxDeep, int maxCount){
+		int deep = 0;
+		
+		Collection<DataNode> tmp = new ArrayList<DataNode>(1);
+		tmp.add(srcNode);		
+		Iterator<DataNode> curList = tmp.iterator();
+
+		Collection<DataNode> result = new ArrayList<DataNode>(maxCount);
+		Collection<DataNode> nextList = null;
+				
+		DataNode node = null;		
+		while(deep < maxDeep && curList.hasNext()){
+			nextList = new ArrayList<DataNode>(maxCount);
+			for(;curList.hasNext(); ){
+				node = curList.next();
+				nextList.addAll(node.visitChildren(session));
+				if(deep > minDeep){
+					result.add(node);
+					if(result.size() > maxCount)return result;
+				}
+			}
+			deep++;
+			curList = nextList.iterator();
+		}
+		
+		return result;
+	}
+
+	
 	
 	private List<Relation> retrievePath(int session, DataNode node){
 		ArrayList<Relation> path = new ArrayList<Relation>(10);		

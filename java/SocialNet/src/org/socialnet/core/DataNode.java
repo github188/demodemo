@@ -84,9 +84,8 @@ public class DataNode {
 				node.visitFrom[session] = null;
 				children.add(node);
 			}
-			children.add(node);
 		}
-		log.info(String.format("clean up [%s]%s", session, this.nodeId));
+		log.info(String.format("clean up [%s]%s, children:%s", session, this.nodeId, children.size()));
 				
 		return children;
 	}	

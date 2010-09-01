@@ -112,6 +112,7 @@ public class Startup {
         ServletHandler handler=new ServletHandler();
         server.setHandler(handler);
         handler.addServletWithMapping("org.socialnet.servlet.SearchServlet", "/search/*");
+        handler.addServletWithMapping("org.socialnet.servlet.ListRelatedServlet", "/list/*");
         try {
 			server.start();
 	        server.join();
