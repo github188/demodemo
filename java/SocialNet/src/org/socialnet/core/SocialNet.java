@@ -44,6 +44,7 @@ public class SocialNet {
 		if(srcNode == null || desNode == null){
 			return EMPTY;
 		}
+		long startTime = System.currentTimeMillis(); 
 		
 		session = sm.newSession(false);
 		if (session < 0) throw new SearchException(SearchException.NO_SESSION);
@@ -67,6 +68,13 @@ public class SocialNet {
 			sm.releaseSession(session);
 		}
 		
+		RunStatus.search_count++;
+		startTime = System.currentTimeMillis() - startTime;
+		if(startTime > RunStatus.max_search_time){
+			RunStatus.max_search_time = startTime;
+		}
+		RunStatus.avg_search_time = (startTime + RunStatus.avg_search_time) / 2;
+		
 		return result;
 	}
 	
@@ -78,11 +86,13 @@ public class SocialNet {
 	 */
 	public boolean createRelation(int start, int end){
 		pool.expireNode(start);
+		RunStatus.relation_add_count++;
 		return false;
 	}
 	
 	public boolean removeRelation(int start, int end){
 		pool.expireNode(start);
+		RunStatus.relation_remove_count++;
 		return false;
 	}
 	
@@ -103,15 +113,16 @@ public class SocialNet {
 	}
 	
 	public Collection<NodePath> listRelatedNode(int start, int minDeep, 
-			int maxDeep, int maxCount) throws SearchException{
-		log.info(String.format("listRelatedNode, start:%s, min:%s, max:%s, count:%s", 
-				start, minDeep, maxDeep, maxCount));
+			int maxDeep, int index, int maxCount) throws SearchException{
+		log.info(String.format("listRelatedNode, start:%s, min:%s, max:%s, index:%s, count:%s", 
+				start, minDeep, maxDeep, index, maxCount));
 		final DataNode srcNode = pool.fetch(start, true);		
 		int session = -1;
 		if(srcNode == null){
 			return new ArrayList<NodePath>(0);
 		}
 		
+		long startTime = System.currentTimeMillis(); 
 		Collection<NodePath> result = null;
 		
 		session = sm.newSession(false);
@@ -119,7 +130,7 @@ public class SocialNet {
 		
 		try{
 			srcNode.startedNode(session); //加一个标志，为开始节点。
-			Collection<DataNode> nodeList = this.listRelatedNodeInSession(session, srcNode, minDeep, maxDeep, maxCount);			
+			Collection<DataNode> nodeList = this.listRelatedNodeInSession(session, srcNode, minDeep, maxDeep, index, maxCount);
 			
 			result = new ArrayList<NodePath>(nodeList.size());
 			for(DataNode node: nodeList){
@@ -131,6 +142,13 @@ public class SocialNet {
 		}finally{
 			sm.releaseSession(session);
 		}
+		
+		RunStatus.list_related_count++;
+		startTime = System.currentTimeMillis() - startTime;
+		if(startTime > RunStatus.max_list_related_time){
+			RunStatus.max_list_related_time = startTime;
+		}
+		RunStatus.avg_list_related_time = (startTime + RunStatus.avg_list_related_time) / 2;		
 		
 		return result;
 	}
@@ -181,7 +199,7 @@ public class SocialNet {
 	}
 	
 	private Collection<DataNode> listRelatedNodeInSession(int session, DataNode srcNode, 
-			int minDeep, int maxDeep, int maxCount){
+			int minDeep, int maxDeep, int index, int maxCount){
 		int deep = 0;
 		
 		Collection<DataNode> tmp = new ArrayList<DataNode>(1);
@@ -190,6 +208,7 @@ public class SocialNet {
 
 		Collection<DataNode> result = new ArrayList<DataNode>(maxCount);
 		Collection<DataNode> nextList = null;
+		//index
 				
 		DataNode node = null;		
 		while(deep < maxDeep && curList.hasNext()){
@@ -198,7 +217,8 @@ public class SocialNet {
 				node = curList.next();
 				nextList.addAll(node.visitChildren(session));
 				if(deep > minDeep){
-					result.add(node);
+					index--;
+					if(index < 0) result.add(node);
 					if(result.size() > maxCount)return result;
 				}
 			}

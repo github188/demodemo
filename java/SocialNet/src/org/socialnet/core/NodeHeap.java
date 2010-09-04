@@ -1,6 +1,8 @@
 package org.socialnet.core;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +64,26 @@ public class NodeHeap {
 		return node;
 	}
 	
+	public int nodeCount(){
+		cleanExpireNode();
+		return this.cache.size();
+	}
+	
+	public void cleanExpireNode(){
+		//Map<Integer, WeakReference<DataNode>>
+		Collection<Integer> list = new ArrayList<Integer>(this.cache.size());
+		list.addAll(this.cache.keySet());
+		WeakReference<DataNode> ref = null;
+		for(Integer i : list){
+			ref = this.cache.get(i);
+			if (ref == null)continue;
+			if(ref.get() == null){
+				this.cache.remove(i);
+			}else if(ref.get().expired()){
+				this.cache.remove(i);
+			}
+		}
+	}
 }
 
 

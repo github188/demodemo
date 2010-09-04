@@ -34,7 +34,7 @@ public class DataNode {
 			node = rel.endNode();
 			if(node.visitFrom[session] == null){
 				node.visitFrom[session] = rel.clone();
-				log.info(String.format("[%s]%s->%s, type=%s, weight=%s", session, this.nodeId, node.nodeId, rel.relationType, rel.weight));
+				log.trace(String.format("[%s]%s->%s, type=%s, weight=%s", session, this.nodeId, node.nodeId, rel.relationType, rel.weight));
 			}
 			children.add(node);
 		}	
@@ -85,7 +85,7 @@ public class DataNode {
 				children.add(node);
 			}
 		}
-		log.info(String.format("clean up [%s]%s, children:%s", session, this.nodeId, children.size()));
+		log.trace(String.format("clean up [%s]%s, children:%s", session, this.nodeId, children.size()));
 				
 		return children;
 	}	

@@ -113,6 +113,9 @@ public class Startup {
         server.setHandler(handler);
         handler.addServletWithMapping("org.socialnet.servlet.SearchServlet", "/search/*");
         handler.addServletWithMapping("org.socialnet.servlet.ListRelatedServlet", "/list/*");
+        handler.addServletWithMapping("org.socialnet.servlet.ManageServlet", "/manage/*");
+        handler.addServletWithMapping("org.socialnet.servlet.StatusServlet", "/status/*");
+        handler.addServletWithMapping("org.socialnet.servlet.StatusServlet", "/");
         try {
 			server.start();
 	        server.join();

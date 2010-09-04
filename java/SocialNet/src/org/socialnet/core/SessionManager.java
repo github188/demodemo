@@ -48,7 +48,10 @@ public class SessionManager {
 			sessionId = this.sessionQueue.poll();
 		}
 		log.debug("create new session, id=" + sessionId);
-		
+		int worked = this.maxSession - this.sessionQueue.size();
+		if(worked > RunStatus.session_max_query){
+			RunStatus.session_max_query = worked;
+		}
 		return sessionId;
 	}
 	

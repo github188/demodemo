@@ -73,6 +73,7 @@ public class JDBCDataLoader implements DataSource {
 			}}
 	    }
 	    result.trimToSize();
+	    RunStatus.db_query_count++;
 		return result;
 	}
 

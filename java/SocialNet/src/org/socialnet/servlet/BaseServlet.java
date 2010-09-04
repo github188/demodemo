@@ -12,17 +12,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONValue;
 import org.socialnet.core.Relation;
 import org.socialnet.core.SearchException;
+import org.socialnet.shell.Startup;
 
 public abstract class BaseServlet extends HttpServlet{
+	protected static Log log = LogFactory.getLog(BaseServlet.class);
 	public static final int PARAM_ERR = 1;
 	public static final int NOT_FOUND = 2;
 	public static final int SEARCH_EXCEPTION = 3;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
+		//log.info("process thread:" + Thread.currentThread().getId() + "\tname:" + Thread.currentThread().getName());
 		this.doPost(request, response);
 	}
 	

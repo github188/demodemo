@@ -14,22 +14,23 @@ import org.socialnet.core.SocialNet;
 public class ListRelatedServlet extends BaseServlet{
 	protected void process(HttpServletRequest request, 
 			final Map<String, Object>status, final Map<String, Object>data) throws SearchException{	
-		int start, min, max, count;
+		int start, min, max, index, count;
 		
 		start = intParam(request, "s", -1);
 		min = intParam(request, "min", 1);
 		max = intParam(request, "max", 6);
+		index = intParam(request, "index", 0);
 		count = intParam(request, "count", 100);
 		if(start == -1){
 			status.put("code", PARAM_ERR);
-			status.put("mesg", "参数错误!, int s -- 开始节点, int min -- 最小层数(1), int max -- 最大层数(6), int count -- 最大返回(100)");
+			status.put("mesg", "参数错误!, int s -- 开始节点, int min -- 最小层数(1), int max -- 最大层数(6), int index -- 开始节点(0)  int count -- 最大返回(100)");
 			return;
 		}
 		
 		SocialNet net = SocialNet.curInstance();
 		
 		Collection<NodePath> datList = new ArrayList<NodePath>(0);
-		datList = net.listRelatedNode(start, min, max, count);
+		datList = net.listRelatedNode(start, min, max, index, count);
 		
 		Collection<Map<String, Object>> xxx = new ArrayList<Map<String, Object>>(datList.size());
 		for(NodePath node: datList){

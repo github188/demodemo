@@ -21,7 +21,6 @@
 	         <mkdir dir="${build.dir}"/> 
 	         <mkdir dir="${build.dir}/classes"/> 
 	         <mkdir dir="${build.dir}/lib"/>                   
-	         <mkdir dir="${dist.dir}"/> 
 	 </target> 
           
      <target name="compile-shell" depends="properties, init"> 
