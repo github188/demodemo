@@ -36,7 +36,7 @@ public class ListRelatedServlet extends BaseServlet{
 		for(NodePath node: datList){
 			Map<String, Object> tmp = new HashMap<String, Object>();
 			tmp.put("user", node.node.id());
-			tmp.put("path", convertPath(node.path));
+			tmp.put("path", node.path);
 			xxx.add(tmp);
 		}
 		

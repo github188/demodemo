@@ -34,10 +34,10 @@ public class DataNode {
 			node = rel.endNode();
 			if(node.visitFrom[session] == null){
 				node.visitFrom[session] = rel.clone();
-				log.trace(String.format("[%s]%s->%s, type=%s, weight=%s", session, this.nodeId, node.nodeId, rel.relationType, rel.weight));
+				log.debug(String.format("[%s]%s->%s, desc=%s, weight=%s", session, this.nodeId, node.nodeId, rel.description, rel.weight));
+				children.add(node);
 			}
-			children.add(node);
-		}	
+		}
 		return children;
 	}
 	
@@ -63,7 +63,7 @@ public class DataNode {
 	}
 	
 	public void startedNode(int session){
-		this.visitFrom[session] = new Relation(this.nodeId, 0, 0);
+		this.visitFrom[session] = new Relation(this.nodeId, 0, "self");
 	}
 	
 	public void cleanStartedNode(int session){
@@ -85,7 +85,7 @@ public class DataNode {
 				children.add(node);
 			}
 		}
-		log.trace(String.format("clean up [%s]%s, children:%s", session, this.nodeId, children.size()));
+		log.debug(String.format("clean up [%s]%s, children:%s", session, this.nodeId, children.size()));
 				
 		return children;
 	}	

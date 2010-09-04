@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +28,8 @@ public class JDBCDataLoader implements DataSource {
 	private Properties settings;
 	private Connection conn = null;
 	
-	protected String sql_relation = null;
-	protected String sql_check_id = null;
+	protected Collection<String> relation_sql_list = null;
+	//protected String sql_check_id = null;
 	
 	public JDBCDataLoader(Properties settings) {
 		this.settings = settings;
@@ -35,15 +38,36 @@ public class JDBCDataLoader implements DataSource {
 
 	@Override
 	public Collection<Relation> loadEdges(int nodeId) {
+		Collection<Relation> sortedSet = new TreeSet<Relation>(new Comparator<Relation>(){
+			@Override
+			public int compare(Relation o1, Relation o2) {
+				if(o1.end_id == o2.end_id && o1.weight == o2.weight){
+					return 0;					 
+				}else {
+					return o1.weight > o2.weight ? 1 : -1;
+				}
+			}
+		});		
+		for(String sql: relation_sql_list){
+			loadRealtion(nodeId, sql, sortedSet);
+			if(conn == null) break; //查询错误. 
+		}
+		Collection<Relation> result = new ArrayList<Relation>(sortedSet.size());
+		result.addAll(sortedSet);
+	    RunStatus.db_query_count++;
+		return result;
+	}
+	
+	private void loadRealtion(int nodeId, String sql, Collection<Relation> result){
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
-		ArrayList<Relation> result = new ArrayList<Relation>(100);
-		int friend, role;
+		int friend;
 		float weight;
+		String desc;
 	    try
 	    {
 	    	if(conn == null) conn = this.getConnection();
-	    	pstm = conn.prepareStatement(sql_relation,
+	    	pstm = conn.prepareStatement(sql,
 	    			 ResultSet.TYPE_FORWARD_ONLY,
 	    			 ResultSet.CONCUR_READ_ONLY
 	    			 );
@@ -53,9 +77,9 @@ public class JDBCDataLoader implements DataSource {
 	    	rs.setFetchSize(100);
 			while (rs.next()){
 				friend = rs.getInt("friend");
-				role = rs.getInt("relation");
+				desc = rs.getString("desc");
 				weight = rs.getFloat("weight");
-				result.add(new Relation(friend, role, weight));
+				result.add(new Relation(friend, weight, desc));
 			}
 	    }catch (SQLException ex){
 	      log.error(ex);
@@ -71,10 +95,7 @@ public class JDBCDataLoader implements DataSource {
 			} catch (SQLException e) {
 				log.error(e);
 			}}
-	    }
-	    result.trimToSize();
-	    RunStatus.db_query_count++;
-		return result;
+	    }		
 	}
 
 	@Override
@@ -89,53 +110,16 @@ public class JDBCDataLoader implements DataSource {
 
 	@Override
 	public boolean isExist(int nodeId) {
-		PreparedStatement pstm = null;
-		ResultSet rs = null;
-		boolean exits = false;
-	    try
-	    {
-	    	if(conn == null) conn = this.getConnection();
-			if(sql_check_id == null || "".equals(sql_check_id.trim())){
-				return true;
-			}	    	
-	    	pstm = conn.prepareStatement(sql_check_id,
-	    			 	ResultSet.TYPE_FORWARD_ONLY,
-	    			 	ResultSet.CONCUR_READ_ONLY
-	    			 );
-	    	pstm.setInt(1, nodeId);
-	    	rs = pstm.executeQuery();	    	
-	    	rs.setFetchSize(1);
-	    	if (rs.next()) exits = true;
-	    }catch (SQLException ex){
-	      log.error(ex);
-	      conn = null;
-	    }finally{
-	    	if(rs != null){try {
-				rs.close();
-			} catch (SQLException e) {
-				log.error(e);				
-			}}
-	    	if(pstm != null){try {
-				pstm.close();
-			} catch (SQLException e) {
-				log.error(e);
-			}}
-	    }
-		return exits;
+		return true;
 	}
 	
 	private void initDBConnection(){
 		String driver = settings.getProperty(DB_DRIVER).trim();
-		sql_relation = settings.getProperty(RELATION_SQL);
-		sql_check_id = settings.getProperty(ID_EXIST_SQL);
 		log.info("db_driver:" + driver);
 		try {
 			Class.forName(driver);
 			this.getConnection();
-			log.info("sql_relation:" + sql_relation);
-			log.info("sql_check_id:" + sql_check_id);			
-			this.isExist(0);
-			if(conn == null) System.exit(-1); //SQL错误，conn被置为空。
+			this.relation_sql_list = getRelationSQL(settings);
 			this.loadEdges(0);
 			if(conn == null) System.exit(-1); //SQL错误，conn被置为空。
 		} catch (ClassNotFoundException e) {
@@ -145,6 +129,19 @@ public class JDBCDataLoader implements DataSource {
 			log.error(e, e.getCause());
 			System.exit(-1);
 		}
+	}
+	
+	private Collection<String> getRelationSQL(Properties settings){
+		Collection<String> sqls = new ArrayList<String>();
+		for(Iterator iter = settings.keySet().iterator();
+			iter.hasNext();){
+			String obj = iter.next().toString();
+			if(obj.startsWith("sql_relation")){
+				sqls.add(settings.getProperty(obj));
+				log.info("relation sql:" + settings.getProperty(obj));
+			}
+		}
+		return sqls;
 	}
 	
 	private Connection getConnection() throws SQLException{

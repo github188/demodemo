@@ -64,18 +64,6 @@ public abstract class BaseServlet extends HttpServlet{
 	protected abstract void process(HttpServletRequest request, 
 			Map<String, Object>status, Map<String, Object>data) throws SearchException;
 	
-	protected List<List<Integer>> convertPath(Collection<Relation> path){
-		List<List<Integer>> xxx = new ArrayList<List<Integer>>();
-		for(Relation r: path){
-			List<Integer> rel = new ArrayList<Integer>();
-			rel.add(r.start.id());
-			rel.add(r.end_id);
-			rel.add(r.relationType);
-			xxx.add(rel);
-		}
-		return xxx;
-	}
-	
 	protected int intParam(HttpServletRequest request, String name, int def){
 		int value = def;
 		try{

@@ -4,19 +4,21 @@ import java.lang.ref.WeakReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
 
-public class Relation implements Cloneable{
+public class Relation implements Cloneable, JSONAware{
 	private static Log log = LogFactory.getLog(Relation.class);
 	public DataNode start;
 	public int end_id;
-	public int relationType;
 	public float weight;	
+	public String description;
 
 	private WeakReference<DataNode> _related;
-	public Relation(int end_id, int relationType, float weight){
+	public Relation(int end_id, float weight, String descritpion){
 		this.end_id = end_id;
-		this.relationType = relationType;
 		this.weight = weight;
+		this.description = descritpion;
 	}
 	
 	public DataNode endNode(){
@@ -35,5 +37,17 @@ public class Relation implements Cloneable{
 			log.error(e.toString(), e);
 			return null;
 		}
+	}
+	
+	public String toJSONString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		sb.append(start.id());
+		sb.append(",");
+		sb.append(end_id);
+		sb.append(",");
+		sb.append("\"" + JSONObject.escape(description) + "\"");
+		sb.append("]");
+		return sb.toString();		
 	}
 }

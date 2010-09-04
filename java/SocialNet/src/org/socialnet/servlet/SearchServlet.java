@@ -28,8 +28,8 @@ public class SearchServlet extends BaseServlet{
 		
 		List<Relation> path = SocialNet.EMPTY;
 		path = net.searchPath(intStart, intEnd, intDeep);
-		data.put("path", convertPath(path));
-		data.put("path_help", "<start>,<end>,<type>");
+		data.put("path", path);
+		data.put("path_help", "<start>,<end>,<desc>");
 		if(path.size() == 0){
 			status.put("code", NOT_FOUND);
 		}else {
