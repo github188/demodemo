@@ -2,11 +2,11 @@ package com.nsn.reporting.chart.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -70,6 +70,7 @@ public class SimpleHTTPServer {
 		
         ServletHandler handler=new ServletHandler();
         server.setHandler(handler);
+        handler.addServletWithMapping("com.nsn.reporting.chart.http.StatusServlet", "/status");
         handler.addServletWithMapping("com.nsn.reporting.chart.http.ChartServlet", "/*");
         try {
 			server.start();
@@ -177,7 +178,12 @@ public class SimpleHTTPServer {
 						server.getThreadPool().dispatch(new PersistenceTask(data));
 					}
 				}catch(Exception e){
-					this.data.error = e.toString();
+					ByteArrayOutputStream buffer = new ByteArrayOutputStream(100 * 1024);
+					e.printStackTrace(new PrintStream(buffer));
+					this.data.error = e.toString() + "\n" + buffer.toString();
+					try{ buffer.close(); } catch(Exception e1){}
+					buffer = null;
+					log.error(e.toString(), e);
 				}finally{
 					this.data.updated = true;
 					this.data.notifyAll();
