@@ -17,17 +17,35 @@
  
 package org.notebook.gui;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*; 
-import javax.swing.event.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.io.File;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.UIManager;
+
+import org.notebook.cache.Category;
+import org.notebook.cache.NoteBook;
+import org.notebook.cache.SimpleObjectCache;
 
 public class Main extends JFrame {
-
+	private SimpleObjectCache cache = null;
+	private NoteBook notebook = null;
+	
 	public Main(){
 		super("Deon的记事本"); 
+		
+		File root = new File(System.getenv("APPDATA"));		
+		cache = new SimpleObjectCache(root);
+		notebook = cache.loadNoteBook();
+		if(notebook == null){
+			notebook = new NoteBook();
+			notebook.root = new Category();
+			notebook.root.initDefaultNode();
+			notebook.root.setName("Deon的记事本");
+		}		
 		setLayout(new BorderLayout());
 		this.initGui();
 		pack(); 
@@ -54,7 +72,7 @@ public class Main extends JFrame {
 
 		JSplitPane splitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, 
-				new JScrollPane(new NavigationTree()),
+				new JScrollPane(new NavigationTree(notebook.root)),
 				new JScrollPane(new DocumentEditor())
 		);
 
