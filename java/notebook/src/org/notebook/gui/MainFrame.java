@@ -19,8 +19,11 @@ package org.notebook.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -30,11 +33,13 @@ import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.SimpleObjectCache;
 
-public class Main extends JFrame {
+public class MainFrame extends JFrame {
 	private SimpleObjectCache cache = null;
 	private NoteBook notebook = null;
+	private BookController controller = null;
+	private MenuToolbar menu = null;
 	
-	public Main(){
+	public MainFrame(){
 		super("Deon的记事本"); 
 		
 		File root = new File(System.getenv("APPDATA"));		
@@ -45,6 +50,7 @@ public class Main extends JFrame {
 			notebook.root = new Category();
 			notebook.root.initDefaultNode();
 			notebook.root.setName("Deon的记事本");
+			cache.saveNoteBook(notebook);
 		}		
 		setLayout(new BorderLayout());
 		this.initGui();
@@ -61,25 +67,52 @@ public class Main extends JFrame {
 			System.out.println(e.toString());
 		}
 
-		Main main = new Main(); 
+		MainFrame main = new MainFrame(); 
 		main.setVisible(true); 
 	}  
 
 	protected void initGui() {
-		this.getRootPane().setJMenuBar(MenuToolbar.menuBar());
+		menu = new MenuToolbar(this);
+		this.getRootPane().setJMenuBar(menu.getMenuBar());
 
 		Container contentPane = getContentPane();
+		
+		NavigationTree tree = new NavigationTree(notebook.root);
+		DocumentEditor editor = new DocumentEditor();
 
+		JScrollPane leftTree = new JScrollPane(tree);
+		Dimension minSize = new Dimension(150, 400);
+		
+		leftTree.setMinimumSize(minSize);
+		
 		JSplitPane splitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, 
-				new JScrollPane(new NavigationTree(notebook.root)),
-				new JScrollPane(new DocumentEditor())
+				leftTree,
+				new JScrollPane(editor)
 		);
+		
 
-		contentPane.add(MenuToolbar.toolBar(), BorderLayout.NORTH);
+		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(new StatusBar(), BorderLayout.SOUTH);
+		
+		controller = new BookController(tree, editor, this.cache);
+		//this.pr
+		super.processEvent(null);
 	}
+	
+	public void processEvent(Action e) {
+		String command = (String)e.getValue(e.NAME);
+		if(command.equals(menu.SAVE)){
+			this.cache.saveNoteBook(this.notebook);
+			this.controller.save();
+		}
+		System.out.println("event:" + command);
+	}
+	
+	
+	
+	
 
 }
 

@@ -49,7 +49,6 @@ public class Category implements TreeModel, Serializable{
 	
 	@Override
 	public void addTreeModelListener(TreeModelListener listener) {
-		System.out.println("add Listener:" + listener.toString());
 		ls.add(listener);		
 	}
 	@Override
@@ -73,6 +72,9 @@ public class Category implements TreeModel, Serializable{
 		}
 		return 0;
 	}
+	public void setRoot(Category c) {
+		this.root = c;
+	}
 	@Override
 	public Object getRoot() {
 		return this.root;
@@ -82,6 +84,11 @@ public class Category implements TreeModel, Serializable{
 		Category c = (Category)arg0;
 		return c.nodeType == FILE;
 	}
+
+	public boolean isLeaf() {
+		return this.nodeType == FILE;
+	}
+	
 	@Override
 	public void removeTreeModelListener(TreeModelListener arg0) {
 		//arg0.treeNodesChanged(e)
@@ -152,6 +159,9 @@ public class Category implements TreeModel, Serializable{
 		if(this.file == null){
 			this.file = SimpleObjectCache.getInstance().load(this.id);
 		}
+		if(this.file == null){
+			this.file = new NoteMessage(this.id);
+		}
 		return this.file;
 	}
 	
@@ -182,7 +192,7 @@ public class Category implements TreeModel, Serializable{
 	}
 	
 	//重置节点关系。当节点被序列化后，Root/Parent被丢失。
-	private void restore(){
+	public void restore(){
 		if(this.children !=null){
 			for(Category c : this.children){
 				c.parent = this;
@@ -190,6 +200,8 @@ public class Category implements TreeModel, Serializable{
 				c.restore();
 			}
 		}
+		if(this.ls == null) 
+			ls = new ArrayList<TreeModelListener>();
 	}
 	
 	private String getNextId(){
@@ -208,10 +220,13 @@ public class Category implements TreeModel, Serializable{
 	}
 	
 	private EventProxy getEventProxy(){
-		if(this.root.evtProxy == null){
-			this.root.evtProxy = new EventProxy();
+		if(this.root != null && this.root != this){
+			return this.root.getEventProxy();
 		}
-		return this.root.evtProxy;
+		if(this.evtProxy == null){
+			this.evtProxy = new EventProxy();
+		}
+		return this.evtProxy;
 	}
 	
 	class EventProxy implements TreeModelListener{

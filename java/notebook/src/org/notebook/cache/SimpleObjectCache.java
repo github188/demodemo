@@ -21,23 +21,30 @@ public class SimpleObjectCache{
 	public SimpleObjectCache(File root){
 		ins = this;
 		log = LogFactory.getLog(SimpleObjectCache.class);
-		root = new File(root, ".notbook");
+		this.root = new File(root, ".notbook");
 		if(!root.isDirectory()){
 			try{
-				root.mkdirs();
+				this.root.mkdirs();
 			}catch(Exception e){
 				log.error(e, e);
 			}
 		}
+		log.info("cache root:" + this.root.getAbsolutePath());
 	}
 	public NoteMessage load(String id){
-		return (NoteMessage)this.loadObject("notebook");
+		NoteMessage msg = (NoteMessage)this.loadObject(id);
+		return msg;
 	}
 	public void save(NoteMessage msg){
 		saveObject(msg.messageId, msg);		
 	}
 	public NoteBook loadNoteBook(){		
-		return (NoteBook)this.loadObject("notebook");
+		NoteBook book = (NoteBook)this.loadObject("notebook");
+		if(book != null){
+			book.root.setRoot(book.root);
+			book.root.restore();
+		}
+		return book;
 	}
 	public void saveNoteBook(NoteBook book){
 		saveObject("notebook", book);		
@@ -54,9 +61,9 @@ public class SimpleObjectCache{
                 si.close();
                 log.info(String.format("load cache:%s", id));
             } catch (ClassNotFoundException e) {
-                    log.error(e, e.getCause());
+                log.error(e, e.getCause());
             }catch(IOException e) {
-                    log.error(e, e.getCause());
+                log.error(e, e.getCause());
             }
         }
         

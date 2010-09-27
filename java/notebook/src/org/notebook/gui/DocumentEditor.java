@@ -17,20 +17,29 @@
  
 package org.notebook.gui;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*; 
-import javax.swing.event.*;
-import java.net.*;
+import java.awt.Font;
+
+import javax.swing.JTextArea;
+
+import org.notebook.cache.Category;
+import org.notebook.cache.NoteMessage;
 
 public class DocumentEditor extends JTextArea {
 
 	public DocumentEditor(){
-		super("line one\nline two\nline three\nline four");
+		super("line one\nline two\nline three\nline four" +
+				"xdddd xdddd xddddxddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd");
 
-		this.setFont(new Font("Dialog", Font.ITALIC, 24));
-		this.getCaret().setBlinkRate(0);
+		//this.setFont(new Font("Dialog", Font.ITALIC, 24));
+		this.setFont(new Font("Serif", Font.PLAIN, 16));
+		this.setLineWrap(false);
+		this.setWrapStyleWord(true);
+		//this.
+	}
+	
+	public void openDocument(Category cate){
+		NoteMessage message = cate.getMessage();
+		this.setText(message.text);
 	}
 }
 

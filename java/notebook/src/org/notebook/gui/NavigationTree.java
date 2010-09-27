@@ -75,7 +75,7 @@ public class NavigationTree extends JTree implements MouseListener {
 		//this.setRootVisible(false);
 	}
 	
-	private JPopupMenu createContextMenu(){	
+	private JPopupMenu createContextMenu(){
 	    final JPopupMenu menu = new JPopupMenu();
 	    JMenuItem newCategory = new JMenuItem("New Category");	
 	    newCategory.addActionListener(new ActionListener() {
@@ -83,7 +83,8 @@ public class NavigationTree extends JTree implements MouseListener {
 	    	  if(getSelectionModel() != null){
 	    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
 	    		  // obj.setName(editor.getCellEditorValue().toString());
-			  	obj.addCategory("new ...");
+			  	 Category xx = obj.addCategory("new ...");
+			  	 System.out.println("add new:" + xx);
 	    	  }
 	      }
 	    });	
@@ -140,7 +141,7 @@ public class NavigationTree extends JTree implements MouseListener {
 	public void mousePressed(MouseEvent arg0) {
 	}
 	@Override
-	public void mouseReleased(MouseEvent arg0) {	
+	public void mouseReleased(MouseEvent arg0) {
 		
 	}
 	
@@ -148,13 +149,13 @@ public class NavigationTree extends JTree implements MouseListener {
 		public void treeWillCollapse(TreeExpansionEvent event)
 		      throws ExpandVetoException {
 				TreePath path = event.getPath();
-				System.out.println("Collapse:" + path.toString());
+				//System.out.println("Collapse:" + path.toString());
 		}
 	
 		public void treeWillExpand(TreeExpansionEvent event)
 		      throws ExpandVetoException {
 		    TreePath path = event.getPath();
-		    System.out.println("Collapse:" + path.toString());
+		    //System.out.println("Collapse:" + path.toString());
 		}
 	};	
 
