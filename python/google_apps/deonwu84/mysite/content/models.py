@@ -8,6 +8,7 @@ class ContentUser(db.Model):
     name = db.StringProperty(required=True)
     truename = db.StringProperty()
     email = db.StringProperty()
+    password = db.StringProperty()
     
     create_date = db.DateTimeProperty(auto_now_add=True)
     
@@ -23,10 +24,23 @@ class ContentCategory(db.Model):
     
     @property
     def id(self): return self.is_saved() and self.key().id() or None
+
+# parent is ContentUser.
+class UserCategory(db.Model):
+    parent_category = db.SelfReferenceProperty()
+    cate_id = db.StringProperty(required=True)
+    
+    nodeType = db.IntegerProperty(default=0)
+    name = db.StringProperty()
+    create_date = db.DateTimeProperty(auto_now_add=True)
+    update_date = db.DateTimeProperty()
+    @property
+    def id(self): return self.is_saved() and self.key().id() or None
     
 
 # parent is ContentCategory.
 class ContentMessage(db.Model):
+    message_id = db.StringProperty()
     track = db.StringProperty()
     ipaddr = db.StringProperty() #
     
