@@ -145,6 +145,7 @@ public class BookController {
 		public void treeNodesInserted(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
 			uploadNoteBook(c);
+			tree.expandPath(e.getTreePath().getParentPath());
 		}
 	
 		@Override
@@ -220,22 +221,72 @@ public class BookController {
 	}
 	
 	class MenuAction {
-		public void Open(){
-			JOptionPane.showMessageDialog(mainFrame,
-				    "Not support Action.",
-				    "NotSupport warning",
-				    JOptionPane.WARNING_MESSAGE);
-		}
-		
 		public void Save(){
 			save();
 		}
 		
 		public void NewCategory(){
-			Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();
-			Category xx = obj.addCategory("新建目录");
-		}		
+			if(tree.getSelectionModel().getSelectionPath() == null){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "没有选择添加到哪一个目录.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else {
+				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();
+				if(obj.isLeaf()){
+					JOptionPane.showMessageDialog(mainFrame,
+						    "不能在文件上面创建子目录.",
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+				}else {
+					obj.addCategory("新建目录");
+					//tree.setSelectionPath()
+				}
+			}
+		}
 		public void NewNote(){
+			if(tree.getSelectionModel().getSelectionPath() == null){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "没有选择添加到哪一个目录.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else {
+				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();
+				if(obj.isLeaf()){
+					JOptionPane.showMessageDialog(mainFrame,
+						    "不能在文件上面创建文件.",
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+				}else {
+					obj.addMessage("新建文件");
+				}
+			}			
+		}
+		
+		public void Remove(){
+			if(tree.getSelectionModel().getSelectionPath() == null){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "请选择需要删除的对象.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else {
+				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();				
+				int i = JOptionPane.showConfirmDialog(mainFrame,
+					    "确定需要删除 '" + obj.name + "'.",
+					    "确认",
+					    JOptionPane.OK_CANCEL_OPTION);
+				if(i==0){
+					obj.remove();
+				}
+			}			
+		}
+		
+		public void HideWindow(){
+			mainFrame.setVisible(false);
+		}
+		
+		public void ShowWindow(){
+			mainFrame.setVisible(true);
 		}
 		
 		public void Exit() {

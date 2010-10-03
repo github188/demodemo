@@ -17,9 +17,12 @@
  
 package org.notebook.gui;
 
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +51,8 @@ public class MenuToolbar {
 	public static final String SYNC = "Sync";
 	
 	public static final String SETTINGS = "Settings";
+	public static final String SHOWWINDOW = "ShowWindow";
+	public static final String HIDEWINDOW = "HideWindow";
 	
 	private MainFrame owner = null;
 	private ResourceBundle rb = new SimpleResourceBound();	
@@ -67,6 +72,23 @@ public class MenuToolbar {
 		public void actionPerformed(ActionEvent event) {
 			owner.processEvent(this);
 		}
+		
+		/**
+		 * 用于系统托盘菜单.
+		 * @return
+		 */
+		public MenuItem toAWTMenu(){
+			MenuItem item = new MenuItem();
+			item.setName((String)this.getValue(Action.ACTION_COMMAND_KEY));
+			item.setLabel((String)this.getValue(Action.ACTION_COMMAND_KEY));
+			final AbstractAction action = this; 
+			item.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					action.actionPerformed(e);
+				}});			
+			return item;
+		}
 	}
 		
 	public void $(String name, String icon, int accelerator){
@@ -81,12 +103,15 @@ public class MenuToolbar {
 		//$(OPEN, "star_off.gif", 0);
 		$(SAVE, "save_edit.gif", KeyEvent.VK_S);
 		$(EXIT, "", 0);
-		$(SETTINGS, "debugt_obj.gif", 0);	
+		$(SETTINGS, "debugt_obj.gif", 0);
 		
-		$(NEW_CATEGORY, "folder_add.gif", 0);			
+		$(NEW_CATEGORY, "folder_add.gif", 0);
 		$(NEW_NOTE, "new_file.gif", 0);	
 		$(DELETE, "delete_obj.gif", 0);
-		$(SYNC, "cvs_synch.gif", 0);		
+		$(SYNC, "cvs_synch.gif", 0);	
+		
+		$(SHOWWINDOW, "editor.gif", 0);	
+		$(HIDEWINDOW, "", 0);	
 	}
 		
 	public JMenuBar getMenuBar(){
@@ -143,6 +168,20 @@ public class MenuToolbar {
 		toolbar.add($(SETTINGS));
 		return toolbar;
 	}
+	
+	public PopupMenu getTrayMenu(){
+	    final PopupMenu menu = new PopupMenu();
+	    //menu.
+	    //JMenuItem newCategory = new JMenuItem("新建目录");	
+	    //MenuItem xx = new MenuItem();
+	    //xx.s
+	    //menu.a
+	    menu.add($(SHOWWINDOW).toAWTMenu());
+	    menu.addSeparator();
+	    menu.add($(EXIT).toAWTMenu());
+	    
+		return menu;
+	}	
 
 	public static ImageIcon icon(String name){
 		ImageIcon icon = null;

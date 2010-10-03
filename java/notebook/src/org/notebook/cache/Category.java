@@ -51,7 +51,7 @@ public class Category implements TreeModel, Serializable{
 	
 	@Override
 	public void addTreeModelListener(TreeModelListener listener) {
-		ls.add(listener);		
+		ls.add(listener);
 	}
 	@Override
 	public Category getChild(Object arg0, int index) {
