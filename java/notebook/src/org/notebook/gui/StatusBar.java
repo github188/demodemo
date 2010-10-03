@@ -63,5 +63,9 @@ public class StatusBar extends JPanel {
 		g.setColor(new Color(221, 221, 220));
 		g.drawLine(0, y, getWidth(), y);
 	}
+	
+	public void setText(String text){
+		System.out.println("ST:" + text);		
+	}
 }
 

@@ -20,7 +20,10 @@ package org.notebook.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.Action;
@@ -29,20 +32,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.SimpleObjectCache;
+import org.notebook.gui.MenuToolbar.BookAction;
 
 public class MainFrame extends JFrame {
+	private static Log log = LogFactory.getLog(MainFrame.class);
 	private SimpleObjectCache cache = null;
 	private NoteBook notebook = null;
 	private BookController controller = null;
 	private MenuToolbar menu = null;
+	private boolean firstRun = false;
 	
 	public MainFrame(){
 		super("Deon的记事本"); 
 		
-		File root = new File(System.getenv("APPDATA"));		
+		File root = new File(System.getenv("APPDATA"));
 		cache = new SimpleObjectCache(root);
 		notebook = cache.loadNoteBook();
 		if(notebook == null){
@@ -51,11 +59,12 @@ public class MainFrame extends JFrame {
 			notebook.root.initDefaultNode();
 			notebook.root.setName("Deon的记事本");
 			cache.saveNoteBook(notebook);
+			firstRun = true;
 		}		
 		setLayout(new BorderLayout());
 		this.initGui();
 		pack(); 
-		setSize(670,548);  
+		setSize(670,548);
 	}
  	
     public static void main(String[] args){ 
@@ -68,6 +77,7 @@ public class MainFrame extends JFrame {
 		}
 
 		MainFrame main = new MainFrame(); 
+		main.setLocationRelativeTo(null);
 		main.setVisible(true); 
 	}  
 
@@ -77,7 +87,7 @@ public class MainFrame extends JFrame {
 
 		Container contentPane = getContentPane();
 		
-		NavigationTree tree = new NavigationTree(notebook.root);
+		NavigationTree tree = new NavigationTree(notebook.root, menu);
 		DocumentEditor editor = new DocumentEditor();
 
 		JScrollPane leftTree = new JScrollPane(tree);
@@ -91,28 +101,49 @@ public class MainFrame extends JFrame {
 				new JScrollPane(editor)
 		);
 		
+		StatusBar status = new StatusBar();
 
 		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
 		contentPane.add(splitPane, BorderLayout.CENTER);
-		contentPane.add(new StatusBar(), BorderLayout.SOUTH);
+		contentPane.add(status, BorderLayout.SOUTH);
 		
-		controller = new BookController(tree, editor, this.cache);
-		//this.pr
-		super.processEvent(null);
+		controller = new BookController(notebook, tree, editor, 
+						this.cache,
+						status,
+						this);
+		
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	    addComponentListener(new ComponentAdapter() {
+	        public void componentShown(ComponentEvent ce) {
+	        	if(firstRun){
+	        		showSettings();
+	        	}
+	        }
+	    });
+	    
+	    addWindowListener(new WindowAdapter(){
+	    	public void windowClosing(WindowEvent e){
+	    		processEvent(menu.$(MenuToolbar.EXIT));
+	    	}
+	    });
 	}
 	
-	public void processEvent(Action e) {
-		String command = (String)e.getValue(e.NAME);
-		if(command.equals(menu.SAVE)){
-			this.cache.saveNoteBook(this.notebook);
-			this.controller.save();
+	public void processEvent(BookAction e) {
+		String command = (String)e.getValue(Action.ACTION_COMMAND_KEY);
+		log.info("processEvent:" + command);
+		if(command.equals(MenuToolbar.SETTINGS)){
+			this.showSettings();
+		}else {
+			this.controller.processEvent(e);
 		}
-		System.out.println("event:" + command);
 	}
 	
-	
-	
-	
-
+	private void showSettings(){
+		NoteBookSettings settings = new NoteBookSettings(this, notebook, controller);
+		
+		settings.setLocationRelativeTo(this);
+		settings.setVisible(true);
+	}
+		
 }
 

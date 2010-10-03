@@ -15,4 +15,9 @@ public class NoteMessage implements Serializable{
 	public NoteMessage(String id){
 		this.messageId = id;
 	}
+	
+	public void setText(String text){
+		this.text = text;
+	}
+	
 }

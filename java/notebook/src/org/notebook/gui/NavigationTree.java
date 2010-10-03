@@ -55,13 +55,22 @@ import javax.swing.tree.TreePath;
 
 import org.notebook.cache.Category;
 
+/*
+JOptionPane.showMessageDialog(frame,
+	    "Eggs are not supposed to be green.",
+	    "Inane warning",
+	    JOptionPane.WARNING_MESSAGE);
+*/
+
 public class NavigationTree extends JTree implements MouseListener {
-	private JPopupMenu menu = null;
+	private static final long serialVersionUID = -9163354911246378721L;
+	private MenuToolbar menu = null;
 	private DefaultTreeCellEditor editor = null;
 
-	public NavigationTree(Category root){
+	public NavigationTree(Category root, MenuToolbar menu){
 		setModel(root);
-		menu = this.createContextMenu();
+		//menu = this.createContextMenu();
+		this.menu = menu;
 		this.addMouseListener(this);
 		this.setEditable(true);
 		editor = new DefaultTreeCellEditor(this, (DefaultTreeCellRenderer) this.getCellRenderer());
@@ -70,32 +79,28 @@ public class NavigationTree extends JTree implements MouseListener {
 		
 		TreeDragSource ds = new TreeDragSource(this, DnDConstants.ACTION_MOVE);
 		TreeDropTarget dt = new TreeDropTarget(this);		
-		//this.
-		//this.setShowsRootHandles(false);
-		//this.setRootVisible(false);
 	}
-	
+
 	private JPopupMenu createContextMenu(){
 	    final JPopupMenu menu = new JPopupMenu();
-	    JMenuItem newCategory = new JMenuItem("New Category");	
+	    //menu.
+	    JMenuItem newCategory = new JMenuItem("新建目录");	
 	    newCategory.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	  if(getSelectionModel() != null){
 	    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
-	    		  // obj.setName(editor.getCellEditorValue().toString());
-			  	 Category xx = obj.addCategory("new ...");
-			  	 System.out.println("add new:" + xx);
+	    		  Category xx = obj.addCategory("新建目录");
 	    	  }
 	      }
 	    });	
 	    menu.add(newCategory);
 	    
-	    JMenuItem newNote = new JMenuItem("New Note");	
+	    JMenuItem newNote = new JMenuItem("新建文件");
 	    newNote.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	  if(getSelectionModel() != null){
 	    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
-			  	obj.addMessage("Note...");
+			  	obj.addMessage("记事本");
 	    	  }
 	      }
 	    });	
@@ -126,8 +131,7 @@ public class NavigationTree extends JTree implements MouseListener {
 			//右键选择
 			int row = getClosestRowForLocation(e.getX(), e.getY());  
 			setSelectionRow(row);
-			
-			menu.show(e.getComponent(), e.getX(), e.getY());
+			menu.getNavigationContextMenu(this).show(e.getComponent(), e.getX(), e.getY());
 		}
 		//this.s
 	}

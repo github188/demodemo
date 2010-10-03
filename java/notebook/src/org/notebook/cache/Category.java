@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.event.TreeModelEvent;
@@ -26,6 +27,7 @@ public class Category implements TreeModel, Serializable{
 	public transient NoteMessage file = null;
 	public transient Collection<TreeModelListener> ls = new ArrayList<TreeModelListener>();	
 	public transient Category parent = null;
+	public transient String parentId = null;
 	private transient Category root = null;
 	private transient EventProxy evtProxy = null;
 	private int nextID = 0;
@@ -104,19 +106,22 @@ public class Category implements TreeModel, Serializable{
 	
 	public Category addCategory(String name){
 		if(this.nodeType == FILE) return null;
-		return createNew(name, DIRECTORY);
+		//return createNew(name, DIRECTORY);
+		return addCategory(createNew(name, DIRECTORY));
 	}
 	
 	public Category addMessage(String name){
 		if(this.nodeType == FILE) return null;
 		Category c = createNew(name, FILE); //new Category(name, FILE);
 		c.file = new NoteMessage(c.id);
+		addCategory(c);
 		return c;
 	}
 	
 	public Category addCategory(Category c){
 		if(this.nodeType == FILE) return null;
 		this.children.add(c);
+		this.lastUpdated = new Date(System.currentTimeMillis());
 		c.parent = this;
 		c.root = this.root;
 		c.restore(); //恢复子节点Root.
@@ -129,24 +134,36 @@ public class Category implements TreeModel, Serializable{
 	
 	private Category createNew(String name, int type){
 		Category c = new Category(name, type);
-		this.children.add(c);
-		c.root = this.root;
-		c.parent = this;
 		c.id = this.getNextId();
-				
-		TreeModelEvent evt = new TreeModelEvent(this, this.getPath(this),
-							new int[]{this.children.size() -1},
-							new Object[]{c, });
-		getEventProxy().treeNodesInserted(evt);
-		//this.root.evtProxy.treeStructureChanged(evt);
 		return c;		
 	}
 	
+	public Category search(String id){
+		LinkedList<Category> queue = new LinkedList<Category>();
+		queue.add(this);
+		Category result = null;
+		while(queue.size() > 0){
+			result = queue.poll();
+			if(result.id != null && result.id.equals(id)){
+				break;
+			}
+			if(result.children != null){
+				queue.addAll(result.children);
+			}
+			result = null;
+		}
+		queue = null;
+		
+		return result;
+	}
+	
 	public void remove(){
-		System.out.println("remove:" + this.name + "\tparent:" + this.parent);		
+		//System.out.println("remove:" + this.name + "\tparent:" + this.parent);		
 		if(this.parent != null){
 			int index = this.parent.children.indexOf(this);
 			this.parent.children.remove(index);
+			this.parent.lastUpdated = new Date(System.currentTimeMillis());
+			
 			TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
 					new int[]{index, },
 					new Object[]{this, });
@@ -209,8 +226,21 @@ public class Category implements TreeModel, Serializable{
 		return String.format("%07d", this.root.nextID);
 	}
 	
+	public int curId(int id){
+		if(id > 0){
+			this.root.nextID = id;
+		}
+		return this.root.nextID;
+	}
+	
 	public void setName(String name){
 		this.name = name;
+		this.lastUpdated = new Date(System.currentTimeMillis());
+		int index = this.parent.children.indexOf(this);
+		TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
+				new int[]{index, },
+				new Object[]{this, });
+		getEventProxy().treeNodesChanged(evt);	
 	}
 	
 	public void initDefaultNode(){
