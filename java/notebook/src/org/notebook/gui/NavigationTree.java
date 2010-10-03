@@ -76,52 +76,10 @@ public class NavigationTree extends JTree implements MouseListener {
 		editor = new DefaultTreeCellEditor(this, (DefaultTreeCellRenderer) this.getCellRenderer());
 		this.setCellEditor(editor);
 		this.addTreeWillExpandListener(treeWillExpandListener);
+		this.setCellRenderer(new BookTreeRenderer());
 		
 		TreeDragSource ds = new TreeDragSource(this, DnDConstants.ACTION_MOVE);
-		TreeDropTarget dt = new TreeDropTarget(this);		
-	}
-
-	private JPopupMenu createContextMenu(){
-	    final JPopupMenu menu = new JPopupMenu();
-	    //menu.
-	    JMenuItem newCategory = new JMenuItem("新建目录");	
-	    newCategory.addActionListener(new ActionListener() {
-	      public void actionPerformed(ActionEvent e) {
-	    	  if(getSelectionModel() != null){
-	    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
-	    		  Category xx = obj.addCategory("新建目录");
-	    	  }
-	      }
-	    });	
-	    menu.add(newCategory);
-	    
-	    JMenuItem newNote = new JMenuItem("新建文件");
-	    newNote.addActionListener(new ActionListener() {
-	      public void actionPerformed(ActionEvent e) {
-	    	  if(getSelectionModel() != null){
-	    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
-			  	obj.addMessage("记事本");
-	    	  }
-	      }
-	    });	
-	    menu.add(newNote);
-	    
-	    menu.addSeparator();
-
-	    JMenuItem remove = new JMenuItem("Remove");	
-	    remove.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-		    	  if(getSelectionModel() != null){
-		    		  Category obj = (Category)getSelectionModel().getSelectionPath().getLastPathComponent();
-		    		  obj.remove();
-		    	  }
-	    	}
-	    });	
-	    menu.add(remove);	    
-	    //menu.add(JMenuItem.s);
-
-	    
-	    return menu;
+		TreeDropTarget dt = new TreeDropTarget(this);	
 	}
 	
 	@Override
@@ -407,5 +365,15 @@ public class NavigationTree extends JTree implements MouseListener {
 	    }
 	  }
 	}
+	
+	class BookTreeRenderer extends DefaultTreeCellRenderer{
+		public BookTreeRenderer(){
+			super();
+			setOpenIcon(MenuToolbar.icon("org/notebook/gui/images/folder_open.gif"));
+			setClosedIcon(MenuToolbar.icon("org/notebook/gui/images/folder_close.gif"));
+			setLeafIcon(MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"));
+		}		
+	}
+	//DefaultTreeCellRenderer renderer2 = new DefaultTreeCellRenderer();
 }
 

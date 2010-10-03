@@ -38,7 +38,6 @@ import javax.swing.KeyStroke;
 import org.notebook.i18n.SimpleResourceBound;
 
 public class MenuToolbar {
-	public static final String OPEN = "Open";
 	public static final String SAVE = "Save";
 	public static final String EXIT = "Exit";
 	
@@ -57,7 +56,7 @@ public class MenuToolbar {
 	public class BookAction extends AbstractAction {
 		private static final long serialVersionUID = -6101997393914923387L;
 		public BookAction(String name, String icon, int accelerator){
-			super(name, new ImageIcon(_("org/notebook/gui/" + icon + ".gif")));
+			super(name, icon("org/notebook/gui/images/" + icon));
 			if(accelerator > 0){
 				this.putValue(this.ACCELERATOR_KEY, 
 						KeyStroke.getKeyStroke(accelerator, ActionEvent.CTRL_MASK));
@@ -75,41 +74,40 @@ public class MenuToolbar {
 	}
 	public BookAction $(String name){
 		return actions.get(name);
-	}	
-	/*
-		new BookAction[]{
-			new BookAction(OPEN, "star_off", 0),
-			new BookAction(SAVE, "star_off", KeyEvent.VK_S),
-			new BookAction(EXIT, "star_off", 0),
-			new BookAction(SETTINGS, "star_off", 0),
-	};*/
+	}
 
 	public MenuToolbar(MainFrame owner){
 		this.owner = owner;
-		$(OPEN, "star_off", 0);
-		$(SAVE, "star_off", KeyEvent.VK_S);
-		$(EXIT, "star_off", 0);
-		$(SETTINGS, "star_off", 0);	
+		//$(OPEN, "star_off.gif", 0);
+		$(SAVE, "save_edit.gif", KeyEvent.VK_S);
+		$(EXIT, "", 0);
+		$(SETTINGS, "debugt_obj.gif", 0);	
 		
-		$(NEW_CATEGORY, "star_off", 0);			
-		$(NEW_NOTE, "star_off", 0);	
-		$(DELETE, "star_off", 0);
-		$(SYNC, "star_off", 0);		
+		$(NEW_CATEGORY, "folder_add.gif", 0);			
+		$(NEW_NOTE, "new_file.gif", 0);	
+		$(DELETE, "delete_obj.gif", 0);
+		$(SYNC, "cvs_synch.gif", 0);		
 	}
 		
 	public JMenuBar getMenuBar(){
 		JMenuBar menubar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 
-		fileMenu.add($(OPEN));
+		//fileMenu.add($(OPEN));
+		fileMenu.add($(NEW_CATEGORY));
+		fileMenu.add($(NEW_NOTE));
+		fileMenu.addSeparator();
+		
 		fileMenu.add($(SAVE));
+		
+		fileMenu.addSeparator();
 		fileMenu.add($(EXIT));
 
 		menubar.add(fileMenu);
 		
 		JMenu toolMenu = new JMenu("Tools");
-
 		toolMenu.add($(SETTINGS));
+		toolMenu.add($(SYNC));
 
 		menubar.add(fileMenu);
 		menubar.add(toolMenu);
@@ -134,13 +132,27 @@ public class MenuToolbar {
 	public JToolBar getToolBar(){
 		JToolBar toolbar = new JToolBar();
 		
-		toolbar.add($(OPEN));
+		//toolbar.add($(OPEN));
+		toolbar.add($(SAVE));
+		toolbar.addSeparator();
+		toolbar.add($(NEW_CATEGORY));
+		toolbar.add($(NEW_NOTE));
+		toolbar.add($(DELETE));
+		toolbar.addSeparator();
+		toolbar.add($(SYNC));
 		toolbar.add($(SETTINGS));
 		return toolbar;
 	}
 
-	protected static URL _(String name){
-		return MenuToolbar.class.getClassLoader().getResource(name);
+	public static ImageIcon icon(String name){
+		ImageIcon icon = null;
+		try{
+			icon = new ImageIcon(MenuToolbar.class.getClassLoader().getResource(name));
+		}catch(Exception e){
+			System.out.println("failed to load:" + name);
+			//e.printStackTrace();
+		}
+		return icon;
 	}
 	
 	public String i18n(String key){
