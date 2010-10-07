@@ -80,15 +80,15 @@ public class NoteBookSettings extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				book.name = name.getText();
-				book.user = username.getText();				
-				if(book.endpoint!= null && 
+				book.user = username.getText();
+				if(book.endpoint== null || 
 					!endpoint.getText().trim().equals(book.endpoint)){
 					book.endpoint = endpoint.getText().trim();
 					controller.syncNoteBook(book.root);
 				}
 				dailog.setVisible(false);
 				dailog.dispose();
-				if(controller != null)controller.save();
+				if(controller != null)controller.saveAll();
 			}
 		});
         
@@ -152,6 +152,10 @@ public class NoteBookSettings extends JDialog {
     public static void main(String[] args) {
         //Schedule a job for the event dispatching thread:
         //creating and showing this application's GUI.
+    	//MsgBox message = new MsgBox(null, "Hey you user, are you sure ?", true);
+    	//Dialog.
+    	
+    	
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                  //Turn off metal's use of bold fonts

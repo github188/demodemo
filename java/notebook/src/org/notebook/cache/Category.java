@@ -1,6 +1,7 @@
 package org.notebook.cache;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -24,7 +25,8 @@ public class Category implements TreeModel, Serializable{
 	public Date createDate;
 	public Date lastUpdated;
 	
-	public transient NoteMessage file = null;
+	//public transient NoteMessage file = null;
+	private transient WeakReference<NoteMessage> fileRef = null;
 	public transient Collection<TreeModelListener> ls = new ArrayList<TreeModelListener>();	
 	public transient Category parent = null;
 	public transient String parentId = null;
@@ -113,7 +115,7 @@ public class Category implements TreeModel, Serializable{
 	public Category addMessage(String name){
 		if(this.nodeType == FILE) return null;
 		Category c = createNew(name, FILE); //new Category(name, FILE);
-		c.file = new NoteMessage(c.id);
+		//c.file = new NoteMessage(c.id);
 		addCategory(c);
 		return c;
 	}
@@ -121,7 +123,7 @@ public class Category implements TreeModel, Serializable{
 	public Category addCategory(Category c){
 		if(this.nodeType == FILE) return null;
 		this.children.add(c);
-		this.lastUpdated = new Date(System.currentTimeMillis());
+		this.setLastUpdate();
 		c.parent = this;
 		c.root = this.root;
 		c.restore(); //恢复子节点Root.
@@ -162,7 +164,7 @@ public class Category implements TreeModel, Serializable{
 		if(this.parent != null){
 			int index = this.parent.children.indexOf(this);
 			this.parent.children.remove(index);
-			this.parent.lastUpdated = new Date(System.currentTimeMillis());
+			this.parent.setLastUpdate();
 			
 			TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
 					new int[]{index, },
@@ -172,14 +174,27 @@ public class Category implements TreeModel, Serializable{
 	}
 	
 	public NoteMessage getMessage(){
+		return getMessage(null);
+	}
+	
+	public NoteMessage getMessage(SimpleObjectCache pm){
+		NoteMessage msg = null;
 		if(this.nodeType != FILE) return null;
-		if(this.file == null){
-			this.file = SimpleObjectCache.getInstance().load(this.id);
+		if(this.fileRef == null || this.fileRef.get() == null) {
+			if(pm != null){
+				msg = pm.load(this.id);
+				if(msg == null){
+					msg = new NoteMessage(this.id);
+				}
+				this.fileRef = new WeakReference<NoteMessage>(msg);
+			}
+		}else {
+			msg = this.fileRef.get();
 		}
-		if(this.file == null){
-			this.file = new NoteMessage(this.id);
+		if(msg != null){
+			msg.setCategory(this);
 		}
-		return this.file;
+		return msg;
 	}
 	
 	public String toString(){
@@ -235,12 +250,16 @@ public class Category implements TreeModel, Serializable{
 	
 	public void setName(String name){
 		this.name = name;
-		this.lastUpdated = new Date(System.currentTimeMillis());
+		this.setLastUpdate();
 		int index = this.parent.children.indexOf(this);
 		TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
 				new int[]{index, },
 				new Object[]{this, });
 		getEventProxy().treeNodesChanged(evt);	
+	}
+	
+	public void setLastUpdate(){
+		this.lastUpdated = new Date(System.currentTimeMillis());
 	}
 	
 	public void initDefaultNode(){

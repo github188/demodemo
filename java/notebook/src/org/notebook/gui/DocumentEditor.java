@@ -25,6 +25,7 @@ import org.notebook.cache.Category;
 import org.notebook.cache.NoteMessage;
 
 public class DocumentEditor extends JTextArea {
+	public NoteMessage msg = null;
 
 	public DocumentEditor(){
 		super("line one\nline two\nline three\nline four" +
@@ -37,9 +38,16 @@ public class DocumentEditor extends JTextArea {
 		//this.
 	}
 	
-	public void openDocument(Category cate){
-		NoteMessage message = cate.getMessage();
-		this.setText(message.text);
+	public void openDocument(NoteMessage msg){
+		this.msg = msg;
+		this.setText(msg.text);
+	}
+	
+	public NoteMessage currentDocuemnt(){
+		if(msg != null){
+			msg.text = this.getText();
+		}
+		return msg;
 	}
 }
 

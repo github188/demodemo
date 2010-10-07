@@ -9,13 +9,17 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreePath;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
+import org.notebook.cache.NoteMessage;
 import org.notebook.cache.SimpleObjectCache;
 import org.notebook.gui.MenuToolbar.BookAction;
 
@@ -30,7 +34,7 @@ public class BookController {
 	
 	private SyncService sync = null;
 	private ThreadPoolExecutor syncThread = null;	
-	private Category curMessage = null;
+	//private Category curMessage = null;
 	private MenuAction menuActions = new MenuAction();
 	
 	public BookController(NoteBook book, NavigationTree tree, 
@@ -87,10 +91,8 @@ public class BookController {
 				if(tree.getSelectionPath() != null){
 					Category node = (Category)tree.getSelectionPath().getLastPathComponent();
 					if(node.isLeaf()){
-						statusBar.setText(String.format("Remove %s", node.name));
-						saveCurMessage();
-						editor.openDocument(node);
-						curMessage = node;
+						statusBar.setText(String.format("Opening %s", node.name));
+						new DocumentTask(DocumentTask.OPENNEW, node).execute();
 					}
 				}
 			}
@@ -119,19 +121,13 @@ public class BookController {
 	
 	}
 	
-	public void save(){
-		this.cache.saveNoteBook(this.book);
-		saveCurMessage();
+	public void saveAll(){
+		new DocumentTask(DocumentTask.SAVEALL, null).execute();
 	}
 	
 	protected void saveCurMessage(){
-		if(curMessage != null){
-			curMessage.getMessage().text = this.editor.getText();
-			this.cache.save(curMessage.getMessage());
-			
-			//更新最后更新时间.
-			curMessage.setName(curMessage.name);
-		}
+		statusBar.setText(String.format("Saving ..."));
+		new DocumentTask(DocumentTask.SAVECUR, null).execute();
 	}
 	
 	class BookTreeModelListener implements TreeModelListener{
@@ -139,13 +135,20 @@ public class BookController {
 		public void treeNodesChanged(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
 			uploadNoteBook(c);
+			//saveAll();
 		}
 	
 		@Override
 		public void treeNodesInserted(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
 			uploadNoteBook(c);
-			tree.expandPath(e.getTreePath().getParentPath());
+			final TreePath path = e.getTreePath();
+			SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	            	tree.expandPath(path);
+	            	//tree.setSelectionPath(path);
+	            }
+	        });
 		}
 	
 		@Override
@@ -187,6 +190,7 @@ public class BookController {
 			}});		
 	}
 	
+	//在后台线程回调.
 	class BookSyncListener implements SyncListener{
 		@Override
 		public void removeLocal(Category c) {
@@ -220,9 +224,59 @@ public class BookController {
 	
 	}
 	
+	//演示使用SwingWorker.
+	//1.后台线程的异常不会被抛出???
+	private class DocumentTask extends SwingWorker<Void, Void>{
+		//public static final String LOADING = "loading";
+		public static final String OPENNEW = "openNew";
+		public static final String SAVEALL = "saveall";
+		public static final String SAVECUR = "savecur";
+		private String task = null;
+		private Category node = null;
+		
+		public DocumentTask(String task, Category node){
+			this.task = task;
+			this.node = node;
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			log.info("start document task..." + this.task);
+			if(this.task.equals(OPENNEW)){
+				this.saveCurDocument();
+				this.loadToOpen(this.node);
+			}else if(this.task.equals(SAVEALL)) {
+				this.saveCurDocument();
+				cache.saveNoteBook(book);
+			}else if(this.task.equals(SAVECUR)){
+				this.saveCurDocument();
+			}
+			return null;
+		}
+		
+		private void saveCurDocument(){
+			NoteMessage msg = editor.currentDocuemnt();
+			if(msg != null){
+				msg.getCategory().setLastUpdate();
+				cache.save(msg);
+				//cache.saveNoteBook(book);
+				uploadNoteBook(msg.getCategory());
+			}
+		}
+		
+		private void loadToOpen(Category node){
+			NoteMessage msg = node.getMessage(cache);
+			if(msg != null){
+				editor.openDocument(msg);
+			}else {
+				log.info("Not found message, " + node.id);
+			}
+		}
+	}
+	
 	class MenuAction {
 		public void Save(){
-			save();
+			saveAll();
 		}
 		
 		public void NewCategory(){

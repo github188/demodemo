@@ -12,6 +12,8 @@ public class NoteMessage implements Serializable{
 	public String text;
 	public String tags;
 	
+	private transient Category owner = null;
+	
 	public NoteMessage(String id){
 		this.messageId = id;
 	}
@@ -20,4 +22,11 @@ public class NoteMessage implements Serializable{
 		this.text = text;
 	}
 	
+	public Category getCategory(){
+		return this.owner;
+	}
+	
+	public void setCategory(Category c){
+		this.owner = c;
+	}
 }

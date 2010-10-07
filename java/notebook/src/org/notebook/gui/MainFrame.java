@@ -18,9 +18,15 @@
 package org.notebook.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Label;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -35,8 +41,10 @@ import java.net.ServerSocket;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
@@ -80,19 +88,33 @@ public class MainFrame extends JFrame {
 	}
  	
     public static void main(String[] args){
-    	checkingIfRunning();
 		try{
-		UIManager.setLookAndFeel(
-			"com.sun.java.swing.plaf." +
-			"windows.WindowsLookAndFeel");
+			UIManager.setLookAndFeel(
+					"com.sun.java.swing.plaf." +
+					"windows.WindowsLookAndFeel");
 		}catch(Exception e){
 			System.out.println(e.toString());
 		}
-
-		MainFrame main = new MainFrame();
-		main.installTrayIcon();
-		main.setLocationRelativeTo(null);
-		main.setVisible(true); 
+		
+    	//showMessageBox("ss");
+		if(checkRunning()){
+			JOptionPane.showMessageDialog(null,
+				    "NoteBook已经在运行中.",
+				    "Error",
+				    JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}else {
+			//使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
+			SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	            	final MainFrame main = new MainFrame();
+	            	main.installTrayIcon();
+	            	//窗口居中.
+	            	main.setLocationRelativeTo(null);
+	            	main.setVisible(true); 
+	            }
+	        });	
+		}
 	}  
 
 	protected void initGui() {
@@ -189,16 +211,15 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	private static void checkingIfRunning(){
+	private static boolean checkRunning(){
 		try {
 			socket = new ServerSocket(SINGLE_INSTANCE_NETWORK_SOCKET,0,
 		    		InetAddress.getByAddress(new byte[] {127,0,0,1}));
+			return false;
 		}catch (BindException e) {
-		    System.err.println("Already running.");
-		    System.exit(1);
+			return true;
 		}catch (IOException e) {
-		    System.err.println("Unexpected error.");
-		    System.exit(2);
+			return true;
 		}
 	}	
 }
