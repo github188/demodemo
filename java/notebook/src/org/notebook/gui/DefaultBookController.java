@@ -20,14 +20,14 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
-import org.notebook.cache.SimpleObjectCache;
+import org.notebook.cache.DataStorage;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog(DefaultBookController.class);
 	private NavigationTree tree = null;
 	private DocumentEditor editor = null;
-	private SimpleObjectCache cache = null;
+	private DataStorage cache = null;
 	private NoteBook book = null;
 	private StatusBar statusBar = null;
 	private MainFrame mainFrame = null;
@@ -39,7 +39,7 @@ public class DefaultBookController implements BookController{
 	
 	public DefaultBookController(NoteBook book, NavigationTree tree, 
 			DocumentEditor editor,
-			SimpleObjectCache cache,
+			DataStorage cache,
 			StatusBar status,
 			MainFrame mainJFrame
 			){

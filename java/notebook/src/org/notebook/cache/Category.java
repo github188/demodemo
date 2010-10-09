@@ -177,7 +177,7 @@ public class Category implements TreeModel, Serializable{
 		return getMessage(null);
 	}
 	
-	public NoteMessage getMessage(SimpleObjectCache pm){
+	public NoteMessage getMessage(DataStorage pm){
 		NoteMessage msg = null;
 		if(this.nodeType != FILE) return null;
 		if(this.fileRef == null || this.fileRef.get() == null) {

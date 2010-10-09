@@ -15,8 +15,16 @@ public class NoteBook implements Serializable{
 	public String password = "";
 	
 	public NoteBook(){
-		user = System.getenv("USERNAME");
+		user = defaultUser();
 		if(user == null) user = "user";
 		name = "user" + "的记事本";
-	}	
+	}
+	
+	protected String defaultUser(){
+		try{
+			return System.getenv("USERNAME");
+		}catch(Exception e){
+			return "unknown";
+		}
+	}
 }

@@ -51,8 +51,9 @@ import javax.swing.UIManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
+import org.notebook.cache.LocalFilePersistence;
 import org.notebook.cache.NoteBook;
-import org.notebook.cache.SimpleObjectCache;
+import org.notebook.cache.DataStorage;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class MainFrame extends JFrame {
@@ -60,7 +61,7 @@ public class MainFrame extends JFrame {
 	private static Log log = LogFactory.getLog(MainFrame.class);
 
 	public MenuToolbar menu = null;
-	private SimpleObjectCache cache = null;
+	private DataStorage dao = null;
 	private NoteBook notebook = null;
 	private BookController controller = null;
 	private boolean firstRun = false;
@@ -69,17 +70,16 @@ public class MainFrame extends JFrame {
 	private static ServerSocket socket = null;
 	
 	public MainFrame(){
-		super(); 
-		
-		File root = new File(System.getenv("APPDATA"), ".notbook");
-		cache = new SimpleObjectCache(root);
-		notebook = cache.loadNoteBook();
+		super();		
+		//cache = new PersistenceService(this.getRootPath());
+		dao = this.createPersistenceService();
+		notebook = dao.loadNoteBook();
 		if(notebook == null){
 			notebook = new NoteBook();
 			notebook.root = new Category();
 			notebook.root.initDefaultNode();
 			notebook.root.setName("Deon的记事本");
-			cache.saveNoteBook(notebook);
+			dao.saveNoteBook(notebook);
 			firstRun = true;
 		}
 		this.setTitle(notebook.name);
@@ -89,8 +89,42 @@ public class MainFrame extends JFrame {
 		setSize(670,548);
 	}
 	
+	private DataStorage createPersistenceService(){
+		DataStorage  storge = null;
+		if(!isRuningJNLP()){
+			File root = new File(System.getenv("APPDATA"), ".notebook");
+			storge = new LocalFilePersistence(root);
+		}else {
+			try {
+				Class cl = Class.forName("org.notebook.cache.JNLPPersistence");
+				storge = (DataStorage)cl.newInstance();
+			}catch(ClassNotFoundException e) {
+				log.error("failed to load JNLP Stroage", e);
+			} catch (Exception e) {
+				log.error("failed to create JNLP Stroage", e);
+			}
+		}
+		return storge;
+	}
+	
+	private boolean isRuningJNLP(){
+		try {
+			Class.forName("javax.jnlp.ServiceManager");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
+    	if(System.getSecurityManager() != null) {
+    		System.out.println("SecurityManager:" + System.getSecurityManager().toString());
+    		//System.setSecurityManager(new SecurityManager());
+    	}else {
+    		System.out.println("SecurityManager is null.");
+    	}
+    	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {
 					public Object run(){
@@ -100,7 +134,7 @@ public class MainFrame extends JFrame {
 				});				
 	}
  	
-    public static void mainPrivileged(String[] args){    	
+    public static void mainPrivileged(String[] args){  	
 		try{
 			UIManager.setLookAndFeel(
 					"com.sun.java.swing.plaf." +
@@ -119,12 +153,19 @@ public class MainFrame extends JFrame {
 		}else {
 			//使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
 			SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	            	final MainFrame main = new MainFrame();
-	            	main.installTrayIcon();
-	            	//窗口居中.
-	            	main.setLocationRelativeTo(null);
-	            	main.setVisible(true); 
+	            @SuppressWarnings("unchecked")
+				public void run() {
+	            	AccessController.doPrivileged(
+	        				new PrivilegedAction() {
+	        					public Object run(){
+	        		            	final MainFrame main = new MainFrame();
+	        		            	main.installTrayIcon();
+	        		            	//窗口居中.
+	        		            	main.setLocationRelativeTo(null);
+	        		            	main.setVisible(true); 
+	        						return null;
+	        					}
+	        		});		            	
 	            }
 	        });	
 		}
@@ -157,7 +198,7 @@ public class MainFrame extends JFrame {
 		contentPane.add(status, BorderLayout.SOUTH);
 		
 		controller = createPrivilegedProxy(new DefaultBookController(notebook, tree, editor, 
-						this.cache,
+						this.dao,
 						status,
 						this));
 		
