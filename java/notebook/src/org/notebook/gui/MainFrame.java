@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
 	public MainFrame(){
 		super(); 
 		
-		File root = new File(System.getenv("APPDATA"));
+		File root = new File(System.getenv("APPDATA"), ".notbook");
 		cache = new SimpleObjectCache(root);
 		notebook = cache.loadNoteBook();
 		if(notebook == null){

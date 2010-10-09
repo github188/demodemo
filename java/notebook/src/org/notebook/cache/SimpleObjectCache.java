@@ -21,8 +21,8 @@ public class SimpleObjectCache{
 	public SimpleObjectCache(File root){
 		ins = this;
 		log = LogFactory.getLog(SimpleObjectCache.class);
-		this.root = new File(root, ".notbook");
-		if(!root.isDirectory()){
+		this.root = root;
+		if(!this.root.isDirectory()){
 			try{
 				this.root.mkdirs();
 			}catch(Exception e){

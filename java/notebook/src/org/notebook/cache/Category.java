@@ -251,11 +251,13 @@ public class Category implements TreeModel, Serializable{
 	public void setName(String name){
 		this.name = name;
 		this.setLastUpdate();
-		int index = this.parent.children.indexOf(this);
-		TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
-				new int[]{index, },
-				new Object[]{this, });
-		getEventProxy().treeNodesChanged(evt);	
+        if(this.parent != null){
+    		int index = this.parent.children.indexOf(this);
+    		TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
+    				new int[]{index, },
+    				new Object[]{this, });
+    		getEventProxy().treeNodesChanged(evt);	
+        }
 	}
 	
 	public void setLastUpdate(){
