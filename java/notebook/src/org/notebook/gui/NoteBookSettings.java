@@ -88,7 +88,9 @@ public class NoteBookSettings extends JDialog {
 				}
 				dailog.setVisible(false);
 				dailog.dispose();
-				if(controller != null)controller.saveAll();
+				if(controller != null){
+					controller.dispatchEvent(MenuToolbar.SAVE);
+				}
 			}
 		});
         

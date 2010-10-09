@@ -18,15 +18,9 @@
 package org.notebook.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.Image;
-import java.awt.Label;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -35,9 +29,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -57,10 +58,11 @@ import org.notebook.gui.MenuToolbar.BookAction;
 public class MainFrame extends JFrame {
 	public static final int SINGLE_INSTANCE_NETWORK_SOCKET = 44331;
 	private static Log log = LogFactory.getLog(MainFrame.class);
+
+	public MenuToolbar menu = null;
 	private SimpleObjectCache cache = null;
 	private NoteBook notebook = null;
 	private BookController controller = null;
-	private MenuToolbar menu = null;
 	private boolean firstRun = false;
 	
 	//只用来判断是否已经有一个进程在运行.
@@ -86,8 +88,19 @@ public class MainFrame extends JFrame {
 		pack(); 
 		setSize(670,548);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static void main(final String[] args){
+    	AccessController.doPrivileged(
+				new PrivilegedAction() {
+					public Object run(){
+						mainPrivileged(args);
+						return null;
+					}
+				});				
+	}
  	
-    public static void main(String[] args){
+    public static void mainPrivileged(String[] args){    	
 		try{
 			UIManager.setLookAndFeel(
 					"com.sun.java.swing.plaf." +
@@ -143,10 +156,10 @@ public class MainFrame extends JFrame {
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(status, BorderLayout.SOUTH);
 		
-		controller = new BookController(notebook, tree, editor, 
+		controller = createPrivilegedProxy(new DefaultBookController(notebook, tree, editor, 
 						this.cache,
 						status,
-						this);
+						this));
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	    addComponentListener(new ComponentAdapter() {
@@ -164,7 +177,7 @@ public class MainFrame extends JFrame {
 	    });
 	    
 	    this.setIconImage(appIcon16());
-	}
+	}	
 	
 	public void processEvent(BookAction e) {
 		String command = (String)e.getValue(Action.ACTION_COMMAND_KEY);
@@ -222,5 +235,31 @@ public class MainFrame extends JFrame {
 			return true;
 		}
 	}	
+	
+	private BookController createPrivilegedProxy(final BookController stub){
+    	return (BookController)Proxy.newProxyInstance(MainFrame.class.getClassLoader(), 
+				   new Class[]{BookController.class}, 
+				   new InvocationHandler(){
+						@SuppressWarnings("unchecked")
+						public Object invoke(Object prxoy, final Method method,
+								final Object[] args) throws Throwable {
+							try{
+								return AccessController.doPrivileged(
+										new PrivilegedExceptionAction() {
+											public Object run() throws Exception{
+												return method.invoke(stub, args);
+											}
+										});	
+							}catch (PrivilegedActionException e){
+								String name = method.getName();
+								log.error("Exception:" + e.getCause().toString() +
+										  "\n Method:" + name,
+										  e);
+								throw e.getException();
+							}
+						}
+					}
+					);		
+	}
 }
 
