@@ -15,7 +15,7 @@ import org.notebook.io.NoteBookClient;
 
 public class SyncService {
 	private static Log log = LogFactory.getLog(SyncService.class);
-	public NoteBook book = null;
+	//public NoteBook book = null;
 	public NoteBookClient client = null;
 	public Category root = null;
 	public Collection<SyncListener> ls = new ArrayList<SyncListener>();
@@ -25,6 +25,8 @@ public class SyncService {
 	
 	public SyncService(NoteBook book){
 		client = new NoteBookClient(book);
+		this.root = book.root;
+		
 	}
 	
 	public void start(){
@@ -36,7 +38,7 @@ public class SyncService {
 	}
 	
 	public void download(final Category cate){
-		if(!running) return;
+		if(!(running && cate.flushed)) return;
 		
 		LinkedList<Category> queue = new LinkedList<Category>();
 		
@@ -47,6 +49,7 @@ public class SyncService {
 						
 			while(queue.size() > 0 && running){
 				remote = queue.poll();
+				EventProxy.checkDownload(remote);
 				local = root.search(cate.id);
 				if(local == null){
 					parent = root.search(remote.parentId);
@@ -80,21 +83,20 @@ public class SyncService {
 			}
 		} catch (Exception e) {
 			EventProxy.syncError(e);
-			log.error(e, e);
-			
+			log.error(e, e);			
 		}
 	}
 	
 	public void upload(final Category cate){
-		if(!running) return;
+		if(!(running && cate.flushed)) return;
 		LinkedList<Category> queue = new LinkedList<Category>();
 		
 		Category remote, local, parent;
 		try {
-			queue.add(cate);
-						
+			queue.add(cate);						
 			while(queue.size() > 0 && running){
 				local = queue.poll();
+				EventProxy.checkUpload(local);
 				remote = client.getCategory(local.id);
 				if(remote == null){
 					parent = client.getCategory(local.parent.id);
@@ -176,6 +178,7 @@ public class SyncService {
 		Collection<Category> localList = new ArrayList<Category>();
 		localList.addAll(local.children);
 		for(Category c: localList){
+			if(!c.flushed) continue;
 			if(remoteNodes.contains(c))continue;
 			EventProxy.removeLocal(c);
 			c.remove();
@@ -217,6 +220,20 @@ public class SyncService {
 			for(SyncListener e: ls){
 				e.syncError(c);
 			}
+		}
+
+		@Override
+		public void checkUpload(Category c) {
+			for(SyncListener e: ls){
+				e.checkUpload(c);
+			}			
+		}
+
+		@Override
+		public void checkDownload(Category c) {
+			for(SyncListener e: ls){
+				e.checkDownload(c);
+			}		
 		}
 	};
 }

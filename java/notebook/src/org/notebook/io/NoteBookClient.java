@@ -25,7 +25,7 @@ public class NoteBookClient{
 	public NoteBook book = null;
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
-	public NoteBookClient(NoteBook root){
+	public NoteBookClient(NoteBook book){
 		this.book = book;
 	}
 	

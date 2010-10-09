@@ -3,6 +3,9 @@ package org.notebook.gui;
 import org.notebook.cache.Category;
 
 public interface SyncListener {
+	public void checkUpload(Category c);
+	public void checkDownload(Category c);
+	
 	public void removeLocal(Category c);
 	public void updateLocal(Category c);
 	
