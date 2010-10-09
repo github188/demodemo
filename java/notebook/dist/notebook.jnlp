@@ -10,13 +10,13 @@
     <description>Simple note book</description>
     <icon href="http://demodemo.googlecode.com/svn/trunk/java/notebook/dist/notebook32.jpg"/> 
     <offline-allowed/>
-    <security>
-        <all-permissions/>
-    </security>    
     <shortcut online="false">
       <desktop/>
     </shortcut>
   </information>
+  <security>
+        <all-permissions/>
+  </security>
   <resources>
     <j2se version="1.5+" java-vm-args=""/>
     <jar href="notebook-0.1.jar"/>
