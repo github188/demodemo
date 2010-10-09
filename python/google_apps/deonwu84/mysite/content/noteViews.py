@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from models import *
 import logging, datetime
+#from datetime.tzinfo
 
 def IP(r): return r.META["REMOTE_ADDR"]
 
@@ -11,30 +12,44 @@ def list_category(r, user, cate_id):
     category = _load_category(owner, cate_id)
     cate_list = UserCategory.all().ancestor(owner).filter("parent_category =", category).fetch(100)
     
-    result_list = []
-    for t in cate_list:
-        result_list.append({})
-        result_list[-1]['id'] = t.id
-        result_list[-1]['cate_id'] = t.cate_id
-        result_list[-1]['nodeType'] = t.nodeType
-        result_list[-1]['name'] = t.name
-        result_list[-1]['update_date'] = t.update_date.strftime("%Y-%m-%d %H:%M:%S")
+    result_list = [ _category2json(e) for e in cate_list]
     return result_list
 
-def update_category(r, user, parent, cate_id, name, nodeType, ):
+def get_category(r, user, cate_id):
+    logging.debug("get_category: user=%s, cate_id=%s, ippaddr=%s" % (
+                 user, cate_id, IP(r)))
+    owner = _load_user(user)
+    cate_list = UserCategory.all().ancestor(owner).filter("cate_id =", cate_id).fetch(1)
+    result_list = [ _category2json(e) for e in cate_list]
+    return result_list
+
+def _category2json(cate):
+    o = {}
+    o['id'] = str(cate.id)
+    o['cate_id'] = str(cate.cate_id)
+    o['nodeType'] = str(cate.nodeType)
+    o['name'] = cate.name
+    o['update_date'] = cate.update_date.strftime("%Y-%m-%d %H:%M:%S")
+    return o
+
+def update_category(r, user, parent, cate_id, name, nodeType, updateDate=''):
     logging.debug("update_category: user=%s, parent=%s, cate_id=%s, name=%s, nodeType=%s, ippaddr=%s" % (
                  user, parent, cate_id, name, nodeType, IP(r)))
     
     result = {"status": 'OK', }
     
     owner = _load_user(user)
-    cate = _load_category(owner, parent)
     sub_cate = _load_category(owner, cate_id)
+    if parent:
+        cate = _load_category(owner, parent)
+        sub_cate.parent_category = cate
     
-    sub_cate.parent_category = cate
     sub_cate.name = name
     sub_cate.nodeType = int(nodeType)
-    sub_cate.update_date = datetime.datetime.now()
+    if updateDate:
+        sub_cate.update_date = datetime.datetime.strptime(updateDate, "%Y-%m-%d %H:%M:%S") #.now()
+    else:
+        sub_cate.update_date = datetime.datetime.now()
     sub_cate.put()
 
     result['date'] = sub_cate.update_date.strftime("%Y-%m-%d %H:%M:%S")
@@ -53,7 +68,9 @@ def sync_message(r, user, message_id, text=''):
         message.put()
     else:
         result['text'] = message.text
-    
+        
+    #result['tzname'] = message.update_date.tzname() 
+
     result['date'] = message.update_date.strftime("%Y-%m-%d %H:%M:%S")
             
     return result
