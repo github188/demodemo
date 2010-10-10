@@ -3,18 +3,16 @@ package org.notebook.cache;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
-public class Category implements TreeModel, Serializable{
+public class Category implements TreeNode, Serializable{
 	private static final long serialVersionUID = 8989783162442987982L;
 	public final static int DIRECTORY = 1;
 	public final static int FILE = 2;
@@ -25,19 +23,18 @@ public class Category implements TreeModel, Serializable{
 	public Date createDate = new Date();
 	public Date lastUpdated = new Date();
 	public boolean flushed = true;
+	public boolean isDirty = false;
 	
 	//public transient NoteMessage file = null;
-	private transient WeakReference<NoteMessage> fileRef = null;
-	public transient Collection<TreeModelListener> ls = new ArrayList<TreeModelListener>();	
+	public transient DefaultTreeModel treeModel = null;
+	private transient WeakReference<NoteMessage> fileRef = null;	
 	public transient Category parent = null;
 	public transient DataStorage loader = null;
 	public transient String parentId = null;
 	private transient Category root = null;
-	private transient EventProxy evtProxy = null;
 	private int nextID = 0;
 	public Category(){
 		root = this;
-		evtProxy = new EventProxy();
 		this.name = "root";
 		children = new ArrayList<Category>();
 		this.id = this.getNextId();
@@ -54,60 +51,14 @@ public class Category implements TreeModel, Serializable{
 		//this.id = this.getNextId();
 	}
 	
-	@Override
-	public void addTreeModelListener(TreeModelListener listener) {
-		ls.add(listener);
-	}
-	@Override
-	public Category getChild(Object arg0, int index) {
-		Category c = (Category)arg0;
-		return c.children.get(index);
-	}
-	@Override
-	public int getChildCount(Object arg0) {
-		Category c = (Category)arg0;
-		return c.children.size();
-	}
-	@Override
-	public int getIndexOfChild(Object arg0, Object arg1) {
-		Category c = (Category)arg0;
-		Category c1 = (Category)arg1;
-		for(int i = 0; i < c.children.size(); i++ ){
-			if(c1.equals(c.children.get(i))){
-				return i;
-			}
-		}
-		return 0;
-	}
+
 	public void setRoot(Category c) {
 		this.root = c;
 	}
-	@Override
-	public Object getRoot() {
-		return this.root;
-	}
-	@Override
-	public boolean isLeaf(Object arg0) {
-		Category c = (Category)arg0;
-		return c.nodeType == FILE;
-	}
-
+	
 	public boolean isLeaf() {
 		return this.nodeType == FILE;
 	}
-	
-	@Override
-	public void removeTreeModelListener(TreeModelListener arg0) {
-		//arg0.treeNodesChanged(e)
-		this.ls.remove(arg0);
-	}
-	
-	@Override
-	public void valueForPathChanged(TreePath path, Object node) {
-		Object x = path.getLastPathComponent();
-		Category cate = (Category)x;
-		cate.setName(node.toString());
-	}	
 	
 	public Category addCategory(String name){
 		if(this.nodeType == FILE) return null;
@@ -123,17 +74,16 @@ public class Category implements TreeModel, Serializable{
 		return c;
 	}
 	
-	public Category addCategory(Category c){
+	public synchronized Category addCategory(Category c){
 		if(this.nodeType == FILE) return null;
 		this.children.add(c);
 		this.setLastUpdate();
 		c.parent = this;
 		c.root = this.root;
 		c.restore(); //恢复子节点Root.
-		TreeModelEvent evt = new TreeModelEvent(this, this.getPath(this),
-				new int[]{this.children.size() -1},
-				new Object[]{c, });
-		getEventProxy().treeNodesInserted(evt);
+		if(root != null && root.treeModel != null){
+			root.treeModel.nodesWereInserted(this, new int[]{this.children.size() -1 });
+		}
 		return c;
 	}	
 	
@@ -162,17 +112,17 @@ public class Category implements TreeModel, Serializable{
 		return result;
 	}
 	
-	public void remove(){
+	public synchronized void remove(){
 		//System.out.println("remove:" + this.name + "\tparent:" + this.parent);		
 		if(this.parent != null){
 			int index = this.parent.children.indexOf(this);
 			this.parent.children.remove(index);
 			this.parent.setLastUpdate();
-			
-			TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
-					new int[]{index, },
-					new Object[]{this, });
-			getEventProxy().treeNodesRemoved(evt);
+			if(root != null && root.treeModel != null){
+				root.treeModel.nodesWereRemoved(this.parent,
+						new int[]{index},
+						new Object[]{this});
+			}
 		}
 	}
 	
@@ -215,6 +165,10 @@ public class Category implements TreeModel, Serializable{
 		return false;
 	}
 	
+	public int hashCode(){
+		return Integer.parseInt(this.id);
+	}
+	
 	private Object[] getPath(Category c){
 		ArrayList<Category> path = new ArrayList<Category>(10);
 		path.add(0, c);
@@ -236,8 +190,6 @@ public class Category implements TreeModel, Serializable{
 				c.restore();
 			}
 		}
-		if(this.ls == null) 
-			ls = new ArrayList<TreeModelListener>();
 	}
 	
 	public void flush(){
@@ -264,13 +216,6 @@ public class Category implements TreeModel, Serializable{
 	public void setName(String name){
 		this.name = name;
 		this.setLastUpdate();
-        if(this.parent != null){
-    		int index = this.parent.children.indexOf(this);
-    		TreeModelEvent evt = new TreeModelEvent(this.parent, this.getPath(this.parent),
-    				new int[]{index, },
-    				new Object[]{this, });
-    		getEventProxy().treeNodesChanged(evt);	
-        }
 	}
 	
 	public void setLastUpdate(){
@@ -278,6 +223,9 @@ public class Category implements TreeModel, Serializable{
 		this.lastUpdated = new Date(System.currentTimeMillis());
 		if(parent != null){
 			parent.setLastUpdate();
+		}
+		if(root != null && root.treeModel != null){
+			root.treeModel.nodeChanged(this);
 		}
 	}
 	
@@ -287,46 +235,44 @@ public class Category implements TreeModel, Serializable{
 		this.addMessage("今天的工作.");		
 	}
 	
-	private EventProxy getEventProxy(){
-		if(this.root != null && this.root != this){
-			return this.root.getEventProxy();
-		}
-		if(this.evtProxy == null){
-			this.evtProxy = new EventProxy();
-		}
-		return this.evtProxy;
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		return children.get(childIndex);
 	}
-	
-	class EventProxy implements TreeModelListener{
 
-		@Override
-		public void treeNodesChanged(TreeModelEvent arg0) {
-			for(Iterator<TreeModelListener> iter = ls.iterator(); iter.hasNext();){
-				iter.next().treeNodesChanged(arg0);
-			}			
-		}
-
-		@Override
-		public void treeNodesInserted(TreeModelEvent arg0) {
-			for(Iterator<TreeModelListener> iter = ls.iterator(); iter.hasNext();){
-				iter.next().treeNodesInserted(arg0);
-			}
-		}
-
-		@Override
-		public void treeNodesRemoved(TreeModelEvent arg0) {
-			for(Iterator<TreeModelListener> iter = ls.iterator(); iter.hasNext();){
-				iter.next().treeNodesRemoved(arg0);
-			}
-		}
-
-		@Override
-		public void treeStructureChanged(TreeModelEvent arg0) {
-			for(Iterator<TreeModelListener> iter = ls.iterator(); iter.hasNext();){
-				iter.next().treeStructureChanged(arg0);
-			}			
-		}
-		
+	@Override
+	public int getChildCount() {
+		return children.size();
 	}
-	
+
+	@Override
+	public TreeNode getParent() {
+		if(this.parent == null && this.parentId != null){
+			return this.root.search(this.parentId);
+		}
+		return this.parent;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		return children.indexOf(node);
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return !this.isLeaf();
+	}
+
+	@Override
+	public Enumeration<Category> children() {
+		final Iterator<Category> iter = children.iterator();
+		return new Enumeration<Category>(){
+			public boolean hasMoreElements() {
+				return iter.hasNext();
+			}
+			public Category nextElement() {
+				return iter.next();
+			}
+		};
+	}
 }

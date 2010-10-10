@@ -365,12 +365,13 @@ public class DefaultBookController implements BookController{
 			if(initedBook){
 				mainFrame.showSettings();
 			}
-			book.root.addTreeModelListener(new BookTreeModelListener());	
+			//book.root.addTreeModelListener(new BookTreeModelListener());	
 			
 			//log.info("loading notebook:" + book.name + ",is:" + SwingUtilities.isEventDispatchThread());
 			mainFrame.setTitle(book.name);
-			mainFrame.tree.setModel(book.root);
-			mainFrame.tree.updateUI();
+			mainFrame.tree.setRoot(book.root);
+			//mainFrame.tree.getModel().
+			//mainFrame.tree.updateUI();
 			sync.setNoteBook(book);
 			sync.start();
 			dispatchEvent(MenuToolbar.SYNC, book.root);			

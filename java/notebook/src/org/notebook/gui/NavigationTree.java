@@ -49,7 +49,10 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.notebook.cache.Category;
@@ -67,11 +70,7 @@ public class NavigationTree extends JTree implements MouseListener {
 	private DefaultTreeCellEditor editor = null;
 
 	public NavigationTree(Category root, MenuToolbar menu){
-		if(root != null){
-			setModel(root);
-		}else {
-			setModel(new Category());
-		}
+		super(new BookTreeModel(root));
 		this.menu = menu;
 		this.addMouseListener(this);
 		this.setEditable(true);
@@ -111,6 +110,13 @@ public class NavigationTree extends JTree implements MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		
+	}
+	
+	public void setRoot(Category root){
+		DefaultTreeModel model = (DefaultTreeModel)getModel();
+		model.setRoot(root);
+		root.treeModel = model;
+		model.reload();
 	}
 	
 	TreeWillExpandListener treeWillExpandListener = new TreeWillExpandListener() {
@@ -260,7 +266,7 @@ public class NavigationTree extends JTree implements MouseListener {
 			  System.out.println("TreeDropTarget: dragEnter-->" + dtde);
 			  TreePath target = getEventTreePath(dtde);
 			  Category node = (Category)target.getLastPathComponent();
-			  if(node.isLeaf(node)){
+			  if(node.isLeaf()){
 				  dtde.rejectDrag();
 			  }else{
 		    	if(!isSubTree(getDragSource(dtde), target)){
@@ -275,7 +281,7 @@ public class NavigationTree extends JTree implements MouseListener {
 			  // System.out.println("TreeDropTarget: dragOver-->" + dtde);
 			  TreePath target = getEventTreePath(dtde);
 			  Category node = (Category)target.getLastPathComponent();
-			  if(node.isLeaf(node)){
+			  if(node.isLeaf()){
 				  dtde.rejectDrag();
 			  }else{
 		    	if(!isSubTree(getDragSource(dtde), target)){
@@ -316,7 +322,7 @@ public class NavigationTree extends JTree implements MouseListener {
 		    JTree tree = (JTree) dtc.getComponent();
 		    TreePath parentpath = tree.getClosestPathForLocation(pt.x, pt.y);
 		    Category parent = (Category) parentpath.getLastPathComponent();
-		    if (parent.isLeaf(parent)) {
+		    if (parent.isLeaf()) {
 		      dtde.rejectDrop();
 		      return;
 		    }
@@ -372,6 +378,18 @@ public class NavigationTree extends JTree implements MouseListener {
 	  }
 	}
 	
+	static class BookTreeModel extends DefaultTreeModel{
+		public BookTreeModel(TreeNode root) {
+			super(root);
+		}
+
+		public void valueForPathChanged(TreePath path, Object newValue) {
+			Category c = (Category)path.getLastPathComponent();
+			c.setName((String)newValue);
+	        nodeChanged(c);
+	    }
+	}
+	
 	class BookTreeRenderer extends DefaultTreeCellRenderer{
 		private static final long serialVersionUID = -2215063329307646081L;
 		protected DateFormat format= new SimpleDateFormat("MM/dd hh:mm");
@@ -405,6 +423,6 @@ public class NavigationTree extends JTree implements MouseListener {
 			return componet;
 		}
 	}
-	//DefaultTreeCellRenderer renderer2 = new DefaultTreeCellRenderer();
+	
 }
 
