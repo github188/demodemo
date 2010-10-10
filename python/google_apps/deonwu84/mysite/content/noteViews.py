@@ -30,6 +30,11 @@ def _category2json(cate):
     o['nodeType'] = str(cate.nodeType)
     o['name'] = cate.name
     o['update_date'] = cate.update_date.strftime("%Y-%m-%d %H:%M:%S")
+    if cate.parent_category:
+        o['parentId'] = cate.parent_category.cate_id
+    else:
+        o['parentId'] = ""
+    o['name'] = cate.name
     return o
 
 def update_category(r, user, parent, cate_id, name, nodeType, updateDate=''):
@@ -55,23 +60,22 @@ def update_category(r, user, parent, cate_id, name, nodeType, updateDate=''):
     result['date'] = sub_cate.update_date.strftime("%Y-%m-%d %H:%M:%S")
     return result
     
-def sync_message(r, user, message_id, text=''):
+def sync_message(r, user, message_id, text=None):
     logging.debug("sync_message: user=%s, message_id=%s, sync=%s ippaddr=%s" % (
                   user, message_id, text and 'up' or 'down', IP(r)))
     
     owner = _load_user(user)
     message = _load_message(owner, message_id)
     result = {"status": 'OK', }
-    if text:
+    if text is not None:
         message.text = db.Text(text)
         message.update_date = datetime.datetime.now()
         message.put()
     else:
         result['text'] = message.text
-        
+    
     #result['tzname'] = message.update_date.tzname() 
-
-    result['date'] = message.update_date.strftime("%Y-%m-%d %H:%M:%S")
+    #result['date'] = message.update_date.strftime("%Y-%m-%d %H:%M:%S")
             
     return result
 
