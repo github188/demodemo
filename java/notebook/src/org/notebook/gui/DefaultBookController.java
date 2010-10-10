@@ -250,16 +250,37 @@ public class DefaultBookController implements BookController{
 		
 		public void SyncDownLoad(BookAction event){
 			final Category cate = selectedTreeNode(event);
+			if (cate == null){return;}
+			if(!sync.isRunning() && event.attachedEvent != null){
+				int i = JOptionPane.showConfirmDialog(mainFrame,
+					    "同步连接断开,是否重新连接.",
+					    "同步错误",
+					    JOptionPane.OK_CANCEL_OPTION);
+				if(i==0){
+					sync.start();
+				}				
+			}
+			
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
 					sync.download(cate);
 					sync.syncCategoryId();
 				}}
-			);			
+			);		
 		}
 		public void SyncUpLoad(BookAction event){
 			final Category cate = selectedTreeNode(event);
+			if (cate == null){return;}
+			if(!sync.isRunning() && event.attachedEvent != null){
+				int i = JOptionPane.showConfirmDialog(mainFrame,
+					    "同步连接断开,是否重新连接.",
+					    "同步错误",
+					    JOptionPane.OK_CANCEL_OPTION);
+				if(i==0){
+					sync.start();
+				}				
+			}	
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
@@ -270,6 +291,16 @@ public class DefaultBookController implements BookController{
 		}
 		public void Sync(BookAction event){
 			final Category cate = selectedTreeNode(event);
+			if (cate == null){return;}
+			if(!sync.isRunning() && event.attachedEvent != null){
+				int i = JOptionPane.showConfirmDialog(mainFrame,
+					    "同步连接断开,是否重新连接.",
+					    "同步错误",
+					    JOptionPane.OK_CANCEL_OPTION);
+				if(i==0){
+					sync.start();
+				}				
+			}		
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
@@ -369,9 +400,8 @@ public class DefaultBookController implements BookController{
 			
 			//log.info("loading notebook:" + book.name + ",is:" + SwingUtilities.isEventDispatchThread());
 			mainFrame.setTitle(book.name);
+			book.root.name = book.name;
 			mainFrame.tree.setRoot(book.root);
-			//mainFrame.tree.getModel().
-			//mainFrame.tree.updateUI();
 			sync.setNoteBook(book);
 			sync.start();
 			dispatchEvent(MenuToolbar.SYNC, book.root);			

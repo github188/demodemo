@@ -37,6 +37,10 @@ public class SyncService {
 		running = false;
 	}
 	
+	public boolean isRunning(){
+		return running;
+	}
+	
 	public void download(final Category cate){
 		//if(!(running && cate.flushed)) return;
 		if(!running){
@@ -54,7 +58,7 @@ public class SyncService {
 		Category remote = null, local = null, parent = null;
 		try {
 			remote = client.getCategory(cate.id);
-			queue.add(remote);
+			if(remote != null){queue.add(remote);}
 						
 			while(queue.size() > 0 && running){
 				remote = queue.poll();
@@ -68,8 +72,10 @@ public class SyncService {
 					}
 					//不能因为同步而修改,更新时间.
 					Date lastUpdate = parent.lastUpdated;
+					boolean isDirty = parent.isDirty;
 					parent.addCategory(remote);
 					parent.lastUpdated = lastUpdate;
+					parent.isDirty = isDirty;
 					
 					local = remote;
 					if(local.isLeaf()){ //添加本地新节点.
@@ -87,6 +93,7 @@ public class SyncService {
 				if(remote.lastUpdated.after(local.lastUpdated)){
 					local.setName(remote.name);
 					local.lastUpdated = remote.lastUpdated;
+					local.isDirty = false;
 					if(remote.isLeaf()){
 						NoteMessage note = client.downLoadMessage(cate.id);
 						local.getMessage().setText(note.text);
@@ -134,6 +141,7 @@ public class SyncService {
 						EventProxy.updateRemote(local);
 						client.updateCategory(local);
 						remote = local;
+						local.isDirty = false;
 						if(local.isLeaf()){
 							client.uploadMessage(local.getMessage());
 							continue;
@@ -142,10 +150,10 @@ public class SyncService {
 				}
 				
 				
-				if(local.lastUpdated.after(remote.lastUpdated)){
+				if(local.lastUpdated.after(remote.lastUpdated) || local.isDirty){
 					EventProxy.updateRemote(local);
 					client.updateCategory(local);
-					if(remote.isLeaf()){
+					if(local.isLeaf()){
 						client.uploadMessage(local.getMessage());
 					}else {
 						for(Category c: client.listCategory(local)){
@@ -155,6 +163,7 @@ public class SyncService {
 							}
 						}
 					}
+					local.isDirty = false;
 				}
 				
 				if(!local.isLeaf()){
@@ -264,7 +273,7 @@ public class SyncService {
 		public void checkDownload(Category c) {
 			for(SyncListener e: ls){
 				e.checkDownload(c);
-			}		
+			}
 		}
 	};
 }

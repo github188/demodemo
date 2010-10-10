@@ -25,6 +25,7 @@ public abstract class DataStorage{
 		if(book != null){
 			book.root.setRoot(book.root);
 			book.root.restore();
+			book.root.loader = this;
 		}
 		return book;
 	}
