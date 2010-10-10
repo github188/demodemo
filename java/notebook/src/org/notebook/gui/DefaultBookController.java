@@ -172,7 +172,7 @@ public class DefaultBookController implements BookController{
 		}
 	
 		@Override
-		public void updateLocal(Category c) {
+		public void updatedLocal(Category c) {
 			updateStatus(String.format("Update %s", c.name));
 			if(c.isLeaf()){
 				storage.save(c.getMessage());
@@ -190,8 +190,8 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@Override
-		public void syncError(Exception c) {
-			updateStatus(String.format("Sync error %s", c.toString()));
+		public void syncError(Category c, Exception e) {
+			updateStatus(String.format("Sync error %s", e.toString()));
 			sync.stop();
 			log.info("Stop sync running....");
 		}

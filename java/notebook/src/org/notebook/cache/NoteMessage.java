@@ -8,9 +8,9 @@ public class NoteMessage implements Serializable{
 	public String messageId;
 	//public String name;
 	public Date createDate = new Date();
-	public Date lastUpdated;
-	public String text;
-	public String tags;
+	public Date lastUpdated = new Date();
+	public String text = "";
+	public String tags = "";
 	
 	private transient Category owner = null;
 	

@@ -29,7 +29,8 @@ public abstract class DataStorage{
 		return book;
 	}
 	public void saveNoteBook(NoteBook book){
-		saveObject("notebook", book);		
+		saveObject("notebook", book);
+		book.root.flush();
 	}
 	
 	protected abstract void saveObject(String id, Object obj);

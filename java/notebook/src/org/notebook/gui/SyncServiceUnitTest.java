@@ -1,6 +1,7 @@
 package org.notebook.gui;
 
 import java.io.File;
+import java.util.Date;
 
 import org.notebook.cache.Category;
 import org.notebook.cache.DataStorage;
@@ -30,10 +31,10 @@ public class SyncServiceUnitTest {
 			public void checkUpload(Category c){output("checkUpload", c);}
 			public void checkDownload(Category c){output("checkDownload", c);}
 			public void removeLocal(Category c){output("removeLocal", c);}
-			public void updateLocal(Category c){output("updateLocal", c);}
+			public void updatedLocal(Category c){output("updateLocal", c);}
 			public void removeRemote(Category c) {output("removeRemote", c);}
 			public void updateRemote(Category c) {output("updateRemote", c);}
-			public void syncError(Exception e) {e.printStackTrace();}
+			public void syncError(Category c, Exception e) {e.printStackTrace();}
 			private void output(String action, Category c){
 				System.out.println(action + " name:" + c.name + ", id:" + c.id);
 			}
@@ -48,12 +49,23 @@ public class SyncServiceUnitTest {
 		
 		tester.testUploadData();
 		
-		//tester.testDownloadCategory();
+		tester.testDownloadCategory();
+				
+		tester.testRemoveRemoteData();
+		
+		tester.testUploadData();
+		tester.testRemoveLocalData();
 		
 		System.out.println("done");
 	}
 	
 	public void testDownloadCategory(){
+		System.out.println("test Download...");
+		Category c = new Category();
+		c.loader = cache;
+		c.lastUpdated = new Date(System.currentTimeMillis() - 1000 * 60 * 60 *24);
+		
+		service.download(c);
 		
 	}
 	
@@ -75,6 +87,11 @@ public class SyncServiceUnitTest {
 	}
 	
 	public void testRemoveRemoteData(){
+		System.out.println("testRemoveRemoteData...");
+		Category c = new Category();
+		c.loader = cache;
+		//c.lastUpdated = new Date(System.currentTimeMillis() - 1000 * 60 * 60 *24);
 		
+		service.upload(c);
 	}
 }

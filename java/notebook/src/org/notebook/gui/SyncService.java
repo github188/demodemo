@@ -1,8 +1,8 @@
 package org.notebook.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
-import org.notebook.io.ClientException;
 import org.notebook.io.NoteBookClient;
 
 public class SyncService {
@@ -39,11 +38,20 @@ public class SyncService {
 	}
 	
 	public void download(final Category cate){
-		if(!(running && cate.flushed)) return;
+		//if(!(running && cate.flushed)) return;
+		if(!running){
+			log.warn("Sync service is not running");
+			return;
+		}	
+		if(!cate.flushed){
+			log.debug(String.format("Ignored upload not saved node, id:%s, name%s",
+					cate.id, cate.name));
+			return;
+		}		
 		
 		LinkedList<Category> queue = new LinkedList<Category>();
 		
-		Category remote, local, parent;
+		Category remote = null, local = null, parent = null;
 		try {
 			remote = client.getCategory(cate.id);
 			queue.add(remote);
@@ -51,25 +59,34 @@ public class SyncService {
 			while(queue.size() > 0 && running){
 				remote = queue.poll();
 				EventProxy.checkDownload(remote);
-				local = root.search(cate.id);
+				local = cate.search(remote.id);
 				if(local == null){
-					parent = root.search(remote.parentId);
-					if(remote.lastUpdated.after(parent.lastUpdated)){
-						EventProxy.updateLocal(remote);
-						parent.addCategory(remote);
-						local = remote;
-						if(local.isLeaf()){ //添加本地新节点.
-							NoteMessage note = client.downLoadMessage(cate.id);
-							local.getMessage().setText(note.text);
-						}
-					}else {	//远程节点是等待删除的过期节点.
+					parent = cate.search(remote.parentId);
+					if(parent == null){
+						EventProxy.syncError(remote, new Exception("Not found parent."));
 						continue;
 					}
+					//不能因为同步而修改,更新时间.
+					Date lastUpdate = parent.lastUpdated;
+					parent.addCategory(remote);
+					parent.lastUpdated = lastUpdate;
+					
+					local = remote;
+					if(local.isLeaf()){ //添加本地新节点.
+						NoteMessage note = client.downLoadMessage(cate.id);
+						local.getMessage().setText(note.text);
+					}
+					EventProxy.updatedLocal(local);
+				}
+				if(!local.flushed){
+					log.debug(String.format("Ignored upload not saved node, id:%s, name%s",
+							local.id, local.name));
+					continue;
 				}
 				
 				if(remote.lastUpdated.after(local.lastUpdated)){
-					EventProxy.updateLocal(remote);
 					local.setName(remote.name);
+					local.lastUpdated = remote.lastUpdated;
 					if(remote.isLeaf()){
 						NoteMessage note = client.downLoadMessage(cate.id);
 						local.getMessage().setText(note.text);
@@ -78,30 +95,42 @@ public class SyncService {
 						this.removeLocalChildren(children, local);
 						queue.addAll(children);
 					}
+					EventProxy.updatedLocal(local);
 				}else if(!remote.isLeaf()){
 					queue.addAll(client.listCategory(remote));
 				}
 			}
 		} catch (Exception e) {
-			EventProxy.syncError(e);
+			EventProxy.syncError(remote, e);
 			log.error(e, e);			
 		}
 	}
 	
 	public void upload(final Category cate){
-		if(!(running && cate.flushed)) return;
+		if(!running){
+			log.warn("Sync service is not running");
+			return;
+		}
+		
 		LinkedList<Category> queue = new LinkedList<Category>();
 		
-		Category remote, local, parent;
+		Category remote=null, local = null, parent=null;
 		try {
 			queue.add(cate);						
 			while(queue.size() > 0 && running){
 				local = queue.poll();
+				if(!local.flushed){
+					log.debug(String.format("Ignored upload not saved node, id:%s, name%s",
+							local.id, local.name));
+					continue;
+				}
 				EventProxy.checkUpload(local);
 				remote = client.getCategory(local.id);
 				if(remote == null){
-					parent = client.getCategory(local.parent.id);
-					if(local.lastUpdated.after(parent.lastUpdated)){
+					if(local.parent != null){
+						parent = client.getCategory(local.parent.id);
+					}
+					if(parent == null || local.lastUpdated.after(parent.lastUpdated)){
 						EventProxy.updateRemote(local);
 						client.updateCategory(local);
 						remote = local;
@@ -111,6 +140,7 @@ public class SyncService {
 						}
 					}
 				}
+				
 				
 				if(local.lastUpdated.after(remote.lastUpdated)){
 					EventProxy.updateRemote(local);
@@ -132,7 +162,7 @@ public class SyncService {
 				}
 			}
 		} catch (Exception e) {
-			EventProxy.syncError(e);
+			EventProxy.syncError(local, e);
 			log.error(e, e);
 		}
 	}
@@ -162,7 +192,7 @@ public class SyncService {
 				this.client.updateCategory(id);
 			}			
 		} catch (Exception e) {
-			EventProxy.syncError(e);
+			EventProxy.syncError(null, e);
 			log.error(e, e);
 		}
 	}
@@ -196,9 +226,9 @@ public class SyncService {
 		}
 
 		@Override
-		public void updateLocal(Category c) {
+		public void updatedLocal(Category c) {
 			for(SyncListener e: ls){
-				e.updateLocal(c);
+				e.updatedLocal(c);
 			}
 		}
 
@@ -217,9 +247,9 @@ public class SyncService {
 		}
 		
 		@Override
-		public void syncError(Exception c) {
-			for(SyncListener e: ls){
-				e.syncError(c);
+		public void syncError(Category c, Exception e) {
+			for(SyncListener l: ls){
+				l.syncError(c, e);
 			}
 		}
 

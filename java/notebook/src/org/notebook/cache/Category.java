@@ -22,9 +22,9 @@ public class Category implements TreeModel, Serializable{
 	public int nodeType = DIRECTORY;
 	public String name;
 	public List<Category> children = null;
-	public Date createDate;
-	public Date lastUpdated;
-	public boolean flushed = false;
+	public Date createDate = new Date();
+	public Date lastUpdated = new Date();
+	public boolean flushed = true;
 	
 	//public transient NoteMessage file = null;
 	private transient WeakReference<NoteMessage> fileRef = null;
@@ -50,6 +50,7 @@ public class Category implements TreeModel, Serializable{
 		if(type != FILE){
 			children = new ArrayList<Category>(5);
 		}
+		this.setLastUpdate();
 		//this.id = this.getNextId();
 	}
 	
@@ -275,6 +276,9 @@ public class Category implements TreeModel, Serializable{
 	public void setLastUpdate(){
 		this.flushed = false;
 		this.lastUpdated = new Date(System.currentTimeMillis());
+		if(parent != null){
+			parent.setLastUpdate();
+		}
 	}
 	
 	public void initDefaultNode(){

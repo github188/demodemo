@@ -7,10 +7,10 @@ public interface SyncListener {
 	public void checkDownload(Category c);
 	
 	public void removeLocal(Category c);
-	public void updateLocal(Category c);
+	public void updatedLocal(Category c);
 	
 	public void removeRemote(Category c);
 	public void updateRemote(Category c);
 	
-	public void syncError(Exception e);
+	public void syncError(Category c, Exception e);
 }

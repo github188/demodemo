@@ -27,13 +27,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.BindException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -49,7 +45,6 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.notebook.cache.DataStorage;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class MainFrame extends JFrame {

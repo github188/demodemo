@@ -51,14 +51,16 @@ public class NoteBookClient{
 				c = new Category();
 				result.add(c);
 				c.id = (String)item.get("cate_id");
-				c.nodeType = (Integer)item.get("nodeType");
+				c.nodeType = Integer.parseInt(item.get("nodeType").toString());
 				c.name = (String)item.get("name");
+				c.parentId = (String)item.get("parentId");
 
 				try {
-					Date updateTime = format.parse((String)item.get("update_date"));
+					c.lastUpdated = format.parse((String)item.get("update_date"));
 					//It's a bug, the GAE always use GTM+0.
 					//c.lastUpdated = new Date(updateTime.getTime() + (60 * 60 * 8));
 				} catch (java.text.ParseException e) {
+					c.lastUpdated = new Date();
 					log.error(e.toString(), e);
 				}
 			}
@@ -112,15 +114,9 @@ public class NoteBookClient{
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			message.text = jsonObject.get("text");
-			try {
-				Date updateTime = format.parse((String)jsonObject.get("update_date"));
-				//message.lastUpdated = new Date(updateTime.getTime() + (60 * 60 * 8));
-			} catch (java.text.ParseException e) {
-				log.error(e.toString(), e);
-			}
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
-		}		
+		}
 		return message;
 	}
 	
