@@ -220,6 +220,7 @@ public class Category implements TreeNode, Serializable{
 	
 	public void setLastUpdate(){
 		this.flushed = false;
+		this.isDirty = true;
 		this.lastUpdated = new Date(System.currentTimeMillis());
 		if(parent != null){
 			parent.setLastUpdate();
@@ -232,7 +233,7 @@ public class Category implements TreeNode, Serializable{
 	public void initDefaultNode(){
 		this.addCategory("服务器管理");
 		this.addCategory("数据库");
-		this.addMessage("今天的工作.");		
+		this.addMessage("今天的工作.");
 	}
 	
 	@Override

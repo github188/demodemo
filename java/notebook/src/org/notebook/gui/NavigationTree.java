@@ -51,7 +51,6 @@ import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -416,8 +415,19 @@ public class NavigationTree extends JTree implements MouseListener {
 			if(value instanceof Category){
 				Category c = (Category)value;
 				if(c.isLeaf() && c.lastUpdated != null){
-					String label = c.name + " " + format.format(c.lastUpdated);
-					renderer.setText(label);
+					StringBuilder label = new StringBuilder(c.name);
+					if(c.isDirty){
+						label.append("*");
+					}
+					label.append(" ");
+					label.append(format.format(c.lastUpdated));
+					renderer.setText(label.toString());
+				}else {
+					StringBuilder label = new StringBuilder(c.name);
+					if(c.isDirty){
+						label.append("*");
+					}
+					renderer.setText(label.toString());					
 				}
 			}
 			return componet;
