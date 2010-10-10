@@ -17,6 +17,7 @@
  
 package org.notebook.gui;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -40,6 +41,8 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
@@ -370,12 +373,37 @@ public class NavigationTree extends JTree implements MouseListener {
 	}
 	
 	class BookTreeRenderer extends DefaultTreeCellRenderer{
+		private static final long serialVersionUID = -2215063329307646081L;
+		protected DateFormat format= new SimpleDateFormat("MM/dd hh:mm");
+		
 		public BookTreeRenderer(){
 			super();
 			setOpenIcon(MenuToolbar.icon("org/notebook/gui/images/folder_open.gif"));
 			setClosedIcon(MenuToolbar.icon("org/notebook/gui/images/folder_close.gif"));
 			setLeafIcon(MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"));
-		}		
+		}
+		
+		public Component getTreeCellRendererComponent(
+                JTree tree,
+                Object value,
+                boolean sel,
+                boolean expanded,
+                boolean leaf,
+                int row,
+                boolean hasFocus) {
+			Component componet = super.getTreeCellRendererComponent(
+			                	tree, value, sel, expanded, leaf, row,
+			                	hasFocus);
+			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)componet;
+			if(value instanceof Category){
+				Category c = (Category)value;
+				if(c.isLeaf() && c.lastUpdated != null){
+					String label = c.name + " " + format.format(c.lastUpdated);
+					renderer.setText(label);
+				}
+			}
+			return componet;
+		}
 	}
 	//DefaultTreeCellRenderer renderer2 = new DefaultTreeCellRenderer();
 }

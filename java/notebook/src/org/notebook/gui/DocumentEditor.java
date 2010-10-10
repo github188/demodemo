@@ -44,7 +44,10 @@ public class DocumentEditor extends JTextArea {
 	
 	public NoteMessage currentDocuemnt(){
 		if(msg != null){
-			msg.text = this.getText();
+			if(!msg.text.equals(this.getText())){
+				msg.text = this.getText();
+				msg.isDirty = true;
+			}
 		}
 		return msg;
 	}

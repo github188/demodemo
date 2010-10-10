@@ -393,9 +393,11 @@ public class DefaultBookController implements BookController{
 		
 		private void saveOpenedMessage(){
 			NoteMessage note = mainFrame.editor.currentDocuemnt();
-			if(note != null){
+			if(note != null && note.isDirty){
 				storage.save(note);
+				note.isDirty = false;
+				note.getCategory().setLastUpdate();
 			}
-		}			
+		}
 	}
 }

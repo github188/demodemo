@@ -11,6 +11,7 @@ public class NoteMessage implements Serializable{
 	public Date lastUpdated = new Date();
 	public String text = "";
 	public String tags = "";
+	public boolean isDirty = false;
 	
 	private transient Category owner = null;
 	
