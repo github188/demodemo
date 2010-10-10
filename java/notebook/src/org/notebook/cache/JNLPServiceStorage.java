@@ -15,12 +15,12 @@ import javax.jnlp.PersistenceService;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 
-public class JNLPPersistence extends DataStorage{
+public class JNLPServiceStorage extends DataStorage{
     private PersistenceService ps = null;
     private BasicService bs = null;
     private URL root = null;
     
-    public JNLPPersistence(){
+    public JNLPServiceStorage(){
         try { 
             ps = (PersistenceService)ServiceManager.lookup("javax.jnlp.PersistenceService"); 
             bs = (BasicService)ServiceManager.lookup("javax.jnlp.BasicService");

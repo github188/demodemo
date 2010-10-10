@@ -28,8 +28,7 @@ public class DocumentEditor extends JTextArea {
 	public NoteMessage msg = null;
 
 	public DocumentEditor(){
-		super("line one\nline two\nline three\nline four" +
-				"xdddd xdddd xddddxddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd dxdddd");
+		super("");
 
 		//this.setFont(new Font("Dialog", Font.ITALIC, 24));
 		this.setFont(new Font("Serif", Font.PLAIN, 16));

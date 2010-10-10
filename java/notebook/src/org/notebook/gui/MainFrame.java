@@ -27,7 +27,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,12 +34,12 @@ import java.lang.reflect.Proxy;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -50,64 +49,53 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.notebook.cache.Category;
-import org.notebook.cache.LocalFilePersistence;
-import org.notebook.cache.NoteBook;
 import org.notebook.cache.DataStorage;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class MainFrame extends JFrame {
-	public static final int SINGLE_INSTANCE_NETWORK_SOCKET = 44331;
+	private static final long serialVersionUID = -4362026054606144515L;
 	private static Log log = LogFactory.getLog(MainFrame.class);
 
-	public MenuToolbar menu = null;
-	private DataStorage dao = null;
-	private NoteBook notebook = null;
+	public MenuToolbar menu = null;	
+	public NavigationTree tree = null;
+	public DocumentEditor editor = null;
+	public StatusBar statusBar = null;
+
 	private BookController controller = null;
-	private boolean firstRun = false;
-	
+		
 	//只用来判断是否已经有一个进程在运行.
-	private static ServerSocket socket = null;
+	private static SingleInstance singlton = new SocketSingleInstance();
+	//初始化托盘时, Controller还没有创建。把安装的结果临时保存。等Contoller创建后，再传给Controller.
+	private boolean visibleTrayIcon = false;
 	
 	public MainFrame(){
-		super();		
-		//cache = new PersistenceService(this.getRootPath());
-		dao = this.createPersistenceService();
-		notebook = dao.loadNoteBook();
-		if(notebook == null){
-			notebook = new NoteBook();
-			notebook.root = new Category();
-			notebook.root.initDefaultNode();
-			notebook.root.setName("Deon的记事本");
-			dao.saveNoteBook(notebook);
-			firstRun = true;
-		}
-		this.setTitle(notebook.name);
+		super();
+		this.setTitle("NoteBook");
 		setLayout(new BorderLayout());
 		this.initGui();
 		pack(); 
 		setSize(670,548);
 	}
 	
-	private DataStorage createPersistenceService(){
-		DataStorage  storge = null;
-		if(!isRuningJNLP()){
-			File root = new File(System.getenv("APPDATA"), ".notebook");
-			storge = new LocalFilePersistence(root);
-		}else {
-			try {
-				Class cl = Class.forName("org.notebook.cache.JNLPPersistence");
-				storge = (DataStorage)cl.newInstance();
-			}catch(ClassNotFoundException e) {
-				log.error("failed to load JNLP Stroage", e);
-			} catch (Exception e) {
-				log.error("failed to create JNLP Stroage", e);
-			}
-		}
-		return storge;
+	public void initNoteBookController(){
+		controller =  createPrivilegedProxy(new DefaultBookController(this,
+						runingJNLP(),
+					 	runningSandbox()
+					  ));
+		controller.setVisibleTrayIcon(visibleTrayIcon);
+		controller.dispatchEvent(MenuToolbar.OPENNOTEBOOK);
 	}
 	
-	private boolean isRuningJNLP(){
+	private boolean runningSandbox(){
+		try {
+			System.getenv("USERNAME");
+			return false;
+		}catch(AccessControlException e){
+			return true;
+		}
+	}
+	
+	private boolean runingJNLP(){
 		try {
 			Class.forName("javax.jnlp.ServiceManager");
 			return true;
@@ -120,9 +108,8 @@ public class MainFrame extends JFrame {
 	public static void main(final String[] args){
     	if(System.getSecurityManager() != null) {
     		System.out.println("SecurityManager:" + System.getSecurityManager().toString());
-    		//System.setSecurityManager(new SecurityManager());
     	}else {
-    		System.out.println("SecurityManager is null.");
+    		//System.setSecurityManager(new SecurityManager());
     	}
     	
     	AccessController.doPrivileged(
@@ -144,7 +131,7 @@ public class MainFrame extends JFrame {
 		}
 		
     	//showMessageBox("ss");
-		if(checkRunning()){
+		if(singlton.checkRunning(null)){
 			JOptionPane.showMessageDialog(null,
 				    "NoteBook已经在运行中.",
 				    "Error",
@@ -153,20 +140,16 @@ public class MainFrame extends JFrame {
 		}else {
 			//使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
 			SwingUtilities.invokeLater(new Runnable() {
-	            @SuppressWarnings("unchecked")
-				public void run() {
-	            	AccessController.doPrivileged(
-	        				new PrivilegedAction() {
-	        					public Object run(){
-	        		            	final MainFrame main = new MainFrame();
-	        		            	main.installTrayIcon();
-	        		            	//窗口居中.
-	        		            	main.setLocationRelativeTo(null);
-	        		            	main.setVisible(true); 
-	        						return null;
-	        					}
-	        		});		            	
-	            }
+				public void run(){
+	            	final MainFrame main = new MainFrame();
+	            	main.installTrayIcon();
+	            	if(main.runingJNLP()){
+	            		main.setupJNLPSingltenService();
+	            	}
+	            	//窗口居中.
+	            	main.setLocationRelativeTo(null);
+	            	main.setVisible(true);
+				}
 	        });	
 		}
 	}  
@@ -177,8 +160,8 @@ public class MainFrame extends JFrame {
 
 		Container contentPane = getContentPane();
 		
-		NavigationTree tree = new NavigationTree(notebook.root, menu);
-		DocumentEditor editor = new DocumentEditor();
+		tree = new NavigationTree(null, menu);
+		editor = new DocumentEditor();
 
 		JScrollPane leftTree = new JScrollPane(tree);
 		Dimension minSize = new Dimension(150, 400);
@@ -191,50 +174,59 @@ public class MainFrame extends JFrame {
 				new JScrollPane(editor)
 		);
 		
-		StatusBar status = new StatusBar();
+		statusBar = new StatusBar();
 
 		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
 		contentPane.add(splitPane, BorderLayout.CENTER);
-		contentPane.add(status, BorderLayout.SOUTH);
+		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
-		controller = createPrivilegedProxy(new DefaultBookController(notebook, tree, editor, 
-						this.dao,
-						status,
-						this));
+		//controller = createPrivilegedProxy(new DefaultBookController(this));
 		
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    addComponentListener(new ComponentAdapter() {
 	        public void componentShown(ComponentEvent ce) {
-	        	if(firstRun){
-	        		showSettings();
+	        	if(controller == null){
+	        		try{
+	        			initNoteBookController();
+	        			setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	        		    addWindowListener(new WindowAdapter(){
+	        		    	public void windowClosing(WindowEvent e){
+	        		    		processEvent(menu.$(MenuToolbar.HIDEWINDOW));
+	        		    	}
+	        		    });
+	        		}catch(Exception e){
+	        			JOptionPane.showMessageDialog(null,
+	        				    "程序初始化出错!",
+	        				    "Error",
+	        				    JOptionPane.ERROR_MESSAGE);
+	        			e.printStackTrace();
+	        		}
 	        	}
 	        }
 	    });
-	    
-	    addWindowListener(new WindowAdapter(){
-	    	public void windowClosing(WindowEvent e){
-	    		processEvent(menu.$(MenuToolbar.HIDEWINDOW));
-	    	}
-	    });
-	    
+	    	    
 	    this.setIconImage(appIcon16());
 	}	
 	
 	public void processEvent(BookAction e) {
-		String command = (String)e.getValue(Action.ACTION_COMMAND_KEY);
-		log.info("processEvent:" + command);
-		if(command.equals(MenuToolbar.SETTINGS)){
-			this.showSettings();
-		}else {
+		if(controller != null){
 			this.controller.processEvent(e);
+		}else {
+			JOptionPane.showMessageDialog(null,
+				    "程序初始化失败!",
+				    "Error",
+				    JOptionPane.ERROR_MESSAGE);			
 		}
 	}
 	
-	private void showSettings(){
-		NoteBookSettings settings = new NoteBookSettings(this, notebook, controller);
-		
+	public void showSettings(){
+		NoteBookSettings settings = new NoteBookSettings(this, controller);		
 		settings.setLocationRelativeTo(this);
 		settings.setVisible(true);
+	}
+	
+	public void status(String msg){
+		this.statusBar.setText(msg);
 	}
 	
 	private Image appIcon(){
@@ -247,6 +239,7 @@ public class MainFrame extends JFrame {
 	
 	
 	private void installTrayIcon(){
+		visibleTrayIcon = false;
 		try {
 			if(java.awt.SystemTray.isSupported()){// 判断当前平台是否支持系统托盘
 				java.awt.SystemTray  st = java.awt.SystemTray.getSystemTray();
@@ -259,23 +252,24 @@ public class MainFrame extends JFrame {
 						processEvent(menu.$(MenuToolbar.SHOWWINDOW));
 					}});
 				st.add(ti);
+				visibleTrayIcon = true;
 		    }
 		}catch (Exception e){
 			log.error(e, e);
 		}
 	}
 	
-	private static boolean checkRunning(){
+	private void setupJNLPSingltenService(){
 		try {
-			socket = new ServerSocket(SINGLE_INSTANCE_NETWORK_SOCKET,0,
-		    		InetAddress.getByAddress(new byte[] {127,0,0,1}));
-			return false;
-		}catch (BindException e) {
-			return true;
-		}catch (IOException e) {
-			return true;
+			Class cl = Class.forName("org.notebook.gui.JNLPSingleInstance");
+			SingleInstance ins = (SingleInstance)cl.newInstance();
+			ins.checkRunning(this);
+		}catch(ClassNotFoundException e) {
+			log.error("failed to load JNLP JNLPSingleInstance", e);
+		} catch (Exception e) {
+			log.error("failed to setup JNLP SingleInstanceService", e);
 		}
-	}	
+	}
 	
 	private BookController createPrivilegedProxy(final BookController stub){
     	return (BookController)Proxy.newProxyInstance(MainFrame.class.getClassLoader(), 
@@ -300,7 +294,7 @@ public class MainFrame extends JFrame {
 							}
 						}
 					}
-					);		
+			);		
 	}
 }
 

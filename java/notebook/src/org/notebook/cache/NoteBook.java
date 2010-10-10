@@ -27,4 +27,8 @@ public class NoteBook implements Serializable{
 			return "unknown";
 		}
 	}
+	
+	public void setEndPoint(String url){
+		this.endpoint = url;
+	}
 }

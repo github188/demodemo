@@ -24,11 +24,13 @@ public class Category implements TreeModel, Serializable{
 	public List<Category> children = null;
 	public Date createDate;
 	public Date lastUpdated;
+	public boolean flushed = false;
 	
 	//public transient NoteMessage file = null;
 	private transient WeakReference<NoteMessage> fileRef = null;
 	public transient Collection<TreeModelListener> ls = new ArrayList<TreeModelListener>();	
 	public transient Category parent = null;
+	public transient DataStorage loader = null;
 	public transient String parentId = null;
 	private transient Category root = null;
 	private transient EventProxy evtProxy = null;
@@ -174,7 +176,7 @@ public class Category implements TreeModel, Serializable{
 	}
 	
 	public NoteMessage getMessage(){
-		return getMessage(null);
+		return getMessage(this.root.loader);
 	}
 	
 	public NoteMessage getMessage(DataStorage pm){
@@ -225,6 +227,7 @@ public class Category implements TreeModel, Serializable{
 	
 	//重置节点关系。当节点被序列化后，Root/Parent被丢失。
 	public void restore(){
+		this.flushed = true;
 		if(this.children !=null){
 			for(Category c : this.children){
 				c.parent = this;
@@ -234,6 +237,15 @@ public class Category implements TreeModel, Serializable{
 		}
 		if(this.ls == null) 
 			ls = new ArrayList<TreeModelListener>();
+	}
+	
+	public void flush(){
+		this.flushed = true;
+		if(this.children !=null){
+			for(Category c : this.children){
+				c.flush();
+			}
+		}
 	}
 	
 	private String getNextId(){
@@ -261,6 +273,7 @@ public class Category implements TreeModel, Serializable{
 	}
 	
 	public void setLastUpdate(){
+		this.flushed = false;
 		this.lastUpdated = new Date(System.currentTimeMillis());
 	}
 	

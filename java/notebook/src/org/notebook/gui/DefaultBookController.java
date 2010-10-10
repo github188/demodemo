@@ -1,7 +1,6 @@
 package org.notebook.gui;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -10,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
@@ -18,47 +16,68 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
+import org.notebook.cache.DataStorage;
+import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
-import org.notebook.cache.DataStorage;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog(DefaultBookController.class);
-	private NavigationTree tree = null;
-	private DocumentEditor editor = null;
-	private DataStorage cache = null;
-	private NoteBook book = null;
-	private StatusBar statusBar = null;
-	private MainFrame mainFrame = null;
-	
+	private DataStorage storage = null;
 	private SyncService sync = null;
-	private ThreadPoolExecutor syncThread = null;	
-	//private Category curMessage = null;
+
+	private NoteBook book = null;
+	private MainFrame mainFrame = null;
+	private ThreadPoolExecutor syncThread = null;
+	private ThreadPoolExecutor actionThread = null;
 	private MenuAction menuActions = new MenuAction();
 	
-	public DefaultBookController(NoteBook book, NavigationTree tree, 
-			DocumentEditor editor,
-			DataStorage cache,
-			StatusBar status,
-			MainFrame mainJFrame
-			){
-		this.book = book;
-		this.tree = tree;
-		this.editor = editor;
-		this.cache = cache;
-		this.statusBar = status;
+	private boolean runningJNLP = false;
+	private boolean runningSandBox = false;
+	private boolean visibleTrayIcon = false;
+	//初始化了本地NoteBook路径.
+	private boolean initedBook = false;
+	
+	public DefaultBookController(MainFrame mainJFrame, boolean isJNLP, boolean isSandBox){
 		this.mainFrame = mainJFrame;
-		sync = new SyncService(book);
-		syncThread = new ThreadPoolExecutor(1, 1, 60, 
-							TimeUnit.SECONDS, 
-							new LinkedBlockingDeque<Runnable>(100)); 		
-		this.tree.addMouseListener(new BookMouseLisenter());
-		this.book.root.addTreeModelListener(new BookTreeModelListener());
+		this.runningJNLP = isJNLP;
+		this.runningSandBox = isSandBox;
+		
+		syncThread = new ThreadPoolExecutor(2, 5, 60, 
+				TimeUnit.SECONDS, 
+				new LinkedBlockingDeque<Runnable>(100));
+		actionThread = new ThreadPoolExecutor(1, 1, 60, 
+				TimeUnit.SECONDS, 
+				new LinkedBlockingDeque<Runnable>(100));
+		
+		this.sync = new SyncService();
 		this.sync.addListener(new BookSyncListener());
-		this.sync.start();
-		this.downloadNoteBook(book.root);
+		//this.sync.start();
+		
+		this.storage = createPersistenceService();
 	}
+	
+	public boolean runingJNLP(){return this.runningJNLP;}
+	public boolean runingSandBox(){return this.runningSandBox;};	
+	
+	private DataStorage createPersistenceService(){
+		DataStorage  storge = null;		
+		if(runningJNLP && runningSandBox){
+			try {
+				Class cl = Class.forName("org.notebook.cache.JNLPServiceStorage");
+				storge = (DataStorage)cl.newInstance();
+			}catch(ClassNotFoundException e) {
+				log.error("failed to load JNLP Stroage", e);
+			} catch (Exception e) {
+				log.error("failed to create JNLP Stroage", e);
+			}			
+		}else {
+			File root = new File(System.getenv("APPDATA"), ".notebook");
+			storge = new LocalFileStorage(root);
+		}
+		return storge;
+	}	
 	
 	public void processEvent(BookAction e){
 		final String HANDLER = "__actionHander";
@@ -67,7 +86,7 @@ public class DefaultBookController implements BookController{
 		Method m = (Method)e.getValue(HANDLER);
 		if(m == null){
 			try {
-				m = MenuAction.class.getMethod(command, new Class[]{});
+				m = MenuAction.class.getMethod(command, new Class[]{BookAction.class});
 				e.putValue(HANDLER, m);
 				log.info("get action process for menu, " + command);
 			} catch (Exception e1) {
@@ -77,79 +96,55 @@ public class DefaultBookController implements BookController{
 			log.warn("Not found action handler, for " + command);
 		}else {
 			try {
-				m.invoke(this.menuActions, new Object[]{});
+				m.invoke(this.menuActions, new Object[]{e});
 			} catch (Exception e1) {
 				log.error(e1.toString(), e1.getCause());
 			}
 		}
 	}
 	
+	public void dispatchEvent(String command, Object param) {
+		BookAction action = this.mainFrame.menu.$(command);
+		if(action != null){
+			action.actionPerformed(null, param);
+		}else {
+			log.warn("Not found action:" + command);
+		}
+	}
+	
 	public void dispatchEvent(String command) {
-		processEvent(this.mainFrame.menu.$(command));
+		dispatchEvent(command, null);
+	}	
+	
+	public boolean visibleTrayIcon(){
+		return visibleTrayIcon;		
+	}
+	public boolean setVisibleTrayIcon(boolean visible){
+		boolean old = visibleTrayIcon;
+		visibleTrayIcon = visible;
+		return old;
 	}
 	
-	class BookMouseLisenter implements MouseListener{
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			if(e.getSource().equals(tree) && e.getClickCount() > 1){
-				if(tree.getSelectionPath() != null){
-					Category node = (Category)tree.getSelectionPath().getLastPathComponent();
-					if(node.isLeaf()){
-						statusBar.setText(String.format("Opening %s", node.name));
-						new DocumentTask(DocumentTask.OPENNEW, node).execute();
-					}
-				}
-			}
-		}
-	
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-	
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub			
-		}
-	
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-		}
-	
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub			
-		}
-	
-	}
-	
-	public void saveAll(){
-		new DocumentTask(DocumentTask.SAVEALL, null).execute();
-	}
-	
-	protected void saveCurMessage(){
-		statusBar.setText(String.format("Saving ..."));
-		new DocumentTask(DocumentTask.SAVECUR, null).execute();
+	@Override
+	public NoteBook getNoteBook() {
+		return this.book;
 	}
 	
 	class BookTreeModelListener implements TreeModelListener{
 		@Override
 		public void treeNodesChanged(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
-			uploadNoteBook(c);
-			//saveAll();
+			dispatchEvent(MenuToolbar.SYNCUPLOAD, c);
 		}
 	
 		@Override
 		public void treeNodesInserted(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
-			uploadNoteBook(c);
+			dispatchEvent(MenuToolbar.SYNCUPLOAD, c);
 			final TreePath path = e.getTreePath();
 			SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
-	            	tree.expandPath(path);
+	            	mainFrame.tree.expandPath(path);
 	            	//tree.setSelectionPath(path);
 	            }
 	        });
@@ -158,200 +153,247 @@ public class DefaultBookController implements BookController{
 		@Override
 		public void treeNodesRemoved(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
-			uploadNoteBook(c.parent);
+			dispatchEvent(MenuToolbar.SYNCUPLOAD, c.parent);
 		}
 	
 		@Override
 		public void treeStructureChanged(TreeModelEvent e) {
 			Category c = (Category)e.getTreePath().getLastPathComponent();
-			uploadNoteBook(c.parent);
+			dispatchEvent(MenuToolbar.SYNCUPLOAD, c.parent);
 		}
 	
-	}
-	
-	public void syncNoteBook(final Category cate){
-		this.syncThread.execute(new Runnable(){
-			@Override
-			public void run() {
-				sync.sync(cate);
-				sync.syncCategoryId();
-			}});
-	}
-	public void uploadNoteBook(final Category cate){
-		this.syncThread.execute(new Runnable(){
-			@Override
-			public void run() {
-				sync.upload(cate);
-				sync.syncCategoryId();
-			}});
-	}
-	public void downloadNoteBook(final Category cate){
-		this.syncThread.execute(new Runnable(){
-			@Override
-			public void run() {
-				sync.download(cate);
-				sync.syncCategoryId();
-			}});		
 	}
 	
 	//在后台线程回调.
 	class BookSyncListener implements SyncListener{
 		@Override
 		public void removeLocal(Category c) {
-			statusBar.setText(String.format("Remove %s", c.name));
+			updateStatus(String.format("Remove %s", c.name));
 		}
 	
 		@Override
 		public void updateLocal(Category c) {
-			statusBar.setText(String.format("Update %s", c.name));
+			updateStatus(String.format("Update %s", c.name));
 			if(c.isLeaf()){
-				cache.save(c.getMessage());
+				storage.save(c.getMessage());
 			}
 		}
 	
 		@Override
 		public void removeRemote(Category c) {
-			statusBar.setText(String.format("Remove remote %s", c.name));
+			updateStatus(String.format("Remove remote %s", c.name));
 		}
 	
 		@Override
 		public void updateRemote(Category c) {
-			statusBar.setText(String.format("Update remote %s", c.name));
+			updateStatus(String.format("Update remote %s", c.name));
 		}
 		
 		@Override
 		public void syncError(Exception c) {
-			statusBar.setText(String.format("Sync error %s", c.toString()));
+			updateStatus(String.format("Sync error %s", c.toString()));
 			sync.stop();
 			log.info("Stop sync running....");
 		}
-	
-	}
-	
-	//演示使用SwingWorker.
-	//1.后台线程的异常不会被抛出???
-	private class DocumentTask extends SwingWorker<Void, Void>{
-		//public static final String LOADING = "loading";
-		public static final String OPENNEW = "openNew";
-		public static final String SAVEALL = "saveall";
-		public static final String SAVECUR = "savecur";
-		private String task = null;
-		private Category node = null;
-		
-		public DocumentTask(String task, Category node){
-			this.task = task;
-			this.node = node;
+
+		@Override
+		public void checkDownload(Category c) {
+			updateStatus(String.format("Check download %s", c.toString()));
+			
 		}
 
 		@Override
-		protected Void doInBackground() throws Exception {
-			log.info("start document task..." + this.task);
-			if(this.task.equals(OPENNEW)){
-				this.saveCurDocument();
-				this.loadToOpen(this.node);
-			}else if(this.task.equals(SAVEALL)) {
-				this.saveCurDocument();
-				cache.saveNoteBook(book);
-			}else if(this.task.equals(SAVECUR)){
-				this.saveCurDocument();
-			}
-			return null;
+		public void checkUpload(Category c) {
+			updateStatus(String.format("Check upload %s", c.toString()));
+			
 		}
 		
-		private void saveCurDocument(){
-			NoteMessage msg = editor.currentDocuemnt();
-			if(msg != null){
-				msg.getCategory().setLastUpdate();
-				cache.save(msg);
-				//cache.saveNoteBook(book);
-				uploadNoteBook(msg.getCategory());
-			}
+		private void updateStatus(String s){
+			mainFrame.status(s);
 		}
-		
-		private void loadToOpen(Category node){
-			NoteMessage msg = node.getMessage(cache);
-			if(msg != null){
-				editor.openDocument(msg);
-			}else {
-				log.info("Not found message, " + node.id);
-			}
-		}
+	
 	}
 	
 	class MenuAction {
-		public void Save(){
-			saveAll();
+		public void Save(BookAction event){
+			actionThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					saveOpenedMessage();
+					storage.saveNoteBook(book);
+				}});
+			event.setEnabled(false);
 		}
-		
-		public void NewCategory(){
-			if(tree.getSelectionModel().getSelectionPath() == null){
-				JOptionPane.showMessageDialog(mainFrame,
-					    "没有选择添加到哪一个目录.",
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-			}else {
-				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();
-				if(obj.isLeaf()){
-					JOptionPane.showMessageDialog(mainFrame,
-						    "不能在文件上面创建子目录.",
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-				}else {
-					obj.addCategory("新建目录");
-					//tree.setSelectionPath()
-				}
+
+		public void Open(BookAction event){
+			final Category node = selectedTreeNode();
+			if(node.isLeaf()){
+				actionThread.execute(new Runnable(){
+					@Override
+					public void run() {
+						saveOpenedMessage();
+						NoteMessage msg = node.getMessage(storage);
+						mainFrame.editor.openDocument(msg);
+					}});
 			}
 		}
-		public void NewNote(){
-			if(tree.getSelectionModel().getSelectionPath() == null){
+		
+		public void UpdatedSettings(BookAction event){
+			Save(event);
+		}
+		
+		public void Settings(BookAction event){
+			mainFrame.showSettings();
+		}
+		
+		public void SyncDownLoad(BookAction event){
+			final Category cate = selectedTreeNode(event);
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					sync.download(cate);
+					sync.syncCategoryId();
+				}}
+			);			
+		}
+		public void SyncUpLoad(BookAction event){
+			final Category cate = selectedTreeNode(event);
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					sync.upload(cate);
+					sync.syncCategoryId();
+				}}
+			);			
+		}
+		public void Sync(BookAction event){
+			final Category cate = selectedTreeNode(event);
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					sync.sync(cate);
+					sync.syncCategoryId();
+				}}
+			);
+		}		
+		
+		public void NewCategory(BookAction event){
+			Category parent = selectedTreeNode();
+			if(parent == null){
 				JOptionPane.showMessageDialog(mainFrame,
 					    "没有选择添加到哪一个目录.",
 					    "Error",
 					    JOptionPane.ERROR_MESSAGE);
+			}else if(parent.isLeaf()){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "不能在文件上面创建子目录.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
 			}else {
-				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();
-				if(obj.isLeaf()){
-					JOptionPane.showMessageDialog(mainFrame,
-						    "不能在文件上面创建文件.",
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-				}else {
-					obj.addMessage("新建文件");
-				}
+				parent.addCategory("新建目录");
+			}
+		}
+		public void NewNote(BookAction event){
+			Category parent = selectedTreeNode();
+			if(parent == null){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "没有选择添加到哪一个目录.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else if(parent.isLeaf()){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "不能在文件上面创建文件.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else {
+				parent.addMessage("新建文件");
 			}			
 		}
 		
-		public void Remove(){
-			if(tree.getSelectionModel().getSelectionPath() == null){
+		public void Remove(BookAction event){
+			Category object = selectedTreeNode();
+			if(object == null){
 				JOptionPane.showMessageDialog(mainFrame,
 					    "请选择需要删除的对象.",
 					    "Error",
 					    JOptionPane.ERROR_MESSAGE);
-			}else {
-				Category obj = (Category)tree.getSelectionModel().getSelectionPath().getLastPathComponent();				
+			}else {				
 				int i = JOptionPane.showConfirmDialog(mainFrame,
-					    "确定需要删除 '" + obj.name + "'.",
+					    "确定需要删除 '" + object.name + "'.",
 					    "确认",
 					    JOptionPane.OK_CANCEL_OPTION);
 				if(i==0){
-					obj.remove();
+					object.remove();
 				}
-			}			
+			}
 		}
 		
-		public void HideWindow(){
-			mainFrame.setVisible(false);
+		public void HideWindow(BookAction event){
+			//if(this.s)
+			if(visibleTrayIcon()){
+				if(mainFrame.isVisible()){
+					mainFrame.setVisible(false);
+				}
+			}else {
+				Exit(event);
+			}
 		}
 		
-		public void ShowWindow(){
+		public void ShowWindow(BookAction event){
 			mainFrame.setVisible(true);
 		}
 		
-		public void Exit() {
+		public void Exit(BookAction event) {
 			log.info("shutdown applcation...");
 			mainFrame.dispose();
 			System.exit(0);
 		}
+		
+		public void OpenNoteBook(BookAction event){
+			book = storage.loadNoteBook();
+			if(book == null){
+				book = new NoteBook();
+				book.root = new Category();
+				book.root.initDefaultNode();
+				storage.saveNoteBook(book);
+				initedBook = true;
+			}else {
+				initedBook = false;
+			}			
+			if(initedBook){
+				mainFrame.showSettings();
+			}
+			book.root.addTreeModelListener(new BookTreeModelListener());	
+			
+			//log.info("loading notebook:" + book.name + ",is:" + SwingUtilities.isEventDispatchThread());
+			mainFrame.setTitle(book.name);
+			mainFrame.tree.setModel(book.root);
+			mainFrame.tree.updateUI();
+			sync.setNoteBook(book);
+			sync.start();
+			dispatchEvent(MenuToolbar.SYNC, book.root);			
+		}
+		
+		private Category selectedTreeNode(){
+			return this.selectedTreeNode(null);
+		}
+		private Category selectedTreeNode(BookAction event){
+			if(event != null && event.attachedObject != null && 
+			   event.attachedObject instanceof Category){
+				return (Category)event.attachedObject;
+			}
+			TreePath path = mainFrame.tree.getSelectionPath();
+			if(path != null){
+				return (Category)path.getLastPathComponent();
+			}
+			return null;
+		}
+		
+		private void saveOpenedMessage(){
+			NoteMessage note = mainFrame.editor.currentDocuemnt();
+			if(note != null){
+				storage.save(note);
+			}
+		}			
 	}
-
 }

@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class LocalFilePersistence extends DataStorage {
+public class LocalFileStorage extends DataStorage {
 	private File root = null;
 
-	public LocalFilePersistence(File root){
+	public LocalFileStorage(File root){
 		this.root = root;
 		if(!this.root.isDirectory()){
 			try{

@@ -37,14 +37,10 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
@@ -68,8 +64,11 @@ public class NavigationTree extends JTree implements MouseListener {
 	private DefaultTreeCellEditor editor = null;
 
 	public NavigationTree(Category root, MenuToolbar menu){
-		setModel(root);
-		//menu = this.createContextMenu();
+		if(root != null){
+			setModel(root);
+		}else {
+			setModel(new Category());
+		}
 		this.menu = menu;
 		this.addMouseListener(this);
 		this.setEditable(true);
@@ -84,14 +83,18 @@ public class NavigationTree extends JTree implements MouseListener {
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (e.getButton() == e.BUTTON3) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
 			System.out.println("mouseClicked..." + e.getComponent());
 			//右键选择
 			int row = getClosestRowForLocation(e.getX(), e.getY());  
 			setSelectionRow(row);
 			menu.getNavigationContextMenu(this).show(e.getComponent(), e.getX(), e.getY());
+		}else if(e.getClickCount() > 1 && e.getButton() == MouseEvent.BUTTON1){
+			Category node = (Category)getSelectionPath().getLastPathComponent();
+			if(node.isLeaf()){
+				menu.$(MenuToolbar.OPEN).actionPerformed(null);
+			}
 		}
-		//this.s
 	}
 	@Override
 	public void mouseEntered(MouseEvent arg0) {			

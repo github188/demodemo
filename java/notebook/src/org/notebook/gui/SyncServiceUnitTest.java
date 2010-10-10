@@ -3,18 +3,19 @@ package org.notebook.gui;
 import java.io.File;
 
 import org.notebook.cache.Category;
+import org.notebook.cache.DataStorage;
+import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.NoteBook;
-import org.notebook.cache.SimpleObjectCache;
 
 public class SyncServiceUnitTest {
-	private SimpleObjectCache cache = null;
+	private DataStorage cache = null;
 	private NoteBook notebook = null;
 	//private Category notebook = null;	
 	private SyncService service = null;
 	
 	public SyncServiceUnitTest(){
 		File root = new File(".test");
-		cache = new SimpleObjectCache(root);
+		cache = new LocalFileStorage(root);
 		notebook = new NoteBook();
 		notebook.root = new Category();
 		notebook.root.loader = cache;
@@ -22,7 +23,8 @@ public class SyncServiceUnitTest {
 		notebook.user = "test1";
 		notebook.endpoint = "http://127.0.0.1:8080/note";
 		
-		service = new SyncService(notebook);
+		service = new SyncService();
+		service.setNoteBook(notebook);
 		service.start();
 		service.addListener(new SyncListener(){
 			public void checkUpload(Category c){output("checkUpload", c);}

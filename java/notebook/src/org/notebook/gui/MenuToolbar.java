@@ -41,6 +41,9 @@ import javax.swing.KeyStroke;
 import org.notebook.i18n.SimpleResourceBound;
 
 public class MenuToolbar {
+	public static final String OPENNOTEBOOK = "OpenNoteBook";
+	public static final String UPDATEDSETTINGS = "UpdatedSettings";
+	public static final String OPEN = "Open";
 	public static final String SAVE = "Save";
 	public static final String EXIT = "Exit";
 	
@@ -49,10 +52,13 @@ public class MenuToolbar {
 	public static final String DELETE = "Remove";
 	
 	public static final String SYNC = "Sync";
+	public static final String SYNCDOWNLOAD = "SyncDownLoad";
+	public static final String SYNCUPLOAD = "SyncUpLoad";
 	
 	public static final String SETTINGS = "Settings";
 	public static final String SHOWWINDOW = "ShowWindow";
 	public static final String HIDEWINDOW = "HideWindow";
+	
 	
 	private MainFrame owner = null;
 	private ResourceBundle rb = new SimpleResourceBound();	
@@ -60,17 +66,35 @@ public class MenuToolbar {
 	
 	public class BookAction extends AbstractAction {
 		private static final long serialVersionUID = -6101997393914923387L;
+		//private boolean processing = false;
+		public Object attachedObject = null;
+		public ActionEvent attachedEvent = null;
+		
 		public BookAction(String name, String icon, int accelerator){
 			super(name, icon("org/notebook/gui/images/" + icon));
 			if(accelerator > 0){
-				this.putValue(this.ACCELERATOR_KEY, 
+				this.putValue(ACCELERATOR_KEY, 
 						KeyStroke.getKeyStroke(accelerator, ActionEvent.CTRL_MASK));
 			}
 			this.putValue(Action.ACTION_COMMAND_KEY, name);
 			this.putValue(Action.NAME, i18n(name));
 		}
 		public void actionPerformed(ActionEvent event) {
-			owner.processEvent(this);
+			//this.SHORT_DESCRIPTION
+			this.actionPerformed(event, null);
+		}
+		public synchronized void actionPerformed(ActionEvent event, Object param) {
+			if(!this.isEnabled())return;
+			//this.processing = true;
+			try{
+				this.attachedObject = param;
+				this.attachedEvent = event;
+				owner.processEvent(this);
+			}finally{
+				//this.processing = false;
+				this.attachedObject = null;
+				this.attachedEvent = null;
+			}
 		}
 		
 		/**
@@ -101,6 +125,10 @@ public class MenuToolbar {
 	public MenuToolbar(MainFrame owner){
 		this.owner = owner;
 		//$(OPEN, "star_off.gif", 0);
+		$(OPENNOTEBOOK, "", 0);
+		$(UPDATEDSETTINGS, "", 0);
+		
+		$(OPEN, "", KeyEvent.VK_O);
 		$(SAVE, "save_edit.gif", KeyEvent.VK_S);
 		$(EXIT, "", 0);
 		$(SETTINGS, "debugt_obj.gif", 0);
@@ -202,7 +230,7 @@ public class MenuToolbar {
 		}
 		if(rb.containsKey(key)){
 			String xx = rb.getString(key);
-			System.out.println(key + "->" + xx);
+			//System.out.println(key + "->" + xx);
 			return xx;
 		}else {
 			return key;

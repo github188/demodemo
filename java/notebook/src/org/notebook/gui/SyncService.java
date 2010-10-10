@@ -23,10 +23,11 @@ public class SyncService {
 	private boolean running = false;
 	//public 
 	
-	public SyncService(NoteBook book){
-		client = new NoteBookClient(book);
-		this.root = book.root;
-		
+	public void setNoteBook(NoteBook book){
+		if(book != null){
+			client = new NoteBookClient(book);
+			this.root = book.root;
+		}
 	}
 	
 	public void start(){

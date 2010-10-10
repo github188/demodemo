@@ -25,9 +25,18 @@ public class NoteBookSettings extends JDialog {
 	private NoteBook book = null;
 	private BookController controller = null;
 	//private boolean c
+	
+	public NoteBookSettings(JFrame parent, BookController controller){
+		this(parent, null, controller);
+	}
 	public NoteBookSettings(JFrame parent, NoteBook book, BookController controller){
 		super(parent, true);
-		this.book = book; 
+		if(book == null){
+			this.book = controller.getNoteBook();
+		}else {
+			this.book = book;
+		}
+		
 		this.controller = controller;
 		
 		this.setTitle("笔记本设置");
@@ -81,16 +90,12 @@ public class NoteBookSettings extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				book.name = name.getText();
 				book.user = username.getText();
-				if(book.endpoint== null || 
-					!endpoint.getText().trim().equals(book.endpoint)){
-					book.endpoint = endpoint.getText().trim();
-					controller.syncNoteBook(book.root);
+				book.setEndPoint(endpoint.getText());
+				if(controller != null){
+					controller.dispatchEvent(MenuToolbar.UPDATEDSETTINGS);
 				}
 				dailog.setVisible(false);
 				dailog.dispose();
-				if(controller != null){
-					controller.dispatchEvent(MenuToolbar.SAVE);
-				}
 			}
 		});
         

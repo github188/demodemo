@@ -17,23 +17,23 @@
  
 package org.notebook.gui;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*; 
-import javax.swing.event.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.SystemColor;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class StatusBar extends JPanel {
+	private JLabel label = new JLabel("init...");
 	public StatusBar() {
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(10, 23));
 
-		JPanel rightPanel = new JPanel(new BorderLayout());
-		rightPanel.add(new JLabel("xxx"), BorderLayout.SOUTH);
-		rightPanel.setOpaque(false);
-
-		add(rightPanel, BorderLayout.EAST);
+		this.add(label, BorderLayout.CENTER);
 		setBackground(SystemColor.control);
 	}
 
@@ -64,8 +64,17 @@ public class StatusBar extends JPanel {
 		g.drawLine(0, y, getWidth(), y);
 	}
 	
-	public void setText(String text){
-		System.out.println("ST:" + text);		
+	public void setText(final String text){
+		System.out.println("ST:" + text);
+		if(SwingUtilities.isEventDispatchThread()){
+			label.setText(text);
+		}else {
+			SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	            	label.setText(text);
+	            }
+	        });
+		}
 	}
 }
 
