@@ -221,8 +221,9 @@ public class DefaultBookController implements BookController{
 				public void run() {
 					saveOpenedMessage();
 					storage.saveNoteBook(book);
+					mainFrame.status("Saved all");
 				}});
-			event.setEnabled(false);
+			mainFrame.status("Saving...");
 		}
 
 		public void Open(BookAction event){
@@ -235,6 +236,7 @@ public class DefaultBookController implements BookController{
 						NoteMessage msg = node.getMessage(storage);
 						mainFrame.editor.openDocument(msg);
 					}});
+				mainFrame.status("Opening " + node.name);
 			}
 		}
 		

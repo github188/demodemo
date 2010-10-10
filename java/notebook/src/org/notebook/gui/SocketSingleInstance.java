@@ -14,6 +14,7 @@ public class SocketSingleInstance implements SingleInstance {
 		try {
 			socket = new ServerSocket(SINGLE_INSTANCE_NETWORK_SOCKET,0,
 		    		InetAddress.getByAddress(new byte[] {127,0,0,1}));
+			log.info("Setup Socket SingleInstance at port " + SINGLE_INSTANCE_NETWORK_SOCKET);
 			//socket.accept()
 			return false;
 		}catch (BindException e) {

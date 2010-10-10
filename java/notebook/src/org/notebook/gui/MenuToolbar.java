@@ -128,7 +128,7 @@ public class MenuToolbar {
 		$(OPENNOTEBOOK, "", 0);
 		$(UPDATEDSETTINGS, "", 0);
 		
-		$(OPEN, "", KeyEvent.VK_O);
+		$(OPEN, "folder_open.gif", KeyEvent.VK_O);
 		$(SAVE, "save_edit.gif", KeyEvent.VK_S);
 		$(EXIT, "", 0);
 		$(SETTINGS, "debugt_obj.gif", 0);
@@ -136,7 +136,10 @@ public class MenuToolbar {
 		$(NEW_CATEGORY, "folder_add.gif", 0);
 		$(NEW_NOTE, "new_file.gif", 0);	
 		$(DELETE, "delete_obj.gif", 0);
-		$(SYNC, "cvs_synch.gif", 0);	
+		
+		$(SYNC, "cvs_synch.gif", 0);			
+		$(SYNCDOWNLOAD, "down_load.png", 0);	
+		$(SYNCUPLOAD, "up_load.png", 0);	
 		
 		$(SHOWWINDOW, "editor.gif", 0);	
 		$(HIDEWINDOW, "", 0);	
@@ -144,9 +147,11 @@ public class MenuToolbar {
 		
 	public JMenuBar getMenuBar(){
 		JMenuBar menubar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
+		JMenu fileMenu = new JMenu("文件");
+		//fileMenu.set
 
 		//fileMenu.add($(OPEN));
+		fileMenu.add($(OPEN));
 		fileMenu.add($(NEW_CATEGORY));
 		fileMenu.add($(NEW_NOTE));
 		fileMenu.addSeparator();
@@ -158,9 +163,14 @@ public class MenuToolbar {
 
 		menubar.add(fileMenu);
 		
-		JMenu toolMenu = new JMenu("Tools");
-		toolMenu.add($(SETTINGS));
+		JMenu toolMenu = new JMenu("工具");
+		//toolMenu.setName("工具");
 		toolMenu.add($(SYNC));
+		toolMenu.add($(SYNCDOWNLOAD));
+		toolMenu.add($(SYNCUPLOAD));
+
+		toolMenu.addSeparator();
+		toolMenu.add($(SETTINGS));
 
 		menubar.add(fileMenu);
 		menubar.add(toolMenu);
@@ -173,10 +183,15 @@ public class MenuToolbar {
 	    //menu.
 	    //JMenuItem newCategory = new JMenuItem("新建目录");	
 	    
+	    menu.add($(OPEN));
 	    menu.add($(NEW_CATEGORY));
 	    menu.add($(NEW_NOTE));
 	    menu.addSeparator();
+	    menu.add($(SYNCDOWNLOAD));
+	    menu.add($(SYNCUPLOAD));
 	    menu.add($(SYNC));
+	    
+	    menu.addSeparator();
 	    menu.add($(DELETE));
 	    
 		return menu;
@@ -191,8 +206,13 @@ public class MenuToolbar {
 		toolbar.add($(NEW_CATEGORY));
 		toolbar.add($(NEW_NOTE));
 		toolbar.add($(DELETE));
+		
 		toolbar.addSeparator();
+		toolbar.add($(SYNCDOWNLOAD));
+		toolbar.add($(SYNCUPLOAD));
 		toolbar.add($(SYNC));
+		
+		toolbar.addSeparator();
 		toolbar.add($(SETTINGS));
 		return toolbar;
 	}

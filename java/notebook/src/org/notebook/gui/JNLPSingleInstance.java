@@ -17,6 +17,7 @@ public class JNLPSingleInstance implements SingleInstance {
 				public void newActivation(String[] arg0) {
 					app.menu.$(MenuToolbar.SHOWWINDOW).actionPerformed(null);
 				}});
+			log.info("register JNLP SingleInstance service..");
 		}catch (UnavailableServiceException e) {
 			//e.printStackTrace();
 		}
