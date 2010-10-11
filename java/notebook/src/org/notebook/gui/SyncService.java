@@ -1,5 +1,7 @@
 package org.notebook.gui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,7 +16,7 @@ import org.notebook.io.NoteBookClient;
 
 public class SyncService {
 	private static Log log = LogFactory.getLog(SyncService.class);
-	//public NoteBook book = null;
+	public NoteBook book = null;
 	public NoteBookClient client = null;
 	public Category root = null;
 	public Collection<SyncListener> ls = new ArrayList<SyncListener>();
@@ -26,11 +28,23 @@ public class SyncService {
 		if(book != null){
 			client = new NoteBookClient(book);
 			this.root = book.root;
+			this.book = book;
 		}
 	}
 	
 	public void start(){
-		running = true;		
+		running = true;	
+		if(this.book != null && book.proxy != null && !book.proxy.trim().equals("")){
+			log.info("http proxy:" + book.proxy);
+			System.setProperty("HTTP_PROXY", book.proxy);
+			try {
+				URL proxy = new URL(book.proxy);				
+				System.setProperty("http.proxyHost", proxy.getHost());
+				System.setProperty("http.proxyPort", proxy.getPort() + "");
+			} catch (MalformedURLException e) {
+				log.error(e.toString(), e);
+			}
+		}
 	}
 	
 	public void stop(){
@@ -69,6 +83,8 @@ public class SyncService {
 					if(parent == null){
 						EventProxy.syncError(remote, new Exception("Not found parent."));
 						continue;
+					}else if(parent.isLeaf()){
+						parent = parent.getConflict();
 					}
 					//不能因为同步而修改,更新时间.
 					Date lastUpdate = parent.lastUpdated;
@@ -80,7 +96,9 @@ public class SyncService {
 					local = remote;
 					if(local.isLeaf()){ //添加本地新节点.
 						NoteMessage note = client.downLoadMessage(cate.id);
-						local.getMessage().setText(note.text);
+						if(note != null){
+							local.getMessage().setText(note.text);
+						}
 					}
 					EventProxy.updatedLocal(local);
 				}
@@ -90,7 +108,8 @@ public class SyncService {
 					continue;
 				}
 				
-				if(remote.lastUpdated.after(local.lastUpdated)){
+				int result = cmpDate(remote.lastUpdated, local.lastUpdated);
+				if(result > 0){
 					local.setName(remote.name);
 					local.lastUpdated = remote.lastUpdated;
 					local.isDirty = false;
@@ -103,6 +122,8 @@ public class SyncService {
 						queue.addAll(children);
 					}
 					EventProxy.updatedLocal(local);
+				}else if(result == -2){
+					log.error("remote:" + remote.lastUpdated + ", local:" + local.lastUpdated);
 				}else if(!remote.isLeaf()){
 					queue.addAll(client.listCategory(remote));
 				}
@@ -111,6 +132,16 @@ public class SyncService {
 			EventProxy.syncError(remote, e);
 			log.error(e, e);			
 		}
+	}
+	
+	private int cmpDate(Date d1, Date d2){
+		if(d1 == null || d2== null){
+			return -2;
+		}
+		long t1 = d1.getTime();
+		long t2 = d2.getTime();
+		if(t1 == t2) return 0;
+		return t1 > t2 ? 1: -1;
 	}
 	
 	public void upload(final Category cate){
@@ -137,7 +168,7 @@ public class SyncService {
 					if(local.parent != null){
 						parent = client.getCategory(local.parent.id);
 					}
-					if(parent == null || local.lastUpdated.after(parent.lastUpdated)){
+					if(parent != null && cmpDate(local.lastUpdated, remote.lastUpdated) > 0){
 						EventProxy.updateRemote(local);
 						client.updateCategory(local);
 						remote = local;
@@ -146,11 +177,13 @@ public class SyncService {
 							client.uploadMessage(local.getMessage());
 							continue;
 						}
+					}else {
+						log.error("Can't find parent to new category, id:" + local.id);
 					}
 				}
 				
-				
-				if(local.lastUpdated.after(remote.lastUpdated) || local.isDirty){
+				int result = cmpDate(local.lastUpdated, remote.lastUpdated);
+				if(result > 0 || local.isDirty){
 					EventProxy.updateRemote(local);
 					client.updateCategory(local);
 					if(local.isLeaf()){

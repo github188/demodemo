@@ -41,7 +41,7 @@ public class NoteBookSettings extends JDialog {
 		
 		this.setTitle("笔记本设置");
 		setContentPane(createSettingJPanel());
-		this.setPreferredSize(new Dimension(400, 150));
+		this.setPreferredSize(new Dimension(400, 180));
 		this.pack();
 		this.setResizable(false);
 	}
@@ -52,14 +52,17 @@ public class NoteBookSettings extends JDialog {
         final JTextField name = new JTextField(book.name);
         final JTextField username = new JTextField(book.user);
         final JTextField endpoint = new JTextField(book.endpoint);
+        final JTextField proxy = new JTextField(book.proxy);
                 
         JLabel nameLabel = new JLabel("笔记本名: ");
         JLabel usernameLabel = new JLabel("用户名: ");
         JLabel endpointLabel = new JLabel("服务器地址: ");
+        JLabel proxyLabel = new JLabel("HTTP代理: ");
         
         nameLabel.setLabelFor(name);
         usernameLabel.setLabelFor(username);
         endpointLabel.setLabelFor(endpoint);
+        proxyLabel.setLabelFor(proxy);
 
         JPanel textControlsPane = new JPanel();
         GridBagLayout gridbag = new GridBagLayout();
@@ -67,8 +70,8 @@ public class NoteBookSettings extends JDialog {
 
         textControlsPane.setLayout(gridbag);
 
-        JLabel[] labels = {nameLabel, usernameLabel, endpointLabel};
-        JTextField[] textFields = {name, username, endpoint};
+        JLabel[] labels = {nameLabel, usernameLabel, endpointLabel, proxyLabel};
+        JTextField[] textFields = {name, username, endpoint, proxy};
         addLabelTextRows(labels, textFields, gridbag, textControlsPane);
 
         c.gridwidth = GridBagConstraints.REMAINDER; //last
@@ -91,6 +94,7 @@ public class NoteBookSettings extends JDialog {
 				book.name = name.getText();
 				book.user = username.getText();
 				book.setEndPoint(endpoint.getText());
+				book.proxy = proxy.getText();
 				if(controller != null){
 					controller.dispatchEvent(MenuToolbar.UPDATEDSETTINGS);
 				}

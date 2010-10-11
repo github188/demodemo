@@ -32,6 +32,7 @@ public class Category implements TreeNode, Serializable{
 	public transient DataStorage loader = null;
 	public transient String parentId = null;
 	private transient Category root = null;
+	private transient Category conflict = null;
 	private int nextID = 0;
 	public Category(){
 		root = this;
@@ -58,6 +59,26 @@ public class Category implements TreeNode, Serializable{
 	
 	public boolean isLeaf() {
 		return this.nodeType == FILE;
+	}
+	
+	public Category getConflict(){
+		Category node = null;
+		if(this.root != null && this.root.conflict != null){
+			return this.root.conflict;
+		}else if(this.root != null){
+			node = this.root.search("conflict");
+			if(node == null){
+				node = this.root.addCategory("同步冲突");
+				node.id = "conflict";
+			}
+		}else {
+			node = this.search("conflict");
+			if(node == null){
+				node = this.addCategory("同步冲突");
+				node.id = "conflict";
+			}
+		}
+		return node;
 	}
 	
 	public Category addCategory(String name){
@@ -166,7 +187,7 @@ public class Category implements TreeNode, Serializable{
 	}
 	
 	public int hashCode(){
-		return Integer.parseInt(this.id);
+		return (id != null) ? id.hashCode() : 0;
 	}
 	
 	private Object[] getPath(Category c){

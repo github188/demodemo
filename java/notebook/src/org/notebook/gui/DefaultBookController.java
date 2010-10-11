@@ -264,6 +264,7 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
+					log.info("Start sync process, id:" + cate.id);
 					sync.download(cate);
 					sync.syncCategoryId();
 				}}
