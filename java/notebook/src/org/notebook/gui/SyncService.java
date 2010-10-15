@@ -56,6 +56,10 @@ public class SyncService {
 	}
 	
 	public void download(final Category cate){
+		download(cate, false);
+	}
+	
+	public void download(final Category cate, boolean force){
 		//if(!(running && cate.flushed)) return;
 		if(!running){
 			log.warn("Sync service is not running");
@@ -72,7 +76,12 @@ public class SyncService {
 		Category remote = null, local = null, parent = null;
 		try {
 			remote = client.getCategory(cate.id);
-			if(remote != null){queue.add(remote);}
+			if(remote != null){
+				if(force){
+					cate.lastUpdated = new Date(cate.lastUpdated.getTime() - 10 * 365 * 24 * 3600);
+				}
+				queue.add(remote);
+			}
 						
 			while(queue.size() > 0 && running){
 				remote = queue.poll();
@@ -99,6 +108,7 @@ public class SyncService {
 						if(note != null){
 							local.getMessage(true).setText(note.text);
 						}
+						local.isDirty = false;
 					}
 					EventProxy.updatedLocal(local);
 				}
@@ -124,8 +134,6 @@ public class SyncService {
 					EventProxy.updatedLocal(local);
 				}else if(result == -2){
 					log.error("remote:" + remote.lastUpdated + ", local:" + local.lastUpdated);
-				}else if(!remote.isLeaf()){
-					queue.addAll(client.listCategory(remote));
 				}
 			}
 		} catch (Exception e) {
@@ -144,7 +152,11 @@ public class SyncService {
 		return t1 > t2 ? 1: -1;
 	}
 	
-	public void upload(final Category cate){
+	public void upload(final Category cate ){
+		upload(cate, false);
+	}
+	
+	public void upload(final Category cate, boolean force){
 		if(!running){
 			log.warn("Sync service is not running");
 			return;
@@ -154,7 +166,17 @@ public class SyncService {
 		
 		Category remote=null, local = null, parent=null;
 		try {
-			queue.add(cate);						
+			if(force && cate.flushed){
+				EventProxy.updateRemote(cate);
+				client.updateCategory(cate);
+				if(cate.isLeaf()){
+					client.uploadMessage(cate.getMessage());
+				}else {
+					queue.addAll(cate.children);
+				}
+			}else {
+				queue.add(cate);
+			}
 			while(queue.size() > 0 && running){
 				local = queue.poll();
 				if(!local.flushed){
@@ -178,7 +200,7 @@ public class SyncService {
 						remote = local;
 						local.isDirty = false;
 						if(local.isLeaf()){
-							client.uploadMessage(local.getMessage());
+							client.uploadMessage(local.getMessage(true));
 						}
 					}else {
 						log.error(String.format("Can't find parent to new category, id:%s, name:%s, pid:%s",
@@ -193,7 +215,7 @@ public class SyncService {
 					EventProxy.updateRemote(local);
 					client.updateCategory(local);
 					if(local.isLeaf()){
-						client.uploadMessage(local.getMessage());
+						client.uploadMessage(local.getMessage(true));
 					}else {
 						for(Category c: client.listCategory(local)){
 							if(root.search(c.id) == null){
@@ -201,13 +223,14 @@ public class SyncService {
 								client.removeCategory(c);
 							}
 						}
+						queue.addAll(local.children);
 					}
 					local.isDirty = false;
 				}
 				
-				if(!local.isLeaf()){
-					queue.addAll(local.children);
-				}
+				//if(!local.isLeaf()){
+				//	queue.addAll(local.children);
+				//}
 			}
 		} catch (Exception e) {
 			EventProxy.syncError(local, e);

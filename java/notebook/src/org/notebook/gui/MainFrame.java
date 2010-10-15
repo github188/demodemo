@@ -27,6 +27,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -101,6 +102,9 @@ public class MainFrame extends JFrame {
 	
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
+		System.setProperty("file.encoding", "UTF-8");
+		System.setProperty("sun.jnu.encoding", "UTF-8");		
+		//System.out.println("中文");
     	if(System.getSecurityManager() != null) {
     		System.out.println("SecurityManager:" + System.getSecurityManager().toString());
     	}else {

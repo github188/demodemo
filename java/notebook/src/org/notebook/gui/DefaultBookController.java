@@ -265,7 +265,7 @@ public class DefaultBookController implements BookController{
 				@Override
 				public void run() {
 					log.info("Start sync process, id:" + cate.id);
-					sync.download(cate);
+					sync.download(cate, true);
 					sync.syncCategoryId();
 					storage.saveNoteBook(book);
 				}}
@@ -286,7 +286,7 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					sync.upload(cate);
+					sync.upload(cate, true);
 					sync.syncCategoryId();
 					storage.saveNoteBook(book);
 				}}

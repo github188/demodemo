@@ -126,7 +126,7 @@ public class NoteBookClient{
 		URL url = new URL(book.endpoint + "/sync_message");
 		Map<String, String> param = new HashMap<String, String>();
 		
-		if(message.messageId == null)return;
+		if(message==null || message.messageId == null)return;
 		
 		param.put("user", this.book.user);
 		param.put("message_id", message.messageId);
