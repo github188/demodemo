@@ -27,7 +27,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -47,6 +46,7 @@ import javax.swing.UIManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.gui.MenuToolbar.BookAction;
+import org.notebook.gui.editor.TextEditorPlane;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -170,7 +170,7 @@ public class MainFrame extends JFrame {
 		JSplitPane splitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, 
 				leftTree,
-				new JScrollPane(editor)
+				new TextEditorPlane(editor)
 		);
 		
 		statusBar = new StatusBar();

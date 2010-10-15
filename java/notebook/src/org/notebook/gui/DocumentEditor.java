@@ -31,10 +31,11 @@ public class DocumentEditor extends JTextArea {
 		super("");
 
 		//this.setFont(new Font("Dialog", Font.ITALIC, 24));
-		this.setFont(new Font("Serif", Font.PLAIN, 16));
+		//this.setFont(new Font("Courier New", Font.PLAIN, 16));
+		this.setFont(new Font("Courier", Font.PLAIN, 14));
 		this.setLineWrap(false);
 		this.setWrapStyleWord(true);
-		//this.
+		//this.==
 	}
 	
 	public void openDocument(NoteMessage msg){
