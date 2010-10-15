@@ -85,23 +85,24 @@ public class NavigationTree extends JTree implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON3) {
-			System.out.println("mouseClicked..." + e.getComponent());
 			//右键选择
 			int row = getClosestRowForLocation(e.getX(), e.getY());  
 			setSelectionRow(row);
 			menu.getNavigationContextMenu(this).show(e.getComponent(), e.getX(), e.getY());
 		}else if(e.getClickCount() > 1 && e.getButton() == MouseEvent.BUTTON1){
-			Category node = (Category)getSelectionPath().getLastPathComponent();
-			if(node.isLeaf()){
-				menu.$(MenuToolbar.OPEN).actionPerformed(null);
+			if(getSelectionPath() != null){
+				Category node = (Category)getSelectionPath().getLastPathComponent();
+				if(node.isLeaf()){
+					menu.$(MenuToolbar.OPEN).actionPerformed(null);
+				}
 			}
 		}
 	}
 	@Override
-	public void mouseEntered(MouseEvent arg0) {			
+	public void mouseEntered(MouseEvent arg0) {
 	}
 	@Override
-	public void mouseExited(MouseEvent arg0) {			
+	public void mouseExited(MouseEvent arg0) {
 	}
 	@Override
 	public void mousePressed(MouseEvent arg0) {

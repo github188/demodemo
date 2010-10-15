@@ -233,7 +233,7 @@ public class DefaultBookController implements BookController{
 					@Override
 					public void run() {
 						saveOpenedMessage();
-						NoteMessage msg = node.getMessage(storage);
+						NoteMessage msg = node.getMessage(storage, true);
 						mainFrame.editor.openDocument(msg);
 					}});
 				mainFrame.status("Opening " + node.name);
@@ -267,6 +267,7 @@ public class DefaultBookController implements BookController{
 					log.info("Start sync process, id:" + cate.id);
 					sync.download(cate);
 					sync.syncCategoryId();
+					storage.saveNoteBook(book);
 				}}
 			);		
 		}
@@ -280,13 +281,14 @@ public class DefaultBookController implements BookController{
 					    JOptionPane.OK_CANCEL_OPTION);
 				if(i==0){
 					sync.start();
-				}				
-			}	
+				}
+			}
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
 					sync.upload(cate);
 					sync.syncCategoryId();
+					storage.saveNoteBook(book);
 				}}
 			);			
 		}
@@ -307,6 +309,7 @@ public class DefaultBookController implements BookController{
 				public void run() {
 					sync.sync(cate);
 					sync.syncCategoryId();
+					storage.saveNoteBook(book);
 				}}
 			);
 		}		
@@ -428,7 +431,6 @@ public class DefaultBookController implements BookController{
 			if(note != null && note.isDirty){
 				storage.save(note);
 				note.isDirty = false;
-				note.getCategory().setLastUpdate();
 			}
 		}
 	}

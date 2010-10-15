@@ -95,9 +95,9 @@ public class SyncService {
 					
 					local = remote;
 					if(local.isLeaf()){ //添加本地新节点.
-						NoteMessage note = client.downLoadMessage(cate.id);
+						NoteMessage note = client.downLoadMessage(local.id);
 						if(note != null){
-							local.getMessage().setText(note.text);
+							local.getMessage(true).setText(note.text);
 						}
 					}
 					EventProxy.updatedLocal(local);
@@ -114,8 +114,8 @@ public class SyncService {
 					local.lastUpdated = remote.lastUpdated;
 					local.isDirty = false;
 					if(remote.isLeaf()){
-						NoteMessage note = client.downLoadMessage(cate.id);
-						local.getMessage().setText(note.text);
+						NoteMessage note = client.downLoadMessage(local.id);
+						local.getMessage(true).setText(note.text);
 					}else {
 						Collection<Category> children = client.listCategory(remote);
 						this.removeLocalChildren(children, local);
@@ -138,8 +138,8 @@ public class SyncService {
 		if(d1 == null || d2== null){
 			return -2;
 		}
-		long t1 = d1.getTime();
-		long t2 = d2.getTime();
+		long t1 = d1.getTime() / 1000;
+		long t2 = d2.getTime() / 1000;
 		if(t1 == t2) return 0;
 		return t1 > t2 ? 1: -1;
 	}
@@ -167,22 +167,28 @@ public class SyncService {
 				if(remote == null){
 					if(local.parent != null){
 						parent = client.getCategory(local.parent.id);
+					}else { //上传根节点。
+						EventProxy.updateRemote(local);
+						client.updateCategory(local);
+						continue;
 					}
-					if(parent != null && cmpDate(local.lastUpdated, remote.lastUpdated) > 0){
+					if(parent != null && cmpDate(local.lastUpdated, parent.lastUpdated) > 0){
 						EventProxy.updateRemote(local);
 						client.updateCategory(local);
 						remote = local;
 						local.isDirty = false;
 						if(local.isLeaf()){
 							client.uploadMessage(local.getMessage());
-							continue;
 						}
 					}else {
-						log.error("Can't find parent to new category, id:" + local.id);
+						log.error(String.format("Can't find parent to new category, id:%s, name:%s, pid:%s",
+								local.id, local.name, 
+								local.parent != null ? local.parent.id: ""));
 					}
+					continue;
 				}
 				
-				int result = cmpDate(local.lastUpdated, remote.lastUpdated);
+				int result = cmpDate(local.lastUpdated, remote.lastUpdated);				
 				if(result > 0 || local.isDirty){
 					EventProxy.updateRemote(local);
 					client.updateCategory(local);
@@ -229,9 +235,11 @@ public class SyncService {
 			int localId = this.root.curId(-1);
 			if(remoteId > localId){
 				this.root.curId(remoteId);
+				log.info("update local next id:" + remoteId);
 			}else {
 				id.setName("" + localId);
 				this.client.updateCategory(id);
+				log.info("update remote next id:" + localId);
 			}			
 		} catch (Exception e) {
 			EventProxy.syncError(null, e);

@@ -148,10 +148,14 @@ public class Category implements TreeNode, Serializable{
 	}
 	
 	public NoteMessage getMessage(){
-		return getMessage(this.root.loader);
+		return getMessage(this.root.loader, false);
 	}
 	
-	public NoteMessage getMessage(DataStorage pm){
+	public NoteMessage getMessage(boolean create){
+		return getMessage(this.root.loader, create);
+	}
+	
+	public NoteMessage getMessage(DataStorage pm, boolean create){
 		NoteMessage msg = null;
 		if(this.nodeType != FILE) return null;
 		if(this.fileRef == null || this.fileRef.get() == null) {
@@ -164,6 +168,10 @@ public class Category implements TreeNode, Serializable{
 			}
 		}else {
 			msg = this.fileRef.get();
+		}
+		if(msg == null && create){
+			msg = new NoteMessage(this.id);
+			this.fileRef = new WeakReference<NoteMessage>(msg);
 		}
 		if(msg != null){
 			msg.setCategory(this);

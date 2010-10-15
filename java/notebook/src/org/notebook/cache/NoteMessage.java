@@ -10,8 +10,8 @@ public class NoteMessage implements Serializable{
 	public Date createDate = new Date();
 	public Date lastUpdated = new Date();
 	public String text = "";
-	public String tags = "";
-	public boolean isDirty = false;
+	public String tags = "";	
+	public transient boolean isDirty = false;
 	
 	private transient Category owner = null;
 	
@@ -21,6 +21,10 @@ public class NoteMessage implements Serializable{
 	
 	public void setText(String text){
 		this.text = text;
+		if(owner != null){
+			owner.setLastUpdate();
+		}
+		this.lastUpdated = new Date();
 	}
 	
 	public Category getCategory(){
@@ -29,5 +33,19 @@ public class NoteMessage implements Serializable{
 	
 	public void setCategory(Category c){
 		this.owner = c;
+	}
+	
+	public String getText(){
+		if (text == null){
+			text = "";
+		}
+		return text;
+	}
+	
+	public Date getLastUpdate(){
+		if(this.lastUpdated == null){
+			this.lastUpdated = new Date();
+		}
+		return this.lastUpdated;
 	}
 }

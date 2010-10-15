@@ -10,14 +10,14 @@ public class NoteBook implements Serializable{
 	public String endpoint = "http://deonwu84.appspot.com/note";
 	public Category root = null;
 	
-	public String proxy = "HTTP://10.159.192.62:8080";
+	public String proxy = "";
 	public String username = "";
 	public String password = "";
 	
 	public NoteBook(){
 		user = defaultUser();
 		if(user == null) user = "user";
-		name = "user" + "的记事本";
+		name = user + "的记事本";
 	}
 	
 	protected String defaultUser(){

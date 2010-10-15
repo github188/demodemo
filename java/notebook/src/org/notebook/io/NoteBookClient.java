@@ -40,6 +40,7 @@ public class NoteBookClient{
 		param.put("user", this.book.user);
 		param.put("cate_id", cateId);
 		
+		log.info("get list:" + cateId);
 		InputStream in = ClientHttpRequest.post(url, param);
 		JSONParser parser = new JSONParser();
 		
@@ -114,6 +115,7 @@ public class NoteBookClient{
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			message.text = jsonObject.get("text");
+			log.info("load message id:" + msgId + ", text:" + message.text);
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
 		}
@@ -124,15 +126,18 @@ public class NoteBookClient{
 		URL url = new URL(book.endpoint + "/sync_message");
 		Map<String, String> param = new HashMap<String, String>();
 		
+		if(message.messageId == null)return;
+		
 		param.put("user", this.book.user);
 		param.put("message_id", message.messageId);
-		param.put("text", message.text);
-		param.put("updateDate", format.format(message.lastUpdated));
+		param.put("text", message.getText());
+		param.put("updateDate", format.format(message.getLastUpdate()));
 		
 		InputStream in = ClientHttpRequest.post(url, param);
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {
+			log.info("up message id:" + message.messageId + ", text:" + message.text);
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			if(!jsonObject.get("status").equals("OK")){				
 				throw new ClientException("Failed to upload message, id=" + message.messageId);
@@ -160,7 +165,7 @@ public class NoteBookClient{
 		Map<String, String> jsonObject = null;
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
-			if(!jsonObject.get("status").equals("OK")){				
+			if(!jsonObject.get("status").equals("OK")){
 				throw new ClientException("Failed to remove category, id=" + cate.id);
 			}
 			if(cate.isLeaf()){

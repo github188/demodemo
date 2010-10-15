@@ -40,12 +40,13 @@ public class DocumentEditor extends JTextArea {
 	public void openDocument(NoteMessage msg){
 		this.msg = msg;
 		this.setText(msg.text);
+		this.msg.isDirty = false;
 	}
 	
 	public NoteMessage currentDocuemnt(){
 		if(msg != null){
-			if(!msg.text.equals(this.getText())){
-				msg.text = this.getText();
+			if(!msg.getText().equals(this.getText())){
+				msg.setText(this.getText());
 				msg.isDirty = true;
 			}
 		}
