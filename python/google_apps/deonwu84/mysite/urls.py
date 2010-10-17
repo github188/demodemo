@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 	(r'^deonwu/(.*)', SimpleViews("mysite.deonwu.views")),
     
     (r'^dyd/',      include('mysite.content.urls')),
+    (r'^note/(?P<user>\w+)/(?P<cate_id>\w+)', SimpleUrl("mysite.content.noteViews.webPage")),
     (r'^note/(.*)', SimpleViews("mysite.content.noteViews")),
     
     (r'^anti-crack.gif', 'utils.simpleviews.anti_crack'),

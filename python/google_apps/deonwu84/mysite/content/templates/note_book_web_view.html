@@ -1,0 +1,22 @@
+{% extends "note_book_base.html" %}
+
+{% block content_body %}
+<div class="head">
+文件列表：
+{% for file in file_list %}
+	<a href="/note/{{owner.name}}/{{file.cate_id}}">{{file.name}}</a> ·
+{% endfor %}
+</div>
+<div id="body">
+<h4>{{category.name}}</h4>
+<div  class='hd'>
+<div style="padding:4px 0; background:#e5ecf9;">{{category.update_date|date:"Y-m-d H:i:s" }}</div>
+</div>
+{% if message %}
+	{%autoescape off %}
+	  {{ message.wikified_content }}
+	{% endautoescape %}
+{% endif %}
+</div><br/>
+
+{% endblock %}

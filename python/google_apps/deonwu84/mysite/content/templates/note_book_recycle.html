@@ -1,0 +1,23 @@
+{% extends "note_book_base.html" %}
+
+{% block content_body %}
+<table>
+	<tr>
+		<th>类型</th>
+		<th>文件名</th>
+		<th>修改日期</th>
+		<th>操作</th>
+	</tr>
+{% for cate in removed_list %}
+	<tr>
+		<td>{% if cate.isLeaf %}文件{%else%}目录{%endif%}</td>
+		<td><a href="/note/{{user}}/{{cate.cate_id}}">{{cate.name}}</a></td>
+		<td>{{cate.update_date|date:"Y-m-d H:i:s" }}</td>
+		<td>
+			<a href="/note/restore?user={{user}}&cate_id={{cate.cate_id}}">恢复</a>&nbsp;&nbsp;
+			<a href="/note/force_delete?user={{user}}&cate_id={{cate.cate_id}}">删除</a>
+		</td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 from models import *
 import logging, datetime
+from google.appengine.api import users
 #from datetime.tzinfo
 
 def IP(r): return r.META["REMOTE_ADDR"]
+
+def cur_user():
+    u = users.get_current_user()
+    return u and u.user_id() or None
 
 def list_category(r, user, cate_id):
     logging.debug("list_category: user=%s, cate_id=%s, ippaddr=%s" % (
@@ -41,6 +46,9 @@ def update_category(r, user, parent, cate_id, name, nodeType, updateDate=''):
     logging.debug("update_category: user=%s, parent=%s, cate_id=%s, name=%s, nodeType=%s, ippaddr=%s" % (
                  user, parent, cate_id, name, nodeType, IP(r)))
     
+    if user != cur_user():        
+        return {"status": 'AUTH_ERROR', "msg": "%s!=%s" %(user, cur_user())}
+    
     result = {"status": 'OK', }
     
     owner = _load_user(user)
@@ -68,6 +76,9 @@ def sync_message(r, user, message_id, text=None):
     message = _load_message(owner, message_id)
     result = {"status": 'OK', }
     if text is not None:
+        if user != cur_user():        
+            return {"status": 'AUTH_ERROR', }
+        
         message.text = db.Text(text)
         message.update_date = datetime.datetime.now()
         message.put()
@@ -79,17 +90,80 @@ def sync_message(r, user, message_id, text=None):
             
     return result
 
-def delete(r, user, cate_id, nodeType='cate'):
+def delete(r, user, cate_id, nodeType='cate', mode=''):
     logging.debug("delete: user=%s, cate_id=%s, nodeType=%s ippaddr=%s" % (
                   user, cate_id, nodeType, IP(r)))
+    if user != cur_user():
+        if mode == 'web':
+            return ("redirect:%s" % users.create_login_url(r.path), )
+        else:     
+            return {"status": 'AUTH_ERROR', "msg": "%s!=%s" %(user, cur_user())}
     
     owner = _load_user(user)
+    removed = _load_category(owner, "__removed__")
     if nodeType == 'cate':
-        _load_category(owner, cate_id).delete()
-    else:
-        _load_message(owner, cate_id).delete()
-    
+        cate = _load_category(owner, cate_id)
+        cate.parent_category = removed
+        cate.update_date = datetime.datetime.now()
+        cate.put()
+    if mode == 'web':
+        return ("redirect:/note/recycle?user=%s" % user)
     return {'status': 'OK'}
+
+def restore(r, user, cate_id, ):
+    logging.debug("delete: user=%s, cate_id=%s, ippaddr=%s" % (
+                  user, cate_id, IP(r)))
+    if user != cur_user():
+        return ("redirect:%s" % users.create_login_url(r.path), )
+    owner = _load_user(user)
+    removed = _load_category(owner, "removed")
+    cate = _load_category(owner, cate_id)
+    cate.parent_category = removed
+    cate.put()
+    return ("redirect:/note/recycle?user=%s" % user, )
+
+def force_delete(r, user, cate_id, ):
+    logging.debug("delete: user=%s, cate_id=%s, ippaddr=%s" % (
+                  user, cate_id, IP(r)))
+    if user != cur_user():
+        return ("redirect:%s" % users.create_login_url(r.path), )
+    owner = _load_user(user)
+    _load_category(owner, cate_id).delete();
+    _load_message(owner, cate_id).delete();
+    return ("redirect:/note/recycle?user=%s" % user, )
+
+def recycle(r, user=''):
+    if user != cur_user():
+        return ("redirect:%s" % users.create_login_url(r.path), )
+    owner = _load_user(user)
+    category = _load_category(owner, "__removed__")
+    removed_list = UserCategory.all().ancestor(owner).filter("parent_category =", category).order("-update_date").fetch(100)
+    cate_list = []
+    
+    return ("note_book_recycle.html", locals())
+
+def webPage(r, user='', cate_id='index'):
+    owner = _load_user(user)
+    cate_id = cate_id == 'index' and '0000001' or cate_id 
+    category = _load_category(owner, cate_id)
+    message = None
+    if category.nodeType == 2:
+        dir_list = UserCategory.all().ancestor(owner).filter("parent_category =", category.parent_category).fetch(100)
+        message = _load_message(owner, category.cate_id)
+        category = category.parent_category
+    else:
+        dir_list = UserCategory.all().ancestor(owner).filter("parent_category =", category).fetch(100)
+    
+    cate_list = [ e for e in dir_list if e.nodeType == 1 ]
+    file_list = [ e for e in dir_list if e.nodeType == 2 ]
+    parent = None
+    if category.parent_category:
+        parent = category.parent_category
+    
+    return ("note_book_web_view.html", locals())
+
+def default_view(r):
+    return webPage(r, "test", 'index')
 
 def update_userinfo(r, user):
     pass
@@ -105,6 +179,7 @@ def _load_category(owner, cate_id):
     category = UserCategory.all().ancestor(owner).filter("cate_id =", cate_id).get()
     if category is None:
         category = UserCategory(parent=owner, cate_id=cate_id)
+        category.update_date = datetime.datetime.now()
         category.put()
     return category
 
@@ -115,3 +190,4 @@ def _load_user(name='', ):
         user = ContentUser(name=name,)
         user.put()
     return user
+

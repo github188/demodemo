@@ -37,6 +37,9 @@ class UserCategory(db.Model):
     @property
     def id(self): return self.is_saved() and self.key().id() or None
     
+    def isLeaf(self):
+        return self.nodeType == 2
+    
 
 # parent is ContentCategory.
 class ContentMessage(db.Model):
@@ -71,6 +74,21 @@ class ContentMessage(db.Model):
         if not str(id).isdigit(): return None
         return db.get(db.Key.from_path('ContentCategory', cate.id, 
                                        'ContentMessage', int(id)))
+        
+    def wikified_content(self):
+        """
+        """
+        from format import * 
+        transforms = [
+          BlockHtmlFormat(),
+          SimpleHtmlFormat(),
+          AutoLink(),
+        ]
+        content = self.text
+        for transform in transforms:
+          content = transform.run(content)
+        return content
+        
         
     def __getattr__(self, name):
         if name == 'htmlText':

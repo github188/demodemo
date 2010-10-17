@@ -10,7 +10,6 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 7 times in query history.
 - kind: BookAccountRecord
   ancestor: yes
   properties:
@@ -19,27 +18,23 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: BookAccountRecord
   ancestor: yes
   properties:
   - name: create_date
     direction: desc
 
-# Used 5 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
   - name: lastupdate
     direction: desc
 
-# Used 4 times in query history.
 - kind: BookUser
   ancestor: yes
   properties:
   - name: name
 
-# Unused in query history -- copied from input.
 - kind: BookUserRecord
   ancestor: yes
   properties:
@@ -47,20 +42,17 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 2 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
   - name: status
 
-# Used 6 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
   - name: status
     direction: desc
 
-# Used 7 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -69,7 +61,6 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 6 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -78,7 +69,6 @@ indexes:
   - name: update_date
     direction: desc
 
-# Used 4 times in query history.
 - kind: ContentMessage
   properties:
   - name: tags_keys
@@ -87,13 +77,11 @@ indexes:
   - name: vote_weight
     direction: desc
 
-# Used 42 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
   - name: status
 
-# Used 7 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -101,7 +89,6 @@ indexes:
   - name: create_date
     direction: desc
 
-# Used 4 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -109,7 +96,6 @@ indexes:
   - name: update_date
     direction: desc
 
-# Used 5 times in query history.
 - kind: ContentMessage
   ancestor: yes
   properties:
@@ -117,44 +103,37 @@ indexes:
   - name: vote_weight
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: ContentMessage
   ancestor: yes
   properties:
   - name: tags_keys
   - name: status
 
-# Used 17 times in query history.
 - kind: ContentTag
   ancestor: yes
 
-# Used 17 times in query history.
 - kind: ContentTag
   ancestor: yes
   properties:
   - name: order
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: MySpaceProfile
   properties:
   - name: data_type
   - name: -created
 
-# Unused in query history -- copied from input.
 - kind: RobotTest
   ancestor: yes
   properties:
   - name: testname
 
-# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
@@ -164,13 +143,11 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
   - name: status
 
-# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
@@ -178,7 +155,6 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTestBuild
   ancestor: yes
   properties:
@@ -188,14 +164,12 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
@@ -203,7 +177,6 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: RobotTrac
   ancestor: yes
   properties:
@@ -212,7 +185,6 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: TestBuildIndex
   ancestor: yes
   properties:
@@ -220,9 +192,15 @@ indexes:
   - name: create_date
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: TracLogging
   ancestor: yes
   properties:
   - name: create_date
+    direction: desc
+
+- kind: UserCategory
+  ancestor: yes
+  properties:
+  - name: parent_category
+  - name: update_date
     direction: desc
