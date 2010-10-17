@@ -1,9 +1,12 @@
-package org.notebook.gui;
+package org.notebook.services;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.SingleInstanceListener;
 import javax.jnlp.SingleInstanceService;
 import javax.jnlp.UnavailableServiceException;
+
+import org.notebook.gui.MainFrame;
+import org.notebook.gui.MenuToolbar;
 
 public class JNLPSingleInstance implements SingleInstance {
 

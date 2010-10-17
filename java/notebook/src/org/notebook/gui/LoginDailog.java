@@ -1,15 +1,22 @@
 package org.notebook.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -20,87 +27,115 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.notebook.cache.NoteBook;
-import org.notebook.services.BookController;
+import org.notebook.services.GmailAuthCallback;
+import org.notebook.services.GmailAuthencation;
 
-public class NoteBookSettings extends JDialog {
-	protected static final String textFieldString = "JTextField";
+public class LoginDailog extends JDialog {
 	private NoteBook book = null;
-	private BookController controller = null;
 	//private boolean c
-	
-	public NoteBookSettings(JFrame parent, BookController controller){
-		this(parent, null, controller);
-	}
-	public NoteBookSettings(JFrame parent, NoteBook book, BookController controller){
-		super(parent, true);
-		if(book == null){
-			this.book = controller.getNoteBook();
-		}else {
-			this.book = book;
+	private GmailAuthencation gmail = new GmailAuthencation();
+	private Image image = null;
+	private JLabel captchaLabel = null;
+	private JTextField captcha = null;
+	private Canvas imagePlnel = new Canvas(){
+		public void paint(Graphics g){
+			if(image != null){
+				g.drawImage(image, 0, 0, Color.black, null);
+			}
 		}
-		
-		this.controller = controller;
-		
-		this.setTitle("笔记本设置");
+	};
+	
+	public LoginDailog(JFrame parent, NoteBook book){
+		super(parent, true);
+		this.book = book;		
+		this.setTitle("用户等录");
 		setContentPane(createSettingJPanel());
-		this.setPreferredSize(new Dimension(400, 210));
+		this.setPreferredSize(new Dimension(400, 180));
 		this.pack();
 		this.setResizable(false);
+	}	
+	private void showCaptchaInDailog(URL url){
+		ImageIcon icon = new ImageIcon(url);
+		//
+		for(int i = 0; i < 10; i++){
+			switch(icon.getImageLoadStatus()){
+				case MediaTracker.ABORTED:
+					break;
+				case MediaTracker.ERRORED:
+					break;
+				case MediaTracker.COMPLETE:
+					break;
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				continue;
+			}
+		}
+		this.image = icon.getImage();
+		captchaLabel.setVisible(true);
+		captcha.setVisible(true);
+		imagePlnel.setVisible(true);
 	}
 	
 	private JPanel createSettingJPanel(){
 		JPanel p = new JPanel(new BorderLayout());
 		
-        final JTextField name = new JTextField(book.name);
-        final JTextField username = new JTextField(book.user);
+        final JTextField username = new JTextField(book.getUser() + "@gmail.com");
         final JPasswordField password = new JPasswordField(book.password);
-        final JTextField endpoint = new JTextField(book.endpoint);
-        final JTextField proxy = new JTextField(book.proxy);
+        captcha = new JTextField("");
                 
-        JLabel nameLabel = new JLabel("笔记本名: ");
-        JLabel usernameLabel = new JLabel("Gmail: ");
-        JLabel usernamePassword = new JLabel("密码: ");
-        JLabel endpointLabel = new JLabel("服务器地址: ");
-        JLabel proxyLabel = new JLabel("HTTP代理: ");
+        JLabel nameLabel = new JLabel("Gmail: ");
+        JLabel passwordLabel = new JLabel("密码: ");
+        captchaLabel = new JLabel("验证码: ");
         
-        nameLabel.setLabelFor(name);
-        usernameLabel.setLabelFor(username);
-        endpointLabel.setLabelFor(endpoint);
-        proxyLabel.setLabelFor(proxy);
+        nameLabel.setLabelFor(username);
+        passwordLabel.setLabelFor(password);
+        captchaLabel.setLabelFor(captcha);
 
         JPanel textControlsPane = new JPanel();
         GridBagLayout gridbag = new GridBagLayout();
-        //GridBagConstraints c = new GridBagConstraints();
-
         textControlsPane.setLayout(gridbag);
 
-        JLabel[] labels = {nameLabel, usernameLabel, usernamePassword, endpointLabel, proxyLabel};
-        JTextField[] textFields = {name, username, password, endpoint, proxy};
+        JLabel[] labels = {nameLabel, passwordLabel, captchaLabel};
+        JTextField[] textFields = {username, password, captcha};
         addLabelTextRows(labels, textFields, gridbag, textControlsPane);
-
-        //textControlsPane.add(actionLabel, c);
         textControlsPane.setBorder(BorderFactory.createCompoundBorder(
-                                	BorderFactory.createTitledBorder("设置信息"),
+                                	BorderFactory.createTitledBorder("Gmail登录"),
                                 	BorderFactory.createEmptyBorder(5,5,5,5)));
         
         JPanel buttons = new JPanel();
         
-        JButton save = new JButton("保存");
+        final JButton login = new JButton("登录");
         JButton close = new JButton("取消");
         
         final JDialog dailog = this;
-        save.addActionListener(new ActionListener(){
+        login.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				book.name = name.getText();
-				book.user = username.getText();
-				book.setEndPoint(endpoint.getText());
-				book.proxy = proxy.getText();
-				if(controller != null){
-					controller.dispatchEvent(MenuToolbar.UPDATEDSETTINGS);
-				}
-				dailog.setVisible(false);
-				dailog.dispose();
+				//String user = username.getText();
+				login.setEnabled(false);
+				username.setEnabled(false);
+				password.setEnabled(false);
+				new Thread(){
+					public void run(){
+						boolean result = gmail.login(username.getText(), password.getPassword(), 
+								captcha.getText(), new GmailAuthCallback(){
+									public void showCaptcha(URL url) {
+										showCaptchaInDailog(url);
+									}
+						});
+						if(result){
+							book.authToken = gmail.authToken;
+							dailog.setVisible(false);
+							dailog.dispose();
+						}else {
+							login.setEnabled(true);
+							username.setEnabled(true);
+							password.setEnabled(true);
+						}
+					}
+				}.start();
 			}
 		});
         
@@ -112,7 +147,7 @@ public class NoteBookSettings extends JDialog {
 			}
 		});        
         
-        buttons.add(save);
+        buttons.add(login);
         buttons.add(close);        
         p.add(textControlsPane, BorderLayout.CENTER);
         p.add(buttons, BorderLayout.SOUTH);
@@ -142,9 +177,12 @@ public class NoteBookSettings extends JDialog {
         //Create and set up the window.
         JFrame frame = new JFrame("TextSamplerDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        NoteBook book = new NoteBook();
+        book.user = "deonwu";
+        
 
         //Add content to the window.
-        final NoteBookSettings s = new NoteBookSettings(frame, new NoteBook(), null);
+        final LoginDailog s = new LoginDailog(frame, book);
         JButton a = new JButton("test");
         
         a.addActionListener(new ActionListener(){

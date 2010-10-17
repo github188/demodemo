@@ -24,9 +24,13 @@ public class NoteBookClient{
 	private static Log log = LogFactory.getLog(NoteBookClient.class);
 	public NoteBook book = null;
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private Map<String, String> auth = new HashMap<String, String>();
 	
 	public NoteBookClient(NoteBook book){
 		this.book = book;
+		if(book.authToken != null){
+			this.auth.put("Authorization", "GoogleLogin auth=" + book.authToken);
+		}
 	}
 	
 	public List<Category> listCategory(Category parent) throws IOException{
@@ -37,7 +41,7 @@ public class NoteBookClient{
 		URL url = new URL(book.endpoint + func);
 		Map<String, String> param = new HashMap<String, String>();
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		param.put("cate_id", cateId);
 		
 		log.info("get list:" + cateId);
@@ -55,6 +59,7 @@ public class NoteBookClient{
 				c.nodeType = Integer.parseInt(item.get("nodeType").toString());
 				c.name = (String)item.get("name");
 				c.parentId = (String)item.get("parentId");
+				c.children = null;
 
 				try {
 					c.lastUpdated = format.parse((String)item.get("update_date"));
@@ -71,12 +76,12 @@ public class NoteBookClient{
 		return result;
 	}
 	
-	public void updateCategory(Category cate) throws IOException, ClientException{		
+	public void updateCategory(Category cate) throws IOException, ClientException, AuthcationException{		
 		URL url = new URL(book.endpoint + "/update_category");
 		Map<String, String> param = new HashMap<String, String>();
 		
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		if(cate.parent != null){
 			param.put("parent", cate.parent.id);
 		}else {
@@ -92,7 +97,9 @@ public class NoteBookClient{
 		Map<String, String> jsonObject = null;
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
-			if(!jsonObject.get("status").equals("OK")){
+			if(jsonObject.get("status").equals(ClientException.AUTH_ERROR)){
+				throw new AuthcationException("accesd denied");
+			}else if(!jsonObject.get("status").equals("OK")){
 				throw new ClientException("Failed to upload category, id=" + cate.id);
 			}			
 		} catch (ParseException e) {
@@ -104,7 +111,7 @@ public class NoteBookClient{
 		URL url = new URL(book.endpoint + "/sync_message");
 		Map<String, String> param = new HashMap<String, String>();
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		param.put("message_id", msgId);
 		
 		InputStream in = ClientHttpRequest.post(url, param);
@@ -122,13 +129,13 @@ public class NoteBookClient{
 		return message;
 	}
 	
-	public void uploadMessage(NoteMessage message) throws IOException, ClientException{
+	public void uploadMessage(NoteMessage message) throws IOException, ClientException, AuthcationException{
 		URL url = new URL(book.endpoint + "/sync_message");
 		Map<String, String> param = new HashMap<String, String>();
 		
 		if(message==null || message.messageId == null)return;
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		param.put("message_id", message.messageId);
 		param.put("text", message.getText());
 		param.put("updateDate", format.format(message.getLastUpdate()));
@@ -139,7 +146,9 @@ public class NoteBookClient{
 		try {
 			log.info("up message id:" + message.messageId + ", text:" + message.text);
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
-			if(!jsonObject.get("status").equals("OK")){				
+			if(jsonObject.get("status").equals(ClientException.AUTH_ERROR)){
+				throw new AuthcationException("accesd denied");
+			}else if(!jsonObject.get("status").equals("OK")){				
 				throw new ClientException("Failed to upload message, id=" + message.messageId);
 			}
 		} catch (ParseException e) {
@@ -153,11 +162,11 @@ public class NoteBookClient{
 		return (rs.size() > 0) ? rs.get(0) : null;
 	}
 	
-	public void removeCategory(Category cate) throws IOException, ClientException{		
+	public void removeCategory(Category cate) throws IOException, ClientException, AuthcationException{
 		URL url = new URL(book.endpoint + "/delete");
 		Map<String, String> param = new HashMap<String, String>();
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		param.put("cate_id", cate.id);
 		
 		InputStream in = ClientHttpRequest.post(url, param);
@@ -165,7 +174,9 @@ public class NoteBookClient{
 		Map<String, String> jsonObject = null;
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
-			if(!jsonObject.get("status").equals("OK")){
+			if(jsonObject.get("status").equals(ClientException.AUTH_ERROR)){
+				throw new AuthcationException("accesd denied");
+			}else if(!jsonObject.get("status").equals("OK")){
 				throw new ClientException("Failed to remove category, id=" + cate.id);
 			}
 			if(cate.isLeaf()){
@@ -180,7 +191,7 @@ public class NoteBookClient{
 		URL url = new URL(book.endpoint + "/delete");
 		Map<String, String> param = new HashMap<String, String>();
 		
-		param.put("user", this.book.user);
+		param.put("user", this.book.getUser());
 		param.put("cate_id", cate.id);
 		param.put("nodeType", "msg");
 		

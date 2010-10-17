@@ -1,6 +1,7 @@
-package org.notebook.gui;
+package org.notebook.services;
 
 import org.notebook.cache.NoteBook;
+import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public interface BookController {

@@ -297,8 +297,11 @@ public class ClientHttpRequest {
    * @see setParameters
    * @see setCookies
    */
-  public InputStream post(Map cookies, Map parameters) throws IOException {
+  public InputStream post(Map cookies, Map parameters, Map<String, String> headers) throws IOException {
     setCookies(cookies);
+    for(String header: headers.keySet()){
+    	connection.setRequestProperty(header, headers.get(header));
+    }
     setParameters(parameters);
     return post();
   }
@@ -414,8 +417,13 @@ public class ClientHttpRequest {
    * @see setParameters
    */
   public static InputStream post(URL url, Map cookies, Map parameters) throws IOException {
-    return new ClientHttpRequest(url).post(cookies, parameters);
+    return new ClientHttpRequest(url).post(cookies, parameters, new HashMap<String, String>());
   }
+  
+  public static InputStream post(URL url, Map cookies, Map parameters, Map headers) throws IOException {
+	    return new ClientHttpRequest(url).post(cookies, parameters, headers);
+	  }
+  
 
   /**
    * posts a new request to specified URL, with cookies and parameters that are passed in the argument

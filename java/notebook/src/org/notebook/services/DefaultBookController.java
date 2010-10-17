@@ -1,4 +1,4 @@
-package org.notebook.gui;
+package org.notebook.services;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -20,7 +20,12 @@ import org.notebook.cache.DataStorage;
 import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
+import org.notebook.gui.LoginDailog;
+import org.notebook.gui.MainFrame;
+import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.MenuToolbar.BookAction;
+import org.notebook.gui.SyncStatusDailog;
+import org.notebook.io.AuthcationException;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog(DefaultBookController.class);
@@ -125,6 +130,24 @@ public class DefaultBookController implements BookController{
 		return old;
 	}
 	
+	protected boolean authencation(){
+		book.authToken = null;
+		GmailAuthencation auth = new GmailAuthencation();
+		log.info("Try login with user, " + book.getUser());
+		if(auth.login(book.getUser() + "@gmail.com", book.password.toCharArray(),
+				null, null)){
+			log.info("login OK, with user " + book.getUser());
+			book.authToken = auth.authToken;
+		}else {
+			LoginDailog loginBox = new LoginDailog(mainFrame, book);
+			loginBox.setLocationRelativeTo(mainFrame);
+			loginBox.setVisible(true);
+			log.info("authToken" + book.authToken);
+			return book.authToken != null;
+		}
+		return true;
+	}
+	
 	@Override
 	public NoteBook getNoteBook() {
 		return this.book;
@@ -161,58 +184,35 @@ public class DefaultBookController implements BookController{
 			Category c = (Category)e.getTreePath().getLastPathComponent();
 			dispatchEvent(MenuToolbar.SYNCUPLOAD, c.parent);
 		}
-	
 	}
 	
 	//在后台线程回调.
 	class BookSyncListener implements SyncListener{
-		@Override
-		public void removeLocal(Category c) {
-			updateStatus(String.format("Remove %s", c.name));
-		}
-	
-		@Override
-		public void updatedLocal(Category c) {
-			updateStatus(String.format("Update %s", c.name));
-			if(c.isLeaf()){
-				storage.save(c.getMessage());
-			}
-		}
-	
-		@Override
-		public void removeRemote(Category c) {
-			updateStatus(String.format("Remove remote %s", c.name));
-		}
-	
-		@Override
-		public void updateRemote(Category c) {
-			updateStatus(String.format("Update remote %s", c.name));
-		}
-		
-		@Override
-		public void syncError(Category c, Exception e) {
-			updateStatus(String.format("Sync error %s", e.toString()));
-			sync.stop();
-			log.info("Stop sync running....");
-		}
-
-		@Override
-		public void checkDownload(Category c) {
-			updateStatus(String.format("Check download %s", c.toString()));
-			
-		}
-
-		@Override
-		public void checkUpload(Category c) {
-			updateStatus(String.format("Check upload %s", c.toString()));
-			
-		}
-		
 		private void updateStatus(String s){
 			mainFrame.status(s);
 		}
-	
+
+		@Override
+		public void start(SyncTask task) {
+			// TODO Auto-generated method stub	
+		}
+
+		@Override
+		public void done(SyncTask task) {
+			// TODO Auto-generated method stub			
+		}
+
+		@Override
+		public void syncError(SyncTask task, Exception e) {
+			sync.stop();
+			if(e instanceof AuthcationException){
+				if(authencation()){
+					sync.start(book, syncThread);
+				}
+			}
+		}
 	}
+		
 	
 	class MenuAction {
 		public void Save(BookAction event){
@@ -241,7 +241,10 @@ public class DefaultBookController implements BookController{
 		}
 		
 		public void UpdatedSettings(BookAction event){
+			book.root.name = book.name;
 			Save(event);
+			sync.start(book, syncThread);
+			sync.download(book.root, true);
 		}
 		
 		public void Settings(BookAction event){
@@ -251,68 +254,51 @@ public class DefaultBookController implements BookController{
 		public void SyncDownLoad(BookAction event){
 			final Category cate = selectedTreeNode(event);
 			if (cate == null){return;}
+			sync.download(cate, true);
 			if(!sync.isRunning() && event.attachedEvent != null){
 				int i = JOptionPane.showConfirmDialog(mainFrame,
 					    "同步连接断开,是否重新连接.",
 					    "同步错误",
 					    JOptionPane.OK_CANCEL_OPTION);
 				if(i==0){
-					sync.start();
-				}				
+					sync.start(book, syncThread);
+				}
 			}
-			
-			syncThread.execute(new Runnable(){
-				@Override
-				public void run() {
-					log.info("Start sync process, id:" + cate.id);
-					sync.download(cate, true);
-					sync.syncCategoryId();
-					storage.saveNoteBook(book);
-				}}
-			);		
 		}
 		public void SyncUpLoad(BookAction event){
 			final Category cate = selectedTreeNode(event);
 			if (cate == null){return;}
+			sync.upload(cate, true);
 			if(!sync.isRunning() && event.attachedEvent != null){
 				int i = JOptionPane.showConfirmDialog(mainFrame,
 					    "同步连接断开,是否重新连接.",
 					    "同步错误",
 					    JOptionPane.OK_CANCEL_OPTION);
 				if(i==0){
-					sync.start();
+					sync.start(book, syncThread);
 				}
 			}
-			syncThread.execute(new Runnable(){
-				@Override
-				public void run() {
-					sync.upload(cate, true);
-					sync.syncCategoryId();
-					storage.saveNoteBook(book);
-				}}
-			);			
 		}
 		public void Sync(BookAction event){
 			final Category cate = selectedTreeNode(event);
 			if (cate == null){return;}
+			sync.sync(cate, true);
 			if(!sync.isRunning() && event.attachedEvent != null){
 				int i = JOptionPane.showConfirmDialog(mainFrame,
 					    "同步连接断开,是否重新连接.",
 					    "同步错误",
 					    JOptionPane.OK_CANCEL_OPTION);
 				if(i==0){
-					sync.start();
-				}				
+					sync.start(book, syncThread);
+				}
 			}		
-			syncThread.execute(new Runnable(){
-				@Override
-				public void run() {
-					sync.sync(cate);
-					sync.syncCategoryId();
-					storage.saveNoteBook(book);
-				}}
-			);
-		}		
+		}	
+		
+		public void SyncStatus(BookAction event){
+			SyncStatusDailog settings = new SyncStatusDailog(mainFrame, sync);		
+			settings.setLocationRelativeTo(mainFrame);
+			settings.setVisible(true);
+		}
 		
 		public void NewCategory(BookAction event){
 			Category parent = selectedTreeNode();
@@ -399,16 +385,12 @@ public class DefaultBookController implements BookController{
 			}			
 			if(initedBook){
 				mainFrame.showSettings();
+			}else {
+				sync.start(book, syncThread);
+				dispatchEvent(MenuToolbar.SYNC, book.root);
 			}
-			//book.root.addTreeModelListener(new BookTreeModelListener());	
-			
-			//log.info("loading notebook:" + book.name + ",is:" + SwingUtilities.isEventDispatchThread());
 			mainFrame.setTitle(book.name);
-			book.root.name = book.name;
 			mainFrame.tree.setRoot(book.root);
-			sync.setNoteBook(book);
-			sync.start();
-			dispatchEvent(MenuToolbar.SYNC, book.root);			
 		}
 		
 		private Category selectedTreeNode(){

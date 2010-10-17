@@ -1,9 +1,11 @@
-package org.notebook.gui;
+package org.notebook.services;
 
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+
+import org.notebook.gui.MainFrame;
 
 public class SocketSingleInstance implements SingleInstance {
 	private static final int SINGLE_INSTANCE_NETWORK_SOCKET = 44331;	

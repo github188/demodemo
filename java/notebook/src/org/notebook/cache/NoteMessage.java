@@ -48,4 +48,10 @@ public class NoteMessage implements Serializable{
 		}
 		return this.lastUpdated;
 	}
+	
+	public void update(NoteMessage note){
+		if(note != null){
+			this.text = note.getText();
+		}
+	}
 }

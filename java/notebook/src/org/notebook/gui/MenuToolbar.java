@@ -54,6 +54,7 @@ public class MenuToolbar {
 	public static final String SYNC = "Sync";
 	public static final String SYNCDOWNLOAD = "SyncDownLoad";
 	public static final String SYNCUPLOAD = "SyncUpLoad";
+	public static final String SYNCSTATUS = "SyncStatus";
 	
 	public static final String SETTINGS = "Settings";
 	public static final String SHOWWINDOW = "ShowWindow";
@@ -139,7 +140,8 @@ public class MenuToolbar {
 		
 		$(SYNC, "cvs_synch.gif", 0);			
 		$(SYNCDOWNLOAD, "down_load.png", 0);	
-		$(SYNCUPLOAD, "up_load.png", 0);	
+		$(SYNCUPLOAD, "up_load.png", 0);
+		$(SYNCSTATUS, "", 0);
 		
 		$(SHOWWINDOW, "editor.gif", 0);	
 		$(HIDEWINDOW, "", 0);	
@@ -168,6 +170,7 @@ public class MenuToolbar {
 		toolMenu.add($(SYNC));
 		toolMenu.add($(SYNCDOWNLOAD));
 		toolMenu.add($(SYNCUPLOAD));
+		toolMenu.add($(SYNCSTATUS));
 
 		toolMenu.addSeparator();
 		toolMenu.add($(SETTINGS));

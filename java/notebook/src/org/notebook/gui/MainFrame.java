@@ -47,6 +47,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.gui.MenuToolbar.BookAction;
 import org.notebook.gui.editor.TextEditorPlane;
+import org.notebook.services.BookController;
+import org.notebook.services.DefaultBookController;
+import org.notebook.services.SingleInstance;
+import org.notebook.services.SocketSingleInstance;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -223,7 +227,7 @@ public class MainFrame extends JFrame {
 		settings.setLocationRelativeTo(this);
 		settings.setVisible(true);
 	}
-	
+		
 	public void status(String msg){
 		this.statusBar.setText(msg);
 	}
@@ -260,7 +264,7 @@ public class MainFrame extends JFrame {
 	
 	private void setupJNLPSingltenService(){
 		try {
-			Class cl = Class.forName("org.notebook.gui.JNLPSingleInstance");
+			Class cl = Class.forName("org.notebook.services.JNLPSingleInstance");
 			SingleInstance ins = (SingleInstance)cl.newInstance();
 			ins.checkRunning(this);
 		}catch(ClassNotFoundException e) {

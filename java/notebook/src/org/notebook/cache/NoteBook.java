@@ -7,12 +7,14 @@ public class NoteBook implements Serializable{
 	private static final long serialVersionUID = -4458662555796010998L;
 	public String name = "Deon的记事本";
 	public String user = null; //System.getenv("USERNAME");
+	public String password = null; //System.getenv("USERNAME");
 	public String endpoint = "http://deonwu84.appspot.com/note";
+	public String authToken = "";
 	public Category root = null;
 	
 	public String proxy = "";
 	public String username = "";
-	public String password = "";
+	public String proxypassword = "";
 	
 	public NoteBook(){
 		user = defaultUser();
@@ -30,5 +32,13 @@ public class NoteBook implements Serializable{
 	
 	public void setEndPoint(String url){
 		this.endpoint = url;
+	}
+	
+	public String getUser(){
+		if(user.indexOf('@') > 0){
+			return user.split("@")[0];
+		}else {
+			return this.user;
+		}
 	}
 }

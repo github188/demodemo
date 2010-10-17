@@ -12,7 +12,7 @@ import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
-public class Category implements TreeNode, Serializable{
+public class Category implements TreeNode, Serializable, Cloneable{
 	private static final long serialVersionUID = 8989783162442987982L;
 	public final static int DIRECTORY = 1;
 	public final static int FILE = 2;
@@ -24,6 +24,7 @@ public class Category implements TreeNode, Serializable{
 	public Date lastUpdated = new Date();
 	public boolean flushed = true;
 	public boolean isDirty = false;
+	public boolean isExpired = false;
 	
 	//public transient NoteMessage file = null;
 	public transient DefaultTreeModel treeModel = null;
@@ -33,6 +34,7 @@ public class Category implements TreeNode, Serializable{
 	public transient String parentId = null;
 	private transient Category root = null;
 	private transient Category conflict = null;
+	private transient Category removed = null;
 	private int nextID = 0;
 	public Category(){
 		root = this;
@@ -81,6 +83,26 @@ public class Category implements TreeNode, Serializable{
 		return node;
 	}
 	
+	public Category getRemoved(){
+		Category node = null;
+		if(this.root != null && this.root.removed != null){
+			return this.root.removed;
+		}else if(this.root != null){
+			node = this.root.search("removed");
+			if(node == null){
+				node = this.root.addCategory("回收站");
+				node.id = "removed";
+			}
+		}else {
+			node = this.search("removed");
+			if(node == null){
+				node = this.addCategory("回收站");
+				node.id = "removed";
+			}
+		}
+		return node;
+	}	
+	
 	public Category addCategory(String name){
 		if(this.nodeType == FILE) return null;
 		//return createNew(name, DIRECTORY);
@@ -95,10 +117,14 @@ public class Category implements TreeNode, Serializable{
 		return c;
 	}
 	
-	public synchronized Category addCategory(Category c){
+	public Category addCategory(Category c){
+		return addCategory(c, true);
+	}
+	
+	public synchronized Category addCategory(Category c, boolean updateDateTime){
 		if(this.nodeType == FILE) return null;
 		this.children.add(c);
-		this.setLastUpdate();
+		if(updateDateTime) this.setLastUpdate();
 		c.parent = this;
 		c.root = this.root;
 		c.restore(); //恢复子节点Root.
@@ -134,8 +160,11 @@ public class Category implements TreeNode, Serializable{
 	}
 	
 	public synchronized void remove(){
-		//System.out.println("remove:" + this.name + "\tparent:" + this.parent);		
+		//System.out.println("remove:" + this.name + "\tparent:" + this.parent);
+		boolean inRemoved = false;
 		if(this.parent != null){
+			//如果不在回收站,先加入回收站.
+			inRemoved = this.getRemoved().search(this.id) != null;
 			int index = this.parent.children.indexOf(this);
 			this.parent.children.remove(index);
 			this.parent.setLastUpdate();
@@ -143,6 +172,9 @@ public class Category implements TreeNode, Serializable{
 				root.treeModel.nodesWereRemoved(this.parent,
 						new int[]{index},
 						new Object[]{this});
+			}
+			if(!inRemoved){
+				this.getRemoved().addCategory(this);
 			}
 		}
 	}
@@ -198,6 +230,16 @@ public class Category implements TreeNode, Serializable{
 		return (id != null) ? id.hashCode() : 0;
 	}
 	
+	public Category copy(){
+		Category c = null;
+		try {
+			c = (Category)this.clone();
+		} catch (CloneNotSupportedException e) {
+			c = new Category("clone failed.", FILE);
+		}
+		return c;
+	}
+	
 	private Object[] getPath(Category c){
 		ArrayList<Category> path = new ArrayList<Category>(10);
 		path.add(0, c);
@@ -226,6 +268,13 @@ public class Category implements TreeNode, Serializable{
 		if(this.children !=null){
 			for(Category c : this.children){
 				c.flush();
+			}
+		}
+		if(this.isLeaf()){
+			NoteMessage msg = this.getMessage(false);
+			if(msg != null && msg.isDirty){
+				this.root.loader.save(msg);
+				msg.isDirty = false;
 			}
 		}
 	}
@@ -263,6 +312,8 @@ public class Category implements TreeNode, Serializable{
 		this.addCategory("服务器管理");
 		this.addCategory("数据库");
 		this.addMessage("今天的工作.");
+		this.getConflict();
+		this.getRemoved();
 	}
 	
 	@Override
