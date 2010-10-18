@@ -4,5 +4,6 @@ import java.net.URL;
 
 public interface GmailAuthCallback {
 	public void showCaptcha(URL url);
+	public void error(String message);
 
 }

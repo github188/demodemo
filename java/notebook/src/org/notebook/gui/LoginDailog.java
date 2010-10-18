@@ -13,6 +13,7 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -40,7 +41,12 @@ public class LoginDailog extends JDialog {
 	private Canvas imagePlnel = new Canvas(){
 		public void paint(Graphics g){
 			if(image != null){
-				g.drawImage(image, 0, 0, Color.black, null);
+				//g.setClip(0, 0, image.getWidth(null), image.getHeight(null));
+				int w = image.getWidth(null);
+				int h = image.getWidth(null);				
+				g.drawImage(image, 0, 0, w, h, this);
+			}else {
+				g.drawString("Not found image", 42, 22);
 			}
 		}
 	};
@@ -50,32 +56,23 @@ public class LoginDailog extends JDialog {
 		this.book = book;		
 		this.setTitle("用户等录");
 		setContentPane(createSettingJPanel());
-		this.setPreferredSize(new Dimension(400, 180));
+		this.setPreferredSize(new Dimension(320, 240));
 		this.pack();
-		this.setResizable(false);
+		//this.setResizable(false);
 	}	
-	private void showCaptchaInDailog(URL url){
-		ImageIcon icon = new ImageIcon(url);
-		//
-		for(int i = 0; i < 10; i++){
-			switch(icon.getImageLoadStatus()){
-				case MediaTracker.ABORTED:
-					break;
-				case MediaTracker.ERRORED:
-					break;
-				case MediaTracker.COMPLETE:
-					break;
+	private void showCaptchaInDailog(final URL url){
+		System.out.println("open url:" + url.toString());
+		new Thread(){
+			public void run(){
+				ImageIcon icon = new ImageIcon(url);
+				image = icon.getImage().getScaledInstance(200, 70, Image.SCALE_SMOOTH);
+				System.out.println("xxxx:" + image);
+				captchaLabel.setVisible(true);
+				captcha.setVisible(true);
+				imagePlnel.setVisible(true);
+				imagePlnel.repaint();
 			}
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				continue;
-			}
-		}
-		this.image = icon.getImage();
-		captchaLabel.setVisible(true);
-		captcha.setVisible(true);
-		imagePlnel.setVisible(true);
+		}.start();
 	}
 	
 	private JPanel createSettingJPanel(){
@@ -88,6 +85,7 @@ public class LoginDailog extends JDialog {
         JLabel nameLabel = new JLabel("Gmail: ");
         JLabel passwordLabel = new JLabel("密码: ");
         captchaLabel = new JLabel("验证码: ");
+        JLabel imageLabel = new JLabel("验证码: ");
         
         nameLabel.setLabelFor(username);
         passwordLabel.setLabelFor(password);
@@ -100,6 +98,21 @@ public class LoginDailog extends JDialog {
         JLabel[] labels = {nameLabel, passwordLabel, captchaLabel};
         JTextField[] textFields = {username, password, captcha};
         addLabelTextRows(labels, textFields, gridbag, textControlsPane);
+        
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
+		c.fill = GridBagConstraints.NONE;      //reset to default
+		c.weightx = 1.0;                       //reset to default
+		textControlsPane.add(imageLabel, c);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;     //end row
+		c.fill = GridBagConstraints.HORIZONTAL;
+		imagePlnel.setSize(200, 70);
+		c.weightx = 4.0;
+		textControlsPane.add(imagePlnel, c);
+		//imagePlnel.setVisible(false);
+        
         textControlsPane.setBorder(BorderFactory.createCompoundBorder(
                                 	BorderFactory.createTitledBorder("Gmail登录"),
                                 	BorderFactory.createEmptyBorder(5,5,5,5)));
@@ -114,6 +127,13 @@ public class LoginDailog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//String user = username.getText();
+				try {
+					showCaptchaInDailog(new URL("https://www.google.com/accounts/Captcha?ctoken=j1RzYvsAIR_IAgPKtXjDMD_MMsmjembsa-0frlRCqVxKatLQor4dCmocBjmeKu6IB5vadmS14N31uemsORmyv936uKYLHFmGZT5_xScdrQs%3Ats0suSYRjcoSsfaV4AnwkQ"));
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/*
 				login.setEnabled(false);
 				username.setEnabled(false);
 				password.setEnabled(false);
@@ -123,6 +143,11 @@ public class LoginDailog extends JDialog {
 								captcha.getText(), new GmailAuthCallback(){
 									public void showCaptcha(URL url) {
 										showCaptchaInDailog(url);
+									}
+
+									@Override
+									public void error(String message) {
+										
 									}
 						});
 						if(result){
@@ -134,8 +159,8 @@ public class LoginDailog extends JDialog {
 							username.setEnabled(true);
 							password.setEnabled(true);
 						}
-					}
 				}.start();
+					}*/
 			}
 		});
         
@@ -163,12 +188,12 @@ public class LoginDailog extends JDialog {
 		for (int i = 0; i < numLabels; i++) {
 			c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
 			c.fill = GridBagConstraints.NONE;      //reset to default
-			c.weightx = 0.0;                       //reset to default
+			c.weightx = 1.0;                       //reset to default
 			container.add(labels[i], c);
 			
 			c.gridwidth = GridBagConstraints.REMAINDER;     //end row
 			c.fill = GridBagConstraints.HORIZONTAL;
-			c.weightx = 1.0;
+			c.weightx = 4.0;
 			container.add(textFields[i], c);
 		}
     }
@@ -204,7 +229,8 @@ public class LoginDailog extends JDialog {
         //creating and showing this application's GUI.
     	//MsgBox message = new MsgBox(null, "Hey you user, are you sure ?", true);
     	//Dialog.
-    	
+		System.setProperty("http.proxyHost", "10.144.1.10");
+		System.setProperty("http.proxyPort", "8080");
     	
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

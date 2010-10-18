@@ -380,7 +380,7 @@ public class SyncService {
 		public void done(SyncTask task) {
 			for(SyncListener e: ls){
 				e.done(task);
-			}			
+			}
 		}
 
 		@Override
