@@ -1,8 +1,8 @@
 package org.notebook.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,11 +10,8 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -35,73 +32,60 @@ public class LoginDailog extends JDialog {
 	private NoteBook book = null;
 	//private boolean c
 	private GmailAuthencation gmail = new GmailAuthencation();
-	private Image captchaImage = null;
-	private JLabel captchaLabel = null;
-	private JTextField captcha = null;
-	private Canvas imagePlnel = new Canvas(){
-		public void paint(Graphics g){
-			if(captchaImage != null){
-				//g.setClip(0, 0, image.getWidth(null), image.getHeight(null));
-				int w = captchaImage.getWidth(null);
-				int h = captchaImage.getWidth(null);				
-				g.drawImage(captchaImage, 0, 0, w, h, this);
-			}else {
-				g.drawString("Not found image", 42, 22);
-			}
-		}
-	};
+	private JLabel errorLabel = new JLabel("ddd");
+	private JLabel captchaLabel = new JLabel("验证码: ");
+	private JTextField captcha = new JTextField("");
+	
+	private JPanel textControlsPane = new JPanel();
+	private boolean captchaVisible = false;
 	
 	public LoginDailog(JFrame parent, NoteBook book){
 		super(parent, true);
 		this.book = book;		
-		this.setTitle("用户等录");
+		this.setTitle("用户登录");
 		setContentPane(createSettingJPanel());
-		this.setPreferredSize(new Dimension(320, 240));
+		//this.setPreferredSize(new Dimension(340, 200));
+		setMinimumSize(new Dimension(340, 150));
 		this.pack();
-		//this.setResizable(false);
+		this.setResizable(false);
 	}	
-	private void showCaptchaInDailog(final Image captcha){
-		this.captchaImage = captcha;
-		imagePlnel.repaint();
-	}
 	
 	private JPanel createSettingJPanel(){
 		JPanel p = new JPanel(new BorderLayout());
 		
         final JTextField username = new JTextField(book.getUser() + "@gmail.com");
-        final JPasswordField password = new JPasswordField(book.password);
-        captcha = new JTextField("");
-                
+        final JPasswordField password = new JPasswordField(book.password);               
         JLabel nameLabel = new JLabel("Gmail: ");
         JLabel passwordLabel = new JLabel("密码: ");
-        captchaLabel = new JLabel("验证码: ");
-        JLabel imageLabel = new JLabel("验证码: ");
-        
         nameLabel.setLabelFor(username);
         passwordLabel.setLabelFor(password);
         captchaLabel.setLabelFor(captcha);
-
-        JPanel textControlsPane = new JPanel();
-        GridBagLayout gridbag = new GridBagLayout();
-        textControlsPane.setLayout(gridbag);
-
-        JLabel[] labels = {nameLabel, passwordLabel, captchaLabel};
-        JTextField[] textFields = {username, password, captcha};
-        addLabelTextRows(labels, textFields, gridbag, textControlsPane);
         
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.EAST;
-		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
-		c.fill = GridBagConstraints.NONE;      //reset to default
-		c.weightx = 1.0;                       //reset to default
-		textControlsPane.add(imageLabel, c);
-		
-		c.gridwidth = GridBagConstraints.REMAINDER;     //end row
-		c.fill = GridBagConstraints.HORIZONTAL;
-		imagePlnel.setSize(200, 70);
-		c.weightx = 4.0;
-		textControlsPane.add(imagePlnel, c);
-		//imagePlnel.setVisible(false);
+        nameLabel.setMinimumSize(new Dimension(140, 10));
+        username.setMinimumSize(new Dimension(120, 10));
+        
+        errorLabel.setForeground(Color.red);
+        password.setToolTipText("输入Gmail密码!");
+
+        JPanel inputPane = new JPanel();
+        GridBagLayout gridbag = new GridBagLayout();
+        inputPane.setLayout(gridbag);
+
+        JLabel[] labels = {new JLabel(""), nameLabel, passwordLabel, captchaLabel };
+        Component[] textFields = {errorLabel, username, password, captcha, };
+        addLabelTextRows(labels, textFields, gridbag, inputPane);
+        
+        textControlsPane.setLayout(new BorderLayout());
+        textControlsPane.add(inputPane, BorderLayout.CENTER);
+        final JLabel xxx = new JLabel("");
+        xxx.setPreferredSize(new Dimension(200, 70));
+        xxx.setBorder(BorderFactory.createEtchedBorder());
+        JPanel captcaPancel = new JPanel(); 
+        textControlsPane.add(captcaPancel, BorderLayout.SOUTH);
+        captcaPancel.add(xxx);
+        xxx.setVisible(false);
+        captchaLabel.setVisible(false);
+        captcha.setVisible(false);
         
         textControlsPane.setBorder(BorderFactory.createCompoundBorder(
                                 	BorderFactory.createTitledBorder("Gmail登录"),
@@ -120,17 +104,27 @@ public class LoginDailog extends JDialog {
 				login.setEnabled(false);
 				username.setEnabled(false);
 				password.setEnabled(false);
+				dailog.validate();
+				dailog.pack();
+				errorLabel.setText("");
 				new Thread(){
 					public void run(){
 						boolean result = gmail.login(username.getText(), password.getPassword(), 
 								captcha.getText(), 
 								new GmailAuthCallback(){
 									public void showCaptcha(Image image) {
-										showCaptchaInDailog(image);
+										xxx.setIcon(new ImageIcon(image));
+								        xxx.setVisible(true);
+								        captchaLabel.setVisible(true);
+								        captcha.setVisible(true);
+								        dailog.validate();
+								        dailog.pack();
 									}
 									@Override
 									public void error(String message) {
-										
+										errorLabel.setText(gmail.getErrorMsg(message));
+										dailog.validate();
+										dailog.pack();
 									}
 								}
 							);
@@ -164,7 +158,7 @@ public class LoginDailog extends JDialog {
 		return p;
 	}
 	
-    private void addLabelTextRows(JLabel[] labels, JTextField[] textFields,
+    private void addLabelTextRows(JLabel[] labels, Component[] textFields,
             		GridBagLayout gridbag, Container container) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.EAST;
@@ -177,7 +171,7 @@ public class LoginDailog extends JDialog {
 			
 			c.gridwidth = GridBagConstraints.REMAINDER;     //end row
 			c.fill = GridBagConstraints.HORIZONTAL;
-			c.weightx = 4.0;
+			c.weightx = 3.0;
 			container.add(textFields[i], c);
 		}
     }
