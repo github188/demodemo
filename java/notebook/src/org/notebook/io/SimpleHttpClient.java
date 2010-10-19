@@ -1,9 +1,9 @@
 package org.notebook.io;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -30,20 +30,21 @@ public class SimpleHttpClient {
 	private byte[] body = null;
 	
 	private ByteArrayOutputStream buffer = new ByteArrayOutputStream(1024);
-	private PrintWriter out = new PrintWriter(buffer);
-	private InputStream in = null;
-	//public static
-	public static HttpResponse post(URL url, Map<String, String> param) throws IOException{
-		return new SimpleHttpClient(url).post(param, new HashMap<String, String>());
-	}
+	private PrintWriter out = null;//new PrintWriter(buffer);
+	private BufferedReader in = null;
 	
-	public static HttpResponse post(URL url, Map<String, String> param, Map<String, String> head) throws IOException{
-		return new SimpleHttpClient(url).post(param, head);
-	}
+	private BufferedInputStream bis = null;	
+
+	public SimpleHttpClient(URL url){
+		this.requestURL = url;
+		this.hasProxy = System.getProperty("http.proxyHost", null) != null;
+	}	
 	
 	public HttpResponse get(String uri, Map<String, String> param) throws IOException{
 		this.createSocket();
-		this.createHttpRequest("GET");
+		this.createHttpRequest("GET", uri);
+		//this.setHeader(head);
+		this.buildBody(param);		
 		this.commit();
 		this.processResponse();
 		//this.close();
@@ -52,7 +53,9 @@ public class SimpleHttpClient {
 	
 	public HttpResponse post(String uri, Map<String, String> param) throws IOException{
 		this.createSocket();
-		this.createHttpRequest("GET");
+		this.createHttpRequest("POST", uri);
+		//this.setHeader(head);
+		this.buildBody(param);		
 		this.commit();
 		this.processResponse();
 		//this.close();
@@ -61,7 +64,7 @@ public class SimpleHttpClient {
 	
 	private HttpResponse post(Map<String, String> param, Map<String, String> head) throws IOException{
 		this.createSocket();
-		this.createHttpRequest("POST");
+		this.createHttpRequest("POST", this.requestURL.getPath());
 		this.setHeader(head);
 		this.buildBody(param);
 		this.commit();	
@@ -73,28 +76,41 @@ public class SimpleHttpClient {
 	private void processResponse() throws IOException{
 		response = new HttpResponse();
 		response.connection = this;
+		String status = in.readLine();
+		log.info(status);
 		
-		StringBuffer buffer = new StringBuffer();
-		for(int data = in.read(); data >= 0; data= in.read()){
-			if(data == '\n'){
-				String header = buffer.toString();
-				response.processHead(header);
-			}else {
-				buffer.append((char)data);
+		int headerLength = 0, contentLength = 0;
+		byte[] content = null;
+		
+		if(status != null && status.indexOf("HTTP") >= 0){
+			headerLength += status.length() + 1;
+			response.setStatus(status);
+			for(String line = in.readLine(); line != null && line.length() > 1; 
+				line = in.readLine()){
+				headerLength += status.length() + 1;
+				response.addHeader(line);
+				if(line.startsWith("Content-Length:")){
+					contentLength = Integer.parseInt(line.split(" ", 2)[1]);
+				}
 			}
+			//bis.reset();
+			//bis.skip(headerLength +1);
+			content = new byte[contentLength];
+			for(;contentLength >0;){
+				int count = bis.read(content, content.length - contentLength, contentLength);
+				if(count == -1)break;
+				contentLength -= count;
+			}
+			response.setContent(content);
+		}else {
+			throw new IOException("Invalid HTTP response hread.");
 		}
-
 	}
 	
-	private SimpleHttpClient(URL url){
-		this.requestURL = url;
-		this.hasProxy = System.getProperty("http.proxyHost", null) != null;
-	}
-	
-	private void createHttpRequest(String method){
+	private void createHttpRequest(String method, String uri){
 		String requestLine = method;
-		requestLine += " " + this.requestURL.getPath();
-		requestLine += " HTTP/1.0";
+		requestLine += " " + uri;
+		requestLine += " HTTP/1.1";
 		out.println(requestLine);
 		out.println("Host: " + this.requestURL.getHost());
 		//out.println("User-Agent: NoteBook/1.0 java1.6 client");
@@ -112,9 +128,10 @@ public class SimpleHttpClient {
 		out.println("");
 		out.flush();
 		buffer.write(this.body);
-		out.close();
+		out.close();	
 		log.info("commit http request...");
 		log.info(buffer.toString());
+		
 		this.socket.getOutputStream().write(buffer.toByteArray());
 		this.socket.getOutputStream().flush();
 	}
@@ -146,13 +163,20 @@ public class SimpleHttpClient {
 			}else {
 				socket = new Socket(requestURL.getHost(), requestURL.getPort());
 			}
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		}else {
-			buffer = new ByteArrayOutputStream(1024);
+			bis = new BufferedInputStream(socket.getInputStream(), 4 * 1024);
 		}
+		buffer.reset();
+		/*
+		 * Prepare read buffer before send HTTP request; mark the start of HTTP 
+		 * head starting. process the head in buffer, then skip the head to read
+		 * content.
+		 */		
+		bis.mark(1024 * 4); 
+		in = new BufferedReader(new InputStreamReader(bis));
+		out = new PrintWriter(buffer);
 	}
 	
-	private Socket connectionToProxy() throws IOException{
+	private Socket connectHTTPSProxy() throws IOException{
 		String host = System.getProperty("http.proxyHost");
 		String proxyPort = System.getProperty("http.proxyPort", "80");
 		Socket proxySocket = new Socket(host, Integer.parseInt(proxyPort));
@@ -162,9 +186,15 @@ public class SimpleHttpClient {
 		proxySocket.getOutputStream().flush();
 		
 		BufferedReader proxyReader = new BufferedReader(new InputStreamReader(proxySocket.getInputStream()));
-		for(int i = 0; i < 5; i++){
-			log.info("proxy:" + proxyReader.readLine());
-		}	
+		boolean established = false;
+		for(String l = proxyReader.readLine(); l != null && l.length() > 0; 
+			l = proxyReader.readLine()){
+			if(l.startsWith("HTTP") && l.indexOf("200") > 1){
+				established = true;
+			}
+		}
+		if(!established)throw new IOException("Failed to established HTTPS connection on proxy, "
+				+ host + ":" + proxyPort);
 		return proxySocket;
 	}
 	
@@ -175,19 +205,26 @@ public class SimpleHttpClient {
 		log.info("connect to https:" + requestURL.getHost() + ", port:" + port);
 		SSLSocketFactory sslsf = (SSLSocketFactory)SSLSocketFactory.getDefault();
 		if(hasProxy){
-			Socket proxySocket = connectionToProxy();
+			Socket proxySocket = connectHTTPSProxy();
 			socket = sslsf.createSocket(proxySocket, requestURL.getHost(), port, true);
 		}else {
 			socket = sslsf.createSocket(requestURL.getHost(), port);
 		}
 	}
 		
-	private void close() throws IOException{
+	public void close() throws IOException{
 		if(this.out != null){this.out.close();};
 		if(this.in != null){this.in.close();};
 		if(this.socket != null){this.socket.close();};
 	};
 	
+	//public static
+	public static HttpResponse post(URL url, Map<String, String> param) throws IOException{
+		return new SimpleHttpClient(url).post(param, new HashMap<String, String>());
+	}
 	
+	public static HttpResponse post(URL url, Map<String, String> param, Map<String, String> head) throws IOException{
+		return new SimpleHttpClient(url).post(param, head);
+	}
 	
 }

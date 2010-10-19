@@ -35,16 +35,16 @@ public class LoginDailog extends JDialog {
 	private NoteBook book = null;
 	//private boolean c
 	private GmailAuthencation gmail = new GmailAuthencation();
-	private Image image = null;
+	private Image captchaImage = null;
 	private JLabel captchaLabel = null;
 	private JTextField captcha = null;
 	private Canvas imagePlnel = new Canvas(){
 		public void paint(Graphics g){
-			if(image != null){
+			if(captchaImage != null){
 				//g.setClip(0, 0, image.getWidth(null), image.getHeight(null));
-				int w = image.getWidth(null);
-				int h = image.getWidth(null);				
-				g.drawImage(image, 0, 0, w, h, this);
+				int w = captchaImage.getWidth(null);
+				int h = captchaImage.getWidth(null);				
+				g.drawImage(captchaImage, 0, 0, w, h, this);
 			}else {
 				g.drawString("Not found image", 42, 22);
 			}
@@ -60,19 +60,9 @@ public class LoginDailog extends JDialog {
 		this.pack();
 		//this.setResizable(false);
 	}	
-	private void showCaptchaInDailog(final URL url){
-		System.out.println("open url:" + url.toString());
-		new Thread(){
-			public void run(){
-				ImageIcon icon = new ImageIcon(url);
-				image = icon.getImage().getScaledInstance(200, 70, Image.SCALE_SMOOTH);
-				System.out.println("xxxx:" + image);
-				captchaLabel.setVisible(true);
-				captcha.setVisible(true);
-				imagePlnel.setVisible(true);
-				imagePlnel.repaint();
-			}
-		}.start();
+	private void showCaptchaInDailog(final Image captcha){
+		this.captchaImage = captcha;
+		imagePlnel.repaint();
 	}
 	
 	private JPanel createSettingJPanel(){
@@ -127,29 +117,23 @@ public class LoginDailog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//String user = username.getText();
-				try {
-					showCaptchaInDailog(new URL("https://www.google.com/accounts/Captcha?ctoken=j1RzYvsAIR_IAgPKtXjDMD_MMsmjembsa-0frlRCqVxKatLQor4dCmocBjmeKu6IB5vadmS14N31uemsORmyv936uKYLHFmGZT5_xScdrQs%3Ats0suSYRjcoSsfaV4AnwkQ"));
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				/*
 				login.setEnabled(false);
 				username.setEnabled(false);
 				password.setEnabled(false);
 				new Thread(){
 					public void run(){
 						boolean result = gmail.login(username.getText(), password.getPassword(), 
-								captcha.getText(), new GmailAuthCallback(){
-									public void showCaptcha(URL url) {
-										showCaptchaInDailog(url);
+								captcha.getText(), 
+								new GmailAuthCallback(){
+									public void showCaptcha(Image image) {
+										showCaptchaInDailog(image);
 									}
-
 									@Override
 									public void error(String message) {
 										
 									}
-						});
+								}
+							);
 						if(result){
 							book.authToken = gmail.authToken;
 							dailog.setVisible(false);
@@ -159,8 +143,8 @@ public class LoginDailog extends JDialog {
 							username.setEnabled(true);
 							password.setEnabled(true);
 						}
+					}
 				}.start();
-					}*/
 			}
 		});
         
