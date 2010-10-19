@@ -19,7 +19,7 @@ import org.notebook.io.ClientException;
 import org.notebook.io.NoteBookClient;
 
 public class SyncService {
-	private static Log log = LogFactory.getLog(SyncService.class);
+	private static Log log = LogFactory.getLog("SyncService");
 	public NoteBook book = null;
 	public NoteBookClient client = null;
 	public Category root = null;
@@ -38,6 +38,7 @@ public class SyncService {
 		this.book = book;
 		this.root = book.root;
 		//this.threadPool = pool;
+		log.info("Starting sync service...");
 		if(this.book != null && book.proxy != null && !book.proxy.trim().equals("")){
 			log.info("http proxy:" + book.proxy);
 			System.setProperty("HTTP_PROXY", book.proxy);
@@ -54,6 +55,7 @@ public class SyncService {
 	}
 	
 	public void stop(){
+		log.info("Stop sync service...");
 		running = false;
 		if(this.runner != null){
 			this.runner.close();

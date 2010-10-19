@@ -28,7 +28,7 @@ import org.notebook.gui.SyncStatusDailog;
 import org.notebook.io.AuthcationException;
 
 public class DefaultBookController implements BookController{
-	private static Log log = LogFactory.getLog(DefaultBookController.class);
+	private static Log log = LogFactory.getLog("DefaultBookController");
 	private DataStorage storage = null;
 	private SyncService sync = null;
 
@@ -41,6 +41,7 @@ public class DefaultBookController implements BookController{
 	private boolean runningJNLP = false;
 	private boolean runningSandBox = false;
 	private boolean visibleTrayIcon = false;
+	private int autoLoginTimes = 0;
 	//初始化了本地NoteBook路径.
 	private boolean initedBook = false;
 	
@@ -87,13 +88,13 @@ public class DefaultBookController implements BookController{
 	public void processEvent(BookAction e){
 		final String HANDLER = "__actionHander";
 		String command = (String)e.getValue(Action.ACTION_COMMAND_KEY);
-		log.info("processEvent:" + command);
+		log.debug("processEvent:" + command);
 		Method m = (Method)e.getValue(HANDLER);
 		if(m == null){
 			try {
 				m = MenuAction.class.getMethod(command, new Class[]{BookAction.class});
 				e.putValue(HANDLER, m);
-				log.info("get action process for menu, " + command);
+				log.debug("get action process for menu, " + command);
 			} catch (Exception e1) {
 			}
 		}
@@ -134,18 +135,23 @@ public class DefaultBookController implements BookController{
 		book.authToken = null;
 		GmailAuthencation auth = new GmailAuthencation();
 		log.info("Try login with user, " + book.getUser());
-		if(auth.login(book.getUser() + "@gmail.com", book.password.toCharArray(),
-				null, null)){
-			log.info("login OK, with user " + book.getUser());
-			book.authToken = auth.authToken;
-		}else {
-			LoginDailog loginBox = new LoginDailog(mainFrame, book);
-			loginBox.setLocationRelativeTo(mainFrame);
-			loginBox.setVisible(true);
-			log.info("authToken" + book.authToken);
-			return book.authToken != null;
+		if(autoLoginTimes < 3){
+			if(auth.login(book.getUser() + "@gmail.com", book.password.toCharArray(),
+					null, null)){
+				log.info("login OK, with user " + book.getUser());
+				book.authToken = auth.authToken;
+				autoLoginTimes++;
+				return true;
+			}else {
+				LoginDailog loginBox = new LoginDailog(mainFrame, book);
+				loginBox.setLocationRelativeTo(mainFrame);
+				//loginBox.setVisible(true);
+				autoLoginTimes = 0;
+				log.debug("authToken:" + book.authToken);
+				return book.authToken != null;
+			}
 		}
-		return true;
+		return false;
 	}
 	
 	@Override

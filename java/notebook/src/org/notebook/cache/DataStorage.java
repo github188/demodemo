@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public abstract class DataStorage{
-	protected Log log = LogFactory.getLog(DataStorage.class);
+	protected Log log = LogFactory.getLog("DataStorage");
 	
 	public NoteMessage load(String id){
 		NoteMessage msg = (NoteMessage)this.loadObject(id);

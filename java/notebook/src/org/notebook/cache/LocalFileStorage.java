@@ -19,7 +19,7 @@ public class LocalFileStorage extends DataStorage {
 				log.error(e, e);
 			}
 		}
-		log.info("cache root:" + this.root.getAbsolutePath());
+		log.info("Cache root:" + this.root.getAbsolutePath());
 	}	
 	
 	protected Object loadObject(String id){
@@ -31,7 +31,7 @@ public class LocalFileStorage extends DataStorage {
                 si = new ObjectInputStream(new FileInputStream(f));
                 obj = si.readObject();
                 si.close();
-                log.info(String.format("load cache:%s", id));
+                log.debug(String.format("load cache:%s", id));
             } catch (ClassNotFoundException e) {
                 log.error(e, e.getCause());
             }catch(IOException e) {
@@ -49,7 +49,7 @@ public class LocalFileStorage extends DataStorage {
             so = new ObjectOutputStream(new FileOutputStream(f));
             so.writeObject(obj);
             so.close();
-            log.info(String.format("save cache:%s", id));
+            log.debug(String.format("save cache:%s", id));
         }catch(IOException e ) {
                 log.error(e, e.getCause());
         }		

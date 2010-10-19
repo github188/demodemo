@@ -21,7 +21,7 @@ import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
 
 public class NoteBookClient{
-	private static Log log = LogFactory.getLog(NoteBookClient.class);
+	private Log log = LogFactory.getLog("NoteBookClient");
 	public NoteBook book = null;
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	private Map<String, String> auth = new HashMap<String, String>();
@@ -44,7 +44,7 @@ public class NoteBookClient{
 		param.put("user", this.book.getUser());
 		param.put("cate_id", cateId);
 		
-		log.info("get list:" + cateId);
+		log.debug("get list:" + cateId);
 		InputStream in = ClientHttpRequest.post(url, param);
 		JSONParser parser = new JSONParser();
 		
@@ -122,7 +122,7 @@ public class NoteBookClient{
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			message.text = jsonObject.get("text");
-			log.info("load message id:" + msgId + ", text:" + message.text);
+			log.debug("load message id:" + msgId + ", text:" + message.text);
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
 		}
@@ -144,7 +144,7 @@ public class NoteBookClient{
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {
-			log.info("up message id:" + message.messageId + ", text:" + message.text);
+			log.debug("up message id:" + message.messageId + ", text:" + message.text);
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			if(jsonObject.get("status").equals(ClientException.AUTH_ERROR)){
 				throw new AuthcationException("accesd denied");

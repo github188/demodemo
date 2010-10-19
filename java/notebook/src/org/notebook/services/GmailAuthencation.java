@@ -17,7 +17,7 @@ import org.notebook.io.HttpResponse;
 import org.notebook.io.SimpleHttpClient;
 
 public class GmailAuthencation {
-	private static Log log = LogFactory.getLog(GmailAuthencation.class);
+	private Log log = LogFactory.getLog("GmailAuthencation");
 	public String authToken = null;
 	private String logintoken = null;
 	private SimpleHttpClient client = null;
@@ -105,7 +105,6 @@ public class GmailAuthencation {
 	
 	public static void main(String[] args){
 		GmailAuthencation auth = new GmailAuthencation();
-		log.info("start.....");
 		System.setProperty("https.proxyHost", "10.144.1.10");
 		System.setProperty("https.proxyPort", "8080");		
 		
@@ -133,6 +132,5 @@ public class GmailAuthencation {
 					}
 				}
 		);
-		log.info("done");
 	}
 }

@@ -209,6 +209,7 @@ public class LoginDailog extends JDialog {
         //creating and showing this application's GUI.
     	//MsgBox message = new MsgBox(null, "Hey you user, are you sure ?", true);
     	//Dialog.
+    	org.apache.commons.logging.impl.SimpleLog logx = null;
 		System.setProperty("http.proxyHost", "10.144.1.10");
 		System.setProperty("http.proxyPort", "8080");
     	

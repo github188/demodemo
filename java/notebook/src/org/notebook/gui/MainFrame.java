@@ -54,7 +54,7 @@ import org.notebook.services.SocketSingleInstance;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
-	private static Log log = LogFactory.getLog(MainFrame.class);
+	private Log log = LogFactory.getLog("MainFrame");
 
 	public MenuToolbar menu = null;	
 	public NavigationTree tree = null;

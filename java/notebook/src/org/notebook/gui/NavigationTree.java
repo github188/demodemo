@@ -123,13 +123,11 @@ public class NavigationTree extends JTree implements MouseListener {
 		public void treeWillCollapse(TreeExpansionEvent event)
 		      throws ExpandVetoException {
 				TreePath path = event.getPath();
-				//System.out.println("Collapse:" + path.toString());
 		}
 	
 		public void treeWillExpand(TreeExpansionEvent event)
 		      throws ExpandVetoException {
 		    TreePath path = event.getPath();
-		    //System.out.println("Collapse:" + path.toString());
 		}
 	};	
 
@@ -145,7 +143,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		    source = new DragSource();
 		    recognizer = source.createDefaultDragGestureRecognizer(sourceTree,
 		        actions, this);
-		    System.out.println("actions:" + actions);
 		}
 	
 		  /*
@@ -159,7 +156,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		      return;
 		    }
 		    oldNode = (Category) path.getLastPathComponent();
-		    System.out.println("dragGestureRecognized:" + oldNode.toString());
 		    transferable = new TransferableTreeNode(path);
 		    source.startDrag(dge, DragSource.DefaultMoveDrop, transferable, this);
 	
@@ -173,7 +169,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		   * Drag Event Handlers
 		   */
 		public void dragEnter(DragSourceDragEvent dsde) {
-			System.out.println("TreeDragSource: dragEnter:" + dsde.getDropAction());
 		    DragSourceContext context = dsde.getDragSourceContext();
 		    int dropAction = dsde.getDropAction();
 		    /*
@@ -187,7 +182,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		}
 	
 		public void dragExit(DragSourceEvent dse) {
-			System.out.println("TreeDragSource: dragExit-->" + dse);
 		}
 	
 		public void dragOver(DragSourceDragEvent dsde) {
@@ -195,17 +189,12 @@ public class NavigationTree extends JTree implements MouseListener {
 		}
 	
 		public void dropActionChanged(DragSourceDragEvent dsde) {
-		    System.out.println("Action: " + dsde.getDropAction());
-		    System.out.println("Target Action: " + dsde.getTargetActions());
-		    System.out.println("User Action: " + dsde.getUserAction());
 		}
 	
 		public void dragDropEnd(DragSourceDropEvent dsde){
 		    /*
 		     * to support move or copy, we have to check which occurred:
 		     */
-			System.out.println("Drop Action: " + dsde.getDropAction() + 
-					"\tDropSuccess:" + dsde.getDropSuccess());
 			//dsde.
 			if(dsde.getDropSuccess()){
 				oldNode.remove();
@@ -263,7 +252,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		  }
 
 		  public void dragEnter(DropTargetDragEvent dtde) {
-			  System.out.println("TreeDropTarget: dragEnter-->" + dtde);
 			  TreePath target = getEventTreePath(dtde);
 			  Category node = (Category)target.getLastPathComponent();
 			  if(node.isLeaf()){
@@ -308,15 +296,12 @@ public class NavigationTree extends JTree implements MouseListener {
 		  }
 
 		  public void dragExit(DropTargetEvent dte) {
-			  System.out.println("TreeDropTarget: dragExit-->" + dte);
 		  }
 
 		  public void dropActionChanged(DropTargetDragEvent dtde) {
-			  System.out.println("TreeDropTarget: dropActionChanged-->" + dtde);
 		  }
 
 		  public void drop(DropTargetDropEvent dtde) {
-			System.out.println("TreeDropTarget,drop-->" + dtde);
 		    Point pt = dtde.getLocation();
 		    DropTargetContext dtc = dtde.getDropTargetContext();
 		    JTree tree = (JTree) dtc.getComponent();
@@ -331,7 +316,6 @@ public class NavigationTree extends JTree implements MouseListener {
 		      Transferable tr = dtde.getTransferable();
 		      DataFlavor[] flavors = tr.getTransferDataFlavors();
 		      for (int i = 0; i < flavors.length; i++) {
-		    	  System.out.println("drop:" + flavors[i]);
 					if (tr.isDataFlavorSupported(flavors[i])) {
 					  dtde.acceptDrop(dtde.getDropAction());
 					  TreePath p = (TreePath) tr.getTransferData(flavors[i]);

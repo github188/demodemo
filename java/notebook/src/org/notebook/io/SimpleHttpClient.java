@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class SimpleHttpClient {
-	private static Log log = LogFactory.getLog(SimpleHttpClient.class);
+	private Log log = LogFactory.getLog("SimpleHttpClient");
 	private boolean hasProxy = false;
 	private URL requestURL = null;
 	private Socket socket = null;
@@ -77,7 +77,7 @@ public class SimpleHttpClient {
 		response = new HttpResponse();
 		response.connection = this;
 		String status = in.readLine();
-		log.info(status);
+		log.debug(status);
 		
 		int headerLength = 0, contentLength = 0;
 		byte[] content = null;
@@ -129,8 +129,8 @@ public class SimpleHttpClient {
 		out.flush();
 		buffer.write(this.body);
 		out.close();	
-		log.info("commit http request...");
-		log.info(buffer.toString());
+		log.debug("commit http request...");
+		log.trace(buffer.toString());
 		
 		this.socket.getOutputStream().write(buffer.toByteArray());
 		this.socket.getOutputStream().flush();
@@ -181,7 +181,7 @@ public class SimpleHttpClient {
 		String proxyPort = System.getProperty("http.proxyPort", "80");
 		Socket proxySocket = new Socket(host, Integer.parseInt(proxyPort));
 		byte[] command = ("CONNECT "+ requestURL.getHost() +":443 HTTP/1.0\n\n").getBytes();
-		log.info(new String(command));
+		log.debug("proxy:" + new String(command));
 		proxySocket.getOutputStream().write(command);
 		proxySocket.getOutputStream().flush();
 		
@@ -192,6 +192,7 @@ public class SimpleHttpClient {
 			if(l.startsWith("HTTP") && l.indexOf("200") > 1){
 				established = true;
 			}
+			log.debug("proxy:" + l);
 		}
 		if(!established)throw new IOException("Failed to established HTTPS connection on proxy, "
 				+ host + ":" + proxyPort);
@@ -202,7 +203,7 @@ public class SimpleHttpClient {
 		int port = requestURL.getPort();
 		port = port > 0 ? port : 443;
 		
-		log.info("connect to https:" + requestURL.getHost() + ", port:" + port);
+		log.debug("connect to https:" + requestURL.getHost() + ", port:" + port);
 		SSLSocketFactory sslsf = (SSLSocketFactory)SSLSocketFactory.getDefault();
 		if(hasProxy){
 			Socket proxySocket = connectHTTPSProxy();
