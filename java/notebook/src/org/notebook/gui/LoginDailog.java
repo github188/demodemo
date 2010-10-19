@@ -32,7 +32,7 @@ public class LoginDailog extends JDialog {
 	private NoteBook book = null;
 	//private boolean c
 	private GmailAuthencation gmail = new GmailAuthencation();
-	private JLabel errorLabel = new JLabel("ddd");
+	private JLabel errorLabel = new JLabel("");
 	private JLabel captchaLabel = new JLabel("验证码: ");
 	private JTextField captcha = new JTextField("");
 	
@@ -129,6 +129,8 @@ public class LoginDailog extends JDialog {
 								}
 							);
 						if(result){
+							book.user = username.getText();
+							book.password = new String(password.getPassword());
 							book.authToken = gmail.authToken;
 							dailog.setVisible(false);
 							dailog.dispose();

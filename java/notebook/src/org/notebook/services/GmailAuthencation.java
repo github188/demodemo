@@ -21,6 +21,13 @@ public class GmailAuthencation {
 	public String authToken = null;
 	private String logintoken = null;
 	private SimpleHttpClient client = null;
+	private Map<String, String> errors = new HashMap<String, String>();
+	
+	public GmailAuthencation(){
+		errors.put("CaptchaRequired", "请输入正确的验证码.");
+		errors.put("BadAuthentication", "用户名或密码错误.");
+		errors.put("AccountDisabled", "用户名禁用.");
+	}
 	
 	public boolean login(String name, char[] passwd, String cpatcha, GmailAuthCallback callback){
 		authToken = null;		
@@ -44,7 +51,6 @@ public class GmailAuthencation {
 			String[] item = null;
 			for(String line: resp.getResponseMessage().split("\n")){
 				item = line.split("=", 2);
-				log.info(item[0]);
 				if(item[0].equals("Auth")){
 					this.authToken = item[1];
 					this.close();
@@ -68,6 +74,14 @@ public class GmailAuthencation {
 		return false;
 	}
 	
+	public String getErrorMsg(String key){
+		String msg = errors.get(key);
+		if(msg == null){
+			msg = "未知错误";
+		}
+		return msg;
+	}
+	
 	public void close(){
 		try{
 			if(this.client != null){
@@ -85,7 +99,8 @@ public class GmailAuthencation {
 		HttpResponse resp = null;
 		resp = client.get(uri, new HashMap<String, String>());
 		ImageIcon imageIcon = new ImageIcon(resp.getContent());
-		return imageIcon.getImage();
+		log.info("Got captcha image:...");
+		return imageIcon.getImage().getScaledInstance(200, 70, Image.SCALE_SMOOTH);
 	}
 	
 	public static void main(String[] args){

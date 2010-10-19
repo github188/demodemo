@@ -9,12 +9,12 @@ public class NoteBook implements Serializable{
 	public String user = null; //System.getenv("USERNAME");
 	public String password = null; //System.getenv("USERNAME");
 	public String endpoint = "http://deonwu84.appspot.com/note";
-	public String authToken = "";
 	public Category root = null;
 	
 	public String proxy = "";
 	public String username = "";
 	public String proxypassword = "";
+	public transient String authToken = "";
 	
 	public NoteBook(){
 		user = defaultUser();
