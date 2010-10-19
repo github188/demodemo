@@ -145,7 +145,7 @@ public class DefaultBookController implements BookController{
 			}else {
 				LoginDailog loginBox = new LoginDailog(mainFrame, book);
 				loginBox.setLocationRelativeTo(mainFrame);
-				//loginBox.setVisible(true);
+				loginBox.setVisible(true);
 				autoLoginTimes = 0;
 				log.debug("authToken:" + book.authToken);
 				return book.authToken != null;
@@ -212,6 +212,7 @@ public class DefaultBookController implements BookController{
 		public void syncError(SyncTask task, Exception e) {
 			sync.stop();
 			if(e instanceof AuthcationException){
+				log.info("Auth error:" + e.getMessage());
 				if(authencation()){
 					sync.start(book, syncThread);
 				}

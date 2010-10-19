@@ -41,7 +41,7 @@ public class GmailAuthencation {
 			param.put("Email", name);
 			param.put("Passwd", new String(passwd));
 			param.put("service", "apps");
-			param.put("source", "deonwu-deonwu84-5");
+			param.put("source", "deonwu84");
 			if(logintoken != null && cpatcha != null && cpatcha.length() > 0){
 				param.put("logintoken", logintoken);
 				param.put("logincaptcha", cpatcha);
@@ -52,8 +52,9 @@ public class GmailAuthencation {
 			for(String line: resp.getResponseMessage().split("\n")){
 				item = line.split("=", 2);
 				if(item[0].equals("Auth")){
-					this.authToken = item[1];
-					this.close();
+					//this.authToken = item[1];
+					//this.close();
+					processSubAuth(item[1]);
 					return true;
 				}else if(item[0].equals("CaptchaToken")){
 					this.logintoken = item[1];
@@ -72,6 +73,24 @@ public class GmailAuthencation {
 			log.error(e, e);
 		}
 		return false;
+	}
+	
+	private void processSubAuth(String token) throws IOException{
+		HttpResponse resp = null;
+		Map<String, String> header = new HashMap<String, String>();
+		header.put("Authorization", "AuthSub token=\"" + token +"\"");
+		resp = client.get("/accounts/AuthSubRevokeToken", new HashMap<String, String>(), header);
+		
+		String[] item = null;
+		log.info("Sub Auth:" + resp.toString() + "\n" + resp.getResponseMessage());
+		for(String line: resp.getResponseMessage().split("\n")){
+			item = line.split("=", 2);
+			if(item[0].equals("Token")){
+				this.authToken = item[1];
+				log.info("Sub Token:" + item[1]);
+				this.close();
+			}
+		}
 	}
 	
 	public String getErrorMsg(String key){

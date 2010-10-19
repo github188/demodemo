@@ -24,12 +24,13 @@ public class NoteBookClient{
 	private Log log = LogFactory.getLog("NoteBookClient");
 	public NoteBook book = null;
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-	private Map<String, String> auth = new HashMap<String, String>();
+	private Map<String, String> header = new HashMap<String, String>();
+	private Map<String, String> cookies = new HashMap<String, String>();
 	
 	public NoteBookClient(NoteBook book){
 		this.book = book;
 		if(book.authToken != null){
-			this.auth.put("Authorization", "GoogleLogin auth=" + book.authToken);
+			this.header.put("Authorization", "GoogleLogin auth=" + book.authToken);
 		}
 	}
 	
@@ -92,13 +93,13 @@ public class NoteBookClient{
 		param.put("nodeType", cate.nodeType + "");
 		param.put("updateDate", format.format(cate.lastUpdated));
 		
-		InputStream in = ClientHttpRequest.post(url, param);
+		InputStream in = ClientHttpRequest.post(url, cookies, param, header);
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {
 			jsonObject = (Map<String, String>)parser.parse(new InputStreamReader(in, "utf-8"));
 			if(jsonObject.get("status").equals(ClientException.AUTH_ERROR)){
-				throw new AuthcationException("accesd denied");
+				throw new AuthcationException("accesd denied," + jsonObject.get("msg"));
 			}else if(!jsonObject.get("status").equals("OK")){
 				throw new ClientException("Failed to upload category, id=" + cate.id);
 			}			
@@ -140,7 +141,7 @@ public class NoteBookClient{
 		param.put("text", message.getText());
 		param.put("updateDate", format.format(message.getLastUpdate()));
 		
-		InputStream in = ClientHttpRequest.post(url, param);
+		InputStream in = ClientHttpRequest.post(url, cookies, param, header);
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {
@@ -169,7 +170,7 @@ public class NoteBookClient{
 		param.put("user", this.book.getUser());
 		param.put("cate_id", cate.id);
 		
-		InputStream in = ClientHttpRequest.post(url, param);
+		InputStream in = ClientHttpRequest.post(url, cookies, param, header);
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {
@@ -195,7 +196,7 @@ public class NoteBookClient{
 		param.put("cate_id", cate.id);
 		param.put("nodeType", "msg");
 		
-		InputStream in = ClientHttpRequest.post(url, param);
+		InputStream in = ClientHttpRequest.post(url, cookies, param, header);
 		JSONParser parser = new JSONParser();
 		Map<String, String> jsonObject = null;
 		try {

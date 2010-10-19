@@ -41,10 +41,14 @@ public class SimpleHttpClient {
 	}	
 	
 	public HttpResponse get(String uri, Map<String, String> param) throws IOException{
+		return get(uri, param, new HashMap<String, String>());
+	}		
+	
+	public HttpResponse get(String uri, Map<String, String> param, Map<String, String> header) throws IOException{
 		this.createSocket();
 		this.createHttpRequest("GET", uri);
-		//this.setHeader(head);
-		this.buildBody(param);		
+		this.setHeader(header);
+		this.buildBody(param);
 		this.commit();
 		this.processResponse();
 		//this.close();
@@ -52,9 +56,14 @@ public class SimpleHttpClient {
 	}
 	
 	public HttpResponse post(String uri, Map<String, String> param) throws IOException{
+		return post(uri, param, new HashMap<String, String>());
+	}	
+	
+	
+	public HttpResponse post(String uri, Map<String, String> param, Map<String, String> header) throws IOException{
 		this.createSocket();
 		this.createHttpRequest("POST", uri);
-		//this.setHeader(head);
+		this.setHeader(header);
 		this.buildBody(param);		
 		this.commit();
 		this.processResponse();
@@ -152,7 +161,10 @@ public class SimpleHttpClient {
 	
 	
 	private void setHeader(Map<String, String> head){
-		this.header.putAll(head);
+		for(String key: head.keySet()){
+			out.println(key + ": " + head.get(key));
+		}
+		//this.header.putAll(head);
 	}
 	//
 	

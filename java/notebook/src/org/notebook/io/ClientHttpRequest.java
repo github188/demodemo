@@ -300,6 +300,7 @@ public class ClientHttpRequest {
   public InputStream post(Map cookies, Map parameters, Map<String, String> headers) throws IOException {
     setCookies(cookies);
     for(String header: headers.keySet()){
+    	System.out.println("header:" + header + "->" + headers.get(header));
     	connection.setRequestProperty(header, headers.get(header));
     }
     setParameters(parameters);
