@@ -8,7 +8,7 @@ def IP(r): return r.META["REMOTE_ADDR"]
 
 def cur_user():
     u = users.get_current_user()
-    return u and u.user_id() or None
+    return u and u.email().split("@")[0] or None
 
 def list_category(r, user, cate_id):
     logging.debug("list_category: user=%s, cate_id=%s, ippaddr=%s" % (
