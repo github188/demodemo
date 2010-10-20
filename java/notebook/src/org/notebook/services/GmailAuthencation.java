@@ -2,8 +2,11 @@ package org.notebook.services;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,12 +16,14 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.io.ClientHttpRequest;
 import org.notebook.io.HttpResponse;
 import org.notebook.io.SimpleHttpClient;
 
 public class GmailAuthencation {
 	private Log log = LogFactory.getLog("GmailAuthencation");
 	public String authToken = null;
+	public String authSID = null;
 	private String logintoken = null;
 	private SimpleHttpClient client = null;
 	private Map<String, String> errors = new HashMap<String, String>();
@@ -40,8 +45,8 @@ public class GmailAuthencation {
 			param.put("accountType", "HOSTED_OR_GOOGLE");
 			param.put("Email", name);
 			param.put("Passwd", new String(passwd));
-			param.put("service", "apps");
-			param.put("source", "deonwu84");
+			param.put("service", "ah");
+			param.put("source", "deonwu-deonwu84-5");
 			if(logintoken != null && cpatcha != null && cpatcha.length() > 0){
 				param.put("logintoken", logintoken);
 				param.put("logincaptcha", cpatcha);
@@ -49,13 +54,13 @@ public class GmailAuthencation {
 			resp = client.post("/accounts/ClientLogin", param);
 			log.info("Reponse:" + resp.toString() + "\n" + resp.getResponseMessage());
 			String[] item = null;
+			boolean loginOk = false;
 			for(String line: resp.getResponseMessage().split("\n")){
 				item = line.split("=", 2);
 				if(item[0].equals("Auth")){
-					//this.authToken = item[1];
-					//this.close();
+					this.authToken = item[1];
 					processSubAuth(item[1]);
-					return true;
+					loginOk = true;
 				}else if(item[0].equals("CaptchaToken")){
 					this.logintoken = item[1];
 				}else if(item[0].equals("CaptchaUrl")){
@@ -66,6 +71,8 @@ public class GmailAuthencation {
 					if(callback != null){
 						callback.error(item[1]);
 					}
+				}else if(item[0].equals("SID")){
+					this.authSID = item[1];					
 				}
 			}
 		} catch (Exception e) {
@@ -75,21 +82,37 @@ public class GmailAuthencation {
 		return false;
 	}
 	
-	private void processSubAuth(String token) throws IOException{
+	private void processSubAuth2(String token) throws IOException{
 		HttpResponse resp = null;
-		Map<String, String> header = new HashMap<String, String>();
-		header.put("Authorization", "AuthSub token=\"" + token +"\"");
-		resp = client.get("/accounts/AuthSubRevokeToken", new HashMap<String, String>(), header);
+		SimpleHttpClient httpClient = new SimpleHttpClient(new URL("http://deonwu84.appspot.com"));
 		
-		String[] item = null;
-		log.info("Sub Auth:" + resp.toString() + "\n" + resp.getResponseMessage());
-		for(String line: resp.getResponseMessage().split("\n")){
-			item = line.split("=", 2);
-			if(item[0].equals("Token")){
-				this.authToken = item[1];
-				log.info("Sub Token:" + item[1]);
-				this.close();
-			}
+		//URL url = new URL("http://deonwu84.appspot.com/_ah/login?auth=" + token);
+		
+		log.info("login:/_ah/login?auth=" + token);
+		resp = httpClient.get("http://deonwu84.appspot.com/_ah/login?auth=" + token, new HashMap<String, String>());		
+		//Object obj = conn.getContent();
+		log.info("status:" + resp.getResponseStatus());
+		//log.info(":" + resp.toString());
+		log.info("Auth Cookie:"); 
+	}	
+	
+	private void processSubAuth(String token) throws IOException{
+		/*
+		URL url = new URL("http://deonwu84.appspot.com/_ah/login?auth=" + token);
+		log.info(url.toString());
+		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+		log.info("status:" + conn.getResponseCode());
+		log.info("status:" + conn.getResponseMessage());
+		//log.info(":" + resp.toString());
+		log.info("Auth Cookie:");
+		*/ 
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("auth", token);
+		InputStream xx = ClientHttpRequest.post(new URL("http://deonwu84.appspot.com/_ah/login"),
+				param);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(xx));
+		for(String l = reader.readLine(); l != null; l = reader.readLine()){
+			log.info("msg:" + l);
 		}
 	}
 	

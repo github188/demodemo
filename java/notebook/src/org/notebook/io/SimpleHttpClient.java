@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,8 +112,9 @@ public class SimpleHttpClient {
 				contentLength -= count;
 			}
 			response.setContent(content);
+			log.trace("Response:" + response.toString());
 		}else {
-			throw new IOException("Invalid HTTP response hread.");
+			throw new IOException("Invalid HTTP response hread:" + status);
 		}
 	}
 	
@@ -137,9 +139,8 @@ public class SimpleHttpClient {
 		out.println("");
 		out.flush();
 		buffer.write(this.body);
-		out.close();	
-		log.debug("commit http request...");
-		log.trace(buffer.toString());
+		out.close();
+		log.trace("Request:" + buffer.toString());
 		
 		this.socket.getOutputStream().write(buffer.toByteArray());
 		this.socket.getOutputStream().flush();
@@ -173,7 +174,7 @@ public class SimpleHttpClient {
 			if(requestURL.getProtocol().equals("https")){
 				this.createHTTPSSocket();
 			}else {
-				socket = new Socket(requestURL.getHost(), requestURL.getPort());
+				this.createHTTPSocket();
 			}
 			bis = new BufferedInputStream(socket.getInputStream(), 4 * 1024);
 		}
@@ -186,6 +187,20 @@ public class SimpleHttpClient {
 		bis.mark(1024 * 4); 
 		in = new BufferedReader(new InputStreamReader(bis));
 		out = new PrintWriter(buffer);
+	}
+	
+	private void createHTTPSocket() throws IOException{
+		if(hasProxy){
+			String host = System.getProperty("http.proxyHost");
+			String proxyPort = System.getProperty("http.proxyPort", "80");
+			log.debug("Connect to http proxy:" + host + ", port:" + proxyPort);
+			socket = new Socket(host, Integer.parseInt(proxyPort));
+		}else {
+			int port = requestURL.getPort();
+			port = port > 0 ? port : 80;
+			log.debug("Connect to http:" + requestURL.getHost() + ", port:" + port);
+			socket = new Socket(requestURL.getHost(), port);
+		}
 	}
 	
 	private Socket connectHTTPSProxy() throws IOException{

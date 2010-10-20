@@ -184,6 +184,7 @@ public class LoginDailog extends JDialog {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         NoteBook book = new NoteBook();
         book.user = "deonwu";
+        book.password = "ite,rt1201"; //.toCharArray();
         
 
         //Add content to the window.
