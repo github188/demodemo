@@ -1,6 +1,7 @@
 package org.notebook.io;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponse {
 	public SimpleHttpClient connection = null;
@@ -8,6 +9,7 @@ public class HttpResponse {
 	public int contentLength = -1;
 	private int statusCode = 200;
 	private byte[] content = null;
+	private Map<String, String> cookies = new HashMap<String, String>();
 	
 	private String header = "";
 	
@@ -21,6 +23,10 @@ public class HttpResponse {
 	
 	public byte[] getContent(){
 		return content;
+	}
+	
+	public String getCookie(String name){
+		return this.cookies.get(name);
 	}
 	
 	public void setContent(byte[] content){
@@ -38,6 +44,16 @@ public class HttpResponse {
 			this.header += "\n";
 		}		
 		this.header += head;
+		if(head.startsWith("Set-Cookie:")){
+			processCookies(head);
+		}
+	}
+	
+	protected void processCookies(String header){
+		header = header.replaceAll("Set-Cookie:", "");
+		String cookie = header.split(";", 2)[0];
+		String term[] = cookie.split("=", 2);
+		cookies.put(term[0].trim(), term[1].trim());
 	}
 	
 	public String toString(){

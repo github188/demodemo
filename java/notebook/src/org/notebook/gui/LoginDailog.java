@@ -132,6 +132,7 @@ public class LoginDailog extends JDialog {
 							book.user = username.getText();
 							book.password = new String(password.getPassword());
 							book.authToken = gmail.authToken;
+							book.authSID = gmail.authSID;
 							dailog.setVisible(false);
 							dailog.dispose();
 						}else {
@@ -211,8 +212,8 @@ public class LoginDailog extends JDialog {
     	//MsgBox message = new MsgBox(null, "Hey you user, are you sure ?", true);
     	//Dialog.
     	org.apache.commons.logging.impl.SimpleLog logx = null;
-		System.setProperty("http.proxyHost", "10.144.1.10");
-		System.setProperty("http.proxyPort", "8080");
+		//System.setProperty("http.proxyHost", "10.144.1.10");
+		//System.setProperty("http.proxyPort", "8080");
     	
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

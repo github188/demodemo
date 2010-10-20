@@ -26,7 +26,10 @@ public class ClientHttpRequest {
   Map cookies = new HashMap();
 
   protected void connect() throws IOException {
-    if (os == null) os = connection.getOutputStream();
+    if (os == null) {
+    	postCookies();    	
+    	os = connection.getOutputStream();    	
+    }
   }
 
   protected void write(char c) throws IOException {
@@ -99,7 +102,6 @@ public class ClientHttpRequest {
 
   private void postCookies() {
     StringBuffer cookieList = new StringBuffer();
-
     for (Iterator i = cookies.entrySet().iterator(); i.hasNext();) {
       Map.Entry entry = (Map.Entry)(i.next());
       cookieList.append(entry.getKey().toString() + "=" + entry.getValue());
@@ -108,6 +110,7 @@ public class ClientHttpRequest {
         cookieList.append("; ");
       }
     }
+    //System.out.println("Cookie:" + cookieList.toString());
     if (cookieList.length() > 0) {
       connection.setRequestProperty("Cookie", cookieList.toString());
     }

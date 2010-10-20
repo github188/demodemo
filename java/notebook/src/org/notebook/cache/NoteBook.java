@@ -15,6 +15,7 @@ public class NoteBook implements Serializable{
 	public String username = "";
 	public String proxypassword = "";
 	public transient String authToken = "";
+	public transient String authSID = "";
 	
 	public NoteBook(){
 		user = defaultUser();

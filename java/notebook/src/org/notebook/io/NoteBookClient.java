@@ -29,8 +29,8 @@ public class NoteBookClient{
 	
 	public NoteBookClient(NoteBook book){
 		this.book = book;
-		if(book.authToken != null){
-			this.header.put("Authorization", "GoogleLogin auth=" + book.authToken);
+		if(book.authSID != null){
+			this.cookies.put("ACSID", book.authSID);
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class NoteBookClient{
 	public void updateCategory(Category cate) throws IOException, ClientException, AuthcationException{		
 		URL url = new URL(book.endpoint + "/update_category");
 		Map<String, String> param = new HashMap<String, String>();
-		
+		updateCookies();
 		
 		param.put("user", this.book.getUser());
 		if(cate.parent != null){
@@ -135,7 +135,7 @@ public class NoteBookClient{
 		Map<String, String> param = new HashMap<String, String>();
 		
 		if(message==null || message.messageId == null)return;
-		
+		updateCookies();
 		param.put("user", this.book.getUser());
 		param.put("message_id", message.messageId);
 		param.put("text", message.getText());
@@ -166,7 +166,7 @@ public class NoteBookClient{
 	public void removeCategory(Category cate) throws IOException, ClientException, AuthcationException{
 		URL url = new URL(book.endpoint + "/delete");
 		Map<String, String> param = new HashMap<String, String>();
-		
+		updateCookies();
 		param.put("user", this.book.getUser());
 		param.put("cate_id", cate.id);
 		
@@ -207,5 +207,9 @@ public class NoteBookClient{
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
 		}
+	}
+	
+	protected void updateCookies(){
+		this.cookies.put("ACSID", book.authSID);
 	}
 }

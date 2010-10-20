@@ -140,6 +140,7 @@ public class DefaultBookController implements BookController{
 					null, null)){
 				log.info("login OK, with user " + book.getUser());
 				book.authToken = auth.authToken;
+				book.authSID = auth.authSID;
 				autoLoginTimes++;
 				return true;
 			}else {
@@ -147,7 +148,7 @@ public class DefaultBookController implements BookController{
 				loginBox.setLocationRelativeTo(mainFrame);
 				loginBox.setVisible(true);
 				autoLoginTimes = 0;
-				log.debug("authToken:" + book.authToken);
+				log.debug("authSID:" + book.authSID);
 				return book.authToken != null;
 			}
 		}

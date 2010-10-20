@@ -408,7 +408,12 @@ public class NavigationTree extends JTree implements MouseListener {
 					label.append(format.format(c.lastUpdated));
 					renderer.setText(label.toString());
 				}else {
-					StringBuilder label = new StringBuilder(c.name);
+					StringBuilder label = new StringBuilder();
+					if(c.name != null){
+						label.append(c.name);
+					}else {
+						label.append("null");
+					}
 					if(c.isDirty){
 						label.append("*");
 					}

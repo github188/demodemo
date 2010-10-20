@@ -105,13 +105,15 @@ public class SimpleHttpClient {
 			}
 			//bis.reset();
 			//bis.skip(headerLength +1);
-			content = new byte[contentLength];
-			for(;contentLength >0;){
-				int count = bis.read(content, content.length - contentLength, contentLength);
-				if(count == -1)break;
-				contentLength -= count;
+			if(response.getResponseStatus() != 302){
+				content = new byte[contentLength];
+				for(;contentLength >0;){
+					int count = bis.read(content, content.length - contentLength, contentLength);
+					if(count == -1)break;
+					contentLength -= count;
+				}
+				response.setContent(content);
 			}
-			response.setContent(content);
 			log.trace("Response:" + response.toString());
 		}else {
 			throw new IOException("Invalid HTTP response hread:" + status);
@@ -170,7 +172,7 @@ public class SimpleHttpClient {
 	//
 	
 	private void createSocket() throws IOException{
-		if(this.socket == null || !this.socket.isConnected()){
+		if(this.socket == null || this.socket.isClosed() || !this.socket.isConnected()){
 			if(requestURL.getProtocol().equals("https")){
 				this.createHTTPSSocket();
 			}else {
