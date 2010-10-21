@@ -207,14 +207,10 @@ public class DefaultBookController implements BookController{
 
 		@Override
 		public void done(SyncTask task) {
-			if(task.status.equals(SyncTask.DOWN_LOAD)){
+			if(task.task.equals(SyncTask.TASK_DOWN_DATA)){
 				Category c = null;
-				if(task.remote != null){
-					c = book.root.search(task.remote.id);
-				}else if (task.local != null){
-					c = book.root.search(task.local.id);
-				}
-				if(c != null && c.isLeaf() && c.getMessage() != null){
+				c = book.root.search(task.local.id);
+				if(c != null && c.getMessage() != null){
 					storage.save(c.getMessage());
 					mainFrame.editor.reloadDocument(c.getMessage());
 				}
@@ -230,6 +226,20 @@ public class DefaultBookController implements BookController{
 					sync.start(book, syncThread);
 				}
 			}
+		}
+
+		@Override
+		public int conflict(Category local, Category remote, int cause) {
+			if(cause == CONFLICT_EXPIRED){
+				return UPDATE_IGNORE;
+			}else {
+				return UPDATE_FORCE;		
+			}
+		}
+
+		@Override
+		public void waiting() {
+			storage.saveNoteBook(book);			
 		}
 	}
 		

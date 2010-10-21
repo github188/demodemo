@@ -405,6 +405,9 @@ public class NavigationTree extends JTree implements MouseListener {
 					if(c.isDirty){
 						label.append("*");
 					}
+					if(c.isExpired){
+						label.append("$");
+					}
 					label.append(" ");
 					label.append(format.format(c.lastUpdated));
 					renderer.setText(label.toString());

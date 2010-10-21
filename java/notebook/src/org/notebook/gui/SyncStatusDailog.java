@@ -28,6 +28,7 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 	private SyncService service = null;
 	private StatusModel doneList = null;
 	private StatusModel paddingList = null;
+	private StatusModel dataList = null;
 	public SyncStatusDailog(JFrame parent, SyncService service){
 		super(parent, true);
 		this.service = service;
@@ -46,13 +47,18 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 		
 		doneList = new StatusModel(this.service.doneTask);
 		paddingList = new StatusModel(this.service.taskQueue);
+		dataList = new StatusModel(this.service.dataQueue);
 		
 		JTable doneTable = new StatusTable(paddingList);
 		JScrollPane jsp = new JScrollPane(doneTable);		
-		textControlsPane.addTab("更新列表", jsp);
+		textControlsPane.addTab("更新状态", jsp);
+		
+		JTable dataTable = new StatusTable(dataList);
+		JScrollPane jsp3 = new JScrollPane(dataTable);		
+		textControlsPane.addTab("更新数据", jsp3);		
 		
 		JTable taskTable = new StatusTable(doneList);
-		JScrollPane jsp2 = new JScrollPane(taskTable);		
+		JScrollPane jsp2 = new JScrollPane(taskTable);
 		textControlsPane.addTab("完成更新", jsp2);
 		
         JPanel buttons = new JPanel();        
@@ -109,6 +115,7 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
+			if(rowIndex >= data.size()) return "";
 			SyncTask task = data.get(rowIndex);
 			switch(columnIndex){
 				case 0: return task.task;
@@ -127,15 +134,28 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 	public void start(SyncTask task) {
 		this.paddingList.fireTableDataChanged();
 		this.doneList.fireTableDataChanged();
+		this.dataList.fireTableDataChanged();
 	}
 
 	@Override
 	public void done(SyncTask task) {
 		this.paddingList.fireTableDataChanged();
 		this.doneList.fireTableDataChanged();
+		this.dataList.fireTableDataChanged();
 	}
 
 	@Override
 	public void syncError(SyncTask task, Exception e) {
+	}
+
+	@Override
+	public int conflict(Category local, Category remote, int cause) {
+		return 0;
+	}
+
+	@Override
+	public void waiting() {
+		// TODO Auto-generated method stub
+		
 	}
 }

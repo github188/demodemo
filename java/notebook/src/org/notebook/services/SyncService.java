@@ -25,6 +25,7 @@ public class SyncService {
 	public Collection<SyncListener> ls = new ArrayList<SyncListener>();
 	
 	public LinkedList<SyncTask> taskQueue = new LinkedList<SyncTask>();
+	public LinkedList<SyncTask> dataQueue = new LinkedList<SyncTask>();
 	public LinkedList<SyncTask> doneTask = new LinkedList<SyncTask>();	
 	private boolean running = false;
 	private SyncRunner runner = null;
@@ -102,7 +103,45 @@ public class SyncService {
 		}
 	}
 	
-	protected void processDownLoad(SyncTask task){
+	protected void doDownLoadData(SyncTask task){
+		EventProxy.start(task);
+		Category local = root.search(task.local.id);
+		if(local != null){
+			try{
+				NoteMessage msg = client.downLoadMessage(local.id);
+				local.getMessage(true).update(msg);
+				local.isExpired = false;
+				task.status = SyncTask.DOWN_LOAD;
+				EventProxy.done(task);
+			}catch(Exception e){
+				EventProxy.syncError(task, e);
+			}
+		}else {
+			task.exception = new Exception("Not found local data with id " +
+					task.local.id ); 
+			task.status = SyncTask.IGNORED;
+		}		
+	}
+	
+	protected void doUpLoadData(SyncTask task){
+		EventProxy.start(task);
+		Category local = root.search(task.local.id);
+		if(local != null){
+			try{
+				client.uploadMessage(local.getMessage(true));
+				local.isDirty = false;
+				task.status = SyncTask.UP_LOAD;
+				EventProxy.done(task);
+			}catch(Exception e){
+				EventProxy.syncError(task, e);
+			}
+		}else {
+			task.exception = new Exception("Not found local data with id " +
+					task.local.id ); 
+		}		
+	}	
+	
+	protected void doDownLoadStructure(SyncTask task){
 		Category parent = null, local=null, remote=null;
 		try {
 			EventProxy.start(task);
@@ -126,16 +165,20 @@ public class SyncService {
 				}
 				local = this.root.search(remote.id);
 				if(local == null){
-					local = task.remote;
+					local = task.remote.copy();
 					task.newCreated = true;
-					task.status = SyncTask.NEW_CREATED;
 					local.isExpired = true;
+					task.status = SyncTask.NEW_CREATED;
+					if(local.isLeaf()){
+						this.scheduleData(local.copy(), SyncTask.TASK_DOWN_DATA);
+					}else if(local.children != null){
+						//新增节点的数据需要清空.
+						local.children.clear();
+					}
 				}else {
 					task.local = local.copy();
 				}
-				if(!parent.children.contains(local)){
-					parent.addCategory(local, false);
-				}
+				parent.addCategory(local, false);
 			}
 			if(remote == null || local == null){
 				task.exception = new Exception("Local or remote not found for download"); 
@@ -144,16 +187,11 @@ public class SyncService {
 			}
 			if(!task.newCreated){
 				if(task.force){
-					_upldateLocalNode(local, remote);
-					task.status = SyncTask.DOWN_LOAD;
-				}else if(local.isDirty){
-					task.exception = new Exception("Local data is dirty!"); 
-					task.status = SyncTask.IGNORED;					
+					task.status = updateLocalFromRemote(local, remote);
 				}else {
 					int result = cmpDate(task.remote.lastUpdated, task.local.lastUpdated);
 					if(result > 0 || local.isExpired){
-						_upldateLocalNode(local, remote);
-						task.status = SyncTask.DOWN_LOAD;
+						task.status = updateLocalFromRemote(local, remote);
 					}else {
 						task.status = SyncTask.NO_UPDATE;
 						
@@ -183,36 +221,49 @@ public class SyncService {
 		}
 	}
 	
-	private void _upldateLocalNode(Category local, Category remote) throws IOException, ClientException{				
+	private String updateLocalFromRemote(Category local, Category remote) throws IOException, ClientException{
 		if(local.isLeaf() != remote.isLeaf()){
 			if(remote.isLeaf()){
-				NoteMessage note = client.downLoadMessage(remote.id);
 				Category c = local.getConflict().addMessage(remote.name);
-				c.getMessage(true).update(note);
+				this.scheduleData(c, SyncTask.TASK_DOWN_DATA);
 				c.lastUpdated = remote.lastUpdated;
 			}else {
 				Category c = local.getConflict().addCategory(remote.name);
 				c.lastUpdated = remote.lastUpdated;
 			}
-		}else {
+			return SyncTask.DOWN_CONFLICT;
+		}else if(!local.isDirty || 
+				SyncListener.UPDATE_FORCE == EventProxy.conflict(local, remote, SyncListener.CONFLICT_DIRTY)){
 			local.setName(remote.name);
-			local.lastUpdated = remote.lastUpdated;		
+			local.lastUpdated = remote.lastUpdated;	
 			if(local.isLeaf()){
-				NoteMessage note = client.downLoadMessage(remote.id);
-				local.getMessage(true).update(note); // .setText(note.text);
+				this.scheduleData(local, SyncTask.TASK_DOWN_DATA);
 			}else {
-				//Collection<Category> children = client.listCategory(remote);
 				if(remote.children == null){
 					remote.children = client.listCategory(remote);
 				}
 				this.removeLocalChildren(remote.children, local);
+				local.isExpired = false;
 			}
+			return SyncTask.DOWN_LOAD;
+		}else {
+			local.isExpired = true;
+			return SyncTask.IGNORED;
 		}
-		local.isExpired = false;
+	}
+	
+	private void scheduleData(Category node, String task){
+		SyncTask newTask = new SyncTask(task, node.copy());
+		dataQueue.add(newTask);
+		if(task.equals(SyncTask.TASK_DOWN_DATA)){
+			node.isExpired = true;
+		}else {
+			node.isDirty = true;
+		}
 	}
 		
-	
-	protected void processUpLoad(SyncTask task){
+	//doDownLoadStructure
+	protected void doUploadStructure(SyncTask task){
 		Category local=null;
 		if(!task.local.flushed){
 			task.status = SyncTask.IGNORED;
@@ -230,17 +281,12 @@ public class SyncService {
 			EventProxy.start(task);
 			task.remote = client.getCategory(local.id);
 			if(task.force){
-				_uploadLocalNode(local);
-				task.status = SyncTask.UP_LOAD;
-			}else if(local.isExpired){
-				task.exception = new Exception("Local data is expired!"); 
-				task.status = SyncTask.IGNORED;
+				task.status = uploadToRemote(local, task.remote);
 			}else {
 				//使用计划时间的比较,保证更新结果和界面显示一致.
 				int result = cmpDate(task.local.lastUpdated, task.remote.lastUpdated);
 				if(result > 0 || local.isDirty){
-					_uploadLocalNode(local);
-					task.status = SyncTask.UP_LOAD;
+					task.status = uploadToRemote(local, task.remote);
 				}else {
 					task.status = SyncTask.NO_UPDATE;
 				}
@@ -252,7 +298,7 @@ public class SyncService {
 					taskQueue.add(newTask);		
 				}
 			}
-			local.isDirty = false;
+			//local.isDirty = false;
 		}catch(Exception e){
 			EventProxy.syncError(task, e);
 			log.error(e, e);
@@ -263,17 +309,26 @@ public class SyncService {
 		}
 	}
 	
-	private void _uploadLocalNode(Category local) throws Exception{		
-		client.updateCategory(local);
-		if(local.isLeaf()){
-			client.uploadMessage(local.getMessage(true));
-		}else {
-			for(Category c: client.listCategory(local)){
-				if(root.search(c.id) == null){
-					client.removeCategory(c);
+	private String uploadToRemote(Category local, Category remote) throws Exception{
+		if(!local.isExpired ||
+			SyncListener.UPDATE_FORCE == EventProxy.conflict(local, remote, SyncListener.CONFLICT_EXPIRED)){			
+			client.updateCategory(local);
+			if(local.isLeaf()){
+				this.scheduleData(local, SyncTask.TASK_UP_DATA);
+			}else {
+				for(Category c: client.listCategory(local)){
+					if(root.search(c.id) == null){
+						client.removeCategory(c);
+					}
 				}
 			}
+			local.isDirty = false;
+			return SyncTask.UP_LOAD;
+		}else {
+			local.isDirty = true;
+			return SyncTask.IGNORED;
 		}
+		
 	}
 	
 	protected void processSync(SyncTask task){
@@ -284,31 +339,21 @@ public class SyncService {
 		private boolean terminal = false;
 		@Override
 		public void run() {
-			SyncTask t = null;
 			log.info("Start SyncRunner");
 			client = new NoteBookClient(book);			
 			syncCategoryId();
-			while(running && !this.terminal){
-				synchronized(taskQueue){
-					t = taskQueue.poll();
-					if(t == null){
-						try {
-							//更新一论结束后需要更新ID.
-							syncCategoryId();
-							taskQueue.wait();
-							continue;
-						} catch (InterruptedException e) {
-							continue;
-						}
-					}
-				}
+			for(SyncTask t = next(); t != null; t = next()){
 				try{
 					if(t.task.equals(SyncTask.TASK_SYNC)){
 						processSync(t);
 					}else if(t.task.equals(SyncTask.TASK_UP)){
-						processUpLoad(t);
+						doUploadStructure(t);
 					}else if(t.task.equals(SyncTask.TASK_DOWN)){
-						processDownLoad(t);
+						doDownLoadStructure(t);
+					}else if(t.task.equals(SyncTask.TASK_DOWN_DATA)){
+						doDownLoadData(t);
+					}else if(t.task.equals(SyncTask.TASK_UP_DATA)){
+						doUpLoadData(t);
 					}
 				}catch(Exception e){
 					log.error(e, e);
@@ -318,6 +363,30 @@ public class SyncService {
 			}
 			log.info("Stop SyncRunner");
 		}
+		
+		private synchronized SyncTask next(){
+			SyncTask t = null;
+			while(running && !this.terminal){				
+				t = taskQueue.poll();
+				if(t == null){
+					t = dataQueue.poll();
+				}
+				if(t != null) return t;
+				synchronized(taskQueue){
+					try {
+						//更新一论结束后需要更新ID.
+						syncCategoryId();
+						EventProxy.waiting();
+						taskQueue.wait();
+						continue;
+					} catch (InterruptedException e) {
+						continue;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public void close(){
 			this.terminal = true;
 			synchronized(taskQueue){
@@ -402,6 +471,27 @@ public class SyncService {
 			for(SyncListener l: ls){
 				l.syncError(task, e);
 			}				
+		}
+
+		@Override
+		public int conflict(Category local, Category remote, int cause) {
+			int result = SyncListener.UPDATE_PADDING;
+			for(SyncListener l: ls){
+				result = l.conflict(local, remote, cause);
+				if(result != SyncListener.UPDATE_PADDING){
+					break;
+				}
+			}			
+			return result == SyncListener.UPDATE_PADDING ?
+					SyncListener.UPDATE_FORCE:
+					result;
+		}
+
+		@Override
+		public void waiting() {
+			for(SyncListener l: ls){
+				l.waiting();
+			}					
 		}
 	};
 }
