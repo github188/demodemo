@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
+import org.notebook.io.AuthcationException;
 import org.notebook.io.ClientException;
 import org.notebook.io.NoteBookClient;
 
@@ -356,7 +357,9 @@ public class SyncService {
 						doUpLoadData(t);
 					}
 				}catch(Exception e){
-					log.error(e, e);
+					if(!(e instanceof AuthcationException)){
+						log.error(e, e);
+					}
 				}finally{
 					doneTask.add(t);
 				}
