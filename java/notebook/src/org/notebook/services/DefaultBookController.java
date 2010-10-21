@@ -208,9 +208,15 @@ public class DefaultBookController implements BookController{
 		@Override
 		public void done(SyncTask task) {
 			if(task.status.equals(SyncTask.DOWN_LOAD)){
-				if(task.local != null && task.local.isLeaf() && task.local.getMessage() != null){
-					storage.save(task.local.getMessage());
-					mainFrame.editor.reloadDocument(task.local.getMessage());
+				Category c = null;
+				if(task.remote != null){
+					c = book.root.search(task.remote.id);
+				}else if (task.local != null){
+					c = book.root.search(task.local.id);
+				}
+				if(c != null && c.isLeaf() && c.getMessage() != null){
+					storage.save(c.getMessage());
+					mainFrame.editor.reloadDocument(c.getMessage());
 				}
 			}
 		}

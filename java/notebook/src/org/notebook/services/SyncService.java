@@ -172,6 +172,9 @@ public class SyncService {
 				}
 			}
 		}catch(Exception e){
+			if(local != null){
+				local.isExpired = true;
+			}
 			EventProxy.syncError(task, e);
 			log.error(e, e);
 		}finally{
