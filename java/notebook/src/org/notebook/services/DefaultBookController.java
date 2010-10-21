@@ -207,7 +207,12 @@ public class DefaultBookController implements BookController{
 
 		@Override
 		public void done(SyncTask task) {
-			// TODO Auto-generated method stub			
+			if(task.status.equals(SyncTask.DOWN_LOAD)){
+				if(task.local != null && task.local.isLeaf() && task.local.getMessage() != null){
+					storage.save(task.local.getMessage());
+					mainFrame.editor.reloadDocument(task.local.getMessage());
+				}
+			}
 		}
 
 		@Override
@@ -245,7 +250,7 @@ public class DefaultBookController implements BookController{
 						NoteMessage msg = node.getMessage(storage, true);
 						mainFrame.editor.openDocument(msg);
 					}});
-				mainFrame.status("Opening " + node.name);
+				mainFrame.status("Opening " + node.name + "(" + node.id + ")");
 			}
 		}
 		

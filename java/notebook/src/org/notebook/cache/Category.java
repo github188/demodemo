@@ -279,10 +279,12 @@ public class Category implements TreeNode, Serializable, Cloneable{
 			}
 		}
 		if(this.isLeaf()){
-			NoteMessage msg = this.getMessage(false);
-			if(msg != null && msg.isDirty){
-				this.root.loader.save(msg);
-				msg.isDirty = false;
+			if(this.fileRef != null && this.fileRef.get() != null) {
+				NoteMessage msg = this.fileRef.get();
+				if(msg != null && msg.isDirty){
+					this.root.loader.save(msg);
+					msg.isDirty = false;
+				}
 			}
 		}
 	}

@@ -35,13 +35,26 @@ public class DocumentEditor extends JTextArea {
 		this.setFont(new Font("Courier", Font.PLAIN, 14));
 		this.setLineWrap(false);
 		this.setWrapStyleWord(true);
-		//this.==
+		this.setEditable(false);
 	}
 	
 	public void openDocument(NoteMessage msg){
 		this.msg = msg;
 		this.setText(msg.text);
 		this.msg.isDirty = false;
+		if(msg.getCategory().isExpired){
+			this.setEditable(false);
+		}else {
+			this.setEditable(true);
+		}
+	}
+	
+	public void reloadDocument(NoteMessage newMsg){
+		if(this.msg != null && newMsg != null){
+			if(this.msg.messageId.equals(newMsg.messageId)){
+				this.setText(newMsg.getText());
+			}
+		}
 	}
 	
 	public NoteMessage currentDocuemnt(){

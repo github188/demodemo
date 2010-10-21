@@ -308,7 +308,7 @@ public class SyncService {
 						processDownLoad(t);
 					}
 				}catch(Exception e){
-					t.exception = e;
+					log.error(e, e);
 				}finally{
 					doneTask.add(t);
 				}
