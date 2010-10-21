@@ -77,6 +77,7 @@ public class NavigationTree extends JTree implements MouseListener {
 		this.setCellEditor(editor);
 		this.addTreeWillExpandListener(treeWillExpandListener);
 		this.setCellRenderer(new BookTreeRenderer());
+		//this.setCellRenderer(new DefaultTreeCellRenderer());
 		
 		TreeDragSource ds = new TreeDragSource(this, DnDConstants.ACTION_MOVE);
 		TreeDropTarget dt = new TreeDropTarget(this);	

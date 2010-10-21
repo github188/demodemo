@@ -91,7 +91,7 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 		public StatusModel(LinkedList<SyncTask> data){
 			this.data = data;			
 		}
-		String[] columns = new String[]{"任务", "本地节点", "远程节点", "本地时间", "远程时间", "状态"};
+		String[] columns = new String[]{"任务", "本地节点", "远程节点", "本地时间", "远程时间", "状态", "错误信息"};
 		
 		public String getColumnName(int column){
 			 return columns[column];
@@ -116,7 +116,8 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 				case 2: return task.remote != null ? task.remote.name : "";
 				case 3: return !task.newCreated && task.local != null && task.local.lastUpdated != null ? format.format(task.local.lastUpdated) : "";
 				case 4: return task.remote != null && task.remote.lastUpdated != null ? format.format(task.remote.lastUpdated) : "";
-				case 5: return task.status;				
+				case 5: return task.status;	
+				case 6: return task.exception != null? task.exception.toString() : "";	
 			}			
 			return "";
 		}

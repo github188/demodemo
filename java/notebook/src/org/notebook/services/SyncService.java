@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Category;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
-import org.notebook.io.AuthcationException;
 import org.notebook.io.ClientException;
 import org.notebook.io.NoteBookClient;
 
@@ -50,6 +49,7 @@ public class SyncService {
 				log.error(e.toString(), e);
 			}
 		}
+		taskQueue.clear();
 		runner = new SyncRunner();
 		pool.execute(runner);
 	}
@@ -104,10 +104,6 @@ public class SyncService {
 	
 	protected void processDownLoad(SyncTask task){
 		Category parent = null, local=null, remote=null;
-		if(task.local != null && !task.local.flushed){
-			task.status = SyncTask.IGNORED;
-			return;
-		}
 		try {
 			EventProxy.start(task);
 			if(task.local != null){
@@ -123,20 +119,23 @@ public class SyncService {
 					return;
 				}
 			}else {
-				parent = this.root.search(task.remote.parentId);
+				remote = task.remote;
+				parent = this.root.search(remote.parentId);
 				if(parent == null || parent.isLeaf()){
 					parent = this.root.getConflict();
 				}
-				local = this.root.search(task.remote.id);
+				local = this.root.search(remote.id);
 				if(local == null){
 					local = task.remote;
 					task.newCreated = true;
 					task.status = SyncTask.NEW_CREATED;
+					local.isExpired = true;
 				}else {
 					task.local = local.copy();
 				}
-				
-				parent.addCategory(local, false);
+				if(!parent.children.contains(local)){
+					parent.addCategory(local, false);
+				}
 			}
 			if(remote == null || local == null){
 				task.exception = new Exception("Local or remote not found for download"); 
@@ -147,9 +146,12 @@ public class SyncService {
 				if(task.force){
 					_upldateLocalNode(local, remote);
 					task.status = SyncTask.DOWN_LOAD;
+				}else if(local.isDirty){
+					task.exception = new Exception("Local data is dirty!"); 
+					task.status = SyncTask.IGNORED;					
 				}else {
 					int result = cmpDate(task.remote.lastUpdated, task.local.lastUpdated);
-					if(result > 0){
+					if(result > 0 || local.isExpired){
 						_upldateLocalNode(local, remote);
 						task.status = SyncTask.DOWN_LOAD;
 					}else {
@@ -159,6 +161,9 @@ public class SyncService {
 				}
 			}
 			if(!task.status.equals(SyncTask.NO_UPDATE) && !remote.isLeaf()){
+				if(remote.children == null){
+					remote.children = client.listCategory(remote);
+				}
 				for(Category c: remote.children){
 					SyncTask newTask = new SyncTask(SyncTask.TASK_DOWN, null);
 					newTask.remote = c;
@@ -200,6 +205,7 @@ public class SyncService {
 				this.removeLocalChildren(remote.children, local);
 			}
 		}
+		local.isExpired = false;
 	}
 		
 	
@@ -223,6 +229,9 @@ public class SyncService {
 			if(task.force){
 				_uploadLocalNode(local);
 				task.status = SyncTask.UP_LOAD;
+			}else if(local.isExpired){
+				task.exception = new Exception("Local data is expired!"); 
+				task.status = SyncTask.IGNORED;
 			}else {
 				//使用计划时间的比较,保证更新结果和界面显示一致.
 				int result = cmpDate(task.local.lastUpdated, task.remote.lastUpdated);

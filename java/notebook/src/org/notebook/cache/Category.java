@@ -129,6 +129,8 @@ public class Category implements TreeNode, Serializable, Cloneable{
 	
 	public synchronized Category addCategory(Category c, boolean updateDateTime){
 		if(this.nodeType == FILE) return null;
+		if(this.children == null) this.children = new ArrayList<Category>(); 
+		if(this.children.contains(c)) return null;
 		this.children.add(c);
 		if(updateDateTime) this.setLastUpdate();
 		c.parent = this;
@@ -329,7 +331,7 @@ public class Category implements TreeNode, Serializable, Cloneable{
 
 	@Override
 	public int getChildCount() {
-		return children.size();
+		return children != null ? children.size() : 0;
 	}
 
 	@Override

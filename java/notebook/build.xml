@@ -57,7 +57,7 @@
    </target> 
   
          <target name="init" depends="properties"> 
-                 <mkdir dir="${build.dir}"/> 
+                 <mkdir dir="${build.dir}"/>                  
                  <mkdir dir="${build.dir}/classes"/> 
                  <mkdir dir="${build.dir}/lib"/>
                  <mkdir dir="${dist.dir}"/> 
@@ -73,7 +73,7 @@
                             destdir="${build.dir}/classes" 
                             includes="**/*.java" 
                             deprecation="on" 
-                            debug="${debug}" 
+                            debug="true"
                             target="${target-jvm}" 
                             source="${source-level}" 
                             classpath="" 
@@ -88,7 +88,7 @@
                  </copy>
          </target>           
     
-         <target name="jar" depends="compile-shell,gen-key">
+         <target name="jar" depends="clean,compile-shell,gen-key">
                  <jar jarfile="${build.dir}/lib/${dist.name}"
                           basedir="${build.dir}/classes"
                           compress="${jar-compression}"
@@ -122,8 +122,10 @@
 	</target>      
   
    <target name="clean" depends="properties"> 
-     <delete quiet="true" dir="${build.dir}"/> 
-     <delete quiet="true" dir="${dist.dir}"/> 
+     <delete quiet="true" dir="${build.dir}"/>
+     <!-- 
+     <delete quiet="true" dir="${dist.dir}"/>
+     --> 
    </target> 
   
    <target name="help" depends="properties"> 
