@@ -136,7 +136,8 @@ public class DefaultBookController implements BookController{
 		GmailAuthencation auth = new GmailAuthencation();
 		log.info("Try login with user, " + book.getUser());
 		if(autoLoginTimes < 3){
-			if(auth.login(book.getUser() + "@gmail.com", book.password.toCharArray(),
+			if(book.password != null &&
+			   auth.login(book.getUser() + "@gmail.com", book.password.toCharArray(),
 					null, null)){
 				log.info("login OK, with user " + book.getUser());
 				book.authToken = auth.authToken;

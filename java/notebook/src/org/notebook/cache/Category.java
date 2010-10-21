@@ -54,6 +54,12 @@ public class Category implements TreeNode, Serializable, Cloneable{
 		//this.id = this.getNextId();
 	}
 	
+	public String getName(){
+		if(this.name == null || this.name.trim().equals("")){
+			this.name = "unkown";
+		}
+		return this.name.trim();
+	}
 
 	public void setRoot(Category c) {
 		this.root = c;
