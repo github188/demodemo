@@ -49,7 +49,6 @@ public class GmailAuthencation {
 				param.put("logincaptcha", cpatcha);
 			}
 			resp = client.post("/accounts/ClientLogin", param);
-			log.info("Reponse:" + resp.toString() + "\n" + resp.getResponseMessage());
 			String[] item = null;
 			boolean loginOk = false;
 			for(String line: resp.getResponseMessage().split("\n")){

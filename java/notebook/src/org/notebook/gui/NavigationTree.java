@@ -399,6 +399,9 @@ public class NavigationTree extends JTree implements MouseListener {
 			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)componet;
 			if(value instanceof Category){
 				Category c = (Category)value;
+				if(c.name == null || c.name.trim().equals("")){
+					c.name = "null";
+				}
 				if(c.isLeaf() && c.lastUpdated != null){
 					StringBuilder label = new StringBuilder(c.name);
 					if(c.isDirty){
@@ -408,12 +411,7 @@ public class NavigationTree extends JTree implements MouseListener {
 					label.append(format.format(c.lastUpdated));
 					renderer.setText(label.toString());
 				}else {
-					StringBuilder label = new StringBuilder();
-					if(c.name != null){
-						label.append(c.name);
-					}else {
-						label.append("null");
-					}
+					StringBuilder label = new StringBuilder(c.name);
 					if(c.isDirty){
 						label.append("*");
 					}
