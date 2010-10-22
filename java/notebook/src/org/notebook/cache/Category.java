@@ -3,6 +3,7 @@ package org.notebook.cache;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -25,16 +26,19 @@ public class Category implements TreeNode, Serializable, Cloneable{
 	public boolean flushed = true;
 	public boolean isDirty = false;
 	public boolean isExpired = false;
+	public int order = 0;
+	public String orderBy = "";
 	
 	//public transient NoteMessage file = null;
 	public transient DefaultTreeModel treeModel = null;
-	private transient WeakReference<NoteMessage> fileRef = null;	
+	private transient WeakReference<NoteMessage> fileRef = null;
 	public transient Category parent = null;
 	public transient DataStorage loader = null;
 	public transient String parentId = null;
 	private transient Category root = null;
 	private transient Category conflict = null;
 	private transient Category removed = null;
+	//private transient Comparator<Category> = null;
 	private int nextID = 0;
 	public Category(){
 		root = this;
