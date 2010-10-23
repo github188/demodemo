@@ -8,15 +8,27 @@
 {% endfor %}
 </div>
 <div id="body">
-<h4>{{category.name}}</h4>
-<div  class='hd'>
-<div style="padding:4px 0; background:#e5ecf9;">{{category.update_date|date:"Y-m-d H:i:s" }}</div>
-</div>
 {% if message %}
-	{%autoescape off %}
-	  {{ message.wikified_content }}
-	{% endautoescape %}
+	<h4>{{category.name}}</h4>
+	<div  class='hd'>
+	<div style="padding:4px 0; background:#e5ecf9;">
+	Ver:{{message.version}},
+	{{category.update_date|date:"Y-m-d H:i:s" }},
+	{% if message.rollback %} <a href="?version={{message.version}}&rollback=Y">RollBack</a> {%endif%}
+	</div>
+	</div>
+		{%autoescape off %}
+		  {{ message.wikified_content }}
+		{% endautoescape %}
+	</div><br/>
+	{% if message.version_list %}
+		<hr/>
+		{% for ver in message.version_list %}
+		<a href=?version={{ver}}>v{{ver}}</a>&nbsp;
+		{% endfor %}
+	{% endif %}
 {% endif %}
-</div><br/>
+</div>
+
 
 {% endblock %}

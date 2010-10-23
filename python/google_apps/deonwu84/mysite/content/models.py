@@ -34,12 +34,37 @@ class UserCategory(db.Model):
     name = db.StringProperty()
     create_date = db.DateTimeProperty(auto_now_add=True)
     update_date = db.DateTimeProperty()
+    order_by = db.StringProperty()
+    position = db.StringProperty()
+    
     @property
     def id(self): return self.is_saved() and self.key().id() or None
     
     def isLeaf(self):
         return self.nodeType == 2
+class HistoryVersion(db.Model):
+    message_id = db.StringProperty()
+    version = db.IntegerProperty(default=0)
+    text = db.TextProperty()
+    tags = db.StringProperty()
+    create_date = db.DateTimeProperty(auto_now_add=True)
+    def wikified_content(self):
+        return _wikified_content(self.text)
     
+    
+def _wikified_content(text):
+    """
+    """
+    from format import * 
+    transforms = [
+      BlockHtmlFormat(),
+      SimpleHtmlFormat(),
+      AutoLink(),
+    ]
+    content = text
+    for transform in transforms:
+      content = transform.run(content)    
+    return content
 
 # parent is ContentCategory.
 class ContentMessage(db.Model):
@@ -60,6 +85,7 @@ class ContentMessage(db.Model):
     
     create_date = db.DateTimeProperty(auto_now_add=True)
     update_date = db.DateTimeProperty()
+    version = db.IntegerProperty(default=0)
     
     def add_tags(self, tags):
         tags = list(set(re.split(u"(\s+|　)", tags)))
@@ -76,19 +102,7 @@ class ContentMessage(db.Model):
                                        'ContentMessage', int(id)))
         
     def wikified_content(self):
-        """
-        """
-        from format import * 
-        transforms = [
-          BlockHtmlFormat(),
-          SimpleHtmlFormat(),
-          AutoLink(),
-        ]
-        content = self.text
-        for transform in transforms:
-          content = transform.run(content)
-        return content
-        
+        return _wikified_content(self.text)        
         
     def __getattr__(self, name):
         if name == 'htmlText':

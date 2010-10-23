@@ -19,8 +19,14 @@
 			<img border="0" src="/static/images/notebook.png"></img>
 			</a>
 			<span style="font-size:24px;">-{{owner.name}}的记事本</span>
-		</div>
-			
+			<span>
+			<script src="http://www.java.com/js/deployJava.js"></script>
+			<script>
+    		var url = "http://demodemo.googlecode.com/svn/trunk/java/notebook/dist/notebook.jnlp";
+    		deployJava.createWebStartLaunchButton(url, '1.6.0');
+			</script>
+			</span>			
+		</div>			
 		<div class='nav-menu'>
 			&nbsp;&nbsp;&nbsp;<a href="/note/{{owner.name}}/index">首页</a>
 {% if cate_list %} |
