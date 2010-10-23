@@ -219,6 +219,7 @@ public class DefaultBookController implements BookController{
 
 		@Override
 		public void syncError(SyncTask task, Exception e) {
+			log.info("Stop sync casued by exception, message:" + e.getMessage());
 			sync.stop();
 			if(e instanceof AuthcationException){
 				log.info("Auth error:" + e.getMessage());
@@ -252,6 +253,7 @@ public class DefaultBookController implements BookController{
 					saveOpenedMessage();
 					storage.saveNoteBook(book);
 					mainFrame.status("Saved all");
+					sync.upload(book.root, false);
 				}});
 			mainFrame.status("Saving...");
 		}
@@ -423,6 +425,32 @@ public class DefaultBookController implements BookController{
 			mainFrame.tree.setRoot(book.root);
 		}
 		
+		public void OrderByPosition(BookAction event) {
+			Category object = selectedTreeNode();
+			object.orderBy("position");
+		}
+		
+		public void OrderByCreateDate(BookAction event) {
+			Category object = selectedTreeNode();
+			object.orderBy("create_date");
+		}
+		public void OrderByUpdate(BookAction event) {
+			Category object = selectedTreeNode();
+			object.orderBy("update_date");
+		}
+		public void OrderByName(BookAction event) {
+			Category object = selectedTreeNode();
+			object.orderBy("name");
+		}
+		public void OrderMoveUp(BookAction event) {
+			Category object = selectedTreeNode();
+			object.moveOrder(-1);
+		}
+		public void OrderMoveDown(BookAction event) {
+			Category object = selectedTreeNode();
+			object.moveOrder(1);
+		}
+		
 		private Category selectedTreeNode(){
 			return this.selectedTreeNode(null);
 		}
@@ -443,6 +471,7 @@ public class DefaultBookController implements BookController{
 			if(note != null && note.isDirty){
 				storage.save(note);
 				note.isDirty = false;
+				sync.upload(note.getCategory(), false);
 			}
 		}
 	}

@@ -55,6 +55,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.notebook.cache.Category;
+import org.notebook.cache.Comparators;
 
 /*
 JOptionPane.showMessageDialog(frame,
@@ -413,6 +414,10 @@ public class NavigationTree extends JTree implements MouseListener {
 					renderer.setText(label.toString());
 				}else {
 					StringBuilder label = new StringBuilder(c.getName());
+					if(Comparators.shortName(c.getOrderBy()) != 'P'){
+						label.append(':');
+						label.append(Comparators.shortName(c.getOrderBy()));
+					}
 					if(c.isDirty){
 						label.append("*");
 					}

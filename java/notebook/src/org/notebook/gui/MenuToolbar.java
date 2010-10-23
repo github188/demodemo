@@ -38,6 +38,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
+import org.notebook.cache.Category;
 import org.notebook.i18n.SimpleResourceBound;
 
 public class MenuToolbar {
@@ -60,7 +61,14 @@ public class MenuToolbar {
 	public static final String SHOWWINDOW = "ShowWindow";
 	public static final String HIDEWINDOW = "HideWindow";
 	
-	
+	public static final String ORDERBY_POSITION = "OrderByPosition";
+	public static final String ORDERBY_CREATEDATE = "OrderByCreateDate";
+	public static final String ORDERBY_UPDATEDATE = "OrderByUpdate";
+	public static final String ORDERBY_NAME = "OrderByName";
+
+	public static final String ORDER_MOVE_UP = "OrderMoveUp";
+	public static final String ORDER_MOVE_DOWN = "OrderMoveDown";
+		
 	private MainFrame owner = null;
 	private ResourceBundle rb = new SimpleResourceBound();	
 	private Map<String, BookAction> actions = new HashMap<String, BookAction>();
@@ -145,6 +153,17 @@ public class MenuToolbar {
 		
 		$(SHOWWINDOW, "editor.gif", 0);	
 		$(HIDEWINDOW, "", 0);	
+		
+		//$(ORDER_MOVE_UP, "up.png", KeyEvent.VK_UP);	
+		//$(ORDER_MOVE_DOWN, "down.png", KeyEvent.VK_DOWN);
+		$(ORDER_MOVE_UP, "", KeyEvent.VK_UP);	
+		$(ORDER_MOVE_DOWN, "", KeyEvent.VK_DOWN);
+
+		
+		$(ORDERBY_POSITION, "", 0);	
+		$(ORDERBY_NAME, "", 0);
+		$(ORDERBY_CREATEDATE, "", 0);	
+		$(ORDERBY_UPDATEDATE, "", 0);
 	}
 		
 	public JMenuBar getMenuBar(){
@@ -189,6 +208,24 @@ public class MenuToolbar {
 	    menu.add($(OPEN));
 	    menu.add($(NEW_CATEGORY));
 	    menu.add($(NEW_NOTE));
+	    //
+	    if(tree.getSelectionPath() != null){
+			Category node = (Category)tree.getSelectionPath().getLastPathComponent();
+			if(node.getParent() != null){
+				node = (Category)node.getParent();
+				if(node.getOrderBy().endsWith("position")){
+					menu.addSeparator();
+					menu.add($(ORDER_MOVE_UP));
+					menu.add($(ORDER_MOVE_DOWN));
+				}
+			}
+	    }
+		menu.addSeparator();
+		menu.add($(ORDERBY_POSITION));
+		menu.add($(ORDERBY_NAME));
+		//menu.add($(ORDERBY_CREATEDATE));
+		menu.add($(ORDERBY_UPDATEDATE));
+		
 	    menu.addSeparator();
 	    menu.add($(SYNCDOWNLOAD));
 	    menu.add($(SYNCUPLOAD));

@@ -13,7 +13,11 @@ import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class Category implements TreeNode, Serializable, Cloneable{
+	protected static transient Log log = LogFactory.getLog("Category");
 	private static final long serialVersionUID = 8989783162442987982L;
 	public final static int DIRECTORY = 1;
 	public final static int FILE = 2;
@@ -26,8 +30,8 @@ public class Category implements TreeNode, Serializable, Cloneable{
 	public boolean flushed = true;
 	public boolean isDirty = false;
 	public boolean isExpired = false;
-	public int order = 0;
-	public String orderBy = "";
+	public int position = 0;
+	public String orderBy = "position";
 	
 	//public transient NoteMessage file = null;
 	public transient DefaultTreeModel treeModel = null;
@@ -82,12 +86,14 @@ public class Category implements TreeNode, Serializable, Cloneable{
 			if(node == null){
 				node = this.root.addCategory("同步冲突");
 				node.id = "conflict";
+				node.position = 1000 - 1;
 			}
 		}else {
 			node = this.search("conflict");
 			if(node == null){
 				node = this.addCategory("同步冲突");
 				node.id = "conflict";
+				node.position = 1000 - 1;
 			}
 		}
 		return node;
@@ -102,12 +108,14 @@ public class Category implements TreeNode, Serializable, Cloneable{
 			if(node == null){
 				node = this.root.addCategory("回收站");
 				node.id = "removed";
+				node.position = 1000;
 			}
 		}else {
 			node = this.search("removed");
 			if(node == null){
 				node = this.addCategory("回收站");
 				node.id = "removed";
+				node.position = 1000;
 			}
 		}
 		return node;
@@ -139,10 +147,9 @@ public class Category implements TreeNode, Serializable, Cloneable{
 		if(updateDateTime) this.setLastUpdate();
 		c.parent = this;
 		c.root = this.root;
-		c.restore(); //恢复子节点Root.
-		if(root != null && root.treeModel != null){
-			root.treeModel.nodesWereInserted(this, new int[]{this.children.size() -1 });
-		}
+		c.position = this.children.size();
+		c.restore(); //恢复子节点Root. //排序
+		this.sort();		
 		return c;
 	}	
 	
@@ -180,11 +187,7 @@ public class Category implements TreeNode, Serializable, Cloneable{
 			int index = this.parent.children.indexOf(this);
 			this.parent.children.remove(index);
 			this.parent.setLastUpdate();
-			if(root != null && root.treeModel != null){
-				root.treeModel.nodesWereRemoved(this.parent,
-						new int[]{index},
-						new Object[]{this});
-			}
+			this.parent.sort();
 			if(!inRemoved){
 				this.getRemoved().addCategory(this);
 			}
@@ -273,7 +276,77 @@ public class Category implements TreeNode, Serializable, Cloneable{
 				c.restore();
 			}
 		}
+		this.sort();		
 	}
+	
+	private void sort(){
+		if(this.isLeaf()) return;
+		if(this.children == null) return;
+		//log.debug(this.name + "(" + this.id + ") sort by " + this.getOrderBy());
+		this.children = Comparators.sort(this.children, this.getOrderBy());
+		if(this.getOrderBy().endsWith("position")){
+			for(int i = 0; i < this.children.size(); i++){
+				this.children.get(i).position = i;
+			}
+		}
+		if(root != null && root.treeModel != null){
+			root.treeModel.nodeStructureChanged(this);
+			log.debug("root.treeModel.nodeStructureChanged(this);" + this.name + "," + this.id);
+		}
+	}
+	
+	public boolean orderBy(String order){
+		if(order != null && !this.isLeaf() 
+		  && !this.getOrderBy().equals(order)){
+			this.orderBy = order;
+			this.sort();
+			this.setLastUpdate();
+			return true;
+		}
+		return false;
+	}
+	
+	public String getOrderBy(){
+		if(this.orderBy == null){
+			this.orderBy = "position";
+		}
+		return this.orderBy;
+	}
+
+	public boolean moveOrder(int dir){
+		if(this.parent == null)return false;
+		if(!parent.getOrderBy().endsWith("position")){
+			return false;
+		}
+		Category other = null;
+		int o1 = parent.getIndex(this);
+		int p1 = this.position;
+		if(dir < 0 && o1 > 0){
+			other = (Category)parent.getChildAt(o1 -1);
+			if(this.position != other.position){
+				this.position = other.position;
+				other.position = p1;
+			}else {
+				this.position += dir;
+			}
+			this.setLastUpdate();
+			other.setLastUpdate();			
+		}else if(dir > 0 && o1 < parent.getChildCount() -1){
+			other = (Category)parent.getChildAt(o1 +1);
+			if(this.position != other.position){
+				this.position = other.position;
+				other.position = p1;
+			}else {
+				this.position += dir;
+			}
+			this.setLastUpdate();
+			other.setLastUpdate();
+		}
+		//log.debug("moveOrder:" + dir + " new position:" + this.position);
+		//this.sort();
+		this.parent.sort();
+		return true;
+	}	
 	
 	public void flush(){
 		this.flushed = true;
@@ -291,6 +364,14 @@ public class Category implements TreeNode, Serializable, Cloneable{
 				}
 			}
 		}
+	}
+	
+	public List<Category> getChildren(){
+		if(this.isLeaf()) return null;
+		if(this.children == null){
+			this.children = new ArrayList<Category>();
+		}
+		return this.children;
 	}
 	
 	private String getNextId(){

@@ -60,6 +60,9 @@ public class NoteBookClient{
 				c.nodeType = Integer.parseInt(item.get("nodeType").toString());
 				c.name = (String)item.get("name");
 				c.parentId = (String)item.get("parentId");
+				//c. = (String)item.get("parentId");
+				c.orderBy((String)item.get("order_by"));
+				c.position = Integer.parseInt(item.get("position").toString());
 				c.children = null;
 
 				try {
@@ -92,6 +95,8 @@ public class NoteBookClient{
 		param.put("name", cate.name);
 		param.put("nodeType", cate.nodeType + "");
 		param.put("updateDate", format.format(cate.lastUpdated));
+		param.put("order_by", cate.getOrderBy());
+		param.put("position", cate.position + "");		
 		
 		InputStream in = ClientHttpRequest.post(url, cookies, param, header);
 		JSONParser parser = new JSONParser();

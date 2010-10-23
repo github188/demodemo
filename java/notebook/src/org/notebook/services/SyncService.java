@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -23,7 +24,7 @@ public class SyncService {
 	public NoteBook book = null;
 	public NoteBookClient client = null;
 	public Category root = null;
-	public Collection<SyncListener> ls = new ArrayList<SyncListener>();
+	public Collection<SyncListener> ls = Collections.synchronizedCollection(new ArrayList<SyncListener>());
 	
 	public LinkedList<SyncTask> taskQueue = new LinkedList<SyncTask>();
 	public LinkedList<SyncTask> dataQueue = new LinkedList<SyncTask>();
@@ -112,6 +113,7 @@ public class SyncService {
 				NoteMessage msg = client.downLoadMessage(local.id);
 				local.getMessage(true).update(msg);
 				local.isExpired = false;
+				local.isDirty = false;
 				task.status = SyncTask.DOWN_LOAD;
 				EventProxy.done(task);
 			}catch(Exception e){
@@ -131,9 +133,12 @@ public class SyncService {
 			try{
 				client.uploadMessage(local.getMessage(true));
 				local.isDirty = false;
+				local.isExpired = false;
 				task.status = SyncTask.UP_LOAD;
 				EventProxy.done(task);
 			}catch(Exception e){
+				task.status = SyncTask.IGNORED;
+				task.exception = e;
 				EventProxy.syncError(task, e);
 			}
 		}else {
@@ -198,6 +203,9 @@ public class SyncService {
 						
 					}
 				}
+			}
+			if(task.status.equals(SyncTask.IGNORED)){
+				task.exception = new Exception("Ignored by user, local is updating!");
 			}
 			if(!task.status.equals(SyncTask.NO_UPDATE) && !remote.isLeaf()){
 				if(remote.children == null){
@@ -268,7 +276,7 @@ public class SyncService {
 		Category local=null;
 		if(!task.local.flushed){
 			task.status = SyncTask.IGNORED;
-			this.doneTask.add(task);
+			task.exception = new Exception("Local data not flushed.");			
 			return;
 		}
 		local = this.root.search(task.local.id);
@@ -285,13 +293,19 @@ public class SyncService {
 				task.status = uploadToRemote(local, task.remote);
 			}else {
 				//使用计划时间的比较,保证更新结果和界面显示一致.
-				int result = cmpDate(task.local.lastUpdated, task.remote.lastUpdated);
+				int result = 1;
+				if(task.remote != null){
+					result = cmpDate(task.local.lastUpdated, task.remote.lastUpdated);
+				}
 				if(result > 0 || local.isDirty){
 					task.status = uploadToRemote(local, task.remote);
 				}else {
 					task.status = SyncTask.NO_UPDATE;
 				}
 			}
+			if(task.status.equals(SyncTask.IGNORED)){
+				task.exception = new Exception("Ignored uploading by user, local is expired!");
+			}			
 			if(!task.status.equals(SyncTask.NO_UPDATE) && !local.isLeaf()){
 				for(Category c: local.children){
 					SyncTask newTask = new SyncTask(SyncTask.TASK_UP, c.copy());
@@ -305,7 +319,6 @@ public class SyncService {
 			log.error(e, e);
 		}finally{
 			task.doneDate = new Date(System.currentTimeMillis());
-			this.doneTask.add(task);
 			EventProxy.done(task);
 		}
 	}
@@ -362,10 +375,13 @@ public class SyncService {
 					}
 				}finally{
 					doneTask.add(t);
+					while(doneTask.size() > 50){
+						doneTask.pollFirst();
+					}
 				}
 			}
 			log.info("Stop SyncRunner");
-		}
+		}		
 		
 		private synchronized SyncTask next(){
 			SyncTask t = null;
@@ -446,7 +462,7 @@ public class SyncService {
 	
 	private void removeLocalChildren(Collection<Category> remoteNodes, Category local){
 		Collection<Category> localList = new ArrayList<Category>();
-		localList.addAll(local.children);
+		localList.addAll(local.getChildren());
 		for(Category c: localList){
 			if(!c.flushed) continue;
 			if(remoteNodes.contains(c))continue;
