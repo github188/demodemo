@@ -7,7 +7,7 @@ from google.appengine.api import users
 def IP(r): return r.META["REMOTE_ADDR"]
 
 def cur_user():
-    return "deon"
+    #return "deon"
     u = users.get_current_user()
     return u and u.email().split("@")[0].lower() or None
 

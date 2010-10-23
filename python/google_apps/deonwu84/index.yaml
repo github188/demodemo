@@ -202,5 +202,17 @@ indexes:
   ancestor: yes
   properties:
   - name: parent_category
+  - name: name
+
+- kind: UserCategory
+  ancestor: yes
+  properties:
+  - name: parent_category
+  - name: position
+
+- kind: UserCategory
+  ancestor: yes
+  properties:
+  - name: parent_category
   - name: update_date
     direction: desc
