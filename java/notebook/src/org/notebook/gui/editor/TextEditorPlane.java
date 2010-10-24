@@ -10,12 +10,17 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Element;
 
 public class TextEditorPlane extends JScrollPane{
-    private JTextArea editor = null;
+    private DocumentEditor editor = null;
     private JTextArea lines = null;
 
+    public TextEditorPlane(DocumentEditor editor){
+    	this.editor = editor;
+        lines = new JTextArea("1");
+        this.initRowNumber();
+    }    
 	
     public TextEditorPlane(JTextArea editor){
-    	this.editor = editor;
+    	//this.editor = editor;
         lines = new JTextArea("1");
         this.initRowNumber();
     }
@@ -53,6 +58,7 @@ public class TextEditorPlane extends JScrollPane{
         });
         getViewport().add(editor);
         setRowHeaderView(lines);
-        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);    	
+        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);   
+        //this.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);      
     }
 }

@@ -23,28 +23,39 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BoxView;
+import javax.swing.text.ComponentView;
+import javax.swing.text.Element;
+import javax.swing.text.IconView;
+import javax.swing.text.LabelView;
+import javax.swing.text.ParagraphView;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 
 import org.notebook.cache.NoteMessage;
 
-public class DocumentEditor extends JTextArea {
+public class DocumentEditor extends JTextPane {
 	public NoteMessage msg = null;
 
 	public DocumentEditor(){
-		super("");
-
-		//this.setFont(new Font("Dialog", Font.ITALIC, 24));
-		//this.setFont(new Font("Courier New", Font.PLAIN, 16));
+		super(new NoteDocument());
 		this.setFont(new Font("Courier", Font.PLAIN, 14));
-		this.wrapLine.putValue(Action.SELECTED_KEY, false);
-		this.wrapLine.actionPerformed(null);
+		//this.wrapLine.putValue(Action.SELECTED_KEY, false);
+		//this.wrapLine.actionPerformed(null);
 		//this.setLineWrap(false);
-		this.setWrapStyleWord(true);
-		this.setEditable(false);
-	}
+		//this.setWrapStyleWord(true);
+		this.setEditable(true);
+		//this.setEditorKit(new WrapEditorKit());
+		//this.setSize(1024, 800);
+	}		
+	
+	public void setLineWrap(boolean xx){};
 	
 	public void openDocument(NoteMessage msg){
 		this.msg = msg;
@@ -94,9 +105,59 @@ public class DocumentEditor extends JTextArea {
 		//public AbstractAction(){}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Boolean x = (Boolean)this.getValue(SELECTED_KEY);
-			setLineWrap(x.booleanValue());
+			//Boolean x = (Boolean)this.getValue(SELECTED_KEY);
+			//setLineWrap(x.booleanValue());
 		}
-	};	
+	};
+	
+	
+	public boolean getScrollableTracksViewportWidth()
+	{	  
+		return true;
+	}	
+	
+	class WrapEditorKit extends StyledEditorKit {
+	    ViewFactory defaultFactory=new WrapColumnFactory();
+	    public ViewFactory getViewFactory() {
+	        return defaultFactory;
+	    }
+	}
+	
+	class NoWrapBoxView extends BoxView {
+	    public NoWrapBoxView(Element elem, int axis) {
+	        super(elem, axis);
+	    }
+	    public void layout(int width, int height) {
+	        super.layout(Short.MAX_VALUE, height);
+	    }
+	}
+	
+	class WrapColumnFactory implements ViewFactory {
+	    public View create(Element elem) {
+	        String kind = elem.getName();
+	        System.out.println("Element name:" + kind);
+			if (kind.equals(AbstractDocument.ContentElementName))
+			{
+				return new LabelView(elem);
+			}
+			else if (kind.equals(AbstractDocument.ParagraphElementName))
+			{
+				return new ParagraphView(elem);
+			}
+			else if (kind.equals(AbstractDocument.SectionElementName))
+			{
+				return new NoWrapBoxView(elem, View.Y_AXIS);
+			}
+			else if (kind.equals(StyleConstants.ComponentElementName))
+			{
+				return new ComponentView(elem);
+			}
+			else if (kind.equals(StyleConstants.IconElementName))
+			{
+				return new IconView(elem);
+			}	        
+	        return new LabelView(elem);
+	    }
+	 }	
 }
 
