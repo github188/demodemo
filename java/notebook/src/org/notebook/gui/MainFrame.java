@@ -45,7 +45,9 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.Version;
 import org.notebook.gui.MenuToolbar.BookAction;
+import org.notebook.gui.editor.DocumentEditor;
 import org.notebook.gui.editor.TextEditorPlane;
 import org.notebook.services.BookController;
 import org.notebook.services.DefaultBookController;
@@ -106,14 +108,10 @@ public class MainFrame extends JFrame {
 	
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
+		System.out.println("NoteBook " + Version.getVersion());
 		System.setProperty("file.encoding", "UTF-8");
-		System.setProperty("sun.jnu.encoding", "UTF-8");		
+		System.setProperty("sun.jnu.encoding", "UTF-8");
 		//System.out.println("中文");
-    	if(System.getSecurityManager() != null) {
-    		System.out.println("SecurityManager:" + System.getSecurityManager().toString());
-    	}else {
-    		//System.setSecurityManager(new SecurityManager());
-    	}
     	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {
@@ -124,7 +122,7 @@ public class MainFrame extends JFrame {
 				});				
 	}
  	
-    public static void mainPrivileged(String[] args){  	
+    public static void mainPrivileged(String[] args){
 		try{
 			UIManager.setLookAndFeel(
 					"com.sun.java.swing.plaf." +
@@ -160,17 +158,14 @@ public class MainFrame extends JFrame {
 	protected void initGui() {
 		menu = new MenuToolbar(this);
 		this.getRootPane().setJMenuBar(menu.getMenuBar());
-
-		Container contentPane = getContentPane();
 		
 		tree = new NavigationTree(null, menu);
 		editor = new DocumentEditor();
+		menu.addExtraToolBar(editor.getToolBar());
 
 		JScrollPane leftTree = new JScrollPane(tree);
-		Dimension minSize = new Dimension(150, 400);
-		
-		leftTree.setMinimumSize(minSize);
-		
+		Dimension minSize = new Dimension(150, 400);		
+		leftTree.setMinimumSize(minSize);		
 		JSplitPane splitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, 
 				leftTree,
@@ -179,6 +174,7 @@ public class MainFrame extends JFrame {
 		
 		statusBar = new StatusBar();
 
+		Container contentPane = getContentPane();
 		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(statusBar, BorderLayout.SOUTH);

@@ -22,7 +22,8 @@ import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
@@ -72,6 +74,7 @@ public class MenuToolbar {
 	private MainFrame owner = null;
 	private ResourceBundle rb = new SimpleResourceBound();	
 	private Map<String, BookAction> actions = new HashMap<String, BookAction>();
+	private Collection<JComponent> extraToolBar = new ArrayList<JComponent>(); 
 	
 	public class BookAction extends AbstractAction {
 		private static final long serialVersionUID = -6101997393914923387L;
@@ -197,6 +200,7 @@ public class MenuToolbar {
 		menubar.add(fileMenu);
 		menubar.add(toolMenu);
 		
+		//menubar.getMenu(0).getName()		
 		return menubar;
 	}
 	
@@ -250,11 +254,22 @@ public class MenuToolbar {
 		toolbar.addSeparator();
 		toolbar.add($(SYNCDOWNLOAD));
 		toolbar.add($(SYNCUPLOAD));
-		toolbar.add($(SYNC));
-		
+		//toolbar.add($(SYNC));		
+		//toolbar.addSeparator();
+		//toolbar.add($(SETTINGS));
 		toolbar.addSeparator();
-		toolbar.add($(SETTINGS));
+		for(JComponent c: this.extraToolBar){
+			toolbar.add(c);
+		}		
+
 		return toolbar;
+	}
+	
+	public void addExtraToolBar(JComponent[] extras){
+		for(JComponent t: extras){
+			this.extraToolBar.add(t);
+		}
+		//this.extraToolBar.a
 	}
 	
 	public PopupMenu getTrayMenu(){
@@ -284,13 +299,10 @@ public class MenuToolbar {
 	
 	public String i18n(String key){
 		if(rb == null){
-			//ResourceBundle.ge
-			//ResourceBundle.Control
 			rb = ResourceBundle.getBundle("NoteBook", new Locale("zh", "CN"));
 		}
 		if(rb.containsKey(key)){
 			String xx = rb.getString(key);
-			//System.out.println(key + "->" + xx);
 			return xx;
 		}else {
 			return key;

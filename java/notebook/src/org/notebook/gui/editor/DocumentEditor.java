@@ -15,13 +15,19 @@
   * $Id$ 
   */ 
  
-package org.notebook.gui;
+package org.notebook.gui.editor;
+
+import static org.notebook.gui.MenuToolbar.icon;
 
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 
-import org.notebook.cache.Category;
 import org.notebook.cache.NoteMessage;
 
 public class DocumentEditor extends JTextArea {
@@ -33,7 +39,9 @@ public class DocumentEditor extends JTextArea {
 		//this.setFont(new Font("Dialog", Font.ITALIC, 24));
 		//this.setFont(new Font("Courier New", Font.PLAIN, 16));
 		this.setFont(new Font("Courier", Font.PLAIN, 14));
-		this.setLineWrap(false);
+		this.wrapLine.putValue(Action.SELECTED_KEY, false);
+		this.wrapLine.actionPerformed(null);
+		//this.setLineWrap(false);
 		this.setWrapStyleWord(true);
 		this.setEditable(false);
 	}
@@ -65,6 +73,30 @@ public class DocumentEditor extends JTextArea {
 			}
 		}
 		return msg;
+		//this.setw
 	}
+	
+	public JComponent[] getMenuBar(){
+		return new JComponent[]{
+			new JToggleButton(this.wrapLine)
+		};
+	}
+	
+	public JComponent[] getToolBar(){
+		return new JComponent[]{
+			new JToggleButton(this.wrapLine)
+		};		
+	}
+	
+	private AbstractAction wrapLine = new AbstractAction("", 
+			icon("org/notebook/gui/images/wrap.png")){
+		private static final long serialVersionUID = 1L;
+		//public AbstractAction(){}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Boolean x = (Boolean)this.getValue(SELECTED_KEY);
+			setLineWrap(x.booleanValue());
+		}
+	};	
 }
 
