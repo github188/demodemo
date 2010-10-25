@@ -123,9 +123,9 @@ public class SyncStatusDailog extends JDialog implements SyncListener{
 				case 2: return task.remote != null ? task.remote.name : "";
 				case 3: return !task.newCreated && task.local != null && task.local.lastUpdated != null ? format.format(task.local.lastUpdated) : "";
 				case 4: return task.remote != null && task.remote.lastUpdated != null ? format.format(task.remote.lastUpdated) : "";
-				case 5: return task.status;	
+				case 5: return task.status + "(" + task.cause + ")";	
 				case 6: return task.exception != null? task.exception.toString() : "";	
-			}			
+			}
 			return "";
 		}
 	}

@@ -35,6 +35,7 @@ public class SyncTask implements Serializable{
 	public String status = null;
 	public boolean newCreated = false;
 	public Exception exception = null;
+	public String cause = "";
 	
 	
 	public SyncTask(String task, Category local){

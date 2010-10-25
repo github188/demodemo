@@ -3,6 +3,8 @@ package org.notebook.services;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +27,7 @@ public class SyncService {
 	public NoteBookClient client = null;
 	public Category root = null;
 	public Collection<SyncListener> ls = Collections.synchronizedCollection(new ArrayList<SyncListener>());
+	protected DateFormat format= new SimpleDateFormat("yyyyMMddhhmmss");
 	
 	public LinkedList<SyncTask> taskQueue = new LinkedList<SyncTask>();
 	public LinkedList<SyncTask> dataQueue = new LinkedList<SyncTask>();
@@ -193,10 +196,12 @@ public class SyncService {
 			}
 			if(!task.newCreated){
 				if(task.force){
+					task.cause = "force";
 					task.status = updateLocalFromRemote(local, remote);
 				}else {
 					int result = cmpDate(task.remote.lastUpdated, task.local.lastUpdated);
 					if(result > 0 || local.isExpired){
+						task.cause = result > 0 ? "time" : "expired";
 						task.status = updateLocalFromRemote(local, remote);
 					}else {
 						task.status = SyncTask.NO_UPDATE;
@@ -290,14 +295,23 @@ public class SyncService {
 			EventProxy.start(task);
 			task.remote = client.getCategory(local.id);
 			if(task.force){
+				task.cause = "force";
 				task.status = uploadToRemote(local, task.remote);
 			}else {
 				//使用计划时间的比较,保证更新结果和界面显示一致.
 				int result = 1;
 				if(task.remote != null){
 					result = cmpDate(task.local.lastUpdated, task.remote.lastUpdated);
+					if(result > 0) {
+						task.cause = "time:";
+						task.cause += format.format(task.local.lastUpdated) + ",";
+						task.cause += format.format(task.remote.lastUpdated);
+					}
+				}else {
+					task.cause = "no remote";
 				}
 				if(result > 0 || local.isDirty){
+					if(local.isDirty) task.cause = "dirty";
 					task.status = uploadToRemote(local, task.remote);
 				}else {
 					task.status = SyncTask.NO_UPDATE;
@@ -417,11 +431,11 @@ public class SyncService {
 	private int cmpDate(Date d1, Date d2){
 		if(d1 == null || d2== null){
 			return -2;
-		}
-		long t1 = d1.getTime() / 1000;
-		long t2 = d2.getTime() / 1000;
-		if(t1 == t2) return 0;
-		return t1 > t2 ? 1: -1;
+		}		
+		//protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String t1 = format.format(d1);
+		String t2 = format.format(d2);
+		return t1.compareTo(t2);
 	}
 	
 	public void syncCategoryId(){
