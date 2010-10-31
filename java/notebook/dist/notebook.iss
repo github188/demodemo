@@ -19,7 +19,6 @@ AllowNoIcons=yes
 LicenseFile=D:\Eclipse_workspace\notebook\GPL-LICENSE.txt
 OutputDir=D:\Eclipse_workspace\notebook\dist
 OutputBaseFilename=notebook-setup
-SetupIconFile=D:\Eclipse_workspace\notebook\dist\notebook.ico
 Compression=lzma
 SolidCompression=yes
 
