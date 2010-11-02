@@ -199,7 +199,7 @@ public class NavigationTree extends JTree implements MouseListener {
 		     */
 			//dsde.
 			if(dsde.getDropSuccess()){
-				oldNode.remove();
+				oldNode.remove(false);
 			}
 		}
 	}
@@ -259,7 +259,11 @@ public class NavigationTree extends JTree implements MouseListener {
 			  if(node.isLeaf()){
 				  dtde.rejectDrag();
 			  }else{
-		    	if(!isSubTree(getDragSource(dtde), target)){
+				Category source = (Category)getDragSource(dtde).getLastPathComponent();
+				//System.out.println("")
+		    	if(!isSubTree(getDragSource(dtde), target) && //不能拖放到子节点。		    	    
+		    		node.getIndex(source) == -1 //不能拖放到当前父节点。
+		    	   ){
 		    		dtde.acceptDrag(dtde.getDropAction());
 		    	}else {
 		    		dtde.rejectDrag();
@@ -274,7 +278,10 @@ public class NavigationTree extends JTree implements MouseListener {
 			  if(node.isLeaf()){
 				  dtde.rejectDrag();
 			  }else{
-		    	if(!isSubTree(getDragSource(dtde), target)){
+				 Category source = (Category)getDragSource(dtde).getLastPathComponent();
+		    	if(!isSubTree(getDragSource(dtde), target) &&
+		    		node.getIndex(source) == -1
+		    	   ){
 		    		dtde.acceptDrag(dtde.getDropAction());
 		    	}else {
 		    		dtde.rejectDrag();

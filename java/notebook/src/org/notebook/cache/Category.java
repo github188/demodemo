@@ -178,7 +178,15 @@ public class Category implements TreeNode, Serializable, Cloneable{
 		return result;
 	}
 	
-	public synchronized void remove(){
+	public void remove(){
+		this.remove(true);
+	}
+	
+	/**
+	 * @param recycle -- 是否需要加入回收站。在做节点移动时，会先在原先的节点删除，在加入到新的
+	 * 父节点。这种情况的删除操作不能放入回收站。
+	 */
+	public synchronized void remove(boolean recycle){
 		//System.out.println("remove:" + this.name + "\tparent:" + this.parent);
 		boolean inRemoved = false;
 		if(this.parent != null){
@@ -188,7 +196,7 @@ public class Category implements TreeNode, Serializable, Cloneable{
 			this.parent.children.remove(index);
 			this.parent.setLastUpdate();
 			this.parent.sort();
-			if(!inRemoved){
+			if(!inRemoved && recycle){
 				this.getRemoved().addCategory(this);
 			}
 		}
