@@ -5,4 +5,8 @@ public final class Version {
 	public static String getVersion(){
 		return version;
 	}
+	
+	public static String getName(){
+		return "NoteBook";
+	}
 }

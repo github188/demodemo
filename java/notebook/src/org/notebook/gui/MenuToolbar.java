@@ -48,7 +48,8 @@ public class MenuToolbar {
 	public static final String UPDATEDSETTINGS = "UpdatedSettings";
 	public static final String OPEN = "Open";
 	public static final String SAVE = "Save";
-	public static final String EXIT = "Exit";
+	public static final String EXIT = "Exit";	
+	public static final String ABOUT = "About";
 	
 	public static final String NEW_CATEGORY = "NewCategory";
 	public static final String NEW_NOTE = "NewNote";
@@ -131,6 +132,8 @@ public class MenuToolbar {
 		actions.put(name, new BookAction(name, icon, accelerator));
 	}
 	public BookAction $(String name){
+		if(!actions.containsKey(name))
+			throw new Error("Not found action by name '" + name + "'");
 		return actions.get(name);
 	}
 
@@ -167,6 +170,7 @@ public class MenuToolbar {
 		$(ORDERBY_NAME, "", 0);
 		$(ORDERBY_CREATEDATE, "", 0);	
 		$(ORDERBY_UPDATEDATE, "", 0);
+		$(ABOUT, "", 0);
 	}
 		
 	public JMenuBar getMenuBar(){
@@ -197,8 +201,14 @@ public class MenuToolbar {
 		toolMenu.addSeparator();
 		toolMenu.add($(SETTINGS));
 
+		JMenu aboutMenu = new JMenu(i18n("Help"));
+		aboutMenu.add($(ABOUT));		
+
 		menubar.add(fileMenu);
 		menubar.add(toolMenu);
+		menubar.add(aboutMenu);
+		
+		//toolMenu.setName("工具");
 		
 		//menubar.getMenu(0).getName()		
 		return menubar;

@@ -24,6 +24,7 @@ import org.notebook.cache.DataStorage;
 import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.NoteBook;
 import org.notebook.cache.NoteMessage;
+import org.notebook.gui.AboutDialog;
 import org.notebook.gui.LoginDailog;
 import org.notebook.gui.MainFrame;
 import org.notebook.gui.MenuToolbar;
@@ -327,6 +328,13 @@ public class DefaultBookController implements BookController{
 		public void Settings(BookAction event){
 			mainFrame.showSettings();
 		}
+		
+		public void About(BookAction event){
+			//mainFrame.showSettings();
+			AboutDialog about = new AboutDialog(mainFrame);
+			about.setLocationRelativeTo(mainFrame);
+			about.setVisible(true);
+		}		
 		
 		public void SyncDownLoad(BookAction event){
 			final Category cate = selectedTreeNode(event);
