@@ -109,8 +109,8 @@ public class MainFrame extends JFrame {
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
 		System.out.println("NoteBook " + Version.getVersion());
-		System.setProperty("file.encoding", "UTF-8");
-		System.setProperty("sun.jnu.encoding", "UTF-8");
+		//System.setProperty("file.encoding", "UTF-8");
+		//System.setProperty("sun.jnu.encoding", "UTF-8");
 		//System.out.println("中文");
     	
     	AccessController.doPrivileged(
@@ -125,8 +125,7 @@ public class MainFrame extends JFrame {
     public static void mainPrivileged(String[] args){
 		try{
 			UIManager.setLookAndFeel(
-					"com.sun.java.swing.plaf." +
-					"windows.WindowsLookAndFeel");
+		            UIManager.getSystemLookAndFeelClassName());
 		}catch(Exception e){
 			System.out.println(e.toString());
 		}

@@ -171,7 +171,7 @@ public class MenuToolbar {
 		
 	public JMenuBar getMenuBar(){
 		JMenuBar menubar = new JMenuBar();
-		JMenu fileMenu = new JMenu("文件");
+		JMenu fileMenu = new JMenu(i18n("File"));
 		//fileMenu.set
 
 		//fileMenu.add($(OPEN));
@@ -187,7 +187,7 @@ public class MenuToolbar {
 
 		menubar.add(fileMenu);
 		
-		JMenu toolMenu = new JMenu("工具");
+		JMenu toolMenu = new JMenu(i18n("Tools"));
 		//toolMenu.setName("工具");
 		toolMenu.add($(SYNC));
 		toolMenu.add($(SYNCDOWNLOAD));

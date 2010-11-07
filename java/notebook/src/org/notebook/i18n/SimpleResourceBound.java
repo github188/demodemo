@@ -10,9 +10,9 @@ import java.util.ResourceBundle;
 
 public class SimpleResourceBound extends ResourceBundle {
 	private Properties data = new Properties();
-	public SimpleResourceBound(){
-		String resource = "org/notebook/i18n/NoteBook_zh_CN.properties";
-		InputStream in = SimpleResourceBound.class.getClassLoader().getResourceAsStream(resource);
+	public SimpleResourceBound(){		
+		InputStream in = SimpleResourceBound.class.getClassLoader().
+			getResourceAsStream(this.resource());
 		try {
 			Reader reader = new InputStreamReader(in, "utf-8");
 			data.load(reader);
@@ -20,6 +20,15 @@ public class SimpleResourceBound extends ResourceBundle {
 			e.printStackTrace();
 		}
 	}
+	
+	private String resource(){
+		String resource = "org/notebook/i18n/NoteBook_zh_CN.properties";
+		if(!System.getProperty("user.language").equals("zh")){
+			resource = "org/notebook/i18n/NoteBook_en.properties";
+		}
+		return resource;
+	}
+	
 
 	@Override
 	protected Object handleGetObject(String key) {
