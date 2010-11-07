@@ -1,6 +1,10 @@
 package org.notebook.cache;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.swing.tree.TreePath;
 
 public class NoteBook implements Serializable{
 
@@ -16,6 +20,10 @@ public class NoteBook implements Serializable{
 	public String proxypassword = "";
 	public transient String authToken = "";
 	public String authSID = "";
+	public transient boolean isDev = true;
+	//用来恢复上次编辑的状态。
+	public Collection<TreePath> expaned = new Vector<TreePath>();
+	public String curNoteId = "";
 	
 	public NoteBook(){
 		user = defaultUser();

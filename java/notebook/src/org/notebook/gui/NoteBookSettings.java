@@ -56,6 +56,10 @@ public class NoteBookSettings extends JDialog {
         final JPasswordField password = new JPasswordField(book.password);
         final JTextField endpoint = new JTextField(book.endpoint);
         final JTextField proxy = new JTextField(book.proxy);
+        
+        if(!book.isDev){
+        	endpoint.setEditable(false);
+        }
                 
         JLabel nameLabel = new JLabel("笔记本名: ");
         JLabel usernameLabel = new JLabel("Gmail: ");

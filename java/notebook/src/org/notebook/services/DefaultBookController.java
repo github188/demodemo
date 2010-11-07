@@ -2,6 +2,7 @@ package org.notebook.services;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -9,8 +10,11 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +66,7 @@ public class DefaultBookController implements BookController{
 		//this.sync.start();
 		
 		this.storage = createPersistenceService();
+		mainJFrame.tree.addTreeWillExpandListener(this.treeWillExpandListener);
 	}
 	
 	public boolean runingJNLP(){return this.runningJNLP;}
@@ -243,7 +248,46 @@ public class DefaultBookController implements BookController{
 			storage.saveNoteBook(book);			
 		}
 	}
-		
+	
+	private TreeWillExpandListener treeWillExpandListener = new TreeWillExpandListener() {
+		public void treeWillCollapse(TreeExpansionEvent event)
+		      throws ExpandVetoException {
+			if(book.expaned.contains(event.getPath())){
+				book.expaned.remove(event.getPath());
+			}
+		}
+	
+		public void treeWillExpand(TreeExpansionEvent event)
+		      throws ExpandVetoException {
+			if(!book.expaned.contains(event.getPath())){
+				book.expaned.add(event.getPath());
+			}
+		}
+	};	
+	
+	private void restoreLastStatus(){
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	Vector<TreePath> expaned = new Vector<TreePath>();
+            	if(book.expaned != null){
+            		expaned.addAll(book.expaned);
+            		book.expaned.clear();
+            	}else {
+            		book.expaned = new Vector<TreePath>();
+            	}
+            	for(TreePath path: expaned){
+            		mainFrame.tree.expandPath(path);
+            	}
+            }
+        });
+		if(book.curNoteId != null && !book.curNoteId.equals("")){
+			Category node = book.root.search(book.curNoteId);
+			if(node != null){
+				NoteMessage msg = node.getMessage(storage, true);
+				mainFrame.editor.openDocument(msg);
+			}
+		}
+	}
 	
 	class MenuAction {
 		public void Save(BookAction event){
@@ -267,6 +311,7 @@ public class DefaultBookController implements BookController{
 						saveOpenedMessage();
 						NoteMessage msg = node.getMessage(storage, true);
 						mainFrame.editor.openDocument(msg);
+						book.curNoteId = node.id;
 					}});
 				mainFrame.status("Opening " + node.name + "(" + node.id + ")");
 			}
@@ -423,6 +468,7 @@ public class DefaultBookController implements BookController{
 			}
 			mainFrame.setTitle(book.name);
 			mainFrame.tree.setRoot(book.root);
+			restoreLastStatus();
 		}
 		
 		public void OrderByPosition(BookAction event) {

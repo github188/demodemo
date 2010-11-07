@@ -131,7 +131,7 @@ public class NavigationTree extends JTree implements MouseListener {
 		      throws ExpandVetoException {
 		    TreePath path = event.getPath();
 		}
-	};	
+	};
 
 	class TreeDragSource implements DragSourceListener, DragGestureListener {
 		DragSource source;
