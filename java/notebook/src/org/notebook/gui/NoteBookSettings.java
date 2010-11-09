@@ -43,7 +43,7 @@ public class NoteBookSettings extends JDialog {
 		
 		this.setTitle("笔记本设置");
 		setContentPane(createSettingJPanel());
-		this.setPreferredSize(new Dimension(400, 210));
+		//this.setPreferredSize(new Dimension(400, 210));
 		this.pack();
 		this.setResizable(false);
 	}

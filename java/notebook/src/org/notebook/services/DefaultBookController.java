@@ -49,8 +49,10 @@ public class DefaultBookController implements BookController{
 	private int autoLoginTimes = 0;
 	//初始化了本地NoteBook路径.
 	private boolean initedBook = false;
+	private boolean isWin = false;
 	
 	public DefaultBookController(MainFrame mainJFrame, boolean isJNLP, boolean isSandBox){
+		isWin = System.getProperty("sun.desktop").equals("windows");
 		this.mainFrame = mainJFrame;
 		this.runningJNLP = isJNLP;
 		this.runningSandBox = isSandBox;
@@ -85,7 +87,12 @@ public class DefaultBookController implements BookController{
 				log.error("failed to create JNLP Stroage", e);
 			}			
 		}else {
-			File root = new File(System.getenv("APPDATA"), ".notebook");
+			File root = null;
+			if(isWin){
+				root = new File(System.getenv("APPDATA"), ".notebook");
+			}else {
+				root = new File(System.getenv("HOME"), ".notebook");
+			}
 			storge = new LocalFileStorage(root);
 		}
 		return storge;
