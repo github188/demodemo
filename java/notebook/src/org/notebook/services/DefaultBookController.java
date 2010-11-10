@@ -425,6 +425,29 @@ public class DefaultBookController implements BookController{
 			}			
 		}
 		
+		public void ReName(BookAction event){
+			Category object = selectedTreeNode();
+			if(object == null){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "请选择需要重命名的对象.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}else {
+				String s = (String)JOptionPane.showInputDialog(
+						mainFrame,
+	                    "输入新名字:\n",
+	                    "重命名",
+	                    JOptionPane.PLAIN_MESSAGE,
+	                    null,
+	                    null,
+	                    object.getName());
+				if(s != null){
+					object.setName(s);
+				}
+			}
+			
+		}
+		
 		public void Remove(BookAction event){
 			Category object = selectedTreeNode();
 			if(object == null){

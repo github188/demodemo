@@ -54,6 +54,7 @@ public class MenuToolbar {
 	public static final String NEW_CATEGORY = "NewCategory";
 	public static final String NEW_NOTE = "NewNote";
 	public static final String DELETE = "Remove";
+	public static final String RENAME = "ReName";
 	
 	public static final String SYNC = "Sync";
 	public static final String SYNCDOWNLOAD = "SyncDownLoad";
@@ -151,6 +152,7 @@ public class MenuToolbar {
 		$(NEW_CATEGORY, "folder_add.gif", 0);
 		$(NEW_NOTE, "new_file.gif", 0);	
 		$(DELETE, "delete_obj.gif", 0);
+		$(RENAME, "", 0);		
 		
 		$(SYNC, "cvs_synch.gif", 0);			
 		$(SYNCDOWNLOAD, "down_load.png", 0);	
@@ -222,6 +224,7 @@ public class MenuToolbar {
 	    menu.add($(OPEN));
 	    menu.add($(NEW_CATEGORY));
 	    menu.add($(NEW_NOTE));
+	    menu.add($(RENAME));
 	    //
 	    if(tree.getSelectionPath() != null){
 			Category node = (Category)tree.getSelectionPath().getLastPathComponent();

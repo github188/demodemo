@@ -20,12 +20,18 @@ package org.notebook.gui.editor;
 import static org.notebook.gui.MenuToolbar.icon;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
@@ -37,11 +43,15 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import org.notebook.cache.NoteMessage;
 
 public class DocumentEditor extends JTextPane {
 	public NoteMessage msg = null;
+	public UndoManager undoManager = null;
 
 	public DocumentEditor(){
 		super(new NoteDocument());
@@ -53,7 +63,19 @@ public class DocumentEditor extends JTextPane {
 		this.setEditable(true);
 		//this.setEditorKit(new WrapEditorKit());
 		//this.setSize(1024, 800);
-	}		
+		undoManager = new UndoManager();
+		this.getDocument().addUndoableEditListener(undoManager);
+		registerKeyboardAction(undo, 
+							   KeyStroke.getKeyStroke(
+		        					KeyEvent.VK_Z, 
+		        					InputEvent.CTRL_MASK), 
+		        		 	   JComponent.WHEN_IN_FOCUSED_WINDOW);
+		registerKeyboardAction(redo, 
+		   						KeyStroke.getKeyStroke(
+		   							KeyEvent.VK_Y, 
+		   							InputEvent.CTRL_MASK), 
+		   						JComponent.WHEN_IN_FOCUSED_WINDOW);	
+	}
 	
 	public void setLineWrap(boolean xx){};
 	
@@ -89,12 +111,16 @@ public class DocumentEditor extends JTextPane {
 	
 	public JComponent[] getMenuBar(){
 		return new JComponent[]{
+			new JButton(undo),
+			new JButton(redo),
 			new JToggleButton(this.wrapLine)
 		};
 	}
 	
 	public JComponent[] getToolBar(){
 		return new JComponent[]{
+			new JButton(undo),
+			new JButton(redo),
 			new JToggleButton(this.wrapLine)
 		};		
 	}
@@ -105,10 +131,35 @@ public class DocumentEditor extends JTextPane {
 		//public AbstractAction(){}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//Boolean x = (Boolean)this.getValue(SELECTED_KEY);
-			//setLineWrap(x.booleanValue());
 		}
 	};
+	
+	private AbstractAction undo = new AbstractAction("", 
+			icon("org/notebook/gui/images/undo.png")){
+		private static final long serialVersionUID = 2L;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+		        undoManager.undo();
+		    } catch (CannotUndoException e1) {
+		    	Toolkit.getDefaultToolkit().beep();
+		    }
+		}
+	};
+	
+	private AbstractAction redo = new AbstractAction("", 
+			icon("org/notebook/gui/images/redo.png")){
+		private static final long serialVersionUID = 3L;
+		//public AbstractAction(){}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+		        undoManager.redo();
+		    } catch (CannotRedoException  e1) {
+		    	Toolkit.getDefaultToolkit().beep();
+		    }
+		}
+	};	
 	
 	
 	public boolean getScrollableTracksViewportWidth()
