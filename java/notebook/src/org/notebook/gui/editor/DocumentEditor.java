@@ -19,6 +19,7 @@ package org.notebook.gui.editor;
 
 import static org.notebook.gui.MenuToolbar.icon;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -61,6 +62,7 @@ public class DocumentEditor extends JTextPane {
 		//this.setLineWrap(false);
 		//this.setWrapStyleWord(true);
 		this.setEditable(true);
+		this.setBackground(Color.white);
 		//this.setEditorKit(new WrapEditorKit());
 		//this.setSize(1024, 800);
 		undoManager = new UndoManager();
@@ -78,6 +80,11 @@ public class DocumentEditor extends JTextPane {
 	}
 	
 	public void setLineWrap(boolean xx){};
+	
+	public void setText(String text){
+		super.setText(text);
+		undoManager.discardAllEdits();
+	};
 	
 	public void openDocument(NoteMessage msg){
 		this.msg = msg;
@@ -140,7 +147,9 @@ public class DocumentEditor extends JTextPane {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-		        undoManager.undo();
+				if(undoManager.canUndo()){
+					undoManager.undo();
+				}
 		    } catch (CannotUndoException e1) {
 		    	Toolkit.getDefaultToolkit().beep();
 		    }
@@ -154,7 +163,9 @@ public class DocumentEditor extends JTextPane {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-		        undoManager.redo();
+				if(undoManager.canRedo()){
+					undoManager.redo();
+				}				
 		    } catch (CannotRedoException  e1) {
 		    	Toolkit.getDefaultToolkit().beep();
 		    }
