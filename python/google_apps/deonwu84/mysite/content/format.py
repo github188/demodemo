@@ -52,7 +52,24 @@ class SimpleHtmlFormat(Transform):
 class BlockHtmlFormat(Transform):
   """A transform that auto-links URLs."""
   def __init__(self):
-    self.regexp = re.compile(r'(={1,3}|\*|~)(.*?)\1')
+    self.regexp = re.compile(r'(\*|~)([^~\*\n]+)\1')
+    #/^$/  
+
+  def replace(self, match):
+    mark = match.group(1)
+    tag = {"--":"strike",
+           "*":"b",
+           "~":"i",
+           }.get(mark, "div")
+    
+    context = match.group(2)
+    
+    return "<%s>%s</%s>" % (tag, context, tag)
+
+class HtmlHeadFormat(Transform):
+  """A transform that auto-links URLs."""
+  def __init__(self):
+    self.regexp = re.compile(r'^\s*(={1,3})([^=\n]+)\1\s*$')
     #/^$/  
 
   def replace(self, match):
@@ -60,8 +77,6 @@ class BlockHtmlFormat(Transform):
     tag = {"=":"h1",
            "==":"h2",
            "===":"h3",
-           "*":"b",
-           "~":"i",
            }.get(mark, "div")
     
     context = match.group(2)

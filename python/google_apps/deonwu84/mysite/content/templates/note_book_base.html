@@ -25,7 +25,14 @@
     		var url = "http://demodemo.googlecode.com/svn/trunk/java/notebook/dist/notebook.jnlp";
     		deployJava.createWebStartLaunchButton(url, '1.6.0');
 			</script>
-			</span>			
+			</span>
+			<span>&nbsp;
+				{% ifequal user login_user %}
+					Welcome {{user}}, <a href="{{logout_url}}">Logout</a>
+				{%else%}
+					<a href="{{login_url}}">Login</a>
+				{%endifequal%}
+			</span>		
 		</div>			
 		<div class='nav-menu'>
 			&nbsp;&nbsp;&nbsp;<a href="/note/{{owner.name}}/index">首页</a>
@@ -37,6 +44,10 @@
 {% if parent %}
 	| <a href="/note/{{owner.name}}/{{parent.cate_id}}">返回</a>
 {% endif %}
+{% ifequal user login_user %}
+	| <a href="/note/recycle?user={{owner.name}}">recycle</a>
+{%endifequal%}
+
 		</div>
     </div>
 {% endblock %}

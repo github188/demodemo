@@ -61,14 +61,20 @@ def update_category(r, user, parent, cate_id, name, nodeType, updateDate='', ord
         sub_cate.parent_category = cate
     
     sub_cate.name = name
-    sub_cate.nodeType = int(nodeType)
-    sub_cate.order_by = order_by or ""
-    sub_cate.position = position or "0"
-    if updateDate:
-        sub_cate.update_date = datetime.datetime.strptime(updateDate, "%Y-%m-%d %H:%M:%S") #.now()
-    else:
-        sub_cate.update_date = datetime.datetime.now()
-    sub_cate.put()
+    if sub_cate.nodeType == 0:
+        sub_cate.nodeType = int(nodeType)
+    elif sub_cate.nodeType != int(nodeType):
+        result['status'] = 'err'
+        result['msg'] = "Can't update the node type."
+    
+    if result['status'] == 'OK':
+        sub_cate.order_by = order_by or ""
+        sub_cate.position = position or "0"
+        if updateDate:
+            sub_cate.update_date = datetime.datetime.strptime(updateDate, "%Y-%m-%d %H:%M:%S") #.now()
+        else:
+            sub_cate.update_date = datetime.datetime.now()
+        sub_cate.put()
 
     result['date'] = sub_cate.update_date.strftime("%Y-%m-%d %H:%M:%S")
     return result
@@ -163,6 +169,9 @@ def webPage(r, user='', cate_id='index', version="", rollback='N'):
     category = _load_category(owner, cate_id)
     message = None
     org_msg = None
+    login_user = cur_user()
+    login_url = users.create_login_url(r.path)
+    logout_url = users.create_logout_url(r.path)
     
     if category.nodeType == 2:
         category = category.parent_category

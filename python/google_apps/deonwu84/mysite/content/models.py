@@ -58,6 +58,7 @@ def _wikified_content(text):
     from format import * 
     transforms = [
       BlockHtmlFormat(),
+      HtmlHeadFormat(),
       SimpleHtmlFormat(),
       AutoLink(),
     ]
