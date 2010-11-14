@@ -239,7 +239,8 @@ public class SyncService {
 		if(local.isLeaf() != remote.isLeaf()){
 			if(remote.isLeaf()){
 				Category c = local.getConflict().addMessage(remote.name);
-				this.scheduleData(c, SyncTask.TASK_DOWN_DATA);
+				//this.scheduleData(c, SyncTask.TASK_DOWN_DATA);
+				c.getMessage().update(client.downLoadMessage(remote.id));
 				c.lastUpdated = remote.lastUpdated;
 			}else {
 				Category c = local.getConflict().addCategory(remote.name);
@@ -338,7 +339,18 @@ public class SyncService {
 	}
 	
 	private String uploadToRemote(Category local, Category remote) throws Exception{
-		if(!local.isExpired ||
+		if(local.isLeaf() != remote.isLeaf()){
+			if(local.isLeaf()){
+				Category c = local.getConflict().addMessage(local.name);
+				c.getMessage().update(local.getMessage());
+			}else {
+				Category c = local.getConflict().addCategory(local.name);
+				for(Category xx: local.children){
+					c.addCategory(xx);
+				}
+			}
+			return SyncTask.DOWN_CONFLICT;
+		}else if(!local.isExpired ||
 			SyncListener.UPDATE_FORCE == EventProxy.conflict(local, remote, SyncListener.CONFLICT_EXPIRED)){			
 			client.updateCategory(local);
 			if(local.isLeaf()){
