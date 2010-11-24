@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?> 
+ <!-- ***** BEGIN LICENSE BLOCK ***** 
+    - Version: MPL 1.1/GPL 2.0 
+    - 
+    - The contents of this file are subject to the Mozilla Public License Version 
+    - 1.1 (the "License"); you may not use this file except in compliance with 
+    - the License. You may obtain a copy of the License at 
+    - http://www.mozilla.org/MPL/ 
+    - 
+    - Software distributed under the License is distributed on an "AS IS" basis, 
+    - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License 
+    - for the specific language governing rights and limitations under the 
+    - License. 
+    - 
+    - The Original Code is Rhino code, released May 6, 1999. 
+    - 
+    - The Initial Developer of the Original Code is 
+    - Netscape Communications Corporation. 
+    - Portions created by the Initial Developer are Copyright (C) 1997-1999 
+    - the Initial Developer. All Rights Reserved. 
+    - 
+    - Contributor(s): 
+    - 
+    - Alternatively, the contents of this file may be used under the terms of 
+    - the GNU General Public License Version 2 or later (the "GPL"), in which 
+    - case the provisions of the GPL are applicable instead of those above. If 
+    - you wish to allow use of your version of this file only under the terms of 
+    - the GPL and not to allow others to use your version of this file under the 
+    - MPL, indicate your decision by deleting the provisions above and replacing 
+    - them with the notice and other provisions required by the GPL. If you do 
+    - not delete the provisions above, a recipient may use your version of this 
+    - file under either the MPL or the GPL. 
+    - 
+    - ***** END LICENSE BLOCK ***** --> 
+  
+  
+ <!-- 
+     Build file for Rhino using Ant (see http://jakarta.apache.org/ant/index.html) 
+     Requires Ant version 1.2 or later 
+  
+     Compilation currently requires JDK 1.5 or later. Can cross-compile to 
+     support JDK 1.4. 
+ --> 
+  
+ <project name="NoteBook" default="help" basedir="."> 
+  
+   <target name="properties"> 
+     <!-- Allow user to override default settings from build.properties --> 
+     <property file="build.local.properties" /> 
+     <tstamp> 
+       <!-- Specify date part of Context#getImplementationVersion() --> 
+       <format property="build.date" pattern="yyyy-MM-dd-hhmm"/> 
+     </tstamp> 
+     <property file="build.properties"/> 
+     <property name="version" value="0.1"/> 
+            
+   </target> 
+  
+         <target name="init" depends="properties"> 
+                 <mkdir dir="${build.dir}"/>                  
+                 <mkdir dir="${build.dir}/classes"/> 
+                 <mkdir dir="${build.dir}/lib"/>
+                 <mkdir dir="${dist.dir}"/> 
+         </target> 
+    <path id="dependent-lib">
+        <fileset dir="lib" >
+           <include name="*.jar"/>
+        </fileset>
+    </path>         
+          
+         <target name="compile-shell" depends="properties, init"> 
+                 <javac srcdir="src" 
+                            destdir="${build.dir}/classes" 
+                            includes="**/*.java" 
+                            deprecation="on" 
+                            debug="true"
+                            target="${target-jvm}" 
+                            source="${source-level}" 
+                            classpath="" 
+                            encoding="utf-8" 
+                 > 
+                    <classpath refid="dependent-lib"/>
+                 </javac> 
+                 <copy todir="${build.dir}/classes"> 
+                         <fileset dir="src" includes="**/*.gif" /> 
+                         <fileset dir="src" includes="**/*.png" /> 
+                         <fileset dir="src" includes="**/*.properties" /> 
+                 </copy>
+         </target>           
+    
+         <target name="jar" depends="clean,compile-shell,gen-key">
+                 <jar jarfile="${build.dir}/lib/${dist.name}"
+                          basedir="${build.dir}/classes"
+                          compress="${jar-compression}"
+                  >
+					<manifest>
+						  <attribute name="Main-Class" value="org.notebook.gui.MainFrame"/>
+					</manifest>
+                    <zipfileset src="lib/commons-logging-1.1.1.jar" />
+                    <zipfileset src="lib/json_simple-1.1.jar" />                    
+				</jar>
+    		<signjar destDir="${dist.dir}"
+    		    alias="NoteBook" keystore="test_key"
+    		    storepass="password"
+    		    preservelastmodified="true">
+    		  <path>
+    		    <fileset dir="${build.dir}/lib" includes="**/*.jar" />
+    		  </path>
+    		</signjar>                
+         </target>
+         
+	<target name="gen-key">
+        <delete quiet="true" file="test_key"/> 
+		<genkey alias="NoteBook" storepass="password" keystore="test_key" >
+		  <dname>
+		    <param name="CN" value="NoteBook"/>
+		    <param name="OU" value="DeonWu"/>
+		    <param name="O"  value="NoteBook.ORG"/>
+		    <param name="C"  value="CH"/>
+		  </dname>
+		</genkey>	
+	</target>      
+  
+   <target name="clean" depends="properties"> 
+     <delete quiet="true" dir="${build.dir}"/>
+     <!-- 
+     <delete quiet="true" dir="${dist.dir}"/>
+     --> 
+   </target> 
+  
+   <target name="help" depends="properties"> 
+ <echo>The following targets are available with this build file: 
+  
+  jar         create runtime.jar in ${build.dir}/lib 
+  
+  unit-test   run unit test. 
+          
+  night-build   night-build 
+          
+  docs        create jsdoc  
+  
+ </echo> 
+   </target> 
+  
+ </project> 
