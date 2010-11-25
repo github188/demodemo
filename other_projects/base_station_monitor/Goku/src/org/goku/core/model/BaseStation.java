@@ -53,4 +53,5 @@ public class BaseStation {
 	 */		
 	public String alarmStatus;
 	
+	//public 
 }
