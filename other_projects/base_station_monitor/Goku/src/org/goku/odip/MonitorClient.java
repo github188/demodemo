@@ -168,15 +168,27 @@ public class MonitorClient implements Runnable{
 		}
 	}
 	
+	/**
+	 * 读Socket缓冲区，并处理所有数据。
+	 * @param channel
+	 * @throws IOException
+	 */
 	protected void read(SocketChannel channel) throws IOException{
-		ByteBuffer buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
-		int readLen = channel.read(buffer);
-		
-		//如果当前缓冲区读满了，开始处理数据。
-		if(buffer.remaining() == 0){
-			this.handler.processData();
-		}else if (readLen == -1){
-			this.readChannelClosed();
+		ByteBuffer buffer = null;
+		while(true){
+			buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
+			int readLen = channel.read(buffer);
+			if(readLen == -1){
+				this.readChannelClosed();
+				break;
+			}else if(buffer.hasRemaining()){ //未读满缓冲区，当前数据处理完成。
+				break;
+			}else {
+				//如果当前缓冲区读满了，开始处理数据。
+				this.handler.processData(this);
+				//处理完成后，重新开始读协议头。
+				this.handler.resetBuffer();
+			}
 		}
 	}
 	
