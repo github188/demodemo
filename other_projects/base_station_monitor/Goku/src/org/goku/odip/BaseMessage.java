@@ -1,4 +1,4 @@
-package org.goku.odpi;
+package org.goku.odip;
 
 public class BaseMessage {
 
