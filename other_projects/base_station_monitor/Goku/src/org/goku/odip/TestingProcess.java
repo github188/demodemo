@@ -20,7 +20,7 @@ public class TestingProcess {
 		final Log log = LogFactory.getLog("main");
 		BaseStation station = new BaseStation();
 		station.uuid = "1234";
-		station.locationId = "10.56.126.77:80";
+		station.locationId = "10.56.126.77:820";
 		
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 5, 60, 
 				TimeUnit.SECONDS, 
@@ -29,7 +29,7 @@ public class TestingProcess {
 		
 		log.info("start connection...");
 		threadPool.execute(selector);
-		for(int i = 0; i < 20; i++){
+		for(int i = 0; i < 1; i++){
 			MonitorClient client = new MonitorClient(station);
 			
 			client.addListener(new MonitorClientListener(){

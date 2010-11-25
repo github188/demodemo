@@ -69,8 +69,10 @@ public class ChannelSelector implements Runnable{
 				Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
 				while (selectedKeys.hasNext()) {
 					SelectionKey key = selectedKeys.next();
-					selectedKeys.remove();					
-					//key.cancel();
+					selectedKeys.remove();
+					if(!key.isValid()){
+						continue;
+					}
 					key.interestOps(0);					
 					Object att = key.attachment();					
 					if(att != null && att instanceof Runnable){
@@ -101,7 +103,7 @@ public class ChannelSelector implements Runnable{
 			this.channel = channel;
 			this.ops = ops;
 			this.att = att;
-		}		
+		}
 	}
 
 }

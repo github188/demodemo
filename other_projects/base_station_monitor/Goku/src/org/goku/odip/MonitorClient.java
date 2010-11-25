@@ -1,6 +1,7 @@
 package org.goku.odip;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -8,7 +9,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +33,7 @@ public class MonitorClient implements Runnable{
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
 	 */
-	protected Runnable handler = null;
+	protected ODIPHandler handler = null;
 	
 	public MonitorClient(BaseStation info){
 		this.info = info;
@@ -45,12 +45,10 @@ public class MonitorClient implements Runnable{
 	 * @param selector
 	 */
 	public void connect(ChannelSelector selector) throws IOException{		
-		String[] address = this.info.locationId.split(":");		
+		String[] address = this.info.locationId.split(":");
 		socketChannel = SocketChannel.open();
 		socketChannel.socket().setSoTimeout(5 * 1000);
 		socketChannel.configureBlocking(false);
-		//log.info("time out:" + socketChannel.socket().getSoTimeout());
-		//log.info("xxx:" + new Date());
 		socketChannel.connect(new InetSocketAddress(address[0], Integer.parseInt(address[1])));		
 		log.info("connecting to " + address[0] + ":" + address[1]);		
 		selector.register(socketChannel, SelectionKey.OP_CONNECT, this);
@@ -106,11 +104,25 @@ public class MonitorClient implements Runnable{
 		}
 
 		@Override
+		public void disconnected(MonitorClientEvent event) {
+			for(MonitorClientListener l: ls){
+				l.disconnected(event);
+			}
+		}
+		
+		@Override
+		public void timeout(MonitorClientEvent event) {
+			for(MonitorClientListener l: ls){
+				l.timeout(event);
+			}
+		}
+		
+		@Override
 		public void alarm(MonitorClientEvent event) {
 			for(MonitorClientListener l: ls){
 				l.alarm(event);
 			}
-		}
+		}		
 	};
 	
 	/**
@@ -123,26 +135,30 @@ public class MonitorClient implements Runnable{
 	
 	/**
 	 * 有需要处理的事件时，Selector使用一个后台线程调用run方法，处理当前的事件。
+	 * 
+	 * Run只有一个线程会运行，当前数据处理完成后，需要修改interestOps，重新触发
+	 * select.
 	 */
 	@Override
-	public void run() {		
+	public void run() {
 		try {
-			log.info("connected:" + socketChannel.isConnected() + ", " + Thread.currentThread().getId());
-			if(!this.selectionKey.isValid()){
-				log.info("Change select is valid.");
-				//this.selectionKey.cancel();				
-			}else if(this.selectionKey.isConnectable()){
+			//log.info("connected:" + socketChannel.isConnected() + ", " + Thread.currentThread().getId());
+			if(this.selectionKey.isConnectable()){
 				//log.info("xxx2:" + new Date());
-				socketChannel.finishConnect();	
-				this.eventProxy.connected(new MonitorClientEvent(this));
-				this.selectionKey.interestOps(SelectionKey.OP_READ);
-				log.info("Change select ops as READ.");
-				this.selectionKey.selector().wakeup();
+				try{
+					socketChannel.finishConnect();
+					this.eventProxy.connected(new MonitorClientEvent(this));
+					this.selectionKey.interestOps(SelectionKey.OP_READ);
+					this.selectionKey.selector().wakeup();
+				}catch(ConnectException conn){
+					this.selectionKey.cancel();
+					this.eventProxy.timeout(new MonitorClientEvent(this));
+				}
+				//log.info("Change select ops as READ.");
 			}else if(this.selectionKey.isReadable()){
 				this.read(socketChannel);
 				if(this.selectionKey.isValid()){
 					this.selectionKey.interestOps(SelectionKey.OP_READ);
-					log.info("Change select ops as READ.");
 					this.selectionKey.selector().wakeup();
 				}
 			}
@@ -153,28 +169,30 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void read(SocketChannel channel) throws IOException{
-		ByteBuffer buffer = ByteBuffer.allocate(1024 * 64);
-		int read = channel.read(buffer);
-		if(read == -1){
-			log.info("selectionKey.cancel()");
-			this.selectionKey.cancel();
-			channel.close();
-			log.info("selectionKey.cancel()ed:");
-			return;
+		ByteBuffer buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
+		int readLen = channel.read(buffer);
+		
+		//如果当前缓冲区读满了，开始处理数据。
+		if(buffer.remaining() == 0){
+			this.handler.processData();
+		}else if (readLen == -1){
+			this.readChannelClosed();
 		}
-		//buffer.reset();
-		buffer.flip();
-		
-		byte[] xx = new byte[buffer.limit()];
-		buffer.get(xx);
-		
-		log.info("read:" + new String(xx));
+	}
+	
+	public void read(ByteBuffer buffer) throws IOException{
+		if(this.selectionKey.isReadable()){
+			int readLen = this.socketChannel.read(buffer);
+			if(readLen == -1){
+				this.readChannelClosed();
+			}
+		}
 	}
 	
 	protected void write(byte[] src) throws IOException{
 		ByteBuffer buffer = ByteBuffer.allocate(1024 * 64);
 		buffer.put(src);
-		buffer.flip();		
+		buffer.flip();
 		this.socketChannel.write(buffer);
 	}
 	
@@ -182,7 +200,14 @@ public class MonitorClient implements Runnable{
 		this.socketChannel.write(src);
 	}
 	
-	//private InetSocketAddress get
-		//new InetSocketAddress("127.0.0.1", 8080)
+	protected void readChannelClosed() throws IOException{
+		log.debug("Close connection by channel read -1.");
+		this.selectionKey.cancel();
+		this.socketChannel.close();
+		
+		this.eventProxy.disconnected(new MonitorClientEvent(this));
+	}
 	
+	//private InetSocketAddress get
+	//new InetSocketAddress("127.0.0.1", 8080)
 }
