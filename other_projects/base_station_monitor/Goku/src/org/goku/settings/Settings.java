@@ -26,8 +26,8 @@ public class Settings {
 	protected Properties settings = System.getProperties();	
 	private String confName = "master.conf";
 	
-	private String[] masterSettings = new String[]{};
-	private String[] routeSettings = new String[]{};
+	//private String[] masterSettings = new String[]{};
+	//private String[] routeSettings = new String[]{};
 	
 	public Settings(String name){
 		this.confName = name;
@@ -63,8 +63,14 @@ public class Settings {
 	}
 	
 	public int getInt(String name, int def){
-		//return settings.getProperty(name, def);
-		return 0;
+		String val = settings.getProperty(name);
+		int intVal = def;
+		try{
+			if(val != null) intVal = Integer.parseInt(val);
+		}catch(Exception e){
+		}
+		
+		return intVal;
 	}	
 		
 }

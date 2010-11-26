@@ -81,7 +81,7 @@ public class RouteServer {
 		log.info("Start http server at port " + httpPort);
 		
 		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
-		http.setServlet("");
+		http.setServlet("org.goku.http.DefaultRouteServerServlet");
 		http.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {

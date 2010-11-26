@@ -38,8 +38,7 @@
                     <classpath refid="dependent-lib"/>
                  </javac> 
                  <copy todir="${build.dir}/classes"> 
-                         <fileset dir="src" includes="**/*.gif" /> 
-                         <fileset dir="src" includes="**/*.png" /> 
+                         <fileset dir="src" includes="**/*.conf" /> 
                          <fileset dir="src" includes="**/*.properties" /> 
                  </copy>
          </target>           
