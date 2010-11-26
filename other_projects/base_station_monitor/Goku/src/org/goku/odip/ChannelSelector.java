@@ -73,7 +73,12 @@ public class ChannelSelector implements Runnable{
 					if(!key.isValid()){
 						continue;
 					}
-					key.interestOps(0);					
+					/*
+					 * 避免当前Key再次被select,导致多一个线程同时处理相同的collection.
+					 * 数据处理完成后，需要重新设置需要监控的操作。
+					 */
+					key.interestOps(0);
+					
 					Object att = key.attachment();					
 					if(att != null && att instanceof Runnable){
 						this.threadPool.execute((Runnable)att);

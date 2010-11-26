@@ -22,6 +22,7 @@ public class TestingProcess {
 		station.uuid = "1234";
 		station.locationId = "10.56.126.77:820";
 		
+		
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 5, 60, 
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(300));
@@ -32,7 +33,7 @@ public class TestingProcess {
 		for(int i = 0; i < 1; i++){
 			MonitorClient client = new MonitorClient(station);
 			
-			client.addListener(new MonitorClientListener(){
+			client.addListener(new AbstractMonitorListener(){
 				@Override
 				public void connected(MonitorClientEvent event) {
 					log.info("connected ok...");

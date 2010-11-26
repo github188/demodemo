@@ -162,36 +162,37 @@ public class MonitorClient implements Runnable{
 					this.selectionKey.selector().wakeup();
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error(e.toString(), e);
 			this.selectionKey.cancel();
 		}
 	}
 	
 	/**
-	 * 读Socket缓冲区，并处理所有数据。
+	 * 读Socket缓冲区并处理, 每次最多只处理一个ODIP协议报文，避免一个线程长时间被占
+	 * 用。其他终端无法处理。
 	 * @param channel
 	 * @throws IOException
 	 */
 	protected void read(SocketChannel channel) throws IOException{
 		ByteBuffer buffer = null;
-		while(true){
-			buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
-			int readLen = channel.read(buffer);
-			if(readLen == -1){
-				this.readChannelClosed();
-				break;
-			}else if(buffer.hasRemaining()){ //未读满缓冲区，当前数据处理完成。
-				break;
-			}else {
-				//如果当前缓冲区读满了，开始处理数据。
-				this.handler.processData(this);
-				//处理完成后，重新开始读协议头。
-				this.handler.resetBuffer();
-			}
+		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
+		int readLen = channel.read(buffer);
+		if(readLen == -1){
+			this.readChannelClosed();
+		}else if(!buffer.hasRemaining()){
+			//如果当前缓冲区读满了，开始处理数据。
+			this.handler.processData(this);
+			//处理完成后，重新开始读协议头。
+			this.handler.resetBuffer();
 		}
 	}
 	
+	/**
+	 * 在ODIPHandler里，可能需要根据协议头，读些数据。
+	 * @param buffer
+	 * @throws IOException
+	 */
 	public void read(ByteBuffer buffer) throws IOException{
 		if(this.selectionKey.isReadable()){
 			int readLen = this.socketChannel.read(buffer);
@@ -202,7 +203,7 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void write(byte[] src) throws IOException{
-		ByteBuffer buffer = ByteBuffer.allocate(1024 * 64);
+		ByteBuffer buffer = ByteBuffer.allocate(src.length);
 		buffer.put(src);
 		buffer.flip();
 		this.socketChannel.write(buffer);

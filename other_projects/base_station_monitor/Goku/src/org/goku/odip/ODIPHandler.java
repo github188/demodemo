@@ -19,7 +19,7 @@ public class ODIPHandler {
 			protoHeader.loadBuffer(this.buffer);
 			int extLen = this.protoHeader.externalLength;		
 			if(extLen > 0){
-				this.buffer.reset();
+				this.buffer.clear();
 				this.buffer.limit(extLen);
 				client.read(buffer);
 				if(!buffer.hasRemaining()){
@@ -30,10 +30,14 @@ public class ODIPHandler {
 			}
 		}
 		
-		//协议头和扩展数据都读完成，开始处理协议信息。
+		//ODIP协议头和扩展数据都读完成，开始处理协议信息。
 		if(protoHeader.cmd != 0 && !buffer.hasRemaining()){
 			
 		}
+	}
+	
+	public void processODIPMessage(MonitorClient client, ProtocolHeader header, ByteBuffer buffer){
+		
 	}
 	
 	public void resetBuffer(){

@@ -15,7 +15,12 @@ import org.apache.commons.logging.LogFactory;
 public class Settings {
 	
 	public final static String HTTP_PORT = "http_port";
+	public final static String CORE_ROUTE_THREAD_COUNT = "core_route_thread_count";
+	public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	
+	public final static String MASTER_SERVER_URL = "master_server_url";
+	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
+	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	
 	private static Log log = LogFactory.getLog("settings");
 	protected Properties settings = System.getProperties();	

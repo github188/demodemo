@@ -1,9 +1,17 @@
 package org.goku.route;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.db.DataStorage;
+import org.goku.http.SimpleHTTPServer;
+import org.goku.http.StartupListener;
 import org.goku.odip.ChannelSelector;
 import org.goku.odip.MonitorClient;
 import org.goku.settings.Settings;
@@ -16,34 +24,99 @@ import org.goku.settings.Settings;
  * @author deon
  */
 public class RouteServer {
-	private Settings settings = null;	
+	private Log log = LogFactory.getLog("main");
+	private static RouteServer ins = null;
 	public Collection<MonitorClient> clients = null;
-	protected ChannelSelector selector = null;
+	public ChannelSelector selector = null;	
+	public DataStorage storage = null;	
+	public MasterClient master = null;
+	public MonitorAlarmManager manager = null;
 	
-	protected DataStorage storage = null;
+	private ThreadPoolExecutor routePool = null; 
+	private Settings settings = null;
+	private boolean running = true;
+	
+	public static RouteServer getInstance(){
+		return ins;
+	}
 	
 	public RouteServer(Settings settings){
+		ins = this;
+		this.settings = settings;
+	}
+	
+	public void startUp() throws Exception{
+		log.info("Starting route server...");
+				
+		log.info("init DB connection...");
+		this.storage = DataStorage.create(settings);
+		
+		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
+		
+		log.info("init thread pool, core thread count " + core_thread_count);
+		routePool = new ThreadPoolExecutor(
+				core_thread_count,
+				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
+				60, 
+				TimeUnit.SECONDS, 
+				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
+				);
+		selector = new ChannelSelector(routePool);
+		
+		
+		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8081");
+		log.info("Check master server in running, url:" + masterUrl);
+		master = new MasterClient(masterUrl);
+		if(master.checkConnection()){
+			log.info("Connected master server.");
+		}else {
+			log.warn("Failed to connect master server.");
+		}
+		
+		log.info("Starting alarm manager server...");
+		manager = new MonitorAlarmManager();
+		routePool.execute(manager);
+		
+		int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
+		log.info("Start http server at port " + httpPort);
+		
+		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
+		http.setServlet("");
+		http.addStartupListener(new StartupListener(){
+			@Override
+			public void started() {
+				// TODO Auto-generated method stub				
+			}
+		});
+		
+		routePool.execute(http);
+		while(this.running){
+			synchronized(this){
+				this.wait();
+			}
+		}
+		log.info("halt");		
+	}
+	
+	protected void loadingMonitorClient(){
 		
 	}
 	
-	public void startUp(){
-		
-	}
-	
-	private void startHttpServer(){
-		
-	}
-	
-	/**
-	 * 启动路由功能，
-	 */
-	private void startRouting(){
-		
+	public void shutdown(){
+		this.running = false;
+		synchronized(this){
+			this.notifyAll();
+		}
 	}
 	
 	protected void addMonitorClient(BaseStation station){
 		MonitorClient client = new MonitorClient(station);
-		client.connect();
+		try {
+			client.connect(selector);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	//private void connectMonitorClient(){
@@ -55,24 +128,4 @@ public class RouteServer {
 		
 	}
 	*/
-	
-	class HttpAction{
-		public void shutdown(){
-			
-		}
-		
-		public void status(){
-			
-		}
-		
-		public void add_monitor(String uuid){
-			BaseStation bs = (BaseStation)storage.load(BaseStation.class, uuid);
-			addMonitorClient(bs);
-			
-		}
-		
-		public void remove_monitor(){
-			
-		}
-	}
 }
