@@ -20,26 +20,31 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 * 实时监控，请求。将视频数据流，以HTTP下载的方式返回。建立一个长连接，异步输出
 	 * 监控录像。
 	 */
-    protected void real_play(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException {
-    	
+	public void real_play(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+    	response.getWriter().write("Welcome real_play!");      	
     }
     
 	
 	/**
 	 * 心跳检查。
 	 */
-    protected void heart_ok(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException {
-    	
+    public void heart_ok(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+    	response.getWriter().write("Welcome heart_ok!");      	
     }
     
 	/**
 	 * 服务器的内部状态。
 	 */
-    protected void routing_status(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException {
-    	
+    public void routing_status(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+    	response.getWriter().write("Welcome routing_status!");    	
+    } 
+
+    protected void index_page(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+    	response.getWriter().write("Welcome route!");
     } 
 	
 }
