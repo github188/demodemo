@@ -85,7 +85,7 @@ public class RouteServer {
 		http.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
-				// TODO Auto-generated method stub				
+				log.info("started http...");	
 			}
 		});
 		
