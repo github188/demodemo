@@ -34,6 +34,7 @@
                             source="1.5" 
                             classpath="" 
                             encoding="utf-8" 
+                 			includeantruntime="flase"
                  > 
                     <classpath refid="dependent-lib"/>
                  </javac> 
