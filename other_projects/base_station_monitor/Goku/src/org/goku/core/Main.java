@@ -2,7 +2,7 @@ package org.goku.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.goku.route.RouteServer;
+import org.goku.route.VideoRouteServer;
 import org.goku.server.CenterServer;
 import org.goku.settings.Settings;
 
@@ -30,8 +30,10 @@ public class Main {
 				help();
 			}else if(args[0].equals("--master")){
 				new Main().startAsMaster();
-			}else if(args[0].equals("--route")){
-				new Main().startAsRoute();
+			}else if(args[0].equals("--video")){
+				new Main().startAsVideoRoute();
+			}else if(args[0].equals("--image")){
+				new Main().startAsImageRoute();
 			}else {
 				help();
 			}
@@ -45,15 +47,21 @@ public class Main {
 		new CenterServer(settings).startUp();
 	}
 	
-	private void startAsRoute() throws Exception {
-		Settings settings = new Settings("master.conf");
-		new RouteServer(settings).startUp();
+	private void startAsVideoRoute() throws Exception {
+		Settings settings = new Settings("video.conf");
+		new VideoRouteServer(settings).startUp();
+	}
+	
+	private void startAsImageRoute() throws Exception {
+		Settings settings = new Settings("image.conf");
+		//new VideoRouteServer(settings).startUp();
 	}
 
 	private static void help(){
 		System.out.println("java -jar Goku.jar <Option>\n" +
 				"    --master              Run as master server.\n" +
-				"    --route               Run as routing server.\n" +
+				"    --video               Run as video routing server.\n" +
+				"    --image               Run as image routing server.\n" +
 				"    --version             Show version.\n");
 		System.exit(0);
 	}

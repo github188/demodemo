@@ -24,6 +24,8 @@ public class MonitorClient implements Runnable{
 	private BaseStation info = null;
 	public Collection<MonitorClientListener> ls = Collections.synchronizedCollection(new ArrayList<MonitorClientListener>());
 	
+	public VideoRoute route = null;
+	
 	/**
 	 * 网络连接的操作对象，可以得到SocketChannel.
 	 */
@@ -35,16 +37,18 @@ public class MonitorClient implements Runnable{
 	 */
 	protected ODIPHandler handler = null;
 	
-	public MonitorClient(BaseStation info){
+	public MonitorClient(BaseStation info, VideoRoute route){
 		this.info = info;
-		log = LogFactory.getLog("node." + info.uuid);		
+		log = LogFactory.getLog("node." + info.uuid);
+		
+		this.route = route;
 	}
 	
 	/**
 	 * 连接客户端，后注册到ChannelSelector，如果有可读／数据由Selector触发一个事件。
 	 * @param selector
 	 */
-	public void connect(ChannelSelector selector) throws IOException{		
+	public void connect(ChannelSelector selector) throws IOException{
 		String[] address = this.info.locationId.split(":");
 		socketChannel = SocketChannel.open();
 		socketChannel.socket().setSoTimeout(5 * 1000);

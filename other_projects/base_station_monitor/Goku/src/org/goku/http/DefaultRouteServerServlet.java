@@ -7,13 +7,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.goku.route.RouteServer;
+import org.goku.route.VideoRouteServer;
 
 public class DefaultRouteServerServlet extends BaseRouteServlet{
-	private RouteServer server = null;
+	private VideoRouteServer server = null;
 	
 	public void init(ServletConfig config){
-		server = RouteServer.getInstance();
+		server = VideoRouteServer.getInstance();
 	}
 	
 	/**
@@ -22,7 +22,8 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 */
 	public void real_play(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-    	response.getWriter().write("Welcome real_play!");      	
+    	response.getWriter().write("Welcome real_play!");  
+    	//response.getOutputStream().flush()
     }
     
 	

@@ -1,7 +1,9 @@
 package org.goku.route;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +16,7 @@ import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
 import org.goku.odip.ChannelSelector;
 import org.goku.odip.MonitorClient;
+import org.goku.odip.VideoRoute;
 import org.goku.settings.Settings;
 
 /**
@@ -23,24 +26,25 @@ import org.goku.settings.Settings;
  * 调度后，才开始收集终端告警。
  * @author deon
  */
-public class RouteServer {
+public class VideoRouteServer {
 	private Log log = LogFactory.getLog("main");
-	private static RouteServer ins = null;
-	public Collection<MonitorClient> clients = null;
+	private static VideoRouteServer ins = null;
+	public Map<String, MonitorClient> clients = Collections.synchronizedMap(new HashMap<String, MonitorClient>());
+	
 	public ChannelSelector selector = null;	
 	public DataStorage storage = null;	
 	public MasterClient master = null;
 	public MonitorAlarmManager manager = null;
 	
-	private ThreadPoolExecutor routePool = null; 
+	private ThreadPoolExecutor threadPool = null; 
 	private Settings settings = null;
 	private boolean running = true;
 	
-	public static RouteServer getInstance(){
+	public static VideoRouteServer getInstance(){
 		return ins;
 	}
 	
-	public RouteServer(Settings settings){
+	public VideoRouteServer(Settings settings){
 		ins = this;
 		this.settings = settings;
 	}
@@ -54,14 +58,14 @@ public class RouteServer {
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		
 		log.info("init thread pool, core thread count " + core_thread_count);
-		routePool = new ThreadPoolExecutor(
+		threadPool = new ThreadPoolExecutor(
 				core_thread_count,
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
 				60, 
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
 				);
-		selector = new ChannelSelector(routePool);
+		selector = new ChannelSelector(threadPool);
 		
 		
 		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8081");
@@ -75,7 +79,7 @@ public class RouteServer {
 		
 		log.info("Starting alarm manager server...");
 		manager = new MonitorAlarmManager();
-		routePool.execute(manager);
+		threadPool.execute(manager);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
 		log.info("Start http server at port " + httpPort);
@@ -89,7 +93,7 @@ public class RouteServer {
 			}
 		});
 		
-		routePool.execute(http);
+		threadPool.execute(http);
 		while(this.running){
 			synchronized(this){
 				this.wait();
@@ -110,13 +114,22 @@ public class RouteServer {
 	}
 	
 	protected void addMonitorClient(BaseStation station){
-		MonitorClient client = new MonitorClient(station);
+		MonitorClient client = new MonitorClient(station, new VideoRoute(threadPool));
 		try {
 			client.connect(selector);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 根据UUID取得监控客户端对象。
+	 * @param uuid
+	 * @return
+	 */
+	public MonitorClient getMonitorClient(String uuid){
+		return clients.get(uuid);
 	}
 	
 	//private void connectMonitorClient(){

@@ -3,6 +3,9 @@ package org.goku.core.model;
 import java.util.Date;
 
 public class BaseStation {
+	public static final int TYPE_VIDEO = 1;
+	public static final int TYPE_IMAGE = 2;
+	
 	/**
 	 * 基站的唯一标识，在客户端界面显示，初始化时配置。
 	 */
@@ -53,5 +56,9 @@ public class BaseStation {
 	 */		
 	public String alarmStatus;
 	
+	/**
+	 * 设备类型， (视频｜图片)
+	 */
+	public int type;
 	//public 
 }
