@@ -1,13 +1,15 @@
 package org.goku.core;
 
-import org.apache.commons.logging.Log;
+import java.io.IOException;
+
 import org.apache.commons.logging.LogFactory;
-import org.goku.master.CenterServer;
+import org.goku.master.MasterVideoServer;
 import org.goku.settings.Settings;
 import org.goku.video.VideoRouteServer;
 
 
 public class Main {
+	
 	static{
 		if(System.getProperty("org.apache.commons.logging.simplelog.defaultlog") == null){
 			System.setProperty("org.apache.commons.logging.simplelog.defaultlog", "trace");	
@@ -21,7 +23,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
-		LogFactory.getLog("main");
+		//LogFactory.getLog("main");
 		if (args.length == 1){
 			if(args[0].equals("--version")){
 				System.out.println(Version.getName() + " " + Version.getVersion());
@@ -43,19 +45,41 @@ public class Main {
 	}
 	
 	private void startAsMaster() throws Exception{
+		initLog4jFile("master.log");
 		Settings settings = new Settings("master.conf");
-		new CenterServer(settings).startUp();
+		new MasterVideoServer(settings).startUp();
 	}
 	
 	private void startAsVideoRoute() throws Exception {
+		initLog4jFile("video.log");
 		Settings settings = new Settings("video.conf");
 		new VideoRouteServer(settings).startUp();
 	}
 	
 	private void startAsImageRoute() throws Exception {
+		initLog4jFile("image.log");
 		Settings settings = new Settings("image.conf");
-		//new VideoRouteServer(settings).startUp();
 	}
+	
+	private void initLog4jFile(String name){
+		//LogFactory.getLog("main");
+		org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
+		try {
+			root.addAppender(new org.apache.log4j.DailyRollingFileAppender(root.getAppender("S").getLayout(),
+					"logs/" + name, 
+					".yyy-MM-dd"));
+		} catch (IOException e) {
+			System.out.println("Failed to add file appender.");
+			// TODO Auto-generated catch block
+		}
+		
+		//root.removeAppender("R");
+		//org.apache.log4j.DailyRollingFileAppender appender = (org.apache.log4j.DailyRollingFileAppender)root.getAppender("R");
+		//appender.setFile("logs/" + name);
+		//root.info("===========================================");
+		//root.info("===========================================");
+	}
+	
 
 	private static void help(){
 		System.out.println("java -jar Goku.jar <Option>\n" +
