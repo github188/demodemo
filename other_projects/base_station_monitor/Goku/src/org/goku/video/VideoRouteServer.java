@@ -31,13 +31,13 @@ public class VideoRouteServer {
 	private static VideoRouteServer ins = null;
 	public Map<String, MonitorClient> clients = Collections.synchronizedMap(new HashMap<String, MonitorClient>());
 	
+	public Settings settings = null;
 	public ChannelSelector selector = null;	
 	public DataStorage storage = null;	
 	public MasterClient master = null;
 	public MonitorAlarmManager manager = null;
 	
 	private ThreadPoolExecutor threadPool = null; 
-	private Settings settings = null;
 	private boolean running = true;
 	
 	public static VideoRouteServer getInstance(){
@@ -50,7 +50,7 @@ public class VideoRouteServer {
 	}
 	
 	public void startUp() throws Exception{
-		log.info("Starting route server...");
+		log.info("Starting video routing server...");
 				
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);

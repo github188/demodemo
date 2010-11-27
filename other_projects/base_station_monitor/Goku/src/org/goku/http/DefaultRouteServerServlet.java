@@ -95,7 +95,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 
     protected void index_page(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-    	response.getWriter().write("Welcome route!");
+    	response.getWriter().write("Welcome video router!");
     } 
 	
 }
