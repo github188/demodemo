@@ -141,4 +141,7 @@ public class VideoRouteServer {
 		
 	}
 	*/
+	public static void main(String[] a) throws Exception{
+		new VideoRouteServer(new Settings("video.conf")).startUp();
+	}
 }
