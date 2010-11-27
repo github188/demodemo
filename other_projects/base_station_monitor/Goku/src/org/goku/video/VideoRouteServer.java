@@ -1,4 +1,4 @@
-package org.goku.route;
+package org.goku.video;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,10 +14,10 @@ import org.goku.core.model.BaseStation;
 import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
-import org.goku.odip.ChannelSelector;
-import org.goku.odip.MonitorClient;
-import org.goku.odip.VideoRoute;
 import org.goku.settings.Settings;
+import org.goku.video.odip.ChannelSelector;
+import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.VideoRoute;
 
 /**
  * 路由服务器，处理基站的连接，和告警查询。录像保存等操作。如果监控客户端，需要连接到

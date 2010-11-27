@@ -2,9 +2,9 @@ package org.goku.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.goku.route.VideoRouteServer;
-import org.goku.server.CenterServer;
+import org.goku.master.CenterServer;
 import org.goku.settings.Settings;
+import org.goku.video.VideoRouteServer;
 
 
 public class Main {

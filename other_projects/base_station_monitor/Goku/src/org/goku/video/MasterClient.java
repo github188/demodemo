@@ -1,4 +1,4 @@
-package org.goku.route;
+package org.goku.video;
 
 import java.io.IOException;
 

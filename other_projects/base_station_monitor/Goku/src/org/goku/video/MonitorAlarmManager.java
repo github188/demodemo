@@ -1,4 +1,4 @@
-package org.goku.route;
+package org.goku.video;
 
 /**
  * Alarm管理中心，检测Alarm，自动收集告警录像，自动清理过期录像。

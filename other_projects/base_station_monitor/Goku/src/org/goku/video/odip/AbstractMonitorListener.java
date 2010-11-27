@@ -1,4 +1,4 @@
-package org.goku.odip;
+package org.goku.video.odip;
 
 public abstract class AbstractMonitorListener implements MonitorClientListener{
 

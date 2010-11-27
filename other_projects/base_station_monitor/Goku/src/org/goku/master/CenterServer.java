@@ -1,4 +1,4 @@
-package org.goku.server;
+package org.goku.master;
 
 import org.goku.settings.Settings;
 

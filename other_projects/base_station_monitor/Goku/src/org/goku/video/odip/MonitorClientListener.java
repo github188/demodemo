@@ -1,4 +1,4 @@
-package org.goku.odip;
+package org.goku.video.odip;
 
 public interface MonitorClientListener {
 	public void connected(MonitorClientEvent event);

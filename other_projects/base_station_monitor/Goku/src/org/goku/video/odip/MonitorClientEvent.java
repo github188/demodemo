@@ -1,4 +1,4 @@
-package org.goku.odip;
+package org.goku.video.odip;
 
 public class MonitorClientEvent {
 	public MonitorClient client = null;
