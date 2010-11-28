@@ -13,7 +13,6 @@ public class TestingProcess {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Logger logger = LoggerFactory.getLogger("xxxx");
-		logger.info("Hello World");
+		System.out.println(String.format("xxx %s ", 1));
 	}
 }

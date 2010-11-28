@@ -3,6 +3,15 @@ package org.goku.core.model;
 import java.util.Date;
 
 public class BaseStation {
+	public static final String ORM_SELECT = "select uuid, connectionStatus, groupName " +
+			"from basestation";
+	public static final String ORM_SAVE = "select uuid, connectionStatus, groupName " +
+	"from basestation";
+	
+	//public static final String ORM_TABLE = null; //new String[]{};
+	public static final String[] ORM_FIELDS = new String[]{};
+	public static final String[] ORM_PK_FIELDS = new String[]{};
+	
 	public static final int TYPE_VIDEO = 1;
 	public static final int TYPE_IMAGE = 2;
 	
