@@ -8,5 +8,9 @@ public interface MonitorClientListener {
 	public void timeout(MonitorClientEvent event);
 	
 	public void alarm(MonitorClientEvent event);
+	
+	public void writeIOException(MonitorClientEvent event);
+	
+	public void loginError(MonitorClientEvent event);
 
 }

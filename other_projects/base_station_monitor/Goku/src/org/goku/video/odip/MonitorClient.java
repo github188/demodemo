@@ -2,7 +2,6 @@ package org.goku.video.odip;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -20,12 +19,12 @@ import org.goku.core.model.BaseStation;
  * @author deon
  */
 public class MonitorClient implements Runnable{
-	protected Log log = null; 
-	private BaseStation info = null;
+	public BaseStation info = null;
 	public Collection<MonitorClientListener> ls = Collections.synchronizedCollection(new ArrayList<MonitorClientListener>());
 	
 	public VideoRoute route = null;
 	
+	protected Log log = null; 
 	/**
 	 * 网络连接的操作对象，可以得到SocketChannel.
 	 */
@@ -44,6 +43,7 @@ public class MonitorClient implements Runnable{
 		
 		this.route = route;
 		this.socketManager = socketManager;
+		this.handler = new ODIPHandler(this);
 	}
 	
 	/** 
@@ -89,14 +89,18 @@ public class MonitorClient implements Runnable{
 	}
 	
 	public void addListener(MonitorClientListener l){
-		this.ls.add(l);
+		if(! this.ls.contains(l)){
+			this.ls.add(l);
+		}
 	}
 	
 	public void removeListener(MonitorClientListener l){
-		this.ls.remove(l);
-	}		
+		if(this.ls.contains(l)){
+			this.ls.remove(l);
+		}
+	}
 	
-	protected MonitorClientListener eventProxy = new MonitorClientListener(){
+	public MonitorClientListener eventProxy = new MonitorClientListener(){
 
 		@Override
 		public void connected(MonitorClientEvent event) {
@@ -124,7 +128,21 @@ public class MonitorClient implements Runnable{
 			for(MonitorClientListener l: ls){
 				l.alarm(event);
 			}
+		}	
+		
+		@Override
+		public void writeIOException(MonitorClientEvent event) {
+			for(MonitorClientListener l: ls){
+				l.writeIOException(event);
+			}
 		}		
+		
+		@Override
+		public void loginError(MonitorClientEvent event) {
+			for(MonitorClientListener l: ls){
+				l.loginError(event);
+			}
+		}				
 	};
 	
 	/**
@@ -143,30 +161,32 @@ public class MonitorClient implements Runnable{
 	 */
 	@Override
 	public void run() {
-		try {
-			//log.info("connected:" + socketChannel.isConnected() + ", " + Thread.currentThread().getId());
-			if(this.selectionKey.isConnectable()){
-				//log.info("xxx2:" + new Date());
-				try{
-					socketChannel.finishConnect();
-					this.eventProxy.connected(new MonitorClientEvent(this));
-					this.selectionKey.interestOps(SelectionKey.OP_READ);
-					this.selectionKey.selector().wakeup();
-				}catch(ConnectException conn){
-					this.selectionKey.cancel();
-					this.eventProxy.timeout(new MonitorClientEvent(this));
+		synchronized(this){
+			try {
+				//log.info("connected:" + socketChannel.isConnected() + ", " + Thread.currentThread().getId());
+				if(this.selectionKey.isConnectable()){
+					//log.info("xxx2:" + new Date());
+					try{
+						socketChannel.finishConnect();
+						this.eventProxy.connected(new MonitorClientEvent(this));
+						this.selectionKey.interestOps(SelectionKey.OP_READ);
+						this.selectionKey.selector().wakeup();
+					}catch(ConnectException conn){
+						this.selectionKey.cancel();
+						this.eventProxy.timeout(new MonitorClientEvent(this));
+					}
+					//log.info("Change select ops as READ.");
+				}else if(this.selectionKey.isReadable()){
+					this.read(socketChannel);
+					if(this.selectionKey.isValid()){
+						this.selectionKey.interestOps(SelectionKey.OP_READ);
+						this.selectionKey.selector().wakeup();
+					}
 				}
-				//log.info("Change select ops as READ.");
-			}else if(this.selectionKey.isReadable()){
-				this.read(socketChannel);
-				if(this.selectionKey.isValid()){
-					this.selectionKey.interestOps(SelectionKey.OP_READ);
-					this.selectionKey.selector().wakeup();
-				}
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				this.selectionKey.cancel();
 			}
-		} catch (Exception e) {
-			log.error(e.toString(), e);
-			this.selectionKey.cancel();
 		}
 	}
 	
@@ -211,8 +231,15 @@ public class MonitorClient implements Runnable{
 		this.socketChannel.write(buffer);
 	}
 	
-	protected void write(ByteBuffer src) throws IOException{
-		this.socketChannel.write(src);
+	protected void write(ByteBuffer src){
+		/**
+		 * 需要一个flush操作么？
+		 */
+		try{
+			this.socketChannel.write(src);
+		}catch(IOException e){
+			this.eventProxy.writeIOException(new MonitorClientEvent(this));
+		}
 	}
 	
 	protected void readChannelClosed() throws IOException{

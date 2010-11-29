@@ -13,6 +13,6 @@ public class TestingProcess {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		System.out.println(String.format("xxx %s ", 1));
+		System.out.println(String.format("xxx 0x%x ", 22));
 	}
 }

@@ -3,6 +3,9 @@ package org.goku.video.odip;
 import java.nio.ByteBuffer;
 
 public class ProtocolHeader {
+	public static final byte CMD_LOGIN = (byte) 0xa0;
+	public static final byte ACK_LOGIN = (byte) 0xb0;
+	
 	private static final byte[] SUPPORT_COMMAND = 
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //00-0F
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //10-1F
@@ -55,5 +58,27 @@ public class ProtocolHeader {
 	
 	public boolean supportCommand(){
 		return SUPPORT_COMMAND[this.cmd] == 1;
+	}
+	
+	/**
+	 * 设定data区域的数据， 
+	 * @param index -- 不是从0 开始，第一个数据从8。为了和文档上的index一致，方便
+	 * 对照文档开发。
+	 * @param data
+	 */
+	public void setByte(int index, byte v){
+		if(index < 8 || index > 31) return;
+		this.data[index - 8] = v;
+	}
+	
+	/**
+	 * 取data区域的数据， 
+	 * @param index -- 不是从0 开始，第一个数据从8。为了和文档上的index一致，方便
+	 * 对照文档开发。
+	 * @param data
+	 */	
+	public byte getByte(int index){
+		if(index < 8 || index > 31) return -1;
+		return this.data[index - 8];
 	}
 }
