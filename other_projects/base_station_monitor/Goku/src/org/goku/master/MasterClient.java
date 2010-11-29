@@ -1,4 +1,4 @@
-package org.goku.video;
+package org.goku.master;
 
 import java.io.IOException;
 

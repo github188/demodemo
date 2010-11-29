@@ -14,8 +14,9 @@ import org.goku.core.model.BaseStation;
 import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
+import org.goku.master.MasterClient;
 import org.goku.settings.Settings;
-import org.goku.video.odip.ChannelSelector;
+import org.goku.video.odip.SocketManager;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.VideoRoute;
 
@@ -32,7 +33,7 @@ public class VideoRouteServer {
 	public Map<String, MonitorClient> clients = Collections.synchronizedMap(new HashMap<String, MonitorClient>());
 	
 	public Settings settings = null;
-	public ChannelSelector selector = null;	
+	public SocketManager socketManager = null;	
 	public DataStorage storage = null;	
 	public MasterClient master = null;
 	public MonitorAlarmManager manager = null;
@@ -65,7 +66,7 @@ public class VideoRouteServer {
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
 				);
-		selector = new ChannelSelector(threadPool);
+		socketManager = new SocketManager(threadPool);
 		
 		
 		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8081");
@@ -78,14 +79,14 @@ public class VideoRouteServer {
 		}
 		
 		log.info("Starting alarm manager server...");
-		manager = new MonitorAlarmManager();
+		manager = new MonitorAlarmManager(threadPool);
 		threadPool.execute(manager);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
 		log.info("Start http server at port " + httpPort);
 		
 		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
-		http.setServlet("org.goku.http.DefaultRouteServerServlet");
+		http.setServlet("org.goku.video.DefaultRouteServerServlet");
 		http.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
@@ -113,15 +114,17 @@ public class VideoRouteServer {
 		}
 	}
 	
-	protected void addMonitorClient(BaseStation station){
-		MonitorClient client = new MonitorClient(station, new VideoRoute(threadPool));
-		try {
-			client.connect(selector);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void addMonitorClient(String uuid){
+		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
+		MonitorClient client = new MonitorClient(station, 
+												 new VideoRoute(threadPool),
+												 socketManager);
+		this.clients.put(uuid, client);
+		this.manager.addClient(client);
+		
+		//client.connect(selector);
 	}
+	
 	
 	/**
 	 * 根据UUID取得监控客户端对象。

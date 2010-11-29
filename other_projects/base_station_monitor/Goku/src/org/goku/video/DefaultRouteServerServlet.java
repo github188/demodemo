@@ -1,4 +1,4 @@
-package org.goku.http;
+package org.goku.video;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.goku.video.VideoRouteServer;
+import org.goku.http.BaseRouteServlet;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
 

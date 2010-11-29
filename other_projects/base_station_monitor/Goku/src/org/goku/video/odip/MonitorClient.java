@@ -31,31 +31,29 @@ public class MonitorClient implements Runnable{
 	 */
 	protected SelectionKey selectionKey = null;
 	protected SocketChannel socketChannel = null;
+	protected SocketManager socketManager = null;
 	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
 	 */
 	protected ODIPHandler handler = null;
 	
-	public MonitorClient(BaseStation info, VideoRoute route){
+	public MonitorClient(BaseStation info, VideoRoute route, SocketManager socketManager){
 		this.info = info;
 		log = LogFactory.getLog("node." + info.uuid);
 		
 		this.route = route;
+		this.socketManager = socketManager;
 	}
 	
-	/**
-	 * 连接客户端，后注册到ChannelSelector，如果有可读／数据由Selector触发一个事件。
+	/** 
 	 * @param selector
 	 */
-	public void connect(ChannelSelector selector) throws IOException{
+	public void connect() throws IOException{
 		String[] address = this.info.locationId.split(":");
-		socketChannel = SocketChannel.open();
-		socketChannel.socket().setSoTimeout(5 * 1000);
-		socketChannel.configureBlocking(false);
-		socketChannel.connect(new InetSocketAddress(address[0], Integer.parseInt(address[1])));		
-		log.info("connecting to " + address[0] + ":" + address[1]);		
-		selector.register(socketChannel, SelectionKey.OP_CONNECT, this);
+		this.socketChannel = this.socketManager.connect(address[0],
+				Integer.parseInt(address[1]),
+				this);
 	}
 	
 	public void checkAlarm(){

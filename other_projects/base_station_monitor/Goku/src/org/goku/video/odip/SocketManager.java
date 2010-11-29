@@ -1,6 +1,7 @@
 package org.goku.video.odip;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -16,10 +17,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * NIO Selecting 线程。
+ * 实现Socket的连接管理，在Socket有可读数据时分配一个线程处理数据。
  * @author deon
  */
-public class ChannelSelector implements Runnable{
+public class SocketManager implements Runnable{
 	private Log log = LogFactory.getLog("main");
 	private Selector selector = null;
 	private ThreadPoolExecutor threadPool = null;
@@ -27,10 +28,25 @@ public class ChannelSelector implements Runnable{
 	
 	private Collection<ChangeRequest> paddings = new ArrayList<ChangeRequest>();//#this.pendingData
 	
-	public ChannelSelector(ThreadPoolExecutor threadPool) throws IOException{
+	public SocketManager(ThreadPoolExecutor threadPool) throws IOException{
 		selector = SelectorProvider.provider().openSelector(); 		
 		this.threadPool = threadPool;
 		//threadPool.execute(this);
+	}
+	
+	public SocketChannel connect(String host, int port, Runnable handler){
+		SocketChannel socketChannel = null;
+		try{
+			socketChannel = SocketChannel.open();
+			socketChannel.socket().setSoTimeout(5 * 1000);
+			socketChannel.configureBlocking(false);
+			socketChannel.connect(new InetSocketAddress(host, port));		
+			log.info("connecting to " + host + ":" +port);		
+			this.register(socketChannel, SelectionKey.OP_CONNECT, handler);
+		}catch(IOException e){
+			log.error("Failed to connect " +  host  + ":" + port);
+		}
+		return socketChannel;
 	}
 	
 	/**
