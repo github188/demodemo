@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,11 +29,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
 		if(id == null){
-			response.getWriter().write("Parameter list 'id=<PK>', 'mime=text/plain', 'len=128', 'delay=2'.");
+			response.getWriter().write("Parameter list 'id=<PK>', 'mime=text/plain'");
 		}else {
 			String file = server.settings.getString(id, null);
 			if(file != null && new File(file).exists() ){
-				_play(file, request, response);				
+				_play(file, request, response);		
 			}else if(file != null){
 				response.getWriter().write("Not found file:" + file);
 			}else {
@@ -45,42 +48,48 @@ public class MasterServerServlet extends BaseRouteServlet{
 		response.setHeader("Transfer-Encoding", "chunked");
 		
 		String mime = request.getParameter("mime");
-		mime = mime == null ? "text/plain" : mime;		
+		mime = mime == null ? "application/octet-stream" : mime;		
 	    response.setContentType(mime);
 	    response.setStatus(HttpServletResponse.SC_OK);
 	    
+	    String range = request.getHeader("Range");
+	    long start = 0, end = Long.MAX_VALUE;
+	    if(range != null){
+	    	log.debug("Request range:" + range);
+	    	String[] ranges = range.split("=", 2)[1].split("-", 2);
+	    	try{
+	    		start = Integer.parseInt(ranges[0].trim());
+	    	}catch(Exception e){}
+	    	try{
+	    		end = Integer.parseInt(ranges[1].trim());
+	    	}catch(Exception e){}
+	    }
+	    	    
+	    long fileSize = new File(file).length();
+	    end = Math.min(end, fileSize);
+	    start = Math.min(start, end);
 	    
-	    int len = 128;
-	    try{
-	    	len = Integer.parseInt(request.getParameter("len"));
-	    }catch(Exception e){};
+	    log.info(String.format("Start replay video, mime:%s, Range bytes=%s-%s, file:%s", 
+				   mime, start, end, file));
 	    
-	    int delay = 2;
-	    try{
-	    	delay = Integer.parseInt(request.getParameter("delay"));
-	    }catch(Exception e){};	    
+	    FileChannel channel = new FileInputStream(file).getChannel();
+	    MappedByteBuffer buffer = channel.map(MapMode.READ_ONLY, start, end - start);
 	    
-	    log.info("Start replay mime:" + mime + ", len:" + len + ", delay:" + delay + ", file:" + file);
-	    
-	    byte[] buffer = new byte[len];
-	    
-	    InputStream in = new FileInputStream(file);
-	    
-	    int readLen = in.read(buffer);
-	    
-	    while(readLen > 0){
-	    	response.getOutputStream().write(buffer, 0, readLen);
+	    byte[] byteBuffer  = new byte[64 * 1024];
+	    for(int remain = 0; buffer.hasRemaining();){
+	    	//如果剩余数据大于Buffer直接发送整个Buffer, 否则只发送剩余数据。
+	    	remain = buffer.remaining();
+	    	if(remain > byteBuffer.length){
+	    		buffer.get(byteBuffer);
+	    		response.getOutputStream().write(byteBuffer);
+	    	}else {
+	    		buffer.get(byteBuffer, 0, remain);
+	    		response.getOutputStream().write(byteBuffer, 0, remain);
+	    	}
 	    	response.flushBuffer();
-	    	log.info("sleep " + delay + " seconds...");
-	    	try {
-				Thread.sleep(delay * 1000);
-			} catch (InterruptedException e) {
-				log.error(e.toString(), e);
-			}
-			readLen = in.read(buffer);
 	    }
 	    
-	    log.info("done replay");
+	    log.debug("Done replay.");
 	}
 	
 	@Override
@@ -95,8 +104,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 	protected void list_station(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		//response.getWriter().write("Welcome master server!");
-		"select uuid, manageServer, devType, connectionStatus, alarmStatus " +
-		"from base_station"
+		//"select uuid, manageServer, devType, connectionStatus, alarmStatus " +
+		//"from base_station"
 	}
 
 	/**
