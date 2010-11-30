@@ -19,6 +19,21 @@ public class Settings {
 	public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	
 	public final static String MASTER_SERVER_URL = "master_server_url";
+	
+	/**
+	 * 主数据库配置。
+	 */
+	public final static String DB_MASTER_DB = "db_master_db";
+	public final static String DB_MASTER_USERNAME = "db_master_username";
+	public final static String DB_MASTER_PASSWORD = "db_master_password";
+
+	/**
+	 * 副数据库配置。
+	 */
+	public final static String DB_SECONDARY_DB = "db_secondary_db";
+	public final static String DB_SECONDARY_USERNAME = "db_secondary_username";
+	public final static String DB_SECONDARY_PASSWORD = "db_secondary_password";
+	
 	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	

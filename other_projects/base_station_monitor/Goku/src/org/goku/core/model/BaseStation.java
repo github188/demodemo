@@ -5,8 +5,9 @@ import java.util.Date;
 public class BaseStation {
 	public static final String ORM_TABLE = "base_station";
 	public static final String[] ORM_FIELDS = new String[]{"uuid", "connectionStatus",
-		"groupName", "manageServer", "locationId", 
-		"lastUpdate", "lastActive", "alarmStatus",
+		"groupName", "routeServer", "locationId", 
+		"lastUpdate", "lastActive", "createDate",
+		"alarmStatus",
 		"devType"};
 	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
 	
@@ -34,7 +35,7 @@ public class BaseStation {
 	/**
 	 * 基站的转发服务器的地址，<ip>:<port>. 由中心服务器分配更新。由运行时动态调整。
 	 */
-	public String manageServer;
+	public String routeServer;
 
 	/**
 	 * 基站的内部连接字符串，转发服务器使用其，连接监控终端。

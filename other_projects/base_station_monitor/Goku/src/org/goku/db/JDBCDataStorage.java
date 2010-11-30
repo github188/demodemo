@@ -7,6 +7,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -15,37 +17,67 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.settings.Settings;
 
+/**
+ * 数据库操作的封装。有点饶，低估了实现ORM的复杂性。
+ * @author deon
+ */
 public class JDBCDataStorage extends DataStorage {
+	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	private Log log = LogFactory.getLog("db");
+	private int wokingDB = 0;
+	private String[][] config = new String[2][3];
 	
-	private String host = null;
-	private String username = null;
-	private String password = null;
-	private String jdbcUrl = null;
-	
-	public JDBCDataStorage(String host, String user, String password){
-		this.jdbcUrl = String.format("jdbc:mysql://%s/goku", host);
+	public JDBCDataStorage(Settings settings){
+		String[] master = new String[3];		
+		master[0] = String.format("jdbc:mysql://%s", settings.getString(Settings.DB_MASTER_DB, null));
+		master[1] = settings.getString(Settings.DB_MASTER_USERNAME, null);
+		master[2] = settings.getString(Settings.DB_MASTER_PASSWORD, null);
+		config[0] = master;
+
+		String[] secondary = new String[3];		
+		secondary[0] = String.format("jdbc:mysql://%s", settings.getString(Settings.DB_SECONDARY_DB, null));
+		secondary[1] = settings.getString(Settings.DB_SECONDARY_USERNAME, null);
+		secondary[2] = settings.getString(Settings.DB_SECONDARY_PASSWORD, null);
+		config[1] = secondary;
+		
 	}
 	
 	public boolean checkConnect(){
 		boolean isOk = false;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			Connection conn = DriverManager.getConnection(jdbcUrl, username,
-					password);
-			if(conn == null)throw new Exception("Failed to connect DB");
-			conn.close();
-			isOk = true;
 		} catch (ClassNotFoundException ex) {
 			log.error("Not found DB driver.");
 		} catch (Exception ex){
 			log.error(ex.toString());
 		}
+		
+		try{
+			log.info("Check master db connection, url:" + config[0][0]);
+			DriverManager.getConnection(config[0][0], 
+					config[0][1],
+					config[0][2]).close();
+			isOk = true;
+		}catch (SQLException e) {
+			log.warn("Failed to connect master db, Error:" + e.toString());
+		}
+
+		try{
+			log.info("Check secondary db connection, url:" + config[1][0]);
+			DriverManager.getConnection(config[1][0], 
+					config[1][1],
+					config[1][2]).close();
+			isOk = true;
+		}catch (SQLException e) {
+			log.warn("Failed to connect secondary db, Error:" + e.toString());
+		}
+		
 		return isOk;
 	}
 	
-	public Collection<Object> list(Class cls, String filter){
+	public Collection<Object> list(Class cls, String filter, Object[] param){
 		String sql = this.buildSelectSql(cls);
 		sql += " where " + filter;
 		
@@ -69,7 +101,7 @@ public class JDBCDataStorage extends DataStorage {
 		return result;
 	}
 	
-	public Collection<Map<String, Object>> query(String sql, String[] param){
+	public Collection<Map<String, Object>> query(String sql, Object[] param){
 		sql = bindParam(sql, param);
 		Connection conn = this.getConnection();
 		Collection<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
@@ -92,8 +124,8 @@ public class JDBCDataStorage extends DataStorage {
 	    	types = new int[count];
 	    	
 	    	for(int i = 0; i < count; i++){
-	    		names[i] = meta.getColumnName(i);
-	    		types[i] = meta.getColumnType(i);
+	    		names[i] = meta.getColumnName(i + 1);
+	    		types[i] = meta.getColumnType(i + 1);
 	    	}
 	    	
 	    	
@@ -101,9 +133,9 @@ public class JDBCDataStorage extends DataStorage {
 	    	while(rs.next()){
 	    		row = new HashMap<String, Object>();
 	    		result.add(row);
-	    		for(int i = 0; i < count; i++){
+	    		for(int i = 1; i <= count; i++){
 	    			Object value = null;
-	    			switch(types[i]){
+	    			switch(types[i - 1]){
 	    				case Types.DATE:
 	    					value = rs.getDate(i);
 	    					break;
@@ -112,6 +144,7 @@ public class JDBCDataStorage extends DataStorage {
 	    				case Types.LONGNVARCHAR:
 	    					value = rs.getString(i);
 	    					break;
+	    				case Types.BIGINT:
 	    				case Types.INTEGER:
 	    				case Types.TINYINT:
 	    					value = rs.getInt(i);
@@ -119,11 +152,13 @@ public class JDBCDataStorage extends DataStorage {
 	    				case Types.FLOAT:
 	    					value = rs.getFloat(i);
 	    			}
-	    			row.put(names[i], value);
+	    			row.put(names[i - 1], value);
 	    		}
 	    	}
 	    	
-	    	conn.commit();
+	    	if(!conn.getAutoCommit()){
+	    		conn.commit();
+	    	}
 	    }
 	    catch (SQLException ex){
 	    	log.error(ex.toString(), ex);
@@ -153,7 +188,7 @@ public class JDBCDataStorage extends DataStorage {
 	
 
 	@Override
-	public int execute_sql(String sql, String[] param){
+	public int execute_sql(String sql, Object[] param){
 		sql = bindParam(sql, param);
 		
 		int updated = 0;
@@ -164,11 +199,15 @@ public class JDBCDataStorage extends DataStorage {
 	    try{
 	    	st = conn.createStatement();
 	    	updated = st.executeUpdate(sql);
-	    	conn.commit();
+	    	if(!conn.getAutoCommit()){
+	    		conn.commit();
+	    	}
 	    }
 	    catch (SQLException ex){
 	    	try {
-				conn.rollback();
+	    		if(!conn.getAutoCommit()){
+	    			conn.rollback();
+	    		}
 			} catch (SQLException e) {
 				log.error(e.toString());
 			}
@@ -193,11 +232,11 @@ public class JDBCDataStorage extends DataStorage {
 		return updated;
 	}
 	
-	private String bindParam(String sql, String[] param){
+	private String bindParam(String sql, Object[] param){
 		for(int i = 0; i < param.length; i++){
 			sql = sql.replaceAll(String.format("\\$\\{%s\\}", i), 
-								 param[i]);
-		}		
+								 this.toSQLValue(param[i]));
+		}
 		return sql;
 	}
 	
@@ -283,22 +322,28 @@ public class JDBCDataStorage extends DataStorage {
 	}
 	
 	private String getSQLValue(Object obj, String field){
+		Object val = null;
 		try {
-			Object val = obj.getClass().getField(field).get(obj);
-			if(val == null){
-				return "null";
-			}else if(val instanceof String){
-				return String.format("'%s'", val);
-			}else if(val instanceof Date){
-				return null;
-			}else {
-				return String.format("%s", val);
-			}
+			val = obj.getClass().getField(field).get(obj);
 		} catch (Exception e) {
 			log.info(String.format("Not found %s field in class %s.", field, obj.getClass().getName()));
 		}
-		return "null";
+		return toSQLValue(val);
 	}	
+	
+	private String toSQLValue(Object val){
+		if(val == null){
+			return "null";
+		}else if(val instanceof String){
+			return String.format("'%s'", val);
+		}else if(val instanceof Date){
+			String x = String.format("STR_TO_DATE('%s',", format.format((Date)val));
+			x += "'%Y-%m-%d %h:%i:%s')";
+			return x;
+		}else {
+			return String.format("%s", val);
+		}
+	}
 	
 	private String[] getORMFields(Class cls){
 		try {
@@ -317,7 +362,19 @@ public class JDBCDataStorage extends DataStorage {
 			log.info(String.format("Not found ORM_FIELDS field in class %s.", cls.getName()));
 		}
 		return null;
-	}		
+	}
+	
+	private String getPKQuery(Class cls){
+		String sql = "";
+		String[] fields = this.getORMFields(cls);
+		for(int i = 0; i < fields.length -1; i++){
+			sql +=  fields[i] + "=${" + i + "} and ";
+		}
+		
+		sql += fields[fields.length - 1] + "=${" + (fields.length - 1) + "}";
+		
+		return sql;		
+	}	
 	
 	private String getORMSql(Class cls, String name){
 		String sql = null;
@@ -331,19 +388,52 @@ public class JDBCDataStorage extends DataStorage {
 	
 	private Connection getConnection(){
 		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(jdbcUrl, username,
-					password);
-		} catch (SQLException e) {
-			log.equals(e.toString());
+		for(int i = 0; i < 2; i++){
+			String[] settings = this.config[this.wokingDB];
+			try{
+				conn = DriverManager.getConnection(settings[0], 
+						settings[1],
+						settings[2]);
+			}catch (SQLException e) {
+				this.wokingDB = (this.wokingDB + 1) % this.config.length;
+				if(this.wokingDB == 0){
+					log.warn("Failed to connect secondary db, try to connect master.");
+				}else {
+					log.warn("Failed to connect master db, try to connect secondary.");
+				}
+			}
 		}
+		if(conn == null){
+			log.error("Failed to connect all DB.");
+		}
+		
 		return conn;
+	}
+	
+	@Override
+	public Object load(Class cls, String pk) {		
+		Collection<Object> result = this.list(cls, this.getPKQuery(cls), new Object[]{pk});
+		if(result.size() > 0){
+			return result.iterator().next();
+		}
+		return null;
 	}
 
 	@Override
 	public boolean save(Object obj) {
-		// TODO Auto-generated method stub
-		return false;
+		// TODO Auto-generated method stub		
+		String sql = this.buildCheckExists(obj);
+		
+		Collection<Map<String, Object>> xx = query(sql, new Object[]{});
+		int rowCount = (Integer)xx.iterator().next().get("have_row");		
+		if(rowCount > 0){
+			sql = this.buildSaveSql(obj);
+			rowCount = this.execute_sql(sql, new Object[]{});				
+		}else {
+			sql = this.buildSaveSql(obj);
+			rowCount = this.execute_sql(sql, new Object[]{});
+		}
+		return rowCount > 0;
 	}
 	
 }

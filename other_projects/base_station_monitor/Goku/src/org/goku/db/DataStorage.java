@@ -2,6 +2,8 @@ package org.goku.db;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
+
 import org.goku.settings.Settings;
 
 /**
@@ -23,9 +25,10 @@ public abstract class DataStorage {
 	/**
 	 * 根据条件过滤对象。
 	 */		
-	public Collection list(Class cls, String filter){
+	public Collection list(Class cls, String filter, Object[] param){
 		return null;
 	}
+	
 	
 	/**
 	 * 保存一个数据对象，如果不存在，创建一个新对象，否则更新已存在对象。
@@ -33,10 +36,13 @@ public abstract class DataStorage {
 	 * @return 返回true, 如果创建了新对象，否则为false;
 	 */
 	public abstract boolean save(Object obj);
-	public abstract int execute_sql(String sql, String[] param) throws SQLException;
+	public abstract int execute_sql(String sql, Object[] param) throws SQLException;
+	public abstract Collection<Map<String, Object>> query(String sql, Object[] param);
+	
+	public abstract boolean checkConnect();
 	
 	public static DataStorage create(Settings param){
-		return null;
+		return new JDBCDataStorage(param);
 	}
 	
 }
