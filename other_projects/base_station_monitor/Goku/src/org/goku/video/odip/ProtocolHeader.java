@@ -6,6 +6,27 @@ public class ProtocolHeader {
 	public static final byte CMD_LOGIN = (byte) 0xa0;
 	public static final byte ACK_LOGIN = (byte) 0xb0;
 	
+	/**
+	 * 建立 实时， 对讲， 连接。
+	 */
+	public static final byte CMD_CONNECT = (byte) 0xf1;
+	//public static final byte ACK_LOGIN = (byte) 0xb0;
+
+	/**
+	 * 停止， 开启。
+	 */
+	public static final byte CMD_VIDEO_CTRL = (byte) 0xc5;	
+
+	/**
+	 * 媒体数据请求
+	 */
+	public static final byte CMD_GET_VIDEO = (byte) 0x11;	
+	/**
+	 * 媒体数据响应
+	 */
+	public static final byte ACK_GET_VIDEO = (byte) 0xbc;	
+
+	
 	private static final byte[] SUPPORT_COMMAND = 
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //00-0F
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //10-1F

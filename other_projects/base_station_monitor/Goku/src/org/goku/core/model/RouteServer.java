@@ -3,7 +3,7 @@ package org.goku.core.model;
 import java.util.Collection;
 import java.util.Date;
 
-public class ManageServer {
+public class RouteServer {
 	/**
 	 * 转发服务器的分组名。
 	 * 

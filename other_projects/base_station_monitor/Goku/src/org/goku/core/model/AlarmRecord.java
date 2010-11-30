@@ -1,6 +1,6 @@
 package org.goku.core.model;
 
-public class AlarmVideo {
+public class AlarmRecord {
 	public String baseStation;
 	public String startTime;
 	public String alarmType;

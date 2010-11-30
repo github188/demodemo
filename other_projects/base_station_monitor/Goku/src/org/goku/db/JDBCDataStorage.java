@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -256,7 +257,7 @@ public class JDBCDataStorage extends DataStorage {
 		sql += fields[fields.length - 1] + "=" + this.getSQLValue(obj, fields[fields.length - 1]);
 		
 		return sql;		
-	}	
+	}
 	
 	private String buildSelectSql(Class cls){
 		String[] fields = this.getORMFields(cls);
@@ -273,21 +274,48 @@ public class JDBCDataStorage extends DataStorage {
 	}
 	
 	private String getTableName(Class cls){
+		try {
+			return (String)cls.getField("ORM_TABLE").get(null);
+		} catch (Exception e) {
+			log.info(String.format("Not found ORM_TABLE field in class %s.", cls.getName()));
+		}
 		return null;
 	}
 	
 	private String getSQLValue(Object obj, String field){
-		return null;
+		try {
+			Object val = obj.getClass().getField(field).get(obj);
+			if(val == null){
+				return "null";
+			}else if(val instanceof String){
+				return String.format("'%s'", val);
+			}else if(val instanceof Date){
+				return null;
+			}else {
+				return String.format("%s", val);
+			}
+		} catch (Exception e) {
+			log.info(String.format("Not found %s field in class %s.", field, obj.getClass().getName()));
+		}
+		return "null";
 	}	
 	
 	private String[] getORMFields(Class cls){
-		String sql = null;
+		try {
+			return (String[])cls.getField("ORM_FIELDS").get(null);
+		} catch (Exception e) {
+			log.info(String.format("Not found ORM_FIELDS field in class %s.", cls.getName()));
+		}
 		return null;
 	}	
 	
 	
 	private String[] getORMPkFields(Class cls){
-		String sql = null;
+		try {
+			return (String[])cls.getField("ORM_PK_FIELDS").get(null);
+		} catch (Exception e) {
+			log.info(String.format("Not found ORM_FIELDS field in class %s.", cls.getName()));
+		}
 		return null;
 	}		
 	

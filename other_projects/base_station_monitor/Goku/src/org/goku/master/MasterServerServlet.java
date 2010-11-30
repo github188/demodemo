@@ -88,5 +88,22 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().write("Welcome master server!");
 	}
+	
+	/**
+	 * 换回基站列表 
+	 */
+	protected void list_station(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		//response.getWriter().write("Welcome master server!");
+		"select uuid, manageServer, devType, connectionStatus, alarmStatus " +
+		"from base_station"
+	}
 
+	/**
+	 * 登录系统
+	 */
+	protected void login(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().write("Welcome master server!");
+	}
 }

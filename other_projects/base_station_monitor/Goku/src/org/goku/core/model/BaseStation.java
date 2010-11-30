@@ -3,14 +3,12 @@ package org.goku.core.model;
 import java.util.Date;
 
 public class BaseStation {
-	public static final String ORM_SELECT = "select uuid, connectionStatus, groupName " +
-			"from basestation";
-	public static final String ORM_SAVE = "select uuid, connectionStatus, groupName " +
-	"from basestation";
-	
-	//public static final String ORM_TABLE = null; //new String[]{};
-	public static final String[] ORM_FIELDS = new String[]{};
-	public static final String[] ORM_PK_FIELDS = new String[]{};
+	public static final String ORM_TABLE = "base_station";
+	public static final String[] ORM_FIELDS = new String[]{"uuid", "connectionStatus",
+		"groupName", "manageServer", "locationId", 
+		"lastUpdate", "lastActive", "alarmStatus",
+		"devType"};
+	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
 	
 	public static final int TYPE_VIDEO = 1;
 	public static final int TYPE_IMAGE = 2;
@@ -68,6 +66,6 @@ public class BaseStation {
 	/**
 	 * 设备类型， (视频｜图片)
 	 */
-	public int type;
+	public int devType;
 	//public 
 }
