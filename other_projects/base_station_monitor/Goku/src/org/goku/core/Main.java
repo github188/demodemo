@@ -2,7 +2,7 @@ package org.goku.core;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.LogFactory;
+import org.goku.image.ImageRouteServer;
 import org.goku.master.MasterVideoServer;
 import org.goku.settings.Settings;
 import org.goku.video.VideoRouteServer;
@@ -59,6 +59,7 @@ public class Main {
 	private void startAsImageRoute() throws Exception {
 		initLog4jFile("image.log");
 		Settings settings = new Settings("image.conf");
+		new ImageRouteServer(settings).startUp();
 	}
 	
 	private void initLog4jFile(String name){

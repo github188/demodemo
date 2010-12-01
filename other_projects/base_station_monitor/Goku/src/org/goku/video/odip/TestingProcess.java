@@ -13,6 +13,8 @@ public class TestingProcess {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		System.out.println(String.format("xxx 0x%x ", 22));
+		byte a = (byte)254;
+		a = (byte) (a+ 4);
+		System.out.println("aa:" + a);
 	}
 }

@@ -89,6 +89,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 	    	response.flushBuffer();
 	    }
 	    
+	    channel.close();
+	    
 	    log.debug("Done replay.");
 	}
 	
