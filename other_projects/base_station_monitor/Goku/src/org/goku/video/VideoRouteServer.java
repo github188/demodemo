@@ -125,6 +125,16 @@ public class VideoRouteServer {
 		//client.connect(selector);
 	}
 	
+	/**
+	 * 删除一个监控视频，例如，需要负载调度，或连接错误时。
+	 * @param client
+	 */
+	public void removeMonitorClient(MonitorClient client){
+		this.manager.removeClient(client);
+		this.clients.remove(client.info.uuid);
+		client.close();
+	}
+	
 	
 	/**
 	 * 根据UUID取得监控客户端对象。

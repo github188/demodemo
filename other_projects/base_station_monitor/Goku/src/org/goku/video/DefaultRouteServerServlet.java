@@ -1,6 +1,7 @@
 package org.goku.video;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 
 import javax.servlet.ServletConfig;
@@ -10,15 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.http.BaseRouteServlet;
+import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.VideoDestination;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
 
 public class DefaultRouteServerServlet extends BaseRouteServlet{
 	private VideoRouteServer server = null;
 	private Log log = LogFactory.getLog("http");
-	
-	private static Writer test = null;
-	private static Continuation continuation = null;
 	
 	public void init(ServletConfig config){
 		server = VideoRouteServer.getInstance();
@@ -30,29 +30,30 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 */
 	public void real_play(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-		response.setHeader("Transfer-Encoding", "chunked");
-	    response.setContentType("text/plain");
-	    response.setStatus(HttpServletResponse.SC_OK);
+	    String uuid = request.getParameter("bid");
+	    MonitorClient client = null;
+	    if(uuid != null){
+	    	client = server.getMonitorClient(uuid);
+	    }
 	    
-	    //Transfer-Encoding: chunked
-    	response.getWriter().write("Welcome real_play!");
-    	
-    	
-    	log.info("start continuation....");
-    	
-    	continuation = ContinuationSupport.getContinuation(request, null);
-    	
-    	test = response.getWriter();
-    	
-    	test.write("waiting...\n");
-    	test.flush();
-    	response.flushBuffer();
-    	
-    	continuation.suspend(1000 * 1000);
-    	
-    	log.info("resumed thread...");
-    	//response.getOutputStream().flush()
-    	//response.getWriter().f
+	    if(client != null){
+			response.setHeader("Transfer-Encoding", "chunked");
+		    response.setContentType("application/octet-stream");
+		    response.setStatus(HttpServletResponse.SC_OK);
+		    Continuation continuation = ContinuationSupport.getContinuation(request, null);
+		    response.flushBuffer();
+		    
+		    RealPlayRouting callback = new RealPlayRouting(continuation, 
+		    		response.getOutputStream(), 
+		    		request.getRemoteHost());
+		    client.realPlay(callback);		    
+		    //suspend 1 hour
+		    continuation.suspend(1000 * 60 * 60);
+		    //suspend timeout.
+		    callback.close();
+	    }else {
+	    	response.getWriter().write("Not found client by uuid:" + uuid); 
+	    }
     }
 	
 	public void send_play(HttpServletRequest request, HttpServletResponse response) 
@@ -60,19 +61,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		response.getWriter().write("Welcome send_play!");
 		
 		String data = request.getParameter("data");
-		
-		if(data != null){
-			try{
-				log.info("send:" + data);
-				test.write(data + "\n");
-				test.flush();
-			}catch(Exception e){
-				log.error(e.toString(), e);
-			}
-			if(data.equals("close")){
-				continuation.resume();
-			}
-		}
+
 		
     }
     
@@ -98,4 +87,42 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
     	response.getWriter().write("Welcome video router!");
     } 
 	
+    class RealPlayRouting implements VideoDestination{
+    	private OutputStream os = null;
+    	private Continuation continuation = null;
+    	private boolean running = true;
+    	
+    	private String remoteIp = null;
+    	public RealPlayRouting(Continuation continuation, OutputStream os, String ip){
+    		this.continuation = continuation;
+    		this.os = os;
+    		//用来输出Log.
+    		this.remoteIp = ip;
+    	}
+
+		@Override
+		public boolean accept(int sourceType) {
+			return true;
+		}
+
+		@Override
+		public void write(byte[] data) throws IOException {
+			if(!this.running) throw new IOException("Destination closed.");
+			this.os.write(data);
+			os.flush();
+		}
+
+		@Override
+		public void close() {
+			if(this.running){
+				this.running = false;
+				continuation.resume();
+			}
+		}
+		
+		public String toString(){
+			return String.format("HTTP<%s>", this.remoteIp);
+		}
+    	
+    }
 }

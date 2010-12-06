@@ -6,17 +6,29 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Video 路由器。负责转发Video数据。
  * @author deon
  *
  */
 public class VideoRoute {
+	private Log log = null;
 	private ThreadPoolExecutor executor = null;
 	private Collection<VideoDestination> destList = Collections.synchronizedCollection(new ArrayList<VideoDestination>());
 	
 	public VideoRoute(ThreadPoolExecutor executor){
 		this.executor = executor;
+	}
+	
+	/**
+	 * 使用Client的logger, 规范log输出。
+	 * @param log
+	 */
+	public void setLogger(Log log){
+		this.log = log;
 	}
 	
 	public void start(){
@@ -53,11 +65,17 @@ public class VideoRoute {
 	}
 	
 	public void addDestination(VideoDestination dest){
-		this.destList.add(dest);		
+		if(!this.destList.contains(dest)){
+			this.destList.add(dest);
+			log.debug("Add video destination, dest=" + dest.toString());
+		}
 	}
 	
 	public void removeDestination(VideoDestination dest){
-		this.destList.remove(dest);
+		if(this.destList.contains(dest)){
+			this.destList.remove(dest);
+			log.debug("Remove video destination, dest=" + dest.toString());
+		}
 	}
 	
 	class RoutingTask implements Runnable{
@@ -73,10 +91,9 @@ public class VideoRoute {
 			try{
 				dest.write(this.data);
 			}catch(Exception e){
-				dest.close();
 				removeDestination(this.dest);
+				dest.close();				
 			}
 		}
-		
 	}
 }

@@ -20,7 +20,8 @@ public class ProtocolHeader {
 	/**
 	 * 媒体数据请求
 	 */
-	public static final byte CMD_GET_VIDEO = (byte) 0x11;	
+	public static final byte CMD_GET_VIDEO = (byte) 0x11;
+	
 	/**
 	 * 媒体数据响应
 	 */
@@ -51,7 +52,7 @@ public class ProtocolHeader {
 	public byte reserved_2 = 0;
 	
 	public byte headerLength = 0;
-	public byte version = 0;
+	public byte version = 0x28;
 	
 	public int externalLength = 0;
 	
@@ -102,4 +103,23 @@ public class ProtocolHeader {
 		if(index < 8 || index > 31) return -1;
 		return this.data[index - 8];
 	}
+	
+	public int getInt(int index){
+		if(index < 8 || index + 4 > 31) return -1;
+		int re = 0;
+		re = this.data[index - 8];
+		re += this.data[index - 7] << 8;
+		re += this.data[index - 6] << 16;
+		re += this.data[index - 5] << 24;
+		return re;
+	}	
+	
+	public void setInt(int index, int data){
+		if(index < 8 || index + 4 > 31) return;
+		
+		this.data[index - 8] = (byte)(data & 0xff);
+		this.data[index - 7] = (byte)(data >> 8 & 0xff);
+		this.data[index - 6] = (byte)(data >> 16 & 0xff);
+		this.data[index - 5] = (byte)(data >> 24 & 0xff);
+	}	
 }

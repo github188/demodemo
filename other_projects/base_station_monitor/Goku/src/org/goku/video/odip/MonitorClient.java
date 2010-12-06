@@ -12,7 +12,7 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
-
+import static org.goku.video.odip.Constant.*;
 
 /**
  * 监控客户端，处理于摄像头的交互。
@@ -24,13 +24,19 @@ public class MonitorClient implements Runnable{
 	
 	public VideoRoute route = null;
 	
-	protected Log log = null; 
+	/**
+	 * 监控视频通道编号，从1开始。
+	 */
+	public int channelId = 0;
+	
+	protected Log log = null;
 	/**
 	 * 网络连接的操作对象，可以得到SocketChannel.
 	 */
 	protected SelectionKey selectionKey = null;
 	protected SocketChannel socketChannel = null;
 	protected SocketManager socketManager = null;
+	protected ClientStatus status = null;
 	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
@@ -51,6 +57,10 @@ public class MonitorClient implements Runnable{
 	 */
 	public void connect() throws IOException{
 		String[] address = this.info.locationId.split(":");
+		if(address.length != 3){
+			throw new IOException("Invalid location Id, <host>:<port>:<channel id>");
+		}
+		this.channelId = Integer.parseInt(address[2]);
 		this.socketChannel = this.socketManager.connect(address[0],
 				Integer.parseInt(address[1]),
 				this);
@@ -60,12 +70,46 @@ public class MonitorClient implements Runnable{
 		
 	}
 	
+	/**
+	 * 登录系统。
+	 */
 	public void login(){
-		
+		if(this.getClientStatus() == null){
+			if(this.socketChannel == null){
+				try {
+					this.connect();
+					synchronized(this.socketChannel){
+						try {
+							this.socketChannel.wait(30 * 1000);
+						} catch (InterruptedException e) {
+						}
+					}
+				} catch (IOException e) {
+					log.warn("Connection error, error:" + e.toString());
+				}
+			}
+			
+			//在多线程时，有可能在等待期间由其他线程完成了login操作。
+			if(this.getClientStatus() == null &&  
+					this.socketChannel != null){
+				this.handler.login("", "", true);
+			}
+		}
 	}
 	
-	public void realPlay(){
-		
+	/**
+	 * 开启实时监控。
+	 * @param player 收实时监控视频数据。
+	 */
+	public void realPlay(VideoDestination player){
+		if(this.getClientStatus() != null){
+			this.route.addDestination(player);
+			if(!this.status.realPlaying){
+				this.handler.requestConnection(REQ_CONN_REAL_PLAY);
+			}
+		}else {
+			log.warn("The client have not conneted when open real play.");
+		}
 	}
 	
 	public void openSound(){
@@ -85,7 +129,11 @@ public class MonitorClient implements Runnable{
 
 
 	public void close(){
-		
+		try {
+			this.closeSocketChannel();
+		} catch (IOException e) {
+			log.error(e, e);
+		}
 	}
 	
 	public void addListener(MonitorClientListener l){
@@ -142,7 +190,14 @@ public class MonitorClient implements Runnable{
 			for(MonitorClientListener l: ls){
 				l.loginError(event);
 			}
-		}				
+		}	
+		
+		@Override
+		public void loginOK(MonitorClientEvent event) {
+			for(MonitorClientListener l: ls){
+				l.loginOK(event);
+			}
+		}			
 	};
 	
 	/**
@@ -175,6 +230,8 @@ public class MonitorClient implements Runnable{
 						this.selectionKey.cancel();
 						this.eventProxy.timeout(new MonitorClientEvent(this));
 					}
+					
+					this.socketChannel.notifyAll();
 					//log.info("Change select ops as READ.");
 				}else if(this.selectionKey.isReadable()){
 					this.read(socketChannel);
@@ -201,7 +258,7 @@ public class MonitorClient implements Runnable{
 		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
 		int readLen = channel.read(buffer);
 		if(readLen == -1){
-			this.readChannelClosed();
+			this.closeSocketChannel();
 		}else if(!buffer.hasRemaining()){
 			//如果当前缓冲区读满了，开始处理数据。
 			this.handler.processData(this);
@@ -209,6 +266,14 @@ public class MonitorClient implements Runnable{
 			this.handler.resetBuffer();
 		}
 	}
+	
+	public void setClientStatus(ClientStatus status){
+		this.status = status;		
+	}
+	
+	public ClientStatus getClientStatus(){
+		return this.status;
+	}	
 	
 	/**
 	 * 在ODIPHandler里，可能需要根据协议头，读些数据。
@@ -219,7 +284,7 @@ public class MonitorClient implements Runnable{
 		if(this.selectionKey.isReadable()){
 			int readLen = this.socketChannel.read(buffer);
 			if(readLen == -1){
-				this.readChannelClosed();
+				this.closeSocketChannel();
 			}
 		}
 	}
@@ -232,21 +297,35 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void write(ByteBuffer src){
+		/*
+		if(this.socketChannel == null){
+			
+		}*/
 		/**
 		 * 需要一个flush操作么？
 		 */
 		try{
-			this.socketChannel.write(src);
+			/**
+			 * 读和写使用了不同的同步对象,避免发送告警查询时出现等待。
+			 */
+			synchronized(this.socketChannel){
+				while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
+					this.socketChannel.write(src);
+				}
+			}
 		}catch(IOException e){
 			this.eventProxy.writeIOException(new MonitorClientEvent(this));
 		}
 	}
 	
-	protected void readChannelClosed() throws IOException{
+	protected void closeSocketChannel() throws IOException{
 		log.debug("Close connection by channel read -1.");
 		this.selectionKey.cancel();
 		this.socketChannel.close();
+		this.socketChannel = null;
 		
+		//重置设备状态，需要重新登录。
+		this.setClientStatus(null);
 		this.eventProxy.disconnected(new MonitorClientEvent(this));
 	}
 	

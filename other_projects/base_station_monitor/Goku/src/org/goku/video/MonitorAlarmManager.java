@@ -7,6 +7,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.goku.video.odip.MonitorClient;
 
 /**
@@ -16,6 +18,7 @@ import org.goku.video.odip.MonitorClient;
  * @author deon
  */
 public class MonitorAlarmManager implements Runnable{
+	private Log log = LogFactory.getLog("video.alarm");
 	//private VideoRouteServer server = null;
 	private Collection<MonitorClient> clients = Collections.synchronizedCollection(new ArrayList<MonitorClient>());
 	private ThreadPoolExecutor executor = null;
@@ -32,19 +35,56 @@ public class MonitorAlarmManager implements Runnable{
 			public void run() {
 				checkAllClient();				
 			}
-		}, 100, 1000 * 5);		
+		}, 100, 1000 * 5);
 	}
 	
 	
 	public void checkAllClient(){
-		
+		synchronized(clients){
+			for(MonitorClient c: clients){
+				executor.execute(new CallBack(c));
+			}
+		}
+	}
+	
+	/**
+	 * 发送终端告警查询请求。
+	 * @param client
+	 */
+	protected void checkMonitorClient(final MonitorClient client){
+		client.checkAlarm();
 	}
 	
 	public void addClient(MonitorClient client){
-		
+		if(!clients.contains(client)){
+			clients.add(client);
+		}
 	}
 
 	public void removeClient(MonitorClient client){
-		
-	}	
+		if(clients.contains(client)){
+			clients.remove(client);
+		}
+	}
+	
+	public void close(){
+		this.timer.cancel();
+	}
+	
+	/**
+	 * 线程池调度的转发类。
+	 */
+	class CallBack implements Runnable{
+		private MonitorClient c;
+		CallBack(MonitorClient c){this.c = c;}
+		public void run() {
+			try{
+				checkMonitorClient(this.c);
+			}catch(Throwable e){
+				String msg = String.format("Error at checking alarm, client id:%s, error:%s",
+						c.info.uuid, e.toString());
+				log.warn(msg, e);
+			}
+		}
+	}
 }

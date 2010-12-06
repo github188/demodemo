@@ -6,11 +6,48 @@ import java.nio.ByteBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static org.goku.video.odip.ProtocolHeader.*;
+
+/**
+ * 处理视频协议数据，
+ * 
+ * 登录流程：
+ * 1. 0xA0 --->          登录
+ * 2.     <--- 0xB0     应答登录
+ * 
+ * 实时监控
+ * 1. 0xf1 --->          请求实时视频
+ *         <--- 0xF1     ????协议中要求返回，抓包分析发现未返回。
+ *    0x11 --->          请求媒体数据 ???什么场景使用 
+ * 4.      <--- 0xBC     视频数据
+ * 
+ * 设备信息查询：
+ * 1. 0xA4 --->          查询设备信息, 01(基本信息), 07(设备ID)
+ *         <--- 0xB4     应答
+ * ---
+ *    0xA8 --->          ??? 什么应用场景
+ *         <--- 0xB8
+ * --- 配置参数
+ *    0xA3 ---> 
+ *         
+ * 告警查询：
+ * 1. 0xA1 --->
+ *         <--- 0xB1     告警状态
+ *         
+ * 
+ * @author deon
+ */
 public class ODIPHandler {
 	public ByteBuffer buffer = ByteBuffer.allocate(1024 * 64);
 	public ProtocolHeader protoHeader = new ProtocolHeader();
 	//public 
 	private Log log = null; //#LogFactory.getLog(");
+	
+	/**
+	 * 阻塞Login方法，等待应答消息.
+	 */
+	private Object lockLogin = new Object();
+	private int loginStatus = 0;
 	
 	/**
 	 * 当前状态，正在等待的Ack消息，如果和期望的Ack不一致将丢弃包不处理。
@@ -28,7 +65,7 @@ public class ODIPHandler {
 		return buffer;
 	}
 	
-	public void processData(MonitorClient client) throws IOException{		
+	public void processData(MonitorClient client) throws IOException{
 		this.buffer.flip();
 		
 		if(protoHeader.cmd == 0){
@@ -62,8 +99,12 @@ public class ODIPHandler {
 	
 	public void processODIPMessage(ProtocolHeader header, ByteBuffer buffer){
 		switch(header.cmd){
-			case ProtocolHeader.ACK_LOGIN:
-				this.ackLogin(header, buffer);				
+			case ACK_LOGIN:
+				this.ackLogin(header, buffer);
+				break;
+			case ACK_GET_VIDEO:
+				this.ackVideoData(header, buffer);
+				//this.a
 		}
 	}
 	
@@ -73,10 +114,19 @@ public class ODIPHandler {
 		this.buffer.limit(32);
 	}
 	
-	public void login(String user, String password){
+	public int login(String user, String password){
+		return this.login(user, password, true);
+	}
+	/**
+	 * 登录系统，等待回应后返回。
+	 * @param user
+	 * @param password
+	 * @return -- 成功返回-1, 失败返回0-7的错误码。
+	 */
+	public int login(String user, String password, boolean sync){
 		ByteBuffer buffer = ByteBuffer.allocate(1024);
 		ProtocolHeader header = new ProtocolHeader();
-		header.cmd = ProtocolHeader.CMD_LOGIN;
+		header.cmd = CMD_LOGIN;
 		header.setByte(26, (byte)1);
 		header.setByte(27, (byte)1);
 		
@@ -89,20 +139,109 @@ public class ODIPHandler {
 		buffer.flip();
 		client.write(buffer);
 		
-		this.waitAck = ProtocolHeader.ACK_LOGIN;
+		log.info("Login to " + client.info.locationId);
+		this.waitAck = ACK_LOGIN;
+		
+		if(sync) {
+			synchronized(this.lockLogin){
+				try {
+					lockLogin.wait(1000 * 10);
+				} catch (InterruptedException e) {
+					log.info("InterruptedException, lock Login");
+				}
+			}
+			return this.loginStatus;
+		}else {
+			return -2;
+		}
+		
 	}
 	
+	/**
+	 *CMD_CONNECT
+	 */
+	public void requestConnection(byte type){
+		if(this.client.getClientStatus() == null)
+			throw new UnsupportedOperationException("Can't connection before login.");
+		
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = ProtocolHeader.CMD_CONNECT;
+		header.externalLength = 0;
+		
+		header.setInt(8, this.client.getClientStatus().sessionId);
+		header.setByte(12, type);
+		header.setByte(13, (byte)(this.client.channelId -1));
+		
+		header.mapToBuffer(buffer);
+		
+		buffer.flip();
+		client.write(buffer);		
+	}
+	
+	/*
+	public void login(String user, String password){
+		
+	}*/
+	
+	/**
+49:75:59:74: 31:70:4a:53:
+44:51:45:3d: 26:26:32:55:
+67:32:52:59: 67:34:74:58:
+30:3d
+	 * @param user
+	 * @param password
+	 * @return
+	 */
 	private byte[] encode(String user, String password){
-		return new byte[]{1, 2};
+		return new byte[]{0x49, 0x75, 0x74, 0x31, 0x31, 0x70, 0x41, 0x53,
+						  0x44, 0x51, 0x45, 0x3d, 0x26, 0x26, 0x32, 0x55,
+						  0x67, 0x32, 0x52, 0x59, 0x67, 0x34, 0x74, 0x58,
+						  0x30, 0x3d
+						  };
 	}
 	
 	protected void ackLogin(ProtocolHeader header, ByteBuffer buffer){
 		if(header.getByte(8) != 0){
+			log.info("Failed to login, error code:" + header.getByte(9));
 			MonitorClientEvent event = new MonitorClientEvent(client);
 			event.header = header;
 			client.eventProxy.loginError(event);
+			this.loginStatus = header.getByte(9);
 		}else {
+			ClientStatus status = new ClientStatus();
+			status.channelCount = header.getByte(10);
+			status.videoType = header.getByte(11);
+			status.devType = header.getByte(12);
+			status.sessionId = header.getInt(16);
+			status.devMode = header.getByte(28);
 			
+			this.client.setClientStatus(status);
+			this.waitAck = 0;
+			
+			log.info(String.format("Login successful, channel count:%s, videoType:%s" +
+					"devType:%s, sessionId:%s, devMode:%s",
+					status.channelCount, 
+					status.videoTypeName(),
+					status.devTypeName(), 
+					status.sessionId, 
+					status.devModeName()));
+			
+			client.eventProxy.loginOK(new MonitorClientEvent(client));
+			this.loginStatus = -1;
+		}
+		this.lockLogin.notifyAll();
+	}
+	
+	protected void ackVideoData(ProtocolHeader header, ByteBuffer buffer){
+		int channel = header.getByte(8) + 1; 
+		if(channel != this.client.channelId){
+			log.warn(String.format("Got other channel video data, %s!=%s", 
+					channel, this.client.channelId));
+		}else {
+			log.debug("Get video data, len:" + header.externalLength);
+			this.client.route.route(buffer, 0);
 		}
 	}
 }

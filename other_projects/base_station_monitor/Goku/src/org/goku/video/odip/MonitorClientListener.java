@@ -12,5 +12,5 @@ public interface MonitorClientListener {
 	public void writeIOException(MonitorClientEvent event);
 	
 	public void loginError(MonitorClientEvent event);
-
+	public void loginOK(MonitorClientEvent event);
 }
