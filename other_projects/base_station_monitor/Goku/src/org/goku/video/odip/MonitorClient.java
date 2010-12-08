@@ -3,6 +3,7 @@ package org.goku.video.odip;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -48,8 +49,10 @@ public class MonitorClient implements Runnable{
 		log = LogFactory.getLog("node." + info.uuid);
 		
 		this.route = route;
+		this.route.setLogger(log);
+
 		this.socketManager = socketManager;
-		this.handler = new ODIPHandler(this);
+		this.handler = new ODIPHandler(this);		
 	}
 	
 	/** 
@@ -105,10 +108,11 @@ public class MonitorClient implements Runnable{
 		if(this.getClientStatus() != null){
 			this.route.addDestination(player);
 			if(!this.status.realPlaying){
-				this.handler.requestConnection(REQ_CONN_REAL_PLAY);
+				//this.handler.requestConnection(REQ_CONN_REAL_PLAY);
+				this.handler.requestVideoStream();
 			}
 		}else {
-			log.warn("The client have not conneted when open real play.");
+			log.warn("The client have not conneted at opening real play.");
 		}
 	}
 	
@@ -230,9 +234,9 @@ public class MonitorClient implements Runnable{
 						this.selectionKey.cancel();
 						this.eventProxy.timeout(new MonitorClientEvent(this));
 					}
-					
-					this.socketChannel.notifyAll();
-					//log.info("Change select ops as READ.");
+					synchronized(socketChannel){
+						this.socketChannel.notifyAll();
+					}
 				}else if(this.selectionKey.isReadable()){
 					this.read(socketChannel);
 					if(this.selectionKey.isValid()){
@@ -262,8 +266,6 @@ public class MonitorClient implements Runnable{
 		}else if(!buffer.hasRemaining()){
 			//如果当前缓冲区读满了，开始处理数据。
 			this.handler.processData(this);
-			//处理完成后，重新开始读协议头。
-			this.handler.resetBuffer();
 		}
 	}
 	
@@ -294,6 +296,8 @@ public class MonitorClient implements Runnable{
 		buffer.put(src);
 		buffer.flip();
 		this.socketChannel.write(buffer);
+		//this.socketManager.w
+		//this.selectionKey.selector().wakeup();
 	}
 	
 	protected void write(ByteBuffer src){
@@ -305,6 +309,7 @@ public class MonitorClient implements Runnable{
 		 * 需要一个flush操作么？
 		 */
 		try{
+			//src.order(ByteOrder.BIG_ENDIAN);
 			/**
 			 * 读和写使用了不同的同步对象,避免发送告警查询时出现等待。
 			 */
@@ -320,8 +325,12 @@ public class MonitorClient implements Runnable{
 	
 	protected void closeSocketChannel() throws IOException{
 		log.debug("Close connection by channel read -1.");
-		this.selectionKey.cancel();
-		this.socketChannel.close();
+		if(this.selectionKey != null){
+			this.selectionKey.cancel();
+		}
+		if(this.socketChannel != null){
+			this.socketChannel.close();
+		}
 		this.socketChannel = null;
 		
 		//重置设备状态，需要重新登录。

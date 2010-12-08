@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
@@ -47,8 +48,12 @@ public class VideoRoute {
 		final byte[] data = new byte[source.limit()];
 		source.get(data);
 		synchronized(destList){
-			for(VideoDestination dest: destList){
-				if(dest.accept(sourceType)){
+			VideoDestination dest = null;
+			for(Iterator<VideoDestination> iter = destList.iterator(); iter.hasNext();){
+				dest = iter.next();
+				if(dest.isClosed()){
+					iter.remove();
+				}else if(dest.accept(sourceType)){
 					executor.execute(new RoutingTask(dest, data));
 				}
 			}
@@ -89,8 +94,18 @@ public class VideoRoute {
 		@Override
 		public void run() {
 			try{
-				dest.write(this.data);
-			}catch(Exception e){
+				/*
+				避免多个线程同时写一个目地, 如果出现一个很慢的目地，将导致线程阻塞
+				知道线程池耗尽。
+				
+				可以考虑，如果使用信号量，如果在同一个目地上阻塞的线程过多。直接丢弃
+				后面的包。
+				*/
+				synchronized(dest){
+					dest.write(this.data);
+				}
+			}catch(Throwable e){
+				log.warn("Routting error:", e);
 				removeDestination(this.dest);
 				dest.close();				
 			}

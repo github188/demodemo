@@ -17,7 +17,7 @@ public class FileVideoRecorder implements VideoDestination{
 	
 	//private 
 	public FileVideoRecorder(File path){
-		this.path = null;
+		this.path = path;
 	}
 
 	@Override
@@ -34,6 +34,10 @@ public class FileVideoRecorder implements VideoDestination{
 		}
 		os.write(data);
 		os.flush();
+	}
+	
+	public boolean isClosed(){
+		return false;
 	}
 
 	@Override

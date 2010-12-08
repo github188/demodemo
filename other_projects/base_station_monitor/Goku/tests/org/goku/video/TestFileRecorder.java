@@ -23,7 +23,7 @@ public class TestFileRecorder {
 		BaseStation station = new BaseStation();
 		
 		station.uuid = "1234";
-		station.locationId = "192.168.1.56:9001:4";
+		station.locationId = "192.168.1.67:9001:1";
 		
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
 				3,
@@ -34,6 +34,7 @@ public class TestFileRecorder {
 				);
 		
 		SocketManager socketManager = new SocketManager(threadPool);
+		threadPool.execute(socketManager);
 		
 		MonitorClient client = new MonitorClient(station, 
 				 new VideoRoute(threadPool),

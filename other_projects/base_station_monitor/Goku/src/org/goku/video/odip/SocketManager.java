@@ -24,7 +24,7 @@ public class SocketManager implements Runnable{
 	private Log log = LogFactory.getLog("main");
 	private Selector selector = null;
 	private ThreadPoolExecutor threadPool = null;
-	private boolean isRunning = true;
+	private boolean isRunning = false;
 	
 	private Collection<ChangeRequest> paddings = new ArrayList<ChangeRequest>();//#this.pendingData
 	
@@ -36,6 +36,9 @@ public class SocketManager implements Runnable{
 	
 	public SocketChannel connect(String host, int port, Runnable handler){
 		SocketChannel socketChannel = null;
+		if(!isRunning){
+			log.warn("The SocketManager have not running.");
+		}
 		try{
 			socketChannel = SocketChannel.open();
 			socketChannel.socket().setSoTimeout(5 * 1000);
@@ -69,6 +72,7 @@ public class SocketManager implements Runnable{
 	@Override
 	public void run() {		
 		log.info("The ChannelSelector is started..");		
+		isRunning = true;
 		while(isRunning){
 			try{
 				synchronized(paddings){

@@ -1,6 +1,7 @@
 package org.goku.video.odip;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class ProtocolHeader {
 	public static final byte CMD_LOGIN = (byte) 0xa0;
@@ -40,7 +41,7 @@ public class ProtocolHeader {
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //80-8F
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //90-9F
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //A0-AF
-	 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //B0-BF
+	 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, //B0-BF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //C0-CF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //D0-DF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //E0-EF
@@ -59,6 +60,7 @@ public class ProtocolHeader {
 	public byte[] data = new byte[24];
 	
 	public void loadBuffer(ByteBuffer buffer){
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		this.cmd = buffer.get();
 		this.reserved_1 = buffer.get();
 		this.reserved_2 = buffer.get();
@@ -69,6 +71,7 @@ public class ProtocolHeader {
 	}
 	
 	public void mapToBuffer(ByteBuffer buffer){
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.put(cmd);
 		buffer.put(this.reserved_1);
 		buffer.put(this.reserved_2);
@@ -79,7 +82,9 @@ public class ProtocolHeader {
 	}
 	
 	public boolean supportCommand(){
-		return SUPPORT_COMMAND[this.cmd] == 1;
+		//int xx = (0 | this.cmd);
+		int unsignedBypte = this.cmd >= 0 ? this.cmd : this.cmd + 256;
+		return SUPPORT_COMMAND[unsignedBypte] == 1;
 	}
 	
 	/**

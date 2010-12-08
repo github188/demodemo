@@ -16,6 +16,11 @@ import org.goku.video.odip.VideoDestination;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
 
+/**
+ * HTTP交互接口
+ * 
+ * @author deon
+ */
 public class DefaultRouteServerServlet extends BaseRouteServlet{
 	private VideoRouteServer server = null;
 	private Log log = LogFactory.getLog("http");
@@ -104,6 +109,10 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		public boolean accept(int sourceType) {
 			return true;
 		}
+		
+		public boolean isClosed(){
+			return !this.running;
+		}		
 
 		@Override
 		public void write(byte[] data) throws IOException {

@@ -20,4 +20,5 @@ public interface VideoDestination {
 	 * @param data 
 	 */
 	public void close();
+	public boolean isClosed();
 }
