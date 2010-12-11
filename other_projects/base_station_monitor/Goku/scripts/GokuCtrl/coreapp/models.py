@@ -40,6 +40,14 @@ class User(models.Model):
     password = models.CharField(max_length=50, 
                                 default='new', )
     display = models.CharField(max_length=50, default='default')
+    lastActive = models.DateTimeField('last active', null=True)
+    
+    status = models.CharField(max_length=10, 
+                              choices=(('ok', "Ok"),
+                                       ('removed', "Removed"),
+                                       ('locked', "locked"),
+                                       ),
+                             default='ok')    
 
     def __unicode__(self):
         return self.name        
