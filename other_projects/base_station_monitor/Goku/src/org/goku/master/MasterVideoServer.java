@@ -41,6 +41,7 @@ public class MasterVideoServer {
 		
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);
+		this.storage.checkConnect();
 		
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		log.info("init thread pool, core thread count " + core_thread_count);

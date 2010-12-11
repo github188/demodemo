@@ -3,7 +3,6 @@ package org.goku.master;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.User;
 import org.goku.http.BaseRouteServlet;
 
 public class MasterServerServlet extends BaseRouteServlet{
@@ -97,13 +97,14 @@ public class MasterServerServlet extends BaseRouteServlet{
 	@Override
 	protected void index_page(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().write("Welcome master server!");
+		//response.getWriter().write("Welcome master server!");
+		static_serve("org/goku/master/help_doc.txt", "text/plain", response);
 	}
 	
 	/**
 	 * 换回基站列表 
 	 */
-	protected void list_station(HttpServletRequest request,
+	public void list_station(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		//response.getWriter().write("Welcome master server!");
 		//"select uuid, manageServer, devType, connectionStatus, alarmStatus " +
@@ -113,8 +114,31 @@ public class MasterServerServlet extends BaseRouteServlet{
 	/**
 	 * 登录系统
 	 */
-	protected void login(HttpServletRequest request,
+	public void login(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().write("Welcome master server!");
+		String user = this.getStringParam(request, "user", null);
+		String password = this.getStringParam(request, "password", null);
+		if(user == null || password == null){
+			response.getWriter().println("-2:参数错误!");
+		}else {
+			User userObj = (User) server.storage.load(User.class, user);
+			if(userObj != null){
+				if(userObj.password != null && userObj.password.equals(password)){
+					response.getWriter().println("0:登录成功");
+				}else {
+					response.getWriter().println("2:密码错误");
+				}
+			}else {
+				response.getWriter().println("1:帐号不存在");
+			}
+		}
+	}
+	
+	/**
+	 * 登录系统
+	 */
+	public void init_sql(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		static_serve("org/goku/master/init_db_sql.txt", "text/plain", response);
 	}
 }

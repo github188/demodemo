@@ -81,7 +81,7 @@ public class JDBCDataStorage extends DataStorage {
 		String sql = this.buildSelectSql(cls);
 		sql += " where " + filter;
 		
-		Collection<Map<String, Object>> rowList = query(sql, new String[]{});		
+		Collection<Map<String, Object>> rowList = query(sql, param);		
 		Collection<Object> result = new ArrayList<Object>();
 		
 		for(Map<String, Object> row: rowList){
@@ -94,6 +94,7 @@ public class JDBCDataStorage extends DataStorage {
 						log.warn(String.format("Failed to set filed '%s' to class '%s'", f, cls.getName()));
 					}
 				}
+				result.add(obj);
 			} catch (Exception e) {
 				log.warn(e.toString());
 			}
@@ -155,6 +156,7 @@ public class JDBCDataStorage extends DataStorage {
 	    			row.put(names[i - 1], value);
 	    		}
 	    	}
+	    	log.debug("Return records:" + result.size());
 	    	
 	    	if(!conn.getAutoCommit()){
 	    		conn.commit();
@@ -366,7 +368,7 @@ public class JDBCDataStorage extends DataStorage {
 	
 	private String getPKQuery(Class cls){
 		String sql = "";
-		String[] fields = this.getORMFields(cls);
+		String[] fields = this.getORMPkFields(cls);
 		for(int i = 0; i < fields.length -1; i++){
 			sql +=  fields[i] + "=${" + i + "} and ";
 		}
@@ -411,7 +413,7 @@ public class JDBCDataStorage extends DataStorage {
 	}
 	
 	@Override
-	public Object load(Class cls, String pk) {		
+	public Object load(Class cls, String pk) {
 		Collection<Object> result = this.list(cls, this.getPKQuery(cls), new Object[]{pk});
 		if(result.size() > 0){
 			return result.iterator().next();
