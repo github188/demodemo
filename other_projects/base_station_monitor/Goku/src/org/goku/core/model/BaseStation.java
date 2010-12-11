@@ -69,4 +69,12 @@ public class BaseStation {
 	 */
 	public int devType;
 	//public 
+	
+	public String getStatus(){
+		if(alarmStatus != null && !"".equals(this.alarmStatus)){
+			return this.alarmStatus;
+		}else {
+			return this.connectionStatus;
+		}
+	}
 }

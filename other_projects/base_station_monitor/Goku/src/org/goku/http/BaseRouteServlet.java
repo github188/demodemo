@@ -15,6 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public abstract class BaseRouteServlet extends HttpServlet{
+	public static final String TEXT = "text/plain";
+	
 	private static final long serialVersionUID = 1L;
 	private static final Map<String, Method> handler = new HashMap<String, Method>();
 	
@@ -53,7 +55,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
     protected abstract void index_page(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     
     protected void static_serve(String path, String mimeType, HttpServletResponse response) throws IOException{
-	    response.setContentType(mimeType == null ? "text/plain" : mimeType);
+	    response.setContentType(mimeType == null ? TEXT : mimeType);
 	    response.setCharacterEncoding("utf-8");
 	    InputStream ins = this.getClass().getClassLoader().getResourceAsStream(path);
 	    byte[] buffer = new byte[64 * 1024];

@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.goku.core.model.BaseStation;
+import org.goku.core.model.User;
 import org.goku.settings.Settings;
+import org.mortbay.log.Log;
 
 /**
  * 数据访问接口，支持JDBC和HTTP的实现。转发服务器，如果不能直接访问数据库，需要实现
@@ -18,9 +21,7 @@ public abstract class DataStorage {
 	 * @param obj
 	 * @return 加载的对象，如果不存在，返回为null.
 	 */	
-	public Object load(Class cls, String pk){
-		return null;
-	}
+	public abstract Object load(Class cls, String pk);
 	
 	/**
 	 * 根据条件过滤对象。
@@ -42,7 +43,13 @@ public abstract class DataStorage {
 	public abstract boolean checkConnect();
 	
 	public static DataStorage create(Settings param){
-		return new JDBCDataStorage(param);
+		if(param.getString(Settings.DB_MASTER_DB, "").equals("dev_dummy")){
+			return new DummyDataStorage(param);
+		}else {
+			return new JDBCDataStorage(param);
+		}
 	}
 	
+	
+	public abstract Collection<BaseStation> listStation(User user);	
 }

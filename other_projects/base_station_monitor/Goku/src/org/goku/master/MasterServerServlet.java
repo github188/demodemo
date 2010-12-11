@@ -3,9 +3,14 @@ package org.goku.master;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,10 +19,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.BaseStation;
+import org.goku.core.model.SimpleCache;
 import org.goku.core.model.User;
 import org.goku.http.BaseRouteServlet;
 
 public class MasterServerServlet extends BaseRouteServlet{
+	private static SimpleCache cache = new SimpleCache();
 	private MasterVideoServer server = null;
 	private Log log = LogFactory.getLog("http");
 	
@@ -102,14 +110,28 @@ public class MasterServerServlet extends BaseRouteServlet{
 	}
 	
 	/**
-	 * 换回基站列表 
+	 * 返回基站列表 
 	 */
-	public void list_station(HttpServletRequest request,
+	public void list_bs(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		//response.getWriter().write("Welcome master server!");
-		//"select uuid, manageServer, devType, connectionStatus, alarmStatus " +
-		//"from base_station"
+		String sid = this.getStringParam(request, "sid", null);
+		
+		response.setContentType(TEXT);
+		if(sid == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:会话过期或已注销");
+			}else {
+				Collection<BaseStation> list = server.storage.listStation(userObj);
+				response.getWriter().println("0:基站信息列表$" + list.size());
+				response.getWriter().println("");
+				outputStationInfo(list, response.getWriter());
+			}
+		}
 	}
+		
 
 	/**
 	 * 登录系统
@@ -118,13 +140,17 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String user = this.getStringParam(request, "user", null);
 		String password = this.getStringParam(request, "password", null);
+
+		response.setContentType(TEXT);
 		if(user == null || password == null){
-			response.getWriter().println("-2:参数错误!");
+			response.getWriter().println("-2:参数错误");
 		}else {
 			User userObj = (User) server.storage.load(User.class, user);
 			if(userObj != null){
 				if(userObj.password != null && userObj.password.equals(password)){
-					response.getWriter().println("0:登录成功");
+					String key = md5(userObj.name + System.currentTimeMillis());
+					cache.set(key, userObj, 60 * 30);
+					response.getWriter().println("0:登录成功$" + key);
 				}else {
 					response.getWriter().println("2:密码错误");
 				}
@@ -134,11 +160,51 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}
 	}
 	
+	public void logout(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		
+		response.setContentType(TEXT);
+		if(sid != null){
+			cache.remove(sid);
+			response.getWriter().println("0:注销成功");
+		}else {
+			response.getWriter().println("-2:参数错误");
+		}
+		
+	}
 	/**
 	 * 登录系统
 	 */
 	public void init_sql(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		static_serve("org/goku/master/init_db_sql.txt", "text/plain", response);
+	}
+	
+	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out){
+		String data = null;
+		for(BaseStation info: list){
+			data = info.uuid + "$" + info.devType + "$" + info.routeServer + "$" + info.getStatus();
+			out.println(data);
+		}
+	}
+	
+	private String md5(String str){
+	    MessageDigest messageDigest = null;
+		try {
+			messageDigest = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e1) {
+		}
+		if(messageDigest != null){
+			messageDigest.reset();
+			messageDigest.update(str.getBytes(Charset.forName("UTF8")));
+			final byte[] resultByte = messageDigest.digest();
+		    String result = "";
+		    for(byte e: resultByte){
+		    	result += String.format("%x", e);
+		    }
+		    return result;			
+		}
+		return "n/a";
 	}
 }

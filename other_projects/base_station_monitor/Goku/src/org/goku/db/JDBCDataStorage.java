@@ -17,6 +17,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.BaseStation;
+import org.goku.core.model.User;
 import org.goku.settings.Settings;
 
 /**
@@ -77,9 +79,14 @@ public class JDBCDataStorage extends DataStorage {
 		return isOk;
 	}
 	
-	public Collection<Object> list(Class cls, String filter, Object[] param){
-		String sql = this.buildSelectSql(cls);
-		sql += " where " + filter;
+	public Collection<Object> list(Class cls, String filterOrSelect, Object[] param){
+		String sql = null;
+		if(filterOrSelect.trim().startsWith("select")){
+			sql = filterOrSelect;
+		}else {
+			sql = this.buildSelectSql(cls);
+			sql += " where " + filterOrSelect;
+		}
 		
 		Collection<Map<String, Object>> rowList = query(sql, param);		
 		Collection<Object> result = new ArrayList<Object>();
@@ -437,5 +444,30 @@ public class JDBCDataStorage extends DataStorage {
 		}
 		return rowCount > 0;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	public Collection<BaseStation> listStation(User user){
+		String sql_is_admin = "select g.name from user_group g " +
+							  "join relation_user_group rg on(g.name=rg.user_group_id)" +
+							  "where rg.user_id=${0} and g.isAdmin=1";
+		
+		String sql_station = null;
+		
+		Collection<Map<String, Object>> xx = query(sql_is_admin, new Object[]{user.name});
+		if(xx.size() > 0){
+			sql_station = "select b.* from base_station b";
+		}else {
+			sql_station = "select b.* from base_station b" +
+						  "join relation_station_group rsg on(b.uuid=rsg.base_station_id)" +
+						  "join relation_user_group rg on(rsg.user_group_id=rg.user_group_id)" +
+						  "where rg.user_id=${0}";
+		}
+		
+		Collection stationList = this.list(BaseStation.class, 
+														sql_station,
+														new String[]{user.name});
+		
+		return stationList;
+	}	
 	
 }
