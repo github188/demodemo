@@ -59,10 +59,10 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String mime = request.getParameter("mime");
 		mime = mime == null ? "application/octet-stream" : mime;		
 	    response.setContentType(mime);
-	    response.setStatus(HttpServletResponse.SC_OK);
+	    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 	    
 	    String range = request.getHeader("Range");
-	    long start = 0, end = Long.MAX_VALUE;
+	    long start = 0, end = Integer.MAX_VALUE;
 	    if(range != null){
 	    	log.debug("Request range:" + range);
 	    	String[] ranges = range.split("=", 2)[1].split("-", 2);
@@ -76,15 +76,19 @@ public class MasterServerServlet extends BaseRouteServlet{
 	    	    
 	    long fileSize = new File(file).length();
 	    end = Math.min(end, fileSize);
+	    //end = Math.min(end, start + 1024 * 1024);
 	    start = Math.min(start, end);
 	    
 	    log.info(String.format("Start replay video, mime:%s, Range bytes=%s-%s, file:%s", 
 				   mime, start, end, file));
 	    
+	    response.setHeader("Content-Length", (end - start) + "");
+	    response.setHeader("Content-Range", String.format("bytes %s-%s/%s", start, end, fileSize));
+	    
 	    FileChannel channel = new FileInputStream(file).getChannel();
 	    MappedByteBuffer buffer = channel.map(MapMode.READ_ONLY, start, end - start);
 	    
-	    byte[] byteBuffer  = new byte[64 * 1024];
+	    byte[] byteBuffer  = new byte[1024 * 640];
 	    for(int remain = 0; buffer.hasRemaining();){
 	    	//如果剩余数据大于Buffer直接发送整个Buffer, 否则只发送剩余数据。
 	    	remain = buffer.remaining();
