@@ -13,6 +13,7 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import static org.goku.video.odip.Constant.*;
 
 /**
  * 监控客户端，处理于摄像头的交互。
@@ -114,7 +115,7 @@ public class MonitorClient implements Runnable{
 		if(this.getClientStatus() != null){
 			if(!this.status.realPlaying){
 				//this.handler.requestConnection(REQ_CONN_REAL_PLAY);
-				this.handler.requestVideoStream();
+				this.handler.videoStreamControl(CTRL_VIDEO_START);
 			}
 		}else {
 			log.warn("Can't open real play in disconnected client.");
@@ -122,6 +123,13 @@ public class MonitorClient implements Runnable{
 	}
 	
 	public void openSound(){
+		
+	}
+	
+	/**
+	 * 发送响应消息，避免被超时断开连接。
+	 */
+	public void ackActive(){
 		
 	}
 	
@@ -140,7 +148,7 @@ public class MonitorClient implements Runnable{
 	 * 当视频接受端为空时调用。发送关闭视频流的命令。
 	 */
 	public void videoDestinationEmpty(){
-		
+		this.handler.videoStreamControl(CTRL_VIDEO_STOP);
 	}
 
 	public void close(){
@@ -277,6 +285,8 @@ public class MonitorClient implements Runnable{
 	 * @throws IOException
 	 */
 	protected void read(SocketChannel channel) throws IOException{
+		this.status.lastActiveTime = System.currentTimeMillis();
+
 		ByteBuffer buffer = null;
 		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
 		int readLen = channel.read(buffer);
@@ -285,6 +295,13 @@ public class MonitorClient implements Runnable{
 		}else if(!buffer.hasRemaining()){
 			//如果当前缓冲区读满了，开始处理数据。
 			this.handler.processData(this);
+		}
+		
+		/**
+		 * 如果30秒没有任何写操作，发送一个告警查询，避免服务端超时断开。
+		 */
+		if(System.currentTimeMillis() - status.lastActionTime > 30 * 1000){
+			this.ackActive();
 		}
 	}
 	
@@ -339,6 +356,7 @@ public class MonitorClient implements Runnable{
 						this.socketChannel.write(src);
 					}
 				}
+				this.status.lastActionTime = System.currentTimeMillis();
 			}else {
 				log.warn("Writing data at a disconnected soket, id:" + this.info.uuid);
 			}

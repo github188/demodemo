@@ -31,6 +31,14 @@ public class ClientStatus {
 	 */	
 	public int sessionId = 0;
 
+	/**
+	 * 最后一次有读操作时间。用于TimeOut管理。
+	 */
+	public long lastActiveTime = 0;
+	/**
+	 * 最后一次写操作时间。
+	 */
+	public long lastActionTime = 0;
 
 	/**
 	 * 视频制式 ack_login W28

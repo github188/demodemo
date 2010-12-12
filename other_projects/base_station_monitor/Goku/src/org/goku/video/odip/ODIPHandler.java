@@ -1,12 +1,14 @@
 package org.goku.video.odip;
 
+import static org.goku.video.odip.ProtocolHeader.ACK_GET_VIDEO;
+import static org.goku.video.odip.ProtocolHeader.ACK_LOGIN;
+import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.goku.video.odip.ProtocolHeader.*;
 
 /**
  * 处理视频协议数据，
@@ -171,9 +173,10 @@ public class ODIPHandler {
 	}
 	
 	/**
-	 *CMD_CONNECT
+	 * 0x11
+	 * @param action 1--开始监控， 0--关闭监控。
 	 */
-	public void requestVideoStream(){
+	public void videoStreamControl(int action){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
 		
@@ -189,9 +192,10 @@ public class ODIPHandler {
 
 		buffer.position(32 + 16);
 		buffer.flip();
-		client.write(buffer);		
-	
-	}	
+		client.write(buffer);
+		
+		this.client.status.realPlaying = action == Constant.CTRL_VIDEO_START;	
+	}
 	
 	/**
 	 *CMD_CONNECT
