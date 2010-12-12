@@ -51,7 +51,8 @@ public abstract class BaseRouteServlet extends HttpServlet{
 				log.error(e1, e1);
 			}
 		}
-		response.getWriter().flush();
+		//response.getWriter().flush();
+		//response.getOutputStream().flush();
 		response.flushBuffer();
     }
     

@@ -3,6 +3,7 @@ package org.goku.core.model;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.goku.db.DataStorage;
 import org.goku.http.HTTPRemoteClient;
 
 /**
@@ -62,13 +63,15 @@ public class RouteServer {
 	 * @param max
 	 * @param pool
 	 */
-	public void balanceBaseStation(int max, Collection<BaseStation> pool){
+	public void balanceBaseStation(int max, Collection<BaseStation> pool, DataStorage storage){
 		if(this.clients.size() > max){
 			Iterator<BaseStation> iter = this.clients.iterator();
 			for(int i = this.clients.size() - max; i > 0 && iter.hasNext(); i--){
 				BaseStation bs = iter.next();
 				if(this.http.removeBaseStaion(bs)){
+					bs.routeServer = null;
 					pool.add(bs);
+					storage.save(bs, new String[]{"routeServer"});
 					iter.remove();
 				}else {
 					continue;
@@ -79,7 +82,9 @@ public class RouteServer {
 			for(int i = max - this.clients.size(); i > 0 && iter.hasNext(); i--){
 				BaseStation bs = iter.next();
 				if(this.http.addBaseStaion(bs)){
+					bs.routeServer = this.ipAddress;
 					this.clients.add(bs);
+					storage.save(bs, new String[]{"routeServer"});
 					iter.remove();
 				}else {
 					continue;

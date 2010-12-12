@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,8 @@ public class JDBCDataStorage extends DataStorage {
 	private Log log = LogFactory.getLog("db");
 	private int wokingDB = 0;
 	private String[][] config = new String[2][3];
+	
+	private ArrayList<Connection> connPool = new ArrayList<Connection>();
 	
 	public JDBCDataStorage(Settings settings){
 		String[] master = new String[3];		
@@ -172,6 +175,7 @@ public class JDBCDataStorage extends DataStorage {
 	    }
 	    catch (SQLException ex){
 	    	log.error(ex.toString(), ex);
+	    	conn = null;
 	    }finally{
 	    	if(rs != null){
 	    		try {
@@ -185,12 +189,7 @@ public class JDBCDataStorage extends DataStorage {
 				} catch (SQLException e) {
 				}
 	    	}
-	    	if(conn != null){
-	    		try {
-					conn.close();
-				} catch (SQLException e) {
-				}
-	    	}
+	    	closeConnection(conn);
 	    }
 		
 		return result;
@@ -222,6 +221,7 @@ public class JDBCDataStorage extends DataStorage {
 				log.error(e.toString());
 			}
 	    	log.error(ex.toString(), ex);
+	    	conn = null;
 	    }finally{
 	    	if(st != null){
 	    		try {
@@ -230,13 +230,7 @@ public class JDBCDataStorage extends DataStorage {
 					log.error(e.toString());
 				}
 	    	}
-	    	if(conn != null){
-	    		try {
-					conn.close();
-				} catch (SQLException e) {
-					log.error(e.toString());
-				}
-	    	}
+	    	closeConnection(conn);
 	    }
 	    
 		return updated;
@@ -271,8 +265,10 @@ public class JDBCDataStorage extends DataStorage {
 		return sql;
 	}
 	
-	private String buildUpdateSql(Object obj){
-		String[] fields = this.getORMFields(obj.getClass());
+	private String buildUpdateSql(Object obj, String[] fields){
+		if(fields == null){
+			fields = this.getORMFields(obj.getClass());
+		}
 		String sql = "update " + this.getTableName(obj.getClass()) +		
 		"set ";
 		
@@ -398,6 +394,13 @@ public class JDBCDataStorage extends DataStorage {
 	
 	private Connection getConnection(){
 		Connection conn = null;
+		synchronized(connPool){
+			if(connPool.size() > 0){
+				conn = connPool.remove(0);
+				return conn;
+			}
+		}
+		
 		for(int i = 0; i < 2; i++){
 			String[] settings = this.config[this.wokingDB];
 			try{
@@ -420,6 +423,14 @@ public class JDBCDataStorage extends DataStorage {
 		return conn;
 	}
 	
+	private void closeConnection(Connection conn){
+		if(conn != null){
+			synchronized(connPool){
+				connPool.add(conn);
+			}		
+		}
+	}
+	
 	@Override
 	public Object load(Class cls, String pk) {
 		Collection<Object> result = this.list(cls, this.getPKQuery(cls), new Object[]{pk});
@@ -437,12 +448,18 @@ public class JDBCDataStorage extends DataStorage {
 		Collection<Map<String, Object>> xx = query(sql, new Object[]{});
 		int rowCount = (Integer)xx.iterator().next().get("have_row");		
 		if(rowCount > 0){
-			sql = this.buildSaveSql(obj);
+			sql = this.buildUpdateSql(obj, null);
 			rowCount = this.execute_sql(sql, new Object[]{});				
 		}else {
 			sql = this.buildSaveSql(obj);
 			rowCount = this.execute_sql(sql, new Object[]{});
 		}
+		return rowCount > 0;
+	}
+	
+	public boolean save(Object obj, String[] fields) {
+		String sql = this.buildUpdateSql(obj, fields);
+		int rowCount = this.execute_sql(sql, new Object[]{});
 		return rowCount > 0;
 	}
 	

@@ -137,7 +137,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 
     protected void index_page(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-    	response.getWriter().write("Welcome video router!");
+    	static_serve("org/goku/video/help_doc.txt", "text/plain", response);
     } 
 	
     class RealPlayRouting implements VideoDestination{

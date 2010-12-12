@@ -37,6 +37,7 @@ public abstract class DataStorage {
 	 * @return 返回true, 如果创建了新对象，否则为false;
 	 */
 	public abstract boolean save(Object obj);
+	public abstract boolean save(Object obj, String[] fields);
 	public abstract int execute_sql(String sql, Object[] param) throws SQLException;
 	public abstract Collection<Map<String, Object>> query(String sql, Object[] param);
 	

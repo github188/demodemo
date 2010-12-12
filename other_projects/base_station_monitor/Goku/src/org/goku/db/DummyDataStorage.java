@@ -34,7 +34,7 @@ public class DummyDataStorage extends DataStorage {
 		
 		User u = new User();
 		u.name = "test1";
-		u.password = "p1";		
+		u.password = "pass";		
 		xxx.add(u);
 	}
 	
@@ -135,24 +135,8 @@ public class DummyDataStorage extends DataStorage {
 
 	@Override
 	public Collection<BaseStation> listStation(User user) {
-		Collection<BaseStation> xxx = new Vector<BaseStation>();
-		
-		BaseStation bs = null; 
-		bs = new BaseStation();
-		bs.uuid = "0001";
-		bs.connectionStatus = "01";
-		
-		bs.routeServer = "http://127.0.0.1:8080/xx";
-		bs.devType = 1;
-		xxx.add(bs);
-
-		bs = new BaseStation();
-		bs.uuid = "0002";
-		bs.connectionStatus = "02";
-		
-		bs.routeServer = "http://127.0.0.1:8080/xx";
-		bs.devType = 1;
-		xxx.add(bs);
+		//Collection<BaseStation> xxx = new Vector<BaseStation>();
+		Collection xxx = objects.get(BaseStation.class);
 		
 		return xxx;
 	}
@@ -175,6 +159,12 @@ public class DummyDataStorage extends DataStorage {
 	public void removeRouteServer(RouteServer route) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean save(Object obj, String[] fields) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

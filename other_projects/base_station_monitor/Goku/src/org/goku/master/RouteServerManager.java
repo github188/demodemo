@@ -102,12 +102,12 @@ public class RouteServerManager implements Runnable {
 			log.info(String.format("balance route server, station count:%s, route count:%s, average:%s",
 						count, routeList.size(), average));
 			for(RouteServer s: routeList){
-				s.balanceBaseStation(count, bsPool);
+				s.balanceBaseStation(count, bsPool, storage);
 			}
 			/**
 			 * 如果最后还存在没有被监控的终端，全部放到最后一个路由。
 			 */
-			routeList.last().balanceBaseStation(Integer.MAX_VALUE, bsPool);
+			routeList.last().balanceBaseStation(Integer.MAX_VALUE, bsPool, storage);
 		}else {
 			log.info("Not found any route server for group " + groupName);
 		}

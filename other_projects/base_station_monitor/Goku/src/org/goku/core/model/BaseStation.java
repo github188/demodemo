@@ -22,7 +22,7 @@ public class BaseStation {
 	/**
 	 * 基站的连接状态，
 	 */
-	public String connectionStatus;
+	public String connectionStatus = "01";
 	
 	/**
 	 * 基站的分组编号，同一组的基站，转发服务器实现自动分配。某个服务器负载过高，或关闭
