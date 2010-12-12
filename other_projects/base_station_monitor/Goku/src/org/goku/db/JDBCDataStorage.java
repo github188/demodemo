@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
 import org.goku.settings.Settings;
 
@@ -468,6 +469,30 @@ public class JDBCDataStorage extends DataStorage {
 														new String[]{user.name});
 		
 		return stationList;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<BaseStation> listStation(RouteServer route) {
+		Collection xx = this.list(BaseStation.class, 
+				"routeServer=${0}",
+				new String[]{route.ipAddress});
+		return xx;
+	}
+
+	@Override
+	public Collection<BaseStation> listDeadStation(String group) {		
+		Date lastActive = new Date(System.currentTimeMillis() - 1000 * 60 * 5);
+		
+		Collection xx = this.list(BaseStation.class, 
+				"(lastActive<${0} or routeServer is null) and groupName=${1}",
+				new Object[]{lastActive, group});
+		return xx;
+	}
+
+	@Override
+	public void removeRouteServer(RouteServer route) {
+		String cleanRoute = "update base_station set routeServer=null where routeServer=${0}";
+		this.execute_sql(cleanRoute, new Object[]{route.ipAddress});
 	}	
 	
 }

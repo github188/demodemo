@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.RouteServer;
 import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
-import org.goku.video.VideoRouteServer;
 
 /**
  * 监控管理服务器，负责调度不同的转发服务器，实现监控服务。
@@ -22,10 +22,11 @@ public class MasterVideoServer {
 	private static MasterVideoServer ins = null;
 	
 	public Settings settings = null;
-	public DataStorage storage = null;		
+	public DataStorage storage = null;
+	public RouteServerManager manager = null;
 	private boolean running = true;
 	
-	private ThreadPoolExecutor threadPool = null; 
+	private ThreadPoolExecutor threadPool = null;
 	
 	public static MasterVideoServer getInstance(){
 		return ins;
@@ -51,7 +52,11 @@ public class MasterVideoServer {
 				60, 
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
-				);		
+				);
+		
+		manager = new RouteServerManager(threadPool, storage);
+		threadPool.execute(manager);
+		log.info("Start route server manager...");
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
 		log.info("Start http server at port " + httpPort);
@@ -72,5 +77,9 @@ public class MasterVideoServer {
 			}
 		}
 		log.info("halt");
+	}
+	
+	public void addRouteServer(String ipaddr, String groupName){
+		this.manager.addRouteServer(new RouteServer(ipaddr, groupName));
 	}
 }

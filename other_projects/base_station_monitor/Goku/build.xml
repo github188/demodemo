@@ -41,6 +41,7 @@
                  <copy todir="${build.dir}/classes"> 
                          <fileset dir="src" includes="**/*.conf" /> 
                          <fileset dir="src" includes="**/*.properties" /> 
+                 		 <fileset dir="src" includes="**/*.txt" /> 
                  </copy>
          </target>           
     

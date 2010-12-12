@@ -14,9 +14,9 @@ class BaseStation(models.Model):
                                         ),
                                         default='new')
     groupName = models.CharField(max_length=50, default='default')
-    routeServer = models.CharField(max_length=50, default='')
+    routeServer = models.CharField(max_length=50, null=True)
     locationId = models.CharField(max_length=50, default='')
-    alarmStatus = models.CharField(max_length=50, default='')
+    alarmStatus = models.CharField(max_length=50, null=True)
     devType = models.IntegerField(default=0,
                                   choices=((1, "Video"),
                                          (2, "Image"),

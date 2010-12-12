@@ -2,8 +2,8 @@ package org.goku.video.odip;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
-import static org.goku.video.odip.Constant.*;
 
 /**
  * 监控客户端，处理于摄像头的交互。
@@ -29,6 +28,7 @@ public class MonitorClient implements Runnable{
 	 * 监控视频通道编号，从1开始。
 	 */
 	public int channelId = 0;
+	public int retryError = 0;
 	
 	protected Log log = null;
 	/**
@@ -38,6 +38,7 @@ public class MonitorClient implements Runnable{
 	protected SocketChannel socketChannel = null;
 	protected SocketManager socketManager = null;
 	protected ClientStatus status = null;
+	
 	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
@@ -50,6 +51,7 @@ public class MonitorClient implements Runnable{
 		
 		this.route = route;
 		this.route.setLogger(log);
+		this.route.start(this);
 
 		this.socketManager = socketManager;
 		this.handler = new ODIPHandler(this);		
@@ -78,7 +80,7 @@ public class MonitorClient implements Runnable{
 	 */
 	public void login(){
 		if(this.getClientStatus() == null){
-			if(this.socketChannel == null){
+			if(this.socketChannel == null || !this.socketChannel.isOpen()){
 				try {
 					this.connect();
 					synchronized(this.socketChannel){
@@ -94,8 +96,12 @@ public class MonitorClient implements Runnable{
 			
 			//在多线程时，有可能在等待期间由其他线程完成了login操作。
 			if(this.getClientStatus() == null &&  
-					this.socketChannel != null){
+					this.socketChannel != null &&
+					this.socketChannel.isConnected()
+					){
 				this.handler.login("", "", true);
+			}else if(this.getClientStatus() == null){
+				log.debug("The socket channel isn't OK, can't login to client.");
 			}
 		}
 	}
@@ -104,15 +110,14 @@ public class MonitorClient implements Runnable{
 	 * 开启实时监控。
 	 * @param player 收实时监控视频数据。
 	 */
-	public void realPlay(VideoDestination player){
+	public void realPlay(){
 		if(this.getClientStatus() != null){
-			this.route.addDestination(player);
 			if(!this.status.realPlaying){
 				//this.handler.requestConnection(REQ_CONN_REAL_PLAY);
 				this.handler.requestVideoStream();
 			}
 		}else {
-			log.warn("The client have not conneted at opening real play.");
+			log.warn("Can't open real play in disconnected client.");
 		}
 	}
 	
@@ -130,7 +135,13 @@ public class MonitorClient implements Runnable{
 	public void downloadByRecordFile(){
 		
 	}
-
+	
+	/**
+	 * 当视频接受端为空时调用。发送关闭视频流的命令。
+	 */
+	public void videoDestinationEmpty(){
+		
+	}
 
 	public void close(){
 		try {
@@ -230,7 +241,15 @@ public class MonitorClient implements Runnable{
 						this.eventProxy.connected(new MonitorClientEvent(this));
 						this.selectionKey.interestOps(SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
+						this.retryError = 0;
+					}catch(NoRouteToHostException conn){
+						this.retryError++;
+						this.socketChannel.close();
+						this.selectionKey.cancel();
+						this.eventProxy.timeout(new MonitorClientEvent(this));
 					}catch(ConnectException conn){
+						this.retryError++;
+						this.socketChannel.close();
 						this.selectionKey.cancel();
 						this.eventProxy.timeout(new MonitorClientEvent(this));
 					}
@@ -301,6 +320,7 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void write(ByteBuffer src){
+		//log.info("xxxxxx, wirte....");
 		/*
 		if(this.socketChannel == null){
 			
@@ -313,10 +333,14 @@ public class MonitorClient implements Runnable{
 			/**
 			 * 读和写使用了不同的同步对象,避免发送告警查询时出现等待。
 			 */
-			synchronized(this.socketChannel){
-				while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
-					this.socketChannel.write(src);
+			if(this.socketChannel.isConnected()){
+				synchronized(this.socketChannel){
+					while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
+						this.socketChannel.write(src);
+					}
 				}
+			}else {
+				log.warn("Writing data at a disconnected soket, id:" + this.info.uuid);
 			}
 		}catch(IOException e){
 			this.eventProxy.writeIOException(new MonitorClientEvent(this));

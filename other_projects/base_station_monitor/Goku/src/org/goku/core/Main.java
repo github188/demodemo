@@ -36,6 +36,8 @@ public class Main {
 				new Main().startAsVideoRoute();
 			}else if(args[0].equals("--image")){
 				new Main().startAsImageRoute();
+			}else if(args[0].equals("--single")){
+				new Main().startAsSingle();
 			}else {
 				help();
 			}
@@ -62,6 +64,33 @@ public class Main {
 		new ImageRouteServer(settings).startUp();
 	}
 	
+	private void startAsSingle() throws Exception {
+		initLog4jFile("standlone.log");
+		new Thread(){
+			public void run(){
+				try{
+					Settings settings = new Settings("master.conf");
+					new MasterVideoServer(settings).startUp();
+				}catch(Exception e){
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+		}.start();	
+		Thread.sleep(1000 * 2);
+		new Thread(){
+			public void run(){
+				try{
+					Settings settings = new Settings("video.conf");
+					new VideoRouteServer(settings).startUp();
+				}catch(Exception e){
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+		}.start();
+	}	
+	
 	private void initLog4jFile(String name){
 		//LogFactory.getLog("main");
 		org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
@@ -87,6 +116,7 @@ public class Main {
 				"    --master              Run as master server.\n" +
 				"    --video               Run as video routing server.\n" +
 				"    --image               Run as image routing server.\n" +
+				"    --single              Run in singlton mode.\n" +
 				"    --version             Show version.\n");
 		System.exit(0);
 	}

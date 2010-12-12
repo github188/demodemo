@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.db.DataStorage;
-import org.goku.master.MasterClient;
+import org.goku.http.HTTPRemoteClient;
 import org.goku.settings.Settings;
 import org.goku.video.MonitorAlarmManager;
 import org.goku.video.VideoRouteServer;
@@ -24,7 +24,7 @@ public class ImageRouteServer {
 	
 	public Settings settings = null;
 	public DataStorage storage = null;	
-	public MasterClient master = null;
+	public HTTPRemoteClient master = null;
 	public MonitorAlarmManager manager = null;
 	
 	private ThreadPoolExecutor threadPool = null; 

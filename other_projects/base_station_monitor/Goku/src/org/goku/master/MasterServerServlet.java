@@ -23,6 +23,7 @@ import org.goku.core.model.BaseStation;
 import org.goku.core.model.SimpleCache;
 import org.goku.core.model.User;
 import org.goku.http.BaseRouteServlet;
+import org.goku.http.HTTPRemoteClient;
 
 public class MasterServerServlet extends BaseRouteServlet{
 	private static SimpleCache cache = new SimpleCache();
@@ -116,7 +117,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);
 		
-		response.setContentType(TEXT);
 		if(sid == null){
 			response.getWriter().println("-2:参数错误");
 		}else {
@@ -132,6 +132,26 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}
 	}
 		
+	/**
+	 * 返回基站列表 
+	 */
+	public void add_route(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String port = this.getStringParam(request, "port", "8081");
+		String groupName = this.getStringParam(request, "group", "default");
+		
+		String client = request.getRemoteHost();
+		String url = "http://" + client + ":" + port;
+		HTTPRemoteClient httpClient = new HTTPRemoteClient(url);
+		if(httpClient.checkConnection()){
+			log.info(String.format("add route:%s, group:%s", client + ":" + port, groupName));
+			this.server.addRouteServer(client + ":" + port, groupName);
+			
+			response.getWriter().println("0:添加Route成功");
+		}else {
+			response.getWriter().println("1:连接Route失败");
+		}
+	}	
 
 	/**
 	 * 登录系统
@@ -141,7 +161,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String user = this.getStringParam(request, "user", null);
 		String password = this.getStringParam(request, "password", null);
 
-		response.setContentType(TEXT);
 		if(user == null || password == null){
 			response.getWriter().println("-2:参数错误");
 		}else {
@@ -164,7 +183,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);
 		
-		response.setContentType(TEXT);
 		if(sid != null){
 			cache.remove(sid);
 			response.getWriter().println("0:注销成功");
@@ -172,6 +190,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 			response.getWriter().println("-2:参数错误");
 		}
 		
+	}
+	
+	public void ping(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().println("OK");
 	}
 	/**
 	 * 登录系统

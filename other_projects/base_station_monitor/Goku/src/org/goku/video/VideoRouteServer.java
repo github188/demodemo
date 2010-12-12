@@ -12,9 +12,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.db.DataStorage;
+import org.goku.http.HTTPRemoteClient;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
-import org.goku.master.MasterClient;
 import org.goku.settings.Settings;
 import org.goku.video.odip.SocketManager;
 import org.goku.video.odip.MonitorClient;
@@ -35,11 +35,12 @@ public class VideoRouteServer {
 	public Settings settings = null;
 	public SocketManager socketManager = null;	
 	public DataStorage storage = null;	
-	public MasterClient master = null;
+	public HTTPRemoteClient master = null;
 	public MonitorAlarmManager manager = null;
 	
 	private ThreadPoolExecutor threadPool = null; 
 	private boolean running = true;
+	private String groupName = null;
 	
 	public static VideoRouteServer getInstance(){
 		return ins;
@@ -52,9 +53,13 @@ public class VideoRouteServer {
 	
 	public void startUp() throws Exception{
 		log.info("Starting video routing server...");
+		
+		groupName = settings.getString(Settings.GROUP_NAME, "");		
+		log.info("Routing group name:" + groupName);
 				
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);
+		this.storage.checkConnect();
 		
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		
@@ -67,11 +72,11 @@ public class VideoRouteServer {
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
 				);
 		socketManager = new SocketManager(threadPool);
+		threadPool.execute(socketManager);
 		
-		
-		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8081");
+		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8080");
 		log.info("Check master server in running, url:" + masterUrl);
-		master = new MasterClient(masterUrl);
+		master = new HTTPRemoteClient(masterUrl);
 		if(master.checkConnection()){
 			log.info("Connected master server.");
 		}else {
@@ -82,7 +87,7 @@ public class VideoRouteServer {
 		manager = new MonitorAlarmManager(threadPool);
 		threadPool.execute(manager);
 		
-		int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
+		final int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
 		log.info("Start http server at port " + httpPort);
 		
 		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
@@ -90,6 +95,7 @@ public class VideoRouteServer {
 		http.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
+				master.registerRoute("", httpPort, groupName);
 				log.info("started http...");	
 			}
 		});
@@ -103,10 +109,6 @@ public class VideoRouteServer {
 		log.info("halt");		
 	}
 	
-	protected void loadingMonitorClient(){
-		
-	}
-	
 	public void shutdown(){
 		this.running = false;
 		synchronized(this){
@@ -114,15 +116,21 @@ public class VideoRouteServer {
 		}
 	}
 	
-	public void addMonitorClient(String uuid){
+	public boolean addMonitorClient(String uuid){
 		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
-		MonitorClient client = new MonitorClient(station, 
-												 new VideoRoute(threadPool),
-												 socketManager);
-		this.clients.put(uuid, client);
-		this.manager.addClient(client);
-		
-		//client.connect(selector);
+		if(station != null && station.devType == 1){
+			MonitorClient client = new MonitorClient(station, 
+													 new VideoRoute(threadPool),
+													 socketManager);
+			this.clients.put(uuid, client);
+			this.manager.addClient(client);
+			return true;
+		}else if(station == null){
+			log.warn("Not found base station by uuid '" + uuid + "'");			
+		}else {
+			log.warn("Not a vedio base station '" + uuid + "'");
+		}
+		return false;
 	}
 	
 	/**

@@ -52,7 +52,17 @@ public class MonitorAlarmManager implements Runnable{
 	 * @param client
 	 */
 	protected void checkMonitorClient(final MonitorClient client){
-		client.checkAlarm();
+		log.debug("Check alarm, client id:" + client.info.uuid);
+		if(client.getClientStatus() == null && client.retryError < 5){
+			client.login();
+		}
+		if(client.getClientStatus() != null){
+			client.checkAlarm();
+			//测试视频传输
+			//client.realPlay();
+		}else {
+			log.warn("The client is disconneted, can't check alarm event. the client uuid is" + client.info.uuid);
+		}
 	}
 	
 	public void addClient(MonitorClient client){

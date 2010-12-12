@@ -19,6 +19,7 @@ public class VideoRoute {
 	private Log log = null;
 	private ThreadPoolExecutor executor = null;
 	private Collection<VideoDestination> destList = Collections.synchronizedCollection(new ArrayList<VideoDestination>());
+	private MonitorClient client = null;
 	
 	public VideoRoute(ThreadPoolExecutor executor){
 		this.executor = executor;
@@ -32,8 +33,8 @@ public class VideoRoute {
 		this.log = log;
 	}
 	
-	public void start(){
-		
+	public void start(MonitorClient client){
+		this.client = client;
 	}
 	
 	/**
@@ -81,6 +82,13 @@ public class VideoRoute {
 			this.destList.remove(dest);
 			log.debug("Remove video destination, dest=" + dest.toString());
 		}
+		if(this.destList.size() <= 0){
+			this.client.videoDestinationEmpty();
+		}
+	}
+	
+	public int destinationSize(){
+		return this.destList.size();
 	}
 	
 	class RoutingTask implements Runnable{

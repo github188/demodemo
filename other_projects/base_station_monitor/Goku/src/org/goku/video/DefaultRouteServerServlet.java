@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,14 +29,32 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	public void init(ServletConfig config){
 		server = VideoRouteServer.getInstance();
 	}
-	
-	/**
-	 * 实时监控，请求。将视频数据流，以HTTP下载的方式返回。建立一个长连接，异步输出
-	 * 监控录像。
-	 */
+
 	public void real_play(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-	    String uuid = request.getParameter("bid");
+		String uuid = this.getStringParam(request, "uuid", null);
+	    MonitorClient client = null;
+		if(uuid == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+		    client = server.getMonitorClient(uuid);
+		    if(client == null){
+		    	response.getWriter().println("1:基站不存在");
+		    }else if(client.getClientStatus() == null){
+		    	response.getWriter().println("2:未建立连接");
+		    }else {
+		    	client.realPlay();
+		    	response.getWriter().println("0:请求发送成功");
+		    }
+		}
+	}
+	
+	/**
+	 *视频传输通道。
+	 */
+	public void video(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+	    String uuid = request.getParameter("uuid");
 	    MonitorClient client = null;
 	    if(uuid != null){
 	    	client = server.getMonitorClient(uuid);
@@ -44,6 +63,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	    if(client != null){
 			response.setHeader("Transfer-Encoding", "chunked");
 		    response.setContentType("application/octet-stream");
+			//response.setContentType("video/h264");			
 		    response.setStatus(HttpServletResponse.SC_OK);
 		    Continuation continuation = ContinuationSupport.getContinuation(request, null);
 		    response.flushBuffer();
@@ -51,9 +71,9 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    RealPlayRouting callback = new RealPlayRouting(continuation, 
 		    		response.getOutputStream(), 
 		    		request.getRemoteHost());
-		    client.realPlay(callback);		    
-		    //suspend 1 hour
-		    continuation.suspend(1000 * 60 * 60);
+		    client.route.addDestination(callback);
+		    //suspend 365 days
+		    continuation.suspend(1000 * 60 * 60 * 365);
 		    //suspend timeout.
 		    callback.close();
 	    }else {
@@ -66,18 +86,46 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		response.getWriter().write("Welcome send_play!");
 		
 		String data = request.getParameter("data");
-
 		
     }
     
 	
-	/**
-	 * 心跳检查。
-	 */
-    public void heart_ok(HttpServletRequest request, HttpServletResponse response) 
-	throws IOException {
-    	response.getWriter().write("Welcome heart_ok!");      	
-    }
+	public void ping(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().println("OK");
+	}
+	
+	public void add_bs(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		if(uuid == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+			if(server.addMonitorClient(uuid)){
+				response.getWriter().println("0:添加成功");
+			}else {
+				response.getWriter().println("1:添加失败");
+			}
+		}
+	}
+	
+	public void del_bs(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		if(uuid == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+			MonitorClient mc = server.getMonitorClient("uuid");
+			if(mc == null){
+				response.getWriter().println("1:不存在基站");
+			}else if(mc.route.destinationSize() > 0){
+				response.getWriter().println("2:有连接的用户");
+			}else {
+				server.removeMonitorClient(mc);
+				response.getWriter().println("0:停止成功");
+			}
+		}
+	}
     
 	/**
 	 * 服务器的内部状态。

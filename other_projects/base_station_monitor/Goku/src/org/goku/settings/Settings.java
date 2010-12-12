@@ -15,6 +15,8 @@ import org.apache.commons.logging.LogFactory;
 public class Settings {
 	
 	public final static String HTTP_PORT = "http_port";
+	public final static String GROUP_NAME = "group_name";
+	
 	public final static String CORE_ROUTE_THREAD_COUNT = "core_route_thread_count";
 	public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	

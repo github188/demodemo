@@ -18,7 +18,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
 	public static final String TEXT = "text/plain";
 	
 	private static final long serialVersionUID = 1L;
-	private static final Map<String, Method> handler = new HashMap<String, Method>();
+	private final Map<String, Method> handler = new HashMap<String, Method>();
 	
 	private Log log = LogFactory.getLog("http");
 
@@ -30,6 +30,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
     	response.setCharacterEncoding("utf-8");
+		response.setContentType(TEXT);
     	String action = request.getParameter("q");
 		Method m = handler.get(action);
 		log.debug("New http action:" + action);
@@ -49,7 +50,9 @@ public abstract class BaseRouteServlet extends HttpServlet{
 			} catch (Exception e1) {
 				log.error(e1, e1);
 			}
-		}    	
+		}
+		response.getWriter().flush();
+		response.flushBuffer();
     }
     
     protected abstract void index_page(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;

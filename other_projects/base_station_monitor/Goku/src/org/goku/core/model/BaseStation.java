@@ -77,4 +77,12 @@ public class BaseStation {
 			return this.connectionStatus;
 		}
 	}
+	
+	public boolean equals(Object o){
+		if(o instanceof BaseStation){
+			BaseStation bs = (BaseStation)o;
+			return this.uuid.equals(((BaseStation) o).uuid);
+		}
+		return false;
+	}	
 }
