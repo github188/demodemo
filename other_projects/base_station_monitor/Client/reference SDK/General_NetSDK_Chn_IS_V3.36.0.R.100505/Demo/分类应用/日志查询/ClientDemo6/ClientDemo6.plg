@@ -1,0 +1,40 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ClientDemo6 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/ClientDemo6.res" /d "NDEBUG" /d "_AFXDLL" "F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\日志查询\ClientDemo6\ClientDemo6.rc"" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP29D.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo6.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\日志查询\ClientDemo6\ClientDemo6.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\日志查询\ClientDemo6\ClientDemo6Dlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP29D.tmp" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP29E.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo6.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\日志查询\ClientDemo6\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP29E.tmp" 
+Creating command line "link.exe dhnetsdk.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ClientDemo6.pdb" /machine:I386 /out:"Release/ClientDemo6.exe"  ".\Release\ClientDemo6.obj" ".\Release\ClientDemo6Dlg.obj" ".\Release\StdAfx.obj" ".\Release\ClientDemo6.res" "
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ClientDemo6.cpp
+ClientDemo6Dlg.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+ClientDemo6.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

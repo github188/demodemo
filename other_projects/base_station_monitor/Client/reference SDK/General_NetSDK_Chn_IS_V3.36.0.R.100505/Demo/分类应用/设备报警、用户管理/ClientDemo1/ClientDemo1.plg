@@ -1,0 +1,79 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ClientDemo1 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/ClientDemo1.res" /d "NDEBUG" /d "_AFXDLL" "F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ClientDemo1.rc"" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D7.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo1.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\AddGroupInfo.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\AddUserInfo.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\AlarmInfo.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ClientDemo1.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ClientDemo1Dlg.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ModifyGroupInfo.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ModifyPwd.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\ModifyUserInfo.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\NewAlarm.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\QueryAlarmState.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\TabAlarmDlg.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\TabUserManageDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D7.tmp" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D8.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo1.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D8.tmp" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D9.tmp" with contents
+[
+dhnetsdk.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ClientDemo1.pdb" /machine:I386 /out:"Release/ClientDemo1.exe" 
+".\Release\AddGroupInfo.obj"
+".\Release\AddUserInfo.obj"
+".\Release\AlarmInfo.obj"
+".\Release\ClientDemo1.obj"
+".\Release\ClientDemo1Dlg.obj"
+".\Release\ModifyGroupInfo.obj"
+".\Release\ModifyPwd.obj"
+".\Release\ModifyUserInfo.obj"
+".\Release\NewAlarm.obj"
+".\Release\QueryAlarmState.obj"
+".\Release\StdAfx.obj"
+".\Release\TabAlarmDlg.obj"
+".\Release\TabUserManageDlg.obj"
+".\Release\ClientDemo1.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP5D9.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+AddGroupInfo.cpp
+AddUserInfo.cpp
+AlarmInfo.cpp
+ClientDemo1.cpp
+ClientDemo1Dlg.cpp
+ModifyGroupInfo.cpp
+ModifyPwd.cpp
+ModifyUserInfo.cpp
+NewAlarm.cpp
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100408\Demo\分类应用\设备报警、用户管理\ClientDemo1\NewAlarm.cpp(86) : warning C4244: '=' : conversion from 'unsigned long' to 'unsigned short', possible loss of data
+QueryAlarmState.cpp
+TabAlarmDlg.cpp
+TabUserManageDlg.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+ClientDemo1.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>

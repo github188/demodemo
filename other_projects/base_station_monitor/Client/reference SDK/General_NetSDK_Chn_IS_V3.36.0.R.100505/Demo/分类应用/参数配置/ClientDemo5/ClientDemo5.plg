@@ -1,0 +1,124 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ClientDemo5 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/ClientDemo5.res" /d "NDEBUG" /d "_AFXDLL" "F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ClientDemo5.rc"" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP311.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo5.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\AlarmInputDlg.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\AlarmMotion.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\AlarmShelter.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\AlarmVLostDlg.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ClientDemo5.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ClientDemo5Dlg.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigAlarm.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigAlarmMotionArea.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigAlarmMotionAreaBlock.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigChannel.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigComm.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigCover.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigFile.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigNetwork.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigRecord.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigServer.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\ConfigStrategy.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgChn.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgDVR.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgMsgHandle.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\StrategyDownload.cpp"
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\StrategyTrans.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP311.tmp" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP312.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ClientDemo5.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP312.tmp" 
+Creating temporary file "C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP313.tmp" with contents
+[
+dhnetsdk.lib dhconfigsdk.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ClientDemo5.pdb" /machine:I386 /out:"Release/ClientDemo5.exe" 
+".\Release\AlarmInputDlg.obj"
+".\Release\AlarmMotion.obj"
+".\Release\AlarmShelter.obj"
+".\Release\AlarmVLostDlg.obj"
+".\Release\ClientDemo5.obj"
+".\Release\ClientDemo5Dlg.obj"
+".\Release\ConfigAlarm.obj"
+".\Release\ConfigAlarmMotionArea.obj"
+".\Release\ConfigAlarmMotionAreaBlock.obj"
+".\Release\ConfigChannel.obj"
+".\Release\ConfigComm.obj"
+".\Release\ConfigCover.obj"
+".\Release\ConfigFile.obj"
+".\Release\ConfigNetwork.obj"
+".\Release\ConfigRecord.obj"
+".\Release\ConfigServer.obj"
+".\Release\ConfigStrategy.obj"
+".\Release\DlgChn.obj"
+".\Release\DlgDVR.obj"
+".\Release\DlgIPC.obj"
+".\Release\DlgMsgHandle.obj"
+".\Release\StdAfx.obj"
+".\Release\StrategyDownload.obj"
+".\Release\StrategyTrans.obj"
+".\Release\ClientDemo5.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\DELL\LOCALS~1\Temp\RSP313.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+AlarmInputDlg.cpp
+AlarmMotion.cpp
+AlarmShelter.cpp
+AlarmVLostDlg.cpp
+ClientDemo5.cpp
+ClientDemo5Dlg.cpp
+ConfigAlarm.cpp
+ConfigAlarmMotionArea.cpp
+ConfigAlarmMotionAreaBlock.cpp
+ConfigChannel.cpp
+ConfigComm.cpp
+ConfigCover.cpp
+ConfigFile.cpp
+ConfigNetwork.cpp
+ConfigRecord.cpp
+ConfigServer.cpp
+ConfigStrategy.cpp
+DlgChn.cpp
+DlgDVR.cpp
+DlgIPC.cpp
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(191) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(195) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(218) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(223) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(334) : warning C4244: '=' : conversion from 'unsigned long' to 'unsigned char', possible loss of data
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(338) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(386) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(405) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(451) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(470) : warning C4018: '<' : signed/unsigned mismatch
+F:\SDK发布\ClientSDK\Custom\3.36.0\General_NetSDK_Chn_IS_V3.36.0.R.100423\Demo\分类应用\参数配置\ClientDemo5\DlgIPC.cpp(515) : warning C4018: '<' : signed/unsigned mismatch
+Generating Code...
+Compiling...
+DlgMsgHandle.cpp
+StrategyDownload.cpp
+StrategyTrans.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+ClientDemo5.exe - 0 error(s), 11 warning(s)
+</pre>
+</body>
+</html>
