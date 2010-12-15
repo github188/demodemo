@@ -1,0 +1,566 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\player264demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\player264demo.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 79
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About dhvecplaydemo"
+FONT 9, "宋体"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "ver",IDC_STATIC_VER,37,15,184,42,SS_NOPREFIX
+    LTEXT           "Copy Right (C) 2006",IDC_STATIC,36,64,119,8
+END
+
+IDD_PLAYER264DEMO_DIALOG DIALOGEX 0, 0, 401, 361
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_APPWINDOW
+CAPTION "dhplaydemo"
+MENU IDR_MENU1
+FONT 9, "宋体"
+BEGIN
+    CONTROL         131,IDC_STATIC_SHOW,"Static",SS_BITMAP,0,0,403,300
+    CONTROL         "Slider1",IDC_SLIDER_PLAY,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,0,304,401,13
+    CONTROL         "",IDC_BUTTON_PLAY,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,4,319,15,15
+    CONTROL         "",IDC_BUTTON_PAUSE,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,20,319,15,15
+    CONTROL         "",IDC_BUTTON_FAST,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,100,319,15,15
+    CONTROL         "",IDC_BUTTON_SLOW,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,84,319,15,15
+    CONTROL         "",IDC_BUTTON_BACKONE,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,68,319,15,15
+    CONTROL         "",IDC_BUTTON_ONE,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,116,319,15,15
+    CONTROL         "",IDC_BUTTON_TOBEGIN,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,52,319,15,15
+    CONTROL         "",IDC_BUTTON_TOEND,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,132,319,15,15
+    CONTROL         "",IDC_BUTTON_PICCATCH,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,148,319,15,15
+    CONTROL         "",IDC_BUTTON_STOP,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,36,319,15,15
+    CONTROL         "Slider6",IDC_SLIDER_SOUND,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,355,322,45,11
+    LTEXT           "",IDC_STATIC_PLAYSTATE,7,346,27,8
+    LTEXT           "",IDC_STATIC_CURINFO,320,343,73,13
+    CONTROL         "",IDC_FULLSCREEN,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,164,319,15,15
+    CONTROL         "",IDC_BUTTON_SOUND,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,338,319,15,15
+    LTEXT           "",IDC_STATIC_STATEINFO,2,340,399,20,WS_BORDER
+    CONTROL         "",IDC_BUTTON_SETCOLOR,"Button",BS_OWNERDRAW | BS_FLAT | 
+                    WS_TABSTOP,180,319,15,15
+END
+
+IDD_DIALOG_LOCATE DIALOG DISCARDABLE  0, 0, 140, 113
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "定位"
+FONT 9, "宋体"
+BEGIN
+    GROUPBOX        "类型",IDC_STATIC,5,0,130,25
+    CONTROL         "帧数",IDC_RADIO_FRAME,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,10,10,45,10
+    CONTROL         "时间",IDC_RADIO_TIME,"Button",BS_AUTORADIOBUTTON,80,10,
+                    41,10
+    GROUPBOX        "范围",IDC_STATIC,5,30,130,35
+    LTEXT           "",IDC_STATIC_RANGE,14,40,116,20
+    EDITTEXT        IDC_EDIT_RANGEVALUE,79,77,40,14,ES_AUTOHSCROLL
+    LTEXT           "帧数或时间",IDC_STATIC,13,79,52,10
+    PUSHBUTTON      "定位",IDC_BUTTON_LOCATE,50,95,35,14,BS_FLAT
+    GROUPBOX        "",IDC_STATIC,5,71,130,22
+END
+
+IDD_DIALOG_MultiDisplay DIALOGEX 0, 0, 275, 242
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "局部放大显示"
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    LTEXT           "",IDC_STATIC_PART_DISPLAY,5,5,263,182,0,
+                    WS_EX_CLIENTEDGE
+    PUSHBUTTON      "显示",IDC_BUTTON_DISPLAY,204,195,29,14,BS_FLAT
+    EDITTEXT        IDC_EDIT_LEFT,73,195,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_RIGHT,148,195,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TOP,73,215,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BOTTOM,148,215,40,14,ES_AUTOHSCROLL
+    LTEXT           "Left",IDC_STATIC,38,198,21,8
+    LTEXT           "right",IDC_STATIC,122,197,16,8
+    LTEXT           "top",IDC_STATIC,38,217,17,8
+    LTEXT           "bottom",IDC_STATIC,118,216,23,8
+    PUSHBUTTON      "刷新",IDC_BUTTON_REFRESH,204,215,29,14,BS_FLAT
+END
+
+IDD_DIALOG_SYS_INFO DIALOGEX 0, 0, 194, 180
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "系统信息"
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    LTEXT           "",IDC_STATIC_INFO,5,5,185,145,0,WS_EX_CLIENTEDGE
+    PUSHBUTTON      "刷新",IDC_BUTTON_REFRESH,30,160,45,14,BS_FLAT
+    PUSHBUTTON      "退出",IDC_OK,115,160,40,14,BS_FLAT
+END
+
+IDD_DIALOG_CUTFILE DIALOG DISCARDABLE  0, 0, 154, 150
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "剪切文件"
+FONT 9, "宋体"
+BEGIN
+    GROUPBOX        "类型",IDC_STATIC,5,5,145,40
+    CONTROL         "帧数",IDC_RADIO_BYFRAME,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,15,20,45,10
+    CONTROL         "时间",IDC_RADIO_TIME,"Button",BS_AUTORADIOBUTTON,80,20,
+                    43,10
+    GROUPBOX        "范围",IDC_STATIC,5,50,145,40
+    LTEXT           "",IDC_STATIC_RANGE,15,65,120,20
+    EDITTEXT        IDC_EDIT_START_POSITION,45,95,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_END_POSITION,45,115,40,14,ES_AUTOHSCROLL
+    LTEXT           "起始值",IDC_STATIC,4,97,41,10
+    LTEXT           "结束值",IDC_STATIC,4,118,40,10
+    PUSHBUTTON      "保存文件",IDC_BUTTON_SAVEFILE,60,135,35,14,BS_FLAT
+    EDITTEXT        IDC_EDIT_startposition,110,95,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_EDIT_endposition,110,115,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+END
+
+IDD_DIALOG_WATERMARK DIALOG DISCARDABLE  0, 0, 313, 262
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Watermark Check"
+FONT 9, "宋体"
+BEGIN
+    LTEXT           "File:",IDC_STATIC,14,16,21,8
+    EDITTEXT        IDC_EDIT_CHECKFILEPATH,37,13,234,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_CHECKFILE,281,13,18,14
+    LTEXT           "Watermark info:",IDC_STATIC,14,41,61,8
+    EDITTEXT        IDC_EDIT_WATREMARK,77,39,179,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    CONTROL         "List1",IDC_LIST_WATERINFO,"SysListView32",WS_BORDER | 
+                    WS_TABSTOP,14,88,285,158
+    CONTROL         "Progress1",IDC_PROGRESS_CHECK,"msctls_progress32",
+                    WS_BORDER,13,63,286,14
+    PUSHBUTTON      "check",IDC_BUTTON_CHECK,266,39,33,14
+END
+
+IDD_DIALOG_MEDIAINFO DIALOG DISCARDABLE  0, 0, 230, 148
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Media Infomation"
+FONT 9, "宋体"
+BEGIN
+    LTEXT           "Static",IDC_STATIC_INFO,17,19,196,111
+END
+
+IDD_DIALOG_AVICONV DIALOG DISCARDABLE  0, 0, 347, 112
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "AVI convert"
+FONT 9, "宋体"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,281,81,50,14
+    LTEXT           "Source File:",IDC_STATIC,14,16,49,8
+    EDITTEXT        IDC_EDIT_SRCFILE,70,13,234,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_SRCFILE,314,13,18,14
+    LTEXT           "Target File:",IDC_STATIC,13,38,49,8
+    EDITTEXT        IDC_EDIT_TARGFILE,70,36,234,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_TARGFILE,314,36,18,14
+    PUSHBUTTON      "Convert",IDC_BUTTON_CONVERT,220,81,50,14
+    CONTROL         "Progress1",IDC_PROGRESS_CONVERT,"msctls_progress32",
+                    WS_BORDER,13,58,319,14
+END
+
+IDD_DIALOG_COLORSET DIALOG DISCARDABLE  0, 0, 223, 67
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Color Set"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "Slider2",IDC_SLIDERS,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,64,18,45,10
+    CONTROL         "Slider3",IDC_SLIDERC,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,64,38,45,10
+    CONTROL         "Slider4",IDC_SLIDERB,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,158,18,45,10
+    CONTROL         "Slider5",IDC_SLIDERH,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,158,38,45,10
+    LTEXT           "Saturation",IDC_STATICB,17,17,44,10
+    LTEXT           "Contrast",IDC_STATICD,17,37,40,8
+    LTEXT           "Brightness",IDC_STATICL,112,18,41,8
+    LTEXT           "Hue",IDC_STATICS,112,38,18,8
+END
+
+IDD_DIALOG_SETPATH DIALOG DISCARDABLE  0, 0, 233, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set PicPath"
+FONT 9, "宋体"
+BEGIN
+    LTEXT           "Pic path:",IDC_STATIC,14,15,37,8
+    EDITTEXT        IDC_EDIT_PICPATH,53,13,142,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_PATHSET,202,13,14,14
+END
+
+IDD_DIALOG_AUDIOIN DIALOG DISCARDABLE  0, 0, 266, 94
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SoundCapture"
+FONT 9, "宋体"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,200,61,50,14
+    LTEXT           "Sound File:",IDC_STATIC,13,14,45,8
+    EDITTEXT        IDC_EDIT_SOUNDFILE,70,12,158,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_SOUNDFILE,233,12,18,14
+    LTEXT           "BitPerSample:",IDC_STATIC,13,37,53,8
+    LTEXT           "SamplesPerSec:",IDC_STATIC,125,38,57,8
+    PUSHBUTTON      "Record",IDC_BUTTON_RECORD,141,61,50,14
+    COMBOBOX        IDC_COMBO_BIT,70,34,48,69,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_COMBO_SAMPLES,186,34,65,135,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "player264demo Microsoft 基础类应用程序\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "player264demo\0"
+            VALUE "LegalCopyright", "版权所有 (C) 2006\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "player264demo.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "player264demo 应用程序\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_PLAYER264DEMO_DIALOG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 356
+        HORZGUIDE, 334
+    END
+
+    IDD_DIALOG_LOCATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 133
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+
+    IDD_DIALOG_MultiDisplay, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 235
+    END
+
+    IDD_DIALOG_SYS_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 187
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_DIALOG_CUTFILE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 143
+    END
+
+    IDD_DIALOG_WATERMARK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 255
+    END
+
+    IDD_DIALOG_MEDIAINFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 223
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 141
+    END
+
+    IDD_DIALOG_AVICONV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 340
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 105
+    END
+
+    IDD_DIALOG_COLORSET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+    END
+
+    IDD_DIALOG_SETPATH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 226
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 37
+    END
+
+    IDD_DIALOG_AUDIOIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 259
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+        HORZGUIDE, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "文件"
+    BEGIN
+        MENUITEM "打开文件",                    ID_FILE_OPEN
+        MENUITEM "关闭文件",                    ID_FILE_CLOSE, GRAYED
+        MENUITEM "退出",                        ID_EXIT
+    END
+    POPUP "功能"
+    BEGIN
+        MENUITEM "循环",                        ID_REPEAT
+        MENUITEM "定位",                        ID_LOCATE, GRAYED
+        MENUITEM "剪切文件",                    IDC_CUTFILE, GRAYED
+        MENUITEM "清空缓冲",                    ID_RESETBUF, GRAYED
+        MENUITEM "区域显示",                    ID_PART_DISPLAY, GRAYED
+        MENUITEM "垂直同步",                    IDC_VERTICALSYNC
+        MENUITEM "音频采集",                    ID_MENUITEM_AUDIOIN
+        MENUITEM "AVI转换",                     ID_OPT_AVICONVER
+        MENUITEM "水印检查",                    ID_OPT_WATERMARK
+        MENUITEM "媒体信息",                    ID_INFO_MEDIA
+        MENUITEM "系统信息",                    IDC_SYSINFO
+    END
+    POPUP "设置"
+    BEGIN
+        POPUP "文件播放模式"
+        BEGIN
+            MENUITEM "文件模式",                    ID_FILEMODE_FILE
+            , CHECKED
+            MENUITEM "文件流模式",                  ID_FILEMODE_STREAM
+        END
+        POPUP "抓图类型"
+        BEGIN
+            MENUITEM "JPG",                         ID_PIC_JPG, CHECKED
+            MENUITEM "BMP",                         ID_PIC_BMP
+        END
+        POPUP "解码回调流类型"
+        BEGIN
+            MENUITEM "无",                          ID_DEC_NONE, CHECKED
+            MENUITEM "音频",                        ID_DEC_AUDIO
+            MENUITEM "视频",                        ID_DEC_VIDEO
+            MENUITEM "混合流",                      ID_DEC_COMPLEX
+        END
+        MENUITEM "抓图保存路径",                ID_SET_PICPATH
+    END
+    POPUP "语言"
+    BEGIN
+        MENUITEM "中文",                        ID_MENUITEM_Chinese
+        MENUITEM "英文",                        ID_MENUITEM_English
+    END
+    POPUP "查看"
+    BEGIN
+        MENUITEM "关于",                        ID_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP              BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
+IDB_OVERLAY             BITMAP  DISCARDABLE     "res\\bmp00001.bmp"
+IDB_BITMAP_PLAY         BITMAP  DISCARDABLE     "res\\play.bmp"
+IDB_BITMAP_FAST         BITMAP  DISCARDABLE     "res\\fast.bmp"
+IDB_BITMAP_PAUSE        BITMAP  DISCARDABLE     "res\\pause.bmp"
+IDB_BITMAP_CAMERA       BITMAP  DISCARDABLE     "res\\camera.bmp"
+IDB_BITMAP_FULLSCREEN   BITMAP  DISCARDABLE     "res\\FullScreen.bmp"
+IDB_BITMAP_SEEKTOEND    BITMAP  DISCARDABLE     "res\\seektoend.bmp"
+IDB_BITMAP_SEEKTOSTART  BITMAP  DISCARDABLE     "res\\seektostart.bmp"
+IDB_BITMAP_SOUND        BITMAP  DISCARDABLE     "res\\sound.bmp"
+IDB_BITMAP_STEPBACKWARD BITMAP  DISCARDABLE     "res\\step backward.bmp"
+IDB_BITMAP_STEPFORWARD  BITMAP  DISCARDABLE     "res\\step forward.bmp"
+IDB_BITMAP_STOP         BITMAP  DISCARDABLE     "res\\stop.bmp"
+IDB_BITMAP_SLOW         BITMAP  DISCARDABLE     "res\\slow.bmp"
+IDB_BITMAP_SETCOLOR     BITMAP  DISCARDABLE     "res\\setcolor.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 player264demo(&A)..."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_STOREYUVDATA         "存储解码得到的YUV数据"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\player264demo.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
