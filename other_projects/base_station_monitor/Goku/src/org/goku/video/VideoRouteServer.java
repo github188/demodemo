@@ -36,7 +36,8 @@ public class VideoRouteServer {
 	public SocketManager socketManager = null;	
 	public DataStorage storage = null;	
 	public HTTPRemoteClient master = null;
-	public MonitorAlarmManager manager = null;
+	public MonitorAlarmManager manager = null;	
+	public VideoRecorderManager recordManager = null;
 	
 	private ThreadPoolExecutor threadPool = null; 
 	private boolean running = true;
@@ -73,6 +74,8 @@ public class VideoRouteServer {
 				);
 		socketManager = new SocketManager(threadPool);
 		threadPool.execute(socketManager);
+		recordManager = new VideoRecorderManager(settings, storage);
+		threadPool.execute(recordManager);
 		
 		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8080");
 		log.info("Check master server in running, url:" + masterUrl);

@@ -39,6 +39,12 @@ public class Settings {
 	public final static String DB_SECONDARY_USERNAME = "db_secondary_username";
 	public final static String DB_SECONDARY_PASSWORD = "db_secondary_password";
 	
+	/**
+	 * 文件保存路径
+	 */
+	public final static String FILE_ROOT_PATH = "file_root_path";
+	public final static String FILE_NAME_PATTERN = "file_name_pattern";
+	
 	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	//public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	

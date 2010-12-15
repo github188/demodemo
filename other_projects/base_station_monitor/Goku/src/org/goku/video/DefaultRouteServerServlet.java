@@ -50,6 +50,50 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	}
 	
 	/**
+	 * 开始视频录像。
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	public void start_record(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		String user = this.getStringParam(request, "user", null);
+	    MonitorClient client = null;
+		if(uuid == null || user == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+		    client = server.getMonitorClient(uuid);
+		    if(client == null){
+		    	response.getWriter().println("1:基站不存在");
+		    }else if(client.getClientStatus() == null){
+		    	response.getWriter().println("2:未建立连接");
+		    }else {
+		    	String sid = server.recordManager.startManualRecord(client, user);
+		    	client.realPlay();
+		    	response.getWriter().println("0:开始视频录像$" + sid);
+		    }
+		}
+	}
+	
+	/**
+	 * 停止录像。
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	public void stop_record(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		if(uuid == null){
+			response.getWriter().println("-2:参数错误");
+		}else {
+			server.recordManager.stoptRecord(uuid);
+		    response.getWriter().println("0:成功停止录像");
+		}
+	}
+	
+	/**
 	 *视频传输通道。
 	 */
 	public void video(HttpServletRequest request, HttpServletResponse response) 
