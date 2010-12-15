@@ -80,6 +80,9 @@ public class SocketVideoServer implements Runnable {
 							out.write(buffer, 0, len);							
 						}
 						out.flush();
+						if(len < buffer.length){
+							this.client.close();
+						}
 					}
 				}
 			}catch (Exception e) {
