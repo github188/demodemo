@@ -100,15 +100,15 @@ public class DummyDataStorage extends DataStorage {
 	}
 	
 	private void loadStanloneDB(){
+		Collection<Object> bsList = new Vector<Object>();
+		objects.put(BaseStation.class, bsList);
+		
 		File file = new File("standlone.db");
 		if(file.isFile()){
 			log.info("Loading db file:" + file.getAbsolutePath());
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				
-				Collection<Object> bsList = new Vector<Object>();
-				objects.put(BaseStation.class, bsList);
-
 				for(String line = reader.readLine(); line != null;){
 					line = line.trim();
 					if(line.length() == 0)continue;
@@ -130,7 +130,9 @@ public class DummyDataStorage extends DataStorage {
 			} catch (Exception e) {
 				log.error(e);
 			}
-		}		
+		}else {
+			log.warn("Not found 'standlone.db' data file");
+		}
 	}
 
 	@Override
