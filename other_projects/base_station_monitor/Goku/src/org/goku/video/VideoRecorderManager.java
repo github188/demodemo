@@ -33,8 +33,9 @@ public class VideoRecorderManager implements Runnable{
 	private Map<String, AlarmRecord> runningRecorder = new HashMap<String, AlarmRecord>();
 	
 	public VideoRecorderManager(Settings settings, DataStorage storage){
-		initRootPath(settings.getString(Settings.FILE_ROOT_PATH, "data"));		
-		pattern = settings.getString(Settings.FILE_ROOT_PATH, DEFAULT);		
+		this.storage = storage;
+		initRootPath(settings.getString(Settings.FILE_ROOT_PATH, "data"));	
+		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);		
 	}
 	
 	/**
@@ -122,19 +123,20 @@ public class VideoRecorderManager implements Runnable{
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(startDate.getTime());
 		
-		path = path.replaceAll("\\$\\{yyyy\\}", now.get(Calendar.YEAR) + "");
-		path = path.replaceAll("\\$\\{mm\\}", now.get(Calendar.MONTH) + "");
-		path = path.replaceAll("\\$\\{dd\\}", now.get(Calendar.DAY_OF_MONTH) + "");
+		path = path.replaceAll("\\$\\{yyyy\\}", String.format("%04d", now.get(Calendar.YEAR)));
+		path = path.replaceAll("\\$\\{mm\\}", String.format("%02d", now.get(Calendar.MONTH)));
+		path = path.replaceAll("\\$\\{dd\\}", String.format("%02d", now.get(Calendar.DAY_OF_MONTH)));
 		
-		path = path.replaceAll("\\$\\{HH\\}", now.get(Calendar.HOUR_OF_DAY) + "");
-		path = path.replaceAll("\\$\\{MM\\}", now.get(Calendar.MINUTE) + "");
-		path = path.replaceAll("\\$\\{SS\\}", now.get(Calendar.SECOND) + "");
-		path = path.replaceAll("\\$\\{SSS\\}", now.get(Calendar.MILLISECOND) + "");
+		path = path.replaceAll("\\$\\{HH\\}", String.format("%02d", now.get(Calendar.HOUR_OF_DAY)));
+		path = path.replaceAll("\\$\\{MM\\}", String.format("%02d", now.get(Calendar.MINUTE)));
+		path = path.replaceAll("\\$\\{SS\\}", String.format("%02d", now.get(Calendar.SECOND)));
+		path = path.replaceAll("\\$\\{SSS\\}", String.format("%03d", now.get(Calendar.MILLISECOND)));
 		
 		path = path.replaceAll("\\$\\{UUID\\}", clientId);
 		path = path.replaceAll("\\$\\{USER\\}", user);
+		path = path.replaceAll("\\$\\{ALARM_TYPE\\}", alarmType);
 		
-		path = path.replaceAll("\\/", File.separator);
+		path = path.replaceAll("\\\\/", File.separator);
 		
 		File pathFile = new File(rootPath, path);
 		File dirFile = pathFile.getParentFile();

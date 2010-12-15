@@ -54,6 +54,9 @@ public class VideoRoute {
 				dest = iter.next();
 				if(dest.isClosed()){
 					iter.remove();
+					if(this.destList.size() <= 0){
+						this.client.videoDestinationEmpty();
+					}					
 				}else if(dest.accept(sourceType)){
 					executor.execute(new RoutingTask(dest, data));
 				}

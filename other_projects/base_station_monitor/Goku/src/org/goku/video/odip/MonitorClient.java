@@ -285,7 +285,9 @@ public class MonitorClient implements Runnable{
 	 * @throws IOException
 	 */
 	protected void read(SocketChannel channel) throws IOException{
-		this.status.lastActiveTime = System.currentTimeMillis();
+		if(this.status != null){
+			this.status.lastActiveTime = System.currentTimeMillis();
+		}
 
 		ByteBuffer buffer = null;
 		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
@@ -300,13 +302,17 @@ public class MonitorClient implements Runnable{
 		/**
 		 * 如果30秒没有任何写操作，发送一个告警查询，避免服务端超时断开。
 		 */
-		if(System.currentTimeMillis() - status.lastActionTime > 30 * 1000){
-			this.ackActive();
+		if(this.status != null){
+			if(System.currentTimeMillis() - status.lastActionTime > 30 * 1000){
+				this.ackActive();
+			}
 		}
 	}
 	
 	public void setClientStatus(ClientStatus status){
-		this.status = status;		
+		this.status = status;
+		this.status.lastActionTime = System.currentTimeMillis();
+		this.status.lastActiveTime = System.currentTimeMillis();
 	}
 	
 	public ClientStatus getClientStatus(){
@@ -356,7 +362,9 @@ public class MonitorClient implements Runnable{
 						this.socketChannel.write(src);
 					}
 				}
-				this.status.lastActionTime = System.currentTimeMillis();
+				if(this.status != null){
+					this.status.lastActionTime = System.currentTimeMillis();
+				}
 			}else {
 				log.warn("Writing data at a disconnected soket, id:" + this.info.uuid);
 			}

@@ -186,7 +186,8 @@ public class ODIPHandler {
 		header.externalLength = 16;
 		header.version = 0;
 		
-		header.setByte(this.client.channelId + 7, (byte)1);
+		//header.setByte(this.client.channelId + 7, (byte)1);
+		header.setByte(this.client.channelId + 7, (byte)action);
 		
 		header.mapToBuffer(buffer);
 
