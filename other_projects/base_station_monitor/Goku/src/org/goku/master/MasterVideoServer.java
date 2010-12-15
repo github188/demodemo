@@ -58,6 +58,9 @@ public class MasterVideoServer {
 		threadPool.execute(manager);
 		log.info("Start route server manager...");
 		
+		//testing.......
+		threadPool.execute(new SocketVideoServer(threadPool));
+		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
 		log.info("Start http server at port " + httpPort);
 		
