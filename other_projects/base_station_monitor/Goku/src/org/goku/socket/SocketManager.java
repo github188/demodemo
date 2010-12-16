@@ -1,20 +1,22 @@
-package org.goku.video.odip;
+package org.goku.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.video.odip.MonitorClient;
 
 /**
  * 实现Socket的连接管理，在Socket有可读数据时分配一个线程处理数据。
@@ -52,6 +54,24 @@ public class SocketManager implements Runnable{
 		return socketChannel;
 	}
 	
+	public ServerSocketChannel listen(String ip, int port, Runnable handler){
+		if(!isRunning){
+			log.warn("The SocketManager have not running.");
+		}
+		ServerSocketChannel serverChannel = null;
+		try{
+			serverChannel = ServerSocketChannel.open();
+			serverChannel.socket().bind(new InetSocketAddress(port)); 
+			serverChannel.configureBlocking(false); 
+			this.register(serverChannel, SelectionKey.OP_ACCEPT, handler);
+			log.info(String.format("Binding port %d for %s", port, handler.toString()));
+		}catch(IOException e){
+			log.error("Failed to bind port " + port);
+		}
+		
+		return serverChannel;
+	}
+	
 	/**
 	 * 不同的线程注册Selector会被阻塞。先保存注册结果，由selecting线程完成操作。
 	 * @param channel
@@ -60,7 +80,7 @@ public class SocketManager implements Runnable{
 	 * @return
 	 * @throws ClosedChannelException
 	 */
-	public void register(SocketChannel channel, int ops, Object att) 
+	public void register(SelectableChannel channel, int ops, Object att) 
 		throws ClosedChannelException{
 		//SelectionKey key = channel.register(this.selector, ops, att);		
 		synchronized(paddings){
@@ -70,7 +90,7 @@ public class SocketManager implements Runnable{
 	}
 
 	@Override
-	public void run() {		
+	public void run() {
 		log.info("The ChannelSelector is started..");		
 		isRunning = true;
 		while(isRunning){
@@ -80,6 +100,10 @@ public class SocketManager implements Runnable{
 						SelectionKey key = req.channel.register(this.selector, req.ops, req.att);
 						if(req.att instanceof MonitorClient){
 							((MonitorClient)req.att).setSelectionKey(key);
+						}else if(req.att instanceof SimpleSocketServer){
+							((SimpleSocketServer)req.att).setSelectionKey(key);
+						}else if(req.att instanceof SocketClient){
+							((SocketClient)req.att).setSelectionKey(key);							
 						}
 					}
 					this.paddings.clear();
@@ -121,10 +145,10 @@ public class SocketManager implements Runnable{
 	}
 	
 	class ChangeRequest{
-		SocketChannel channel = null;
+		SelectableChannel channel = null;
 		int ops = 0;
 		Object att = null;
-		public ChangeRequest(SocketChannel channel, int ops, Object att){
+		public ChangeRequest(SelectableChannel channel, int ops, Object att){
 			this.channel = channel;
 			this.ops = ops;
 			this.att = att;

@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class Settings {
 	
+	public final static String LISTEN_PORT = "listen_port";
 	public final static String HTTP_PORT = "http_port";
 	public final static String GROUP_NAME = "group_name";
 	

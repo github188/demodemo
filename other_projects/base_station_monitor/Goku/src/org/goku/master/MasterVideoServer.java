@@ -11,6 +11,8 @@ import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
+import org.goku.socket.SimpleSocketServer;
+import org.goku.socket.SocketManager;
 
 /**
  * 监控管理服务器，负责调度不同的转发服务器，实现监控服务。
@@ -23,6 +25,9 @@ public class MasterVideoServer {
 	
 	public Settings settings = null;
 	public DataStorage storage = null;
+	public SimpleHTTPServer httpServer = null;
+	public SimpleSocketServer socketServer = null;
+	public SocketManager socketManager = null;	
 	public RouteServerManager manager = null;
 	private boolean running = true;
 	
@@ -58,22 +63,26 @@ public class MasterVideoServer {
 		threadPool.execute(manager);
 		log.info("Start route server manager...");
 		
+		socketManager = new SocketManager(threadPool);
+		threadPool.execute(socketManager);		
 		//testing.......
 		threadPool.execute(new SocketVideoServer(threadPool));
+		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
+		socketServer = new SimpleSocketServer(socketManager, port);
+		threadPool.execute(socketServer);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
-		log.info("Start http server at port " + httpPort);
-		
-		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
-		http.setServlet("org.goku.master.MasterServerServlet");
-		http.addStartupListener(new StartupListener(){
+		log.info("Start http server at port " + httpPort);		
+		httpServer = new SimpleHTTPServer("", httpPort);
+		httpServer.setServlet("org.goku.master.MasterServerServlet");
+		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
 				log.info("started http...");	
 			}
 		});		
 		
-		threadPool.execute(http);
+		threadPool.execute(httpServer);
 		while(this.running){
 			synchronized(this){
 				this.wait();

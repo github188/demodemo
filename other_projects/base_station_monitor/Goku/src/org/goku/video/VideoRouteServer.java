@@ -16,7 +16,8 @@ import org.goku.http.HTTPRemoteClient;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
-import org.goku.video.odip.SocketManager;
+import org.goku.socket.SimpleSocketServer;
+import org.goku.socket.SocketManager;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.VideoRoute;
 
@@ -33,15 +34,19 @@ public class VideoRouteServer {
 	public Map<String, MonitorClient> clients = Collections.synchronizedMap(new HashMap<String, MonitorClient>());
 	
 	public Settings settings = null;
-	public SocketManager socketManager = null;	
+	public SocketManager socketManager = null;
+	public SimpleSocketServer socketServer = null;
 	public DataStorage storage = null;	
 	public HTTPRemoteClient master = null;
 	public MonitorAlarmManager manager = null;	
 	public VideoRecorderManager recordManager = null;
+	public SimpleHTTPServer httpServer = null;
 	
 	private ThreadPoolExecutor threadPool = null; 
 	private boolean running = true;
 	private String groupName = null;
+	
+	private static final String servelt = "org.goku.video.DefaultRouteServerServlet";
 	
 	public static VideoRouteServer getInstance(){
 		return ins;
@@ -90,12 +95,17 @@ public class VideoRouteServer {
 		manager = new MonitorAlarmManager(threadPool);
 		threadPool.execute(manager);
 		
+		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
+		socketServer = new SimpleSocketServer(socketManager, port);
+		socketServer.setServlet(servelt);
+		threadPool.execute(socketServer);
+		
 		final int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
 		log.info("Start http server at port " + httpPort);
 		
-		SimpleHTTPServer http = new SimpleHTTPServer("", httpPort);
-		http.setServlet("org.goku.video.DefaultRouteServerServlet");
-		http.addStartupListener(new StartupListener(){
+		httpServer = new SimpleHTTPServer("", httpPort);
+		httpServer.setServlet(servelt);
+		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
 				master.registerRoute("", httpPort, groupName);
@@ -103,7 +113,7 @@ public class VideoRouteServer {
 			}
 		});
 		
-		threadPool.execute(http);
+		threadPool.execute(httpServer);
 		while(this.running){
 			synchronized(this){
 				this.wait();
