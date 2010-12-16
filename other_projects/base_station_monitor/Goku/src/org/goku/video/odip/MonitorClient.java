@@ -339,7 +339,8 @@ public class MonitorClient implements Runnable{
 		ByteBuffer buffer = ByteBuffer.allocate(src.length);
 		buffer.put(src);
 		buffer.flip();
-		this.socketChannel.write(buffer);
+		this.write(buffer);
+		//this.socketChannel.write(buffer);
 		//this.socketManager.w
 		//this.selectionKey.selector().wakeup();
 	}

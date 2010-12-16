@@ -15,6 +15,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public abstract class BaseRouteServlet extends HttpServlet{
+	
+	public static final String SESSION_ID = "session_id";
+	public static final String SESSION_USER = "session_user";
+	
 	public static final String TEXT = "text/plain";
 	
 	private static final long serialVersionUID = 1L;
@@ -65,12 +69,16 @@ public abstract class BaseRouteServlet extends HttpServlet{
 	    byte[] buffer = new byte[64 * 1024];
 	    if(ins == null){
 	    	//response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	    	response.getWriter().write("Not found:" + path);
+	    	response.getWriter().println("Not found:" + path);
 	    }else {
-	    	for(int len = ins.read(buffer); len > 0; ){
-	    		response.getOutputStream().write(buffer, 0, len);
-	    		len = ins.read(buffer);
-	    	}	    	
+	    	if(response.getOutputStream() != null){
+		    	for(int len = ins.read(buffer); len > 0; ){
+		    		response.getOutputStream().write(buffer, 0, len);
+		    		len = ins.read(buffer);
+		    	}
+	    	}else { //在Socket, 模式不能取到OutputStream.
+	    		response.getWriter().println("Can't get OutputStream.");
+	    	}
 	    }
     }
     

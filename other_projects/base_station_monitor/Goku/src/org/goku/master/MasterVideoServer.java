@@ -32,6 +32,7 @@ public class MasterVideoServer {
 	private boolean running = true;
 	
 	private ThreadPoolExecutor threadPool = null;
+	private static final String servelt = "org.goku.master.MasterServerServlet";
 	
 	public static MasterVideoServer getInstance(){
 		return ins;
@@ -69,12 +70,13 @@ public class MasterVideoServer {
 		threadPool.execute(new SocketVideoServer(threadPool));
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
+		socketServer.setServlet(servelt);
 		threadPool.execute(socketServer);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
 		log.info("Start http server at port " + httpPort);		
 		httpServer = new SimpleHTTPServer("", httpPort);
-		httpServer.setServlet("org.goku.master.MasterServerServlet");
+		httpServer.setServlet(servelt);
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {

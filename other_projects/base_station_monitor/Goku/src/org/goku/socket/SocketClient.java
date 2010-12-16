@@ -2,12 +2,12 @@ package org.goku.socket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.User;
 
 /**
  * 用于当Socket有可读数据时，调用读操作，读一行有效的命令，再传给SocketServer处理。
@@ -18,6 +18,17 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SocketClient implements Runnable {
 	public SocketChannel socket = null;
+	
+	/**
+	 * 用户登录Session ID
+	 */
+	public String sessionId = null;
+	
+	/**
+	 * 用户登录Session的用户名。
+	 */
+	public User loginUser = null;
+	
 	
 	protected SelectionKey selectionKey = null;	
 	protected SimpleSocketServer server = null;	
@@ -63,6 +74,25 @@ public class SocketClient implements Runnable {
 		}else{
 			readBuffer.flip();
 			this.processBuffer(readBuffer);
+		}
+	}
+	
+	protected void write(byte[] src) throws IOException{
+		ByteBuffer buffer = ByteBuffer.allocate(src.length);
+		buffer.put(src);
+		buffer.flip();
+		this.write(buffer);
+	}
+	
+	protected void write(ByteBuffer src) throws IOException{
+		//src.order(ByteOrder.BIG_ENDIAN);
+		if(log.isDebugEnabled()){
+			log.debug(String.format("Write data:%s, to:%s", src.remaining(), socket.socket().getRemoteSocketAddress()));
+		}
+		synchronized(this.socket){
+			while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
+				this.socket.write(src);
+			}
 		}
 	}
 	

@@ -66,12 +66,17 @@ public class SimpleSocketServer implements Runnable {
 		if(log.isDebugEnabled()){
 			log.debug(String.format("'%s' read from %s", data, client.socket.socket().getRemoteSocketAddress()));
 		}
-		if(data.startsWith("cmd>")){
-			this.httpAdapter.runCommand(data, client);
-		}else if(data.startsWith("video>")){
-			this.videoAdapter.runCommand(data, client);
-		}else {
-			log.warn("drop unkown command:" + data);
+		try{
+			if(data.startsWith("cmd>")){
+				this.httpAdapter.runCommand(data, client);
+			}else if(data.startsWith("video>")){
+				this.videoAdapter.runCommand(data, client);
+			}else {
+				log.warn("drop unkown command:" + data);
+			}
+		}catch(IOException e){
+			log.error(e.toString(), e);
+			client.closeSocket();
 		}
 	}
 	
@@ -92,3 +97,4 @@ public class SimpleSocketServer implements Runnable {
 	}
 
 }
+

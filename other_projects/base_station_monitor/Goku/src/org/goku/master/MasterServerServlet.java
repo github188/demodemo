@@ -130,8 +130,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}else {
 				Collection<BaseStation> list = server.storage.listStation(userObj);
 				response.getWriter().println("0:基站信息列表$" + list.size());
-				response.getWriter().println("");
 				outputStationInfo(list, response.getWriter());
+				response.getWriter().println("");
 			}
 		}
 	}
@@ -173,6 +173,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(userObj.password != null && userObj.password.equals(password)){
 					String key = md5(userObj.name + System.currentTimeMillis());
 					cache.set(key, userObj, 60 * 30);
+					request.setAttribute(SESSION_ID, key);
+					request.setAttribute(SESSION_USER, userObj);
 					response.getWriter().println("0:登录成功$" + key);
 				}else {
 					response.getWriter().println("2:密码错误");
@@ -189,6 +191,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 		
 		if(sid != null){
 			cache.remove(sid);
+			request.setAttribute(SESSION_ID, null);
+			request.setAttribute(SESSION_USER, null);			
 			response.getWriter().println("0:注销成功");
 		}else {
 			response.getWriter().println("-2:参数错误");
