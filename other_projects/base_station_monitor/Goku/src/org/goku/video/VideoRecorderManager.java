@@ -73,7 +73,26 @@ public class VideoRecorderManager implements Runnable{
 		return startAlarmRecord(client, alarm);
 	}
 	
-	public void stoptRecord(String sid){		
+	/**
+	 * 根据录像ID查询文件路径，
+	 * @param uuid
+	 * @return 录像文件路径，如果没有找到或文件不存在，返回null;
+	 */
+	public File getAlarmRecordFile(String uuid){
+		AlarmRecord record = (AlarmRecord)storage.load(AlarmRecord.class, uuid);
+		File path = null;
+		if(record != null){
+			path = new File(this.rootPath, record.videoPath);
+			if(!path.isFile()){
+				log.warn("Not found video file:" + path + ", by id:" + uuid);
+			}
+		}else {
+			log.warn("Not found video record by id:" + uuid);
+		}
+		return path;
+	}
+	
+	public void stoptRecord(String sid){
 		AlarmRecord alarm = runningRecorder.get(sid);
 		if(alarm != null){
 			alarm.recorder.close();

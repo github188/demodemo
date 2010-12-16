@@ -7,8 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.goku.core.model.BaseStation;
+import org.goku.socket.SocketManager;
 import org.goku.video.odip.MonitorClient;
-import org.goku.video.odip.SocketManager;
 import org.goku.video.odip.VideoRoute;
 
 public class TestFileRecorder {

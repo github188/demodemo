@@ -17,6 +17,10 @@ import org.goku.core.model.User;
  * @author deon
  */
 public class SocketClient implements Runnable {
+	public static final int MODE_HTTP = 1;
+	public static final int MODE_REALLPLY = 2;
+	public static final int MODE_REPLAY = 3;
+	
 	public SocketChannel socket = null;
 	
 	/**
@@ -28,10 +32,14 @@ public class SocketClient implements Runnable {
 	 * 用户登录Session的用户名。
 	 */
 	public User loginUser = null;
+	public int connectionMode = MODE_HTTP;
 	
+	public FileReplayController replay = null;
+	//public VideoDestination realPlay = null;
+	//public int connectionMode = MODE_HTTP;
 	
 	protected SelectionKey selectionKey = null;	
-	protected SimpleSocketServer server = null;	
+	protected SimpleSocketServer server = null;
 	private Log log = LogFactory.getLog("client.socket");
 	
 	protected ByteBuffer readBuffer = ByteBuffer.allocate(1024);
