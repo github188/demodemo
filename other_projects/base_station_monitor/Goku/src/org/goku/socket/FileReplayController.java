@@ -1,20 +1,47 @@
 package org.goku.socket;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
 public class FileReplayController {
 	private SocketClient client = null;
-	private File path = null;
+	private FileChannel channel = null;
+	private MappedByteBuffer buffer = null;
+	private int fileSize = 0;
+	private int frameSize = 1024 * 4;
 	
-	public FileReplayController(SocketClient client, File path){
-		
+	public FileReplayController(SocketClient client, File path) throws IOException{
+		this.client = client;
+		fileSize = (int)path.length();
+		channel = new FileInputStream(path).getChannel();
+		buffer = channel.map(MapMode.READ_ONLY, 0, fileSize);
 	}
 	
-	public void nextFrame(){
-		
+	public void nextFrame() throws IOException{		
+		int nextPos = buffer.position();
+		nextPos = Math.min(nextPos + frameSize, fileSize);
+		buffer.limit(nextPos);
+		client.write(buffer);
+		if(nextPos >= fileSize){
+			this.close();
+		}
 	}
 
-	public void seekPos(long pos){
-		
+	public void seekPos(int pos){
+		buffer.position(pos);
+	}
+	
+	public void close() throws IOException{
+		if(channel != null){
+			channel.close();
+		}
+		if(client != null){
+			client.replay = null;
+			client.close();
+		}
 	}
 }

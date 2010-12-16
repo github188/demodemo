@@ -3,7 +3,6 @@ package org.goku.db;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
@@ -49,6 +49,11 @@ public class DummyDataStorage extends DataStorage {
 		}else if(cls.equals(BaseStation.class)){
 			for(Object o: objList){
 				BaseStation uu = (BaseStation)o;
+				if(uu.uuid.equals(pk)) return uu;
+			}
+		}else if(cls.equals(AlarmRecord.class)){
+			for(Object o: objList){
+				AlarmRecord uu = (AlarmRecord)o;
 				if(uu.uuid.equals(pk)) return uu;
 			}
 		}
@@ -95,13 +100,23 @@ public class DummyDataStorage extends DataStorage {
 			log.info("name:" + uu.uuid + ", location:" + uu.locationId);
 		}
 		
+		log.warn("--------Alarm Record----------");
+		objList = objects.get(AlarmRecord.class);
+		for(Object o: objList){
+			AlarmRecord uu = (AlarmRecord)o;
+			log.info("uuid:" + uu.uuid + ", videoPath:" + uu.videoPath);
+		}
+		
 		log.warn("=================================================");
 		return true;
 	}
 	
 	private void loadStanloneDB(){
 		Collection<Object> bsList = new Vector<Object>();
+		Collection<Object> alarmList = new Vector<Object>();
+		
 		objects.put(BaseStation.class, bsList);
+		objects.put(AlarmRecord.class, alarmList);
 		
 		File file = new File("standlone.db");
 		if(file.isFile()){
@@ -109,7 +124,9 @@ public class DummyDataStorage extends DataStorage {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				
-				for(String line = reader.readLine(); line != null;){
+				for(String line = ""; line != null;){
+					line = reader.readLine();
+					if(line == null)break;
 					line = line.trim();
 					if(line.length() == 0)continue;
 					log.debug("Read line:" + line);
@@ -123,12 +140,20 @@ public class DummyDataStorage extends DataStorage {
 						bs.groupName = bsinfo[2];
 						bs.locationId = bsinfo[3];
 						bsList.add(bs);
+					}else if(line.startsWith("RE:")){
+						line = line.split(":", 2)[1];
+						AlarmRecord alarm = new AlarmRecord();
+						String[] bsinfo = line.split("\\$", 2);
+						log.debug("Alarm:" + bsinfo[0]);
+						alarm.uuid =bsinfo[0];
+						alarm.videoPath = bsinfo[1];
+						alarmList.add(alarm);						
 					}
 					
-					line = reader.readLine();
+					
 				}
 			} catch (Exception e) {
-				log.error(e);
+				log.error(e.toString(), e);
 			}
 		}else {
 			log.warn("Not found 'standlone.db' data file");

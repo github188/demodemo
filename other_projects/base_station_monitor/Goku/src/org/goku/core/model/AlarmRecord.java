@@ -12,13 +12,13 @@ public class AlarmRecord {
 	public String user = "";
 	public Date startTime;
 	public Date endTime;
+	public String videoPath;
 	
 	/**
 	 * 零时保存。
 	 */
 	public transient FileVideoRecorder recorder = null;
 	
-	public String videoPath;
 	
 	public void generatePK(){
 		long t = System.currentTimeMillis();

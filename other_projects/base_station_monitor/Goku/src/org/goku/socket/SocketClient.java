@@ -130,6 +130,10 @@ public class SocketClient implements Runnable {
 		this.selectionKey = key;
 	}
 	
+	public void close(){
+		this.closeSocket();
+	}
+	
 	public void closeSocket(){
 		log.info("Close socket, " + socket.socket().getRemoteSocketAddress());
 		if(this.selectionKey != null){

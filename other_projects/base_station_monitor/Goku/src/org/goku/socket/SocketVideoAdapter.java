@@ -59,7 +59,7 @@ public class SocketVideoAdapter {
 		}
 	}
 	
-	protected void doRePlay(SocketClient client, String uuid){
+	protected void doRePlay(SocketClient client, String uuid) throws IOException{
 		if(client.connectionMode == SocketClient.MODE_HTTP){
 			File videoPath = server.recordManager.getAlarmRecordFile(uuid);
 			if(videoPath != null){
@@ -75,10 +75,10 @@ public class SocketVideoAdapter {
 		}		
 	}	
 	
-	protected void doSeek(SocketClient client, String pos){
-		long posLong = 0;
+	protected void doSeek(SocketClient client, String pos) throws IOException{
+		int posLong = 0;
 		try{
-			posLong = Long.parseLong(pos);
+			posLong = Integer.parseInt(pos);
 		}catch(Throwable e){
 			log.error("doSeek error, err:" + e.toString(), e);
 		}
@@ -88,7 +88,7 @@ public class SocketVideoAdapter {
 		}
 	}
 	
-	protected void doOk(SocketClient client){
+	protected void doOk(SocketClient client) throws IOException{
 		if(client.replay != null){
 			client.replay.nextFrame();
 		}
