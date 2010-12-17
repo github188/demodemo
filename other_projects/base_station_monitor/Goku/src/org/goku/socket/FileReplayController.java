@@ -32,6 +32,7 @@ public class FileReplayController {
 	}
 
 	public void seekPos(int pos){
+		pos = Math.min(pos, fileSize);
 		buffer.position(pos);
 	}
 	

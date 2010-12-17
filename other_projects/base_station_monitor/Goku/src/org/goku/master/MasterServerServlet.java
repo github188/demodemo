@@ -122,14 +122,14 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String sid = this.getStringParam(request, "sid", null);
 		
 		if(sid == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 			User userObj = (User)cache.get(sid);
 			if(userObj == null){
-				response.getWriter().println("1:会话过期或已注销");
+				response.getWriter().println("1:Session is expired or logout");
 			}else {
 				Collection<BaseStation> list = server.storage.listStation(userObj);
-				response.getWriter().println("0:基站信息列表$" + list.size());
+				response.getWriter().println("0:Base station list$" + list.size());
 				outputStationInfo(list, response.getWriter());
 				response.getWriter().println("");
 			}
@@ -151,9 +151,9 @@ public class MasterServerServlet extends BaseRouteServlet{
 			log.info(String.format("add route:%s, group:%s", client + ":" + port, groupName));
 			this.server.addRouteServer(client + ":" + port, groupName);
 			
-			response.getWriter().println("0:添加Route成功");
+			response.getWriter().println("0:Added route server");
 		}else {
-			response.getWriter().println("1:连接Route失败");
+			response.getWriter().println("1:Failed to add route server");
 		}
 	}	
 
@@ -166,7 +166,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String password = this.getStringParam(request, "password", null);
 
 		if(user == null || password == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 			User userObj = (User) server.storage.load(User.class, user);
 			if(userObj != null){
@@ -175,12 +175,12 @@ public class MasterServerServlet extends BaseRouteServlet{
 					cache.set(key, userObj, 60 * 30);
 					request.setAttribute(SESSION_ID, key);
 					request.setAttribute(SESSION_USER, userObj);
-					response.getWriter().println("0:登录成功$" + key);
+					response.getWriter().println("0:login ok$" + key);
 				}else {
-					response.getWriter().println("2:密码错误");
+					response.getWriter().println("2:password error");
 				}
 			}else {
-				response.getWriter().println("1:帐号不存在");
+				response.getWriter().println("1:account not exist");
 			}
 		}
 	}
@@ -193,9 +193,9 @@ public class MasterServerServlet extends BaseRouteServlet{
 			cache.remove(sid);
 			request.setAttribute(SESSION_ID, null);
 			request.setAttribute(SESSION_USER, null);			
-			response.getWriter().println("0:注销成功");
+			response.getWriter().println("0:logout ok");
 		}else {
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}
 		
 	}

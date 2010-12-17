@@ -19,7 +19,7 @@ import org.goku.video.odip.VideoDestination;
  * video>real?uuid=1111
  * video>replay?uuid=1111
  * video>seek?pos=1111
- * video>next
+ * video>ack
  * 
  * @author deon
  */
@@ -39,7 +39,7 @@ public class SocketVideoAdapter {
 			doRePlay(client, param.get("uuid"));
 		}else if(cmd.equals("seek")){
 			doSeek(client, param.get("pos"));
-		}else if(cmd.equals("next")){
+		}else if(cmd.equals("ack")){
 			doOk(client);
 		}
 	}

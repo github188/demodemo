@@ -64,7 +64,7 @@ public class SimpleSocketServer implements Runnable {
 	 */
 	public void processClient(String data, SocketClient client){
 		if(log.isDebugEnabled()){
-			log.debug(String.format("'%s' read from %s", data, client.socket.socket().getRemoteSocketAddress()));
+			log.debug(String.format("processing comand '%s' read from %s", data, client.toString()));
 		}
 		try{
 			if(data.startsWith("cmd>")){
@@ -72,7 +72,10 @@ public class SimpleSocketServer implements Runnable {
 			}else if(data.startsWith("video>")){
 				this.videoAdapter.runCommand(data, client);
 			}else {
-				log.warn("drop unkown command:" + data);
+				if(client.connectionMode == SocketClient.MODE_HTTP){
+					String error = String.format("Drop unkonw command:'%s', the valid prefix is 'cmd>' or 'video>'.", data);
+					client.write(error.getBytes());
+				}
 			}
 		}catch(IOException e){
 			log.error(e.toString(), e);

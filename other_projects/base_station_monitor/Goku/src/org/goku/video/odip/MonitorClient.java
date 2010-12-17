@@ -346,16 +346,13 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void write(ByteBuffer src){
-		//log.info("xxxxxx, wirte....");
-		/*
-		if(this.socketChannel == null){
-			
-		}*/
 		/**
 		 * 需要一个flush操作么？
 		 */
 		try{
-			//src.order(ByteOrder.BIG_ENDIAN);
+			if(log.isDebugEnabled()){
+				log.debug(String.format("Write data size:%s", src.remaining()));
+			}
 			/**
 			 * 读和写使用了不同的同步对象,避免发送告警查询时出现等待。
 			 */
@@ -363,6 +360,10 @@ public class MonitorClient implements Runnable{
 				synchronized(this.socketChannel){
 					while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
 						this.socketChannel.write(src);
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 				if(this.status != null){

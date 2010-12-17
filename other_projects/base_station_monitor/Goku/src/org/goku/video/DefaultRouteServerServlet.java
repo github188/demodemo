@@ -35,16 +35,16 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		String uuid = this.getStringParam(request, "uuid", null);
 	    MonitorClient client = null;
 		if(uuid == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 		    client = server.getMonitorClient(uuid);
 		    if(client == null){
-		    	response.getWriter().println("1:基站不存在");
+		    	response.getWriter().println("1:BTS not found");
 		    }else if(client.getClientStatus() == null){
-		    	response.getWriter().println("2:未建立连接");
+		    	response.getWriter().println("2:BTS disconnected");
 		    }else {
 		    	client.realPlay();
-		    	response.getWriter().println("0:请求发送成功");
+		    	response.getWriter().println("0:Video request OK");
 		    }
 		}
 	}
@@ -61,17 +61,17 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		String user = this.getStringParam(request, "user", null);
 	    MonitorClient client = null;
 		if(uuid == null || user == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 		    client = server.getMonitorClient(uuid);
 		    if(client == null){
-		    	response.getWriter().println("1:基站不存在");
+		    	response.getWriter().println("1:BTS not found");
 		    }else if(client.getClientStatus() == null){
-		    	response.getWriter().println("2:未建立连接");
+		    	response.getWriter().println("2:BTS disconnected");
 		    }else {
 		    	String sid = server.recordManager.startManualRecord(client, user);
 		    	client.realPlay();
-		    	response.getWriter().println("0:开始视频录像$" + sid);
+		    	response.getWriter().println("0:Start video recording$" + sid);
 		    }
 		}
 	}
@@ -86,10 +86,10 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	throws IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
 		if(uuid == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 			server.recordManager.stoptRecord(uuid);
-		    response.getWriter().println("0:成功停止录像");
+		    response.getWriter().println("0:Stop video record");
 		}
 	}
 	
@@ -143,12 +143,12 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
 		if(uuid == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 			if(server.addMonitorClient(uuid)){
-				response.getWriter().println("0:添加成功");
+				response.getWriter().println("0:Added BTS");
 			}else {
-				response.getWriter().println("1:添加失败");
+				response.getWriter().println("1:Failed to add BTS");
 			}
 		}
 	}
@@ -157,16 +157,16 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
 		if(uuid == null){
-			response.getWriter().println("-2:参数错误");
+			response.getWriter().println("-2:Parameter error");
 		}else {
 			MonitorClient mc = server.getMonitorClient("uuid");
 			if(mc == null){
-				response.getWriter().println("1:不存在基站");
+				response.getWriter().println("1:BTS not found");
 			}else if(mc.route.destinationSize() > 0){
-				response.getWriter().println("2:有连接的用户");
+				response.getWriter().println("2:BTS using by user");
 			}else {
 				server.removeMonitorClient(mc);
-				response.getWriter().println("0:停止成功");
+				response.getWriter().println("0:Disconnect BTS");
 			}
 		}
 	}

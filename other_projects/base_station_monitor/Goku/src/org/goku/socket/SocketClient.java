@@ -81,6 +81,9 @@ public class SocketClient implements Runnable {
 			this.closeSocket();
 		}else{
 			readBuffer.flip();
+			if(log.isDebugEnabled()){
+				log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), toString()));
+			}
 			this.processBuffer(readBuffer);
 		}
 	}
@@ -95,11 +98,15 @@ public class SocketClient implements Runnable {
 	protected void write(ByteBuffer src) throws IOException{
 		//src.order(ByteOrder.BIG_ENDIAN);
 		if(log.isDebugEnabled()){
-			log.debug(String.format("Write data:%s, to:%s", src.remaining(), socket.socket().getRemoteSocketAddress()));
+			log.debug(String.format("Write data size:%s, to:%s", src.remaining(), toString()));
 		}
 		synchronized(this.socket){
 			while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
 				this.socket.write(src);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}				
 			}
 		}
 	}
@@ -120,6 +127,9 @@ public class SocketClient implements Runnable {
 			}
 			//log.info("cmd:" + curCmd);
 		}
+		if(curCmd.length() > 0){
+			log.debug("incomplete command in buffer:" + this.curCmd.toString());
+		}
 	}
 	
 	/**
@@ -135,7 +145,7 @@ public class SocketClient implements Runnable {
 	}
 	
 	public void closeSocket(){
-		log.info("Close socket, " + socket.socket().getRemoteSocketAddress());
+		log.info("Close socket, " + toString());
 		if(this.selectionKey != null){
 			this.selectionKey.cancel();
 		}
@@ -146,5 +156,13 @@ public class SocketClient implements Runnable {
 				log.error(e.toString(), e);
 			}
 		}
+	}
+	
+	public String toString(){
+		String remoteIp = socket.socket().getRemoteSocketAddress().toString();
+		if(this.loginUser != null){
+			remoteIp = loginUser.name + "@" + remoteIp;
+		}
+		return remoteIp;
 	}
 }
