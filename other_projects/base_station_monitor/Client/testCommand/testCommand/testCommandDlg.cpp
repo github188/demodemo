@@ -173,4 +173,35 @@ void CtestCommandDlg::OnBnClickedButton1()
 	CString str(buf);
 	int pos=str.Find('$');
 	CString substr=str.Mid(pos+1);
+	//MessageBox(substr);
+
+	strcpy(sendcmd_start, "cmd>list_bs?\n");
+	cs->Send(sendcmd_start, sizeof(sendcmd_start));
+	memset(buf, 0, sizeof(buf));
+	cs->Receive(buf, sizeof(buf));
+	str.Format("%s", buf);
+	MessageBox(str);
+	pos=str.Find('\n');
+	substr=str.Mid(0,pos);
+	//MessageBox(substr);
+	int start=pos+1;
+	int end=start;
+	while(true)
+	{
+		pos=str.Find('\n',start);
+		if(pos==-1)
+		{
+			break;
+		}
+		end=pos;
+		substr=str.Mid(start,end-start+1);
+		if(substr.Trim().IsEmpty())
+		//if(substr=='\n') error
+		{
+			MessageBox("the end");
+			break;
+		}
+		//MessageBox(substr);
+		start=end+1;
+	}
 }
