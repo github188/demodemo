@@ -40,6 +40,8 @@ public class SocketHTTPAdaptor {
 		if(client.sessionId != null){
 			param.put("sid", client.sessionId);
 		}
+		param.put("mode", "socket");
+		
 		DummyHttpRequest req = new DummyHttpRequest(param, client);
 		DummyHttpResponse resp = new DummyHttpResponse(client);
 		try {

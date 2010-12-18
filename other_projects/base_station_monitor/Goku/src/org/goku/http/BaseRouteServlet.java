@@ -20,6 +20,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
 	public static final String SESSION_USER = "session_user";
 	
 	public static final String TEXT = "text/plain";
+	public static final String HTML = "text/html";
 	
 	private static final long serialVersionUID = 1L;
 	private final Map<String, Method> handler = new HashMap<String, Method>();

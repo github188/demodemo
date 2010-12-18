@@ -48,17 +48,32 @@ public class HTTPRemoteClient {
 	}
 	
 	/**
+	 * 更新服务器的状态。
+	 */	
+	public String updatingInfo(){
+		HttpResponse resp = null;		
+		try {
+			resp = http.get("/?q=info", new HashMap<String, String>());
+			return resp.getResponseMessage();
+		} catch (IOException e) {
+			log.error("Failed to master server, ", e);
+			return "";
+		}
+	}	
+	
+	/**
 	 * 通知中心服务器，转发服务器已启动。
 	 * @param host 转发服务器的名称。
 	 * @param port 转发服务器的HTTP接口端口。
 	 */
-	public void registerRoute(String host, int port, String group){
+	public void registerRoute(String host, int port, String group, String socketPort){
 		HttpResponse resp = null;
 		Map<String, String> para = new HashMap<String, String>();
 		try {
 			para.put("q", "add_route");
 			para.put("port", port + "");
 			para.put("group", group);
+			para.put("socketPort", socketPort);
 			resp = http.post(para, EMPTY);
 			String text = resp.getResponseMessage().trim();
 			if(!text.startsWith("0:")){

@@ -139,6 +139,11 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		response.getWriter().println("OK");
 	}
 	
+	public void info(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().println(this.server.groupName + "$" + this.server.socketServer.listenPort);
+	}
+	
 	public void add_bs(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String uuid = this.getStringParam(request, "uuid", null);

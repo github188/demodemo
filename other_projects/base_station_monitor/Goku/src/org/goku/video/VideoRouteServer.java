@@ -41,10 +41,10 @@ public class VideoRouteServer {
 	public MonitorAlarmManager manager = null;	
 	public VideoRecorderManager recordManager = null;
 	public SimpleHTTPServer httpServer = null;
+	public String groupName = null;
 	
 	private ThreadPoolExecutor threadPool = null; 
 	private boolean running = true;
-	private String groupName = null;
 	
 	private static final String servelt = "org.goku.video.DefaultRouteServerServlet";
 	
@@ -108,7 +108,7 @@ public class VideoRouteServer {
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
-				master.registerRoute("", httpPort, groupName);
+				master.registerRoute("", httpPort, groupName, socketServer.listenPort + "");
 				log.info("started http...");	
 			}
 		});

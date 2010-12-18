@@ -1,8 +1,8 @@
 package org.goku.master;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +22,9 @@ import org.goku.db.DataStorage;
  */
 public class RouteServerManager implements Runnable {
 	private Log log = LogFactory.getLog("route.manager");
-	private Collection<RouteServer> servers = Collections.synchronizedCollection(new ArrayList<RouteServer>());
+	//private Collection<RouteServer> servers = Collections.synchronizedCollection(new ArrayList<RouteServer>());
+	
+	private Map<String, RouteServer> servers = Collections.synchronizedMap(new HashMap<String, RouteServer>());	
 	
 	private ThreadPoolExecutor executor = null;
 	private DataStorage storage = null;
@@ -50,27 +52,40 @@ public class RouteServerManager implements Runnable {
 		this.restoreRoute();
 	}
 	
-	public void addRouteServer(final RouteServer route){
-		if(!this.servers.contains(route)){
-			this.servers.add(route);
+	public RouteServer getRouteReserver(String ipaddr){
+		return servers.get(ipaddr);
+	}
+	
+	public RouteServer addRouteServer(final String ipaddr, final String group){
+		RouteServer route = null;
+		route = servers.get(ipaddr);
+		if(route == null){
+			route = new RouteServer(ipaddr, group);
+			servers.put(ipaddr, route);
 			executor.execute(new Runnable(){
 				@Override
 				public void run() {
-					balanceGroup(route.groupName);
-				}});
+					balanceGroup(group);
+			}});
 		}
+		route.groupName = group;
+		
+		return route;
 	}
 	
-	public void removeRouteServer(final RouteServer route){
-		if(this.servers.contains(route)){
-			this.servers.remove(route);
+	public RouteServer removeRouteServer(String ipaddr){
+		final RouteServer route = this.servers.remove(ipaddr);
+		
+		if(route != null){
 			executor.execute(new Runnable(){
 				@Override
 				public void run() {
 					storage.removeRouteServer(route);
 					balanceGroup(route.groupName);
-				}});
+			}});
 		}
+		
+		return route;
 	}
 	
 	/**
@@ -82,13 +97,12 @@ public class RouteServerManager implements Runnable {
 		
 		log.info("balance route group, name:" + groupName);		
 		int count = 0;
-		synchronized(servers){
-			for(RouteServer s: servers){
-				if(s.groupName.equals(groupName)){
-					s.setBaseStationList(storage.listStation(s));
-					count += s.listBaseStation().size();
-					routeList.add(s);
-				}
+
+		for(RouteServer s: servers.values()){
+			if(s.groupName.equals(groupName)){
+				s.setBaseStationList(storage.listStation(s));
+				count += s.listBaseStation().size();
+				routeList.add(s);
 			}
 		}
 		if(routeList.size() > 0){
@@ -114,16 +128,15 @@ public class RouteServerManager implements Runnable {
 	}
 	
 	protected void checkAllRouteServer(){
-		Collection<RouteServer> routeList = new Vector<RouteServer>();		
-		routeList.addAll(servers);
 		//log.info("check All RouteServer...");
-		for(RouteServer s: routeList){
+		for(RouteServer s: servers.values()){
 			if(s.ping()){
 				s.lastActive = System.currentTimeMillis();
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status OK!");
+				s.updating();
 			}else {
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status ERR!");
-				this.removeRouteServer(s);
+				this.removeRouteServer(s.ipAddress);
 			}
 		}
 	}
@@ -136,15 +149,10 @@ public class RouteServerManager implements Runnable {
 						   "group by routeServer, groupName";
 		Collection<Map<String, Object>> xx = storage.query(routeList, new Object[]{});
 		
-		//Collection<String> groups = new ArrayList<String>();
-		for(Map<String, Object> route: xx){
-			//groups.add((String)route.get("groupName"));
-			servers.add(new RouteServer((String)route.get("routeServer"),
-						(String)route.get("groupName")));
+		for(Map<String, Object> info: xx){
+			RouteServer route = new RouteServer((String)info.get("routeServer"),
+												(String)info.get("groupName"));
+			servers.put(route.groupName, route);
 		}
-		/*
-		for(String group: groups){
-			balanceGroup(group);
-		}*/
 	}
 }

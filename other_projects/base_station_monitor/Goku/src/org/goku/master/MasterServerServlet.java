@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.RouteServer;
 import org.goku.core.model.SimpleCache;
 import org.goku.core.model.User;
 import org.goku.http.BaseRouteServlet;
@@ -120,6 +121,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void list_bs(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);
+		String mode = this.getStringParam(request, "mode", null);
 		
 		if(sid == null){
 			response.getWriter().println("-2:Parameter error");
@@ -130,11 +132,27 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}else {
 				Collection<BaseStation> list = server.storage.listStation(userObj);
 				response.getWriter().println("0:Base station list$" + list.size());
-				outputStationInfo(list, response.getWriter());
+				outputStationInfo(list, response.getWriter(), server.routeManager, mode);
 				response.getWriter().println("");
 			}
 		}
 	}
+	
+	/**
+	 * 返回告警信息列表。 
+	 */
+	public void list_alarm(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		String mode = this.getStringParam(request, "mode", null);
+		
+		if(sid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			
+		}
+	}	
 		
 	/**
 	 * 返回基站列表 
@@ -142,15 +160,16 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void add_route(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String port = this.getStringParam(request, "port", "8081");
+		String socketPort = this.getStringParam(request, "socketPort", null);
 		String groupName = this.getStringParam(request, "group", "default");
 		
 		String client = request.getRemoteHost();
 		String url = "http://" + client + ":" + port;
 		HTTPRemoteClient httpClient = new HTTPRemoteClient(url);
 		if(httpClient.checkConnection()){
-			log.info(String.format("add route:%s, group:%s", client + ":" + port, groupName));
-			this.server.addRouteServer(client + ":" + port, groupName);
-			
+			log.info(String.format("add route:%s, group:%s, socket:%s", client + ":" + port, groupName, socketPort));
+			RouteServer route = this.server.addRouteServer(client + ":" + port, groupName);
+			route.socketPort = socketPort;			
 			response.getWriter().println("0:Added route server");
 		}else {
 			response.getWriter().println("1:Failed to add route server");
@@ -212,10 +231,17 @@ public class MasterServerServlet extends BaseRouteServlet{
 		static_serve("org/goku/master/init_db_sql.txt", "text/plain", response);
 	}
 	
-	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out){
+	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out, RouteServerManager rm, String mode){
 		String data = null;
 		for(BaseStation info: list){
-			data = info.uuid + "$" + info.devType + "$" + info.routeServer + "$" + info.getStatus();
+			String routeAddr = info.routeServer;
+			if(mode != null && mode.equals("socket")){
+				RouteServer route = rm.getRouteReserver(info.routeServer);
+				routeAddr = route.getConnectAddr(mode);
+			}
+			routeAddr = routeAddr == null ? "": routeAddr;
+			
+			data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
 			out.println(data);
 		}
 	}

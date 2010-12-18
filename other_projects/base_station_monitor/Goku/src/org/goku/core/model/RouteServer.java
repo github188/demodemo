@@ -18,6 +18,8 @@ public class RouteServer {
 	 */
 	public String groupName;
 	
+	public String socketPort;
+	
 	/**
 	 * 中心管理服务器地址。<ip>:<port>
 	 * 
@@ -97,11 +99,44 @@ public class RouteServer {
 		return http.checkConnection();
 	}
 	
+	/**
+	 * 更新Route信息，
+	 * 
+	 * <GroupName>$<socketPort>
+	 * @return
+	 */
+	public boolean updating(){
+		String info = http.updatingInfo();
+		String[] aInfo = info.split("\\$", 2);
+		if(aInfo.length == 2){
+			this.groupName = aInfo[0].trim();
+			this.socketPort = aInfo[1].trim();
+		}
+		return true;
+	}
+	
 	public boolean equals(Object o){
 		if(o instanceof RouteServer){
-			RouteServer route = (RouteServer)o;
 			return this.ipAddress.equals(((RouteServer) o).ipAddress);
 		}
 		return false;
 	}
+	
+	/**
+	 * 返回转发服务器的连接地址，更加mode返回HTTP，或Socket连接方式。
+	 * @param mode
+	 * @return
+	 */
+	public String getConnectAddr(String mode){
+		if(mode == null || mode.equals("http")){
+			return this.ipAddress;
+		}else if(mode.equals("socket")){
+			if(this.socketPort == null || "".equals(this.socketPort.trim())){
+				return "";
+			}else {
+				return this.ipAddress.split(":")[0] + ":" + this.socketPort;
+			}
+		}
+		return "";
+	}	
 }

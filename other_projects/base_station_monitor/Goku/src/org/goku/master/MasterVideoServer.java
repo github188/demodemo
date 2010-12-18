@@ -28,7 +28,7 @@ public class MasterVideoServer {
 	public SimpleHTTPServer httpServer = null;
 	public SimpleSocketServer socketServer = null;
 	public SocketManager socketManager = null;	
-	public RouteServerManager manager = null;
+	public RouteServerManager routeManager = null;
 	private boolean running = true;
 	
 	private ThreadPoolExecutor threadPool = null;
@@ -60,14 +60,12 @@ public class MasterVideoServer {
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
 				);
 		
-		manager = new RouteServerManager(threadPool, storage);
-		threadPool.execute(manager);
+		routeManager = new RouteServerManager(threadPool, storage);
+		threadPool.execute(routeManager);
 		log.info("Start route server manager...");
 		
 		socketManager = new SocketManager(threadPool);
 		threadPool.execute(socketManager);		
-		//testing.......
-		threadPool.execute(new SocketVideoServer(threadPool));
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
 		socketServer.setServlet(servelt);
@@ -93,7 +91,7 @@ public class MasterVideoServer {
 		log.info("halt");
 	}
 	
-	public void addRouteServer(String ipaddr, String groupName){
-		this.manager.addRouteServer(new RouteServer(ipaddr, groupName));
+	public RouteServer addRouteServer(String ipaddr, String groupName){
+		return routeManager.addRouteServer(ipaddr, groupName);
 	}
 }

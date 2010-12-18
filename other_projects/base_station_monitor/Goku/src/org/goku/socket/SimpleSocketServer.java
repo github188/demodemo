@@ -24,7 +24,7 @@ public class SimpleSocketServer implements Runnable {
 	 */
 	private SimpleSocketServer server = null;
 	
-	private int listenPort = 0;
+	public int listenPort = 0;
 	
 	public SimpleSocketServer(SocketManager manager, int nPort){
 		this.manager = manager;
