@@ -38,7 +38,7 @@ public class VideoRouteServer {
 	public SimpleSocketServer socketServer = null;
 	public DataStorage storage = null;	
 	public HTTPRemoteClient master = null;
-	public MonitorAlarmManager manager = null;	
+	public AlarmMonitorCenter manager = null;	
 	public VideoRecorderManager recordManager = null;
 	public SimpleHTTPServer httpServer = null;
 	public String groupName = null;
@@ -92,7 +92,7 @@ public class VideoRouteServer {
 		}
 		
 		log.info("Starting alarm manager server...");
-		manager = new MonitorAlarmManager(threadPool);
+		manager = new AlarmMonitorCenter(threadPool);
 		threadPool.execute(manager);
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);

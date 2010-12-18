@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -104,7 +105,10 @@ public class DummyDataStorage extends DataStorage {
 		objList = objects.get(AlarmRecord.class);
 		for(Object o: objList){
 			AlarmRecord uu = (AlarmRecord)o;
-			log.info("uuid:" + uu.uuid + ", videoPath:" + uu.videoPath);
+			log.info("uuid:" + uu.uuid + ", videoPath:" + uu.videoPath +
+					", alarm code:" + uu.alarmType + 
+					", BTS id:" + uu.baseStation +
+					", level:" + uu.getLevel());
 		}
 		
 		log.warn("=================================================");
@@ -143,10 +147,18 @@ public class DummyDataStorage extends DataStorage {
 					}else if(line.startsWith("RE:")){
 						line = line.split(":", 2)[1];
 						AlarmRecord alarm = new AlarmRecord();
-						String[] bsinfo = line.split("\\$", 2);
+						String[] bsinfo = line.split("\\$");
 						log.debug("Alarm:" + bsinfo[0]);
 						alarm.uuid =bsinfo[0];
 						alarm.videoPath = bsinfo[1];
+						alarm.startTime = new Date();
+						alarm.endTime = new Date();
+						if(bsinfo.length > 2){
+							alarm.alarmType = bsinfo[2];
+						}
+						if(bsinfo.length > 3){
+							alarm.baseStation = bsinfo[3];
+						}
 						alarmList.add(alarm);						
 					}
 					
@@ -194,4 +206,16 @@ public class DummyDataStorage extends DataStorage {
 		return false;
 	}
 
+	public QueryResult queryData(Class cls, QueryParameter param){
+		QueryResult result = new QueryResult();
+		result.data = objects.get(cls);
+		if(result.data == null){
+			result.data = new Vector();
+		}
+		
+		result.sessionId = "0001";
+		result.count = result.data.size();
+		
+		return result;
+	}
 }

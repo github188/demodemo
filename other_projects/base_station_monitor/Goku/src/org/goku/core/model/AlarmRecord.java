@@ -9,9 +9,13 @@ public class AlarmRecord {
 	public String baseStation = "";
 	public String startTimeString;
 	public String alarmType = "";
+	/**
+	 * 告警处理状态，超时，正在发生，手动取消，删除
+	 */
+	public String alarmStatus = "";
 	public String user = "";
-	public Date startTime;
-	public Date endTime;
+	public Date startTime = null;
+	public Date endTime = null;
 	public String videoPath;
 	
 	/**
@@ -19,6 +23,9 @@ public class AlarmRecord {
 	 */
 	public transient FileVideoRecorder recorder = null;
 	
+	public String getLevel(){
+		return "error";
+	}	
 	
 	public void generatePK(){
 		long t = System.currentTimeMillis();

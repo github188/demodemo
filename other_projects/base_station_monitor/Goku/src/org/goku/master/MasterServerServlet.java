@@ -10,7 +10,10 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,14 +22,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.SimpleCache;
 import org.goku.core.model.User;
+import org.goku.db.QueryParameter;
+import org.goku.db.QueryResult;
 import org.goku.http.BaseRouteServlet;
 import org.goku.http.HTTPRemoteClient;
 
 public class MasterServerServlet extends BaseRouteServlet{
+	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	private static SimpleCache cache = new SimpleCache();
 	private MasterVideoServer server = null;
 	private Log log = LogFactory.getLog("http");
@@ -141,16 +148,26 @@ public class MasterServerServlet extends BaseRouteServlet{
 	/**
 	 * 返回告警信息列表。 
 	 */
-	public void list_alarm(HttpServletRequest request,
+	public void list_al(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);
-		String mode = this.getStringParam(request, "mode", null);
 		
 		if(sid == null){
 			response.getWriter().println("-2:Parameter error");
 		}else {
 			User userObj = (User)cache.get(sid);
-			
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				QueryParameter param = new QueryParameter();
+				param.qsid = this.getStringParam(request, "qsid", null);
+				param.limit = this.getIntParam(request, "limit", 100);
+				param.offset = this.getIntParam(request, "offset", 0);
+				param.order = this.getStringParam(request, "order", null);
+				
+				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
+				outputAlarmList(alarms, response.getWriter());
+			}
 		}
 	}	
 		
@@ -245,6 +262,23 @@ public class MasterServerServlet extends BaseRouteServlet{
 			out.println(data);
 		}
 	}
+	
+	private void outputAlarmList(QueryResult result, PrintWriter out){
+		out.println(String.format("0:alarm list$%s$%s$%s", result.count, result.data.size(), result.sessionId));
+		AlarmRecord alarm = null;
+		String data = null;
+		for(Iterator iter = result.data.iterator(); iter.hasNext();){
+			alarm = (AlarmRecord)iter.next();
+			data = String.format("%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarm.alarmType, alarm.baseStation,
+					alarm.alarmStatus, alarm.getLevel(), 
+					format.format(alarm.startTime),
+					format.format(alarm.endTime));
+			out.println(data);
+		}
+		out.println();
+	}	
+	
+	//private String md5(String str)
 	
 	private String md5(String str){
 	    MessageDigest messageDigest = null;

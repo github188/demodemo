@@ -17,14 +17,14 @@ import org.goku.video.odip.MonitorClient;
  * 同时负责终端的连接状态管理，如果不能连接成功，需要向中心服务器，报告状态。
  * @author deon
  */
-public class MonitorAlarmManager implements Runnable{
+public class AlarmMonitorCenter implements Runnable{
 	private Log log = LogFactory.getLog("video.alarm");
 	//private VideoRouteServer server = null;
 	private Collection<MonitorClient> clients = Collections.synchronizedCollection(new ArrayList<MonitorClient>());
 	private ThreadPoolExecutor executor = null;
 	private Timer timer = new Timer();
 	
-	public MonitorAlarmManager(ThreadPoolExecutor executor){
+	public AlarmMonitorCenter(ThreadPoolExecutor executor){
 		this.executor = executor;
 	}
 	

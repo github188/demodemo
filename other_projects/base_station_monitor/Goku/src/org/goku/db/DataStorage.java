@@ -78,5 +78,12 @@ public abstract class DataStorage {
 	 * @param route
 	 * @return
 	 */
-	public abstract void removeRouteServer(RouteServer route);	
+	public abstract void removeRouteServer(RouteServer route);
+	
+	/**
+	 * 删除RouteServer，清除基站和Route之间的关系。
+	 * @param route
+	 * @return
+	 */
+	public abstract QueryResult queryData(Class obj, QueryParameter param);	
 }

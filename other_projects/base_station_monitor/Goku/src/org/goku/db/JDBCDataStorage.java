@@ -512,4 +512,7 @@ public class JDBCDataStorage extends DataStorage {
 		this.execute_sql(cleanRoute, new Object[]{route.ipAddress});
 	}	
 	
+	public QueryResult queryData(Class obj, QueryParameter param){
+		return null;
+	}
 }
