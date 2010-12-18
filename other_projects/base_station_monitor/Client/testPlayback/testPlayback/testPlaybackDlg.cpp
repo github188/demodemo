@@ -10,6 +10,10 @@
 #define new DEBUG_NEW
 #endif
 
+typedef struct{
+	char *cmd;
+	int nport;
+}threadparm;
 
 // CAboutDlg dialog used for App About
 
@@ -154,6 +158,8 @@ HCURSOR CtestPlaybackDlg::OnQueryDragIcon()
 
 UINT recvThread(LPVOID param)
 {
+	threadparm *p=(threadparm *)param;
+
 	CSocket *cs=new CSocket();
 	cs->Create();
 	if(cs->Connect(_T("127.0.0.1"), 8001)==FALSE)
@@ -163,10 +169,10 @@ UINT recvThread(LPVOID param)
 	}
 	int totalNum=4094;
 	BYTE buf[1024];
-	char sendcmd_start[]="video>replay?uuid=10020002\n";
+	//char sendcmd_start[]="video>replay?uuid=10020002\n";
+	char *sendcmd_start=p->cmd;
 	char sendcmd_ack[]="video>ack\n";
-	cs->Send(sendcmd_start, sizeof(sendcmd_start));
-	FILE *fp=fopen("getstream.h264", "wb");
+	cs->Send(sendcmd_start, strlen(sendcmd_start));
 	bool bfinish=false;
 	while(!bfinish)
 	{
@@ -174,11 +180,10 @@ UINT recvThread(LPVOID param)
 		while(receivedNum<totalNum)
 		{
 			int ret=cs->Receive(buf, sizeof(buf));
-			while(PLAY_InputData(1,buf,sizeof(buf))==FALSE)
+			while(PLAY_InputData(p->nport,buf,sizeof(buf))==FALSE)
 			{
-				::Sleep(1000);
+				::Sleep(500);
 			}
-			fwrite(buf, sizeof(char), sizeof(buf), fp);
 			if(ret>0)
 			{
 				receivedNum+=ret;
@@ -192,7 +197,6 @@ UINT recvThread(LPVOID param)
 		cs->Send(sendcmd_ack, sizeof(sendcmd_ack));
 	}
 	cs->Close();
-	fclose(fp);
 	MessageBox(NULL,_T("receive end"),_T("receive end"),MB_OK);
 	return 0;
 }
@@ -206,8 +210,19 @@ void CtestPlaybackDlg::OnBnClickedButton1()
 		HWND hwnd=GetDlgItem(IDC_PLAY)->GetSafeHwnd();
 		BOOL bPlayRet=PLAY_Play(1, hwnd);
 		//start a thread to receive the video information.
-		mythread = AfxBeginThread(recvThread, NULL);
+		threadparm *p1=new threadparm();
+		p1->cmd="video>replay?uuid=10020002\n";
+		p1->nport=1;
+		mythread = AfxBeginThread(recvThread, p1);
 
 		//closestream
 	}
+
+	PLAY_OpenStream(2,0,0,1024*100);
+	HWND hwnd=GetDlgItem(IDC_PLAY2)->GetSafeHwnd();
+	PLAY_Play(2, hwnd);
+	threadparm *p2=new threadparm();
+	p2->cmd="video>replay?uuid=10020001\n";
+	p2->nport=2;
+	AfxBeginThread(recvThread, p2);
 }
