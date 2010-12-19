@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.SystemLog;
 import org.goku.db.DataStorage;
 import org.goku.http.HTTPRemoteClient;
 import org.goku.http.SimpleHTTPServer;
@@ -66,6 +67,7 @@ public class VideoRouteServer {
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);
 		this.storage.checkConnect();
+		SystemLog.dataStorage = storage;
 		
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		

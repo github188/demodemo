@@ -102,7 +102,7 @@ public class DummyHttpRequest implements HttpServletRequest {
 	}
 
 	public String getRemoteAddr() {
-		return null;
+		return this.client.socket.socket().getInetAddress().getHostAddress();
 	}
 
 	public String getRemoteHost() {

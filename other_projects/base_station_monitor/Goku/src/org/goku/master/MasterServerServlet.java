@@ -26,6 +26,7 @@ import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.SimpleCache;
+import org.goku.core.model.SystemLog;
 import org.goku.core.model.User;
 import org.goku.db.QueryParameter;
 import org.goku.db.QueryResult;
@@ -200,7 +201,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		String user = this.getStringParam(request, "user", null);
 		String password = this.getStringParam(request, "password", null);
-
+		
+		String remoteAddr = request.getRemoteAddr();
 		if(user == null || password == null){
 			response.getWriter().println("-2:Parameter error");
 		}else {
@@ -211,11 +213,14 @@ public class MasterServerServlet extends BaseRouteServlet{
 					cache.set(key, userObj, 60 * 30);
 					request.setAttribute(SESSION_ID, key);
 					request.setAttribute(SESSION_USER, userObj);
+					SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
 					response.getWriter().println("0:login ok$" + key);
 				}else {
+					SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
 					response.getWriter().println("2:password error");
 				}
 			}else {
+				SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
 				response.getWriter().println("1:account not exist");
 			}
 		}
@@ -228,7 +233,12 @@ public class MasterServerServlet extends BaseRouteServlet{
 		if(sid != null){
 			cache.remove(sid);
 			request.setAttribute(SESSION_ID, null);
-			request.setAttribute(SESSION_USER, null);			
+			request.setAttribute(SESSION_USER, null);
+			User userObj = (User)cache.get(sid);
+			if(userObj != null){
+				String remoteAddr = request.getRemoteAddr();
+				SystemLog.saveLog(SystemLog.LOGOUT, userObj.name, "master", remoteAddr);
+			}
 			response.getWriter().println("0:logout ok");
 		}else {
 			response.getWriter().println("-2:Parameter error");

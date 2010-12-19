@@ -5,6 +5,12 @@ import java.util.Date;
 import org.goku.video.FileVideoRecorder;
 
 public class AlarmRecord {
+	public static final String ORM_TABLE = "alarm_record";
+	public static final String[] ORM_FIELDS = new String[]{"uuid", "baseStation",
+		"alarmType", "alarmStatus", "user", 
+		"startTime", "endTime", "videoPath"};
+	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
+	
 	public String uuid = null;
 	public String baseStation = "";
 	public String startTimeString;

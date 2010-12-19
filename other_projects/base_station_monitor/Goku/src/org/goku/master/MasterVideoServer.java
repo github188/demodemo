@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.RouteServer;
+import org.goku.core.model.SystemLog;
 import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
 import org.goku.http.StartupListener;
@@ -48,7 +49,8 @@ public class MasterVideoServer {
 		
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);
-		this.storage.checkConnect();
+		this.storage.checkConnect();		
+		SystemLog.dataStorage = storage;
 		
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		log.info("init thread pool, core thread count " + core_thread_count);
