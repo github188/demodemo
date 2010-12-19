@@ -1,6 +1,5 @@
 package org.goku.video;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.RouteRunningStatus;
 import org.goku.core.model.SystemLog;
 import org.goku.db.DataStorage;
 import org.goku.http.HTTPRemoteClient;
@@ -167,6 +167,30 @@ public class VideoRouteServer {
 	public MonitorClient getMonitorClient(String uuid){
 		return clients.get(uuid);
 	}
+	
+	public RouteRunningStatus getStatus(RouteRunningStatus httpStatus, boolean reset){
+		RouteRunningStatus status = new RouteRunningStatus();
+		for(MonitorClient client: clients.values()){
+			status.allVideo += 1;
+			if(client.getClientStatus() != null){
+				status.connectVideo += 1;
+				if(client.getClientStatus().realPlaying){
+					status.activeVideo += 1;
+				}
+			}
+			status.receiveData(client.runningStatus.receiveData);
+			status.sendData(client.runningStatus.sendData);
+			if(reset){
+				client.runningStatus.cleanData();
+			}
+		}
+		
+		status.clientRequestCount = httpStatus.clientRequestCount;
+		if(reset){
+			httpStatus.cleanData();
+		}
+		return status;
+	} 
 	
 	//public File getSave
 	

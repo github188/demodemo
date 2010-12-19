@@ -2,7 +2,6 @@ package org.goku.video;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.RouteRunningStatus;
 import org.goku.http.BaseRouteServlet;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.VideoDestination;
@@ -179,10 +179,18 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	/**
 	 * 服务器的内部状态。
 	 */
-    public void routing_status(HttpServletRequest request, HttpServletResponse response) 
+    public void status(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-    	response.getWriter().write("Welcome routing_status!");    	
-    } 
+    	//response.getWriter().write("Welcome routing_status!");
+    	String reset = this.getStringParam(request, "reset", "");
+    	RouteRunningStatus status = server.getStatus(runningStatus, reset.equals("Y"));
+    	response.getWriter().println("recvData:" + status.receiveData);
+    	response.getWriter().println("sentData:" + status.sendData);
+    	response.getWriter().println("activeVideo:" + status.activeVideo);
+    	response.getWriter().println("connectVideo:" + status.connectVideo);
+    	response.getWriter().println("allVideo:" + status.allVideo);
+    	response.getWriter().println("clientRequestCount:" + status.clientRequestCount);
+    }
 
     protected void index_page(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {

@@ -1,5 +1,8 @@
 package org.goku.video.odip;
 
+import static org.goku.video.odip.Constant.CTRL_VIDEO_START;
+import static org.goku.video.odip.Constant.CTRL_VIDEO_STOP;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -13,9 +16,8 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.RouteRunningStatus;
 import org.goku.socket.SocketManager;
-
-import static org.goku.video.odip.Constant.*;
 
 /**
  * 监控客户端，处理于摄像头的交互。
@@ -27,6 +29,7 @@ public class MonitorClient implements Runnable{
 	
 	public VideoRoute route = null;
 	
+	public RouteRunningStatus runningStatus = new RouteRunningStatus();
 	/**
 	 * 监控视频通道编号，从1开始。
 	 */
@@ -294,6 +297,9 @@ public class MonitorClient implements Runnable{
 		ByteBuffer buffer = null;
 		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
 		int readLen = channel.read(buffer);
+		if(readLen > 0){
+			runningStatus.receiveData(readLen);
+		}
 		if(readLen == -1){
 			this.closeSocketChannel();
 		}else if(!buffer.hasRemaining()){
@@ -331,6 +337,8 @@ public class MonitorClient implements Runnable{
 			int readLen = this.socketChannel.read(buffer);
 			if(readLen == -1){
 				this.closeSocketChannel();
+			}else {
+				runningStatus.receiveData(readLen);
 			}
 		}
 	}
@@ -346,6 +354,7 @@ public class MonitorClient implements Runnable{
 	}
 	
 	protected void write(ByteBuffer src){
+		//this.runningStatus.sendData(src.remaining());
 		/**
 		 * 需要一个flush操作么？
 		 */
@@ -359,7 +368,8 @@ public class MonitorClient implements Runnable{
 			if(this.socketChannel.isConnected()){
 				synchronized(this.socketChannel){
 					while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
-						this.socketChannel.write(src);
+						int len = this.socketChannel.write(src);
+						runningStatus.sendData(len);
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {

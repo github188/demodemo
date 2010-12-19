@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.RouteRunningStatus;
 
 public abstract class BaseRouteServlet extends HttpServlet{
 	
@@ -22,7 +23,10 @@ public abstract class BaseRouteServlet extends HttpServlet{
 	public static final String TEXT = "text/plain";
 	public static final String HTML = "text/html";
 	
+	protected static final RouteRunningStatus runningStatus = new RouteRunningStatus();
+	
 	private static final long serialVersionUID = 1L;
+
 	private final Map<String, Method> handler = new HashMap<String, Method>();
 	
 	private Log log = LogFactory.getLog("http");
@@ -51,6 +55,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
 			index_page(request, response);
 		}else {
 			try {
+				runningStatus.clientRequestCount(1);
 				m.invoke(this, new Object[]{request, response});
 			} catch (Exception e1) {
 				log.error(e1, e1);
