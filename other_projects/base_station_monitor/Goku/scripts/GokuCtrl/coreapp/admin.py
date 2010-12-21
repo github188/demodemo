@@ -2,8 +2,8 @@ from django.contrib import admin
 from models import *
 
 class BaseStationAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'connectionStatus', 'groupName', 'routeServer', 'locationId', 
-              'alarmStatus', 'devType' ]
+    fields = ['uuid', 'connectionStatus', 'groupName', 'locationId', 
+              'devType' ]
     list_display = ('uuid', 'connectionStatus', 'groupName', 'routeServer', 'locationId', 
               'alarmStatus', 'devType', 'lastActive')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
@@ -24,7 +24,12 @@ class UserGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'isAdmin', )
     list_filter = ['name', ]              
     search_fields = ['name', ]
-
+    
+class SystemLogAdmin(admin.ModelAdmin):
+    fields = ['actionType', 'actionOwner', 'actionObject', 'description', 'createDate' ]
+    list_display = ('actionType', 'actionOwner', 'actionObject', 'description', 'createDate' )
+    list_filter = ['actionType', ]              
+    search_fields = ['actionOwner', 'actionObject']
 
 class UserGroupRelationAdmin(admin.ModelAdmin):
     fields = ['user_group', 'user',  ]
@@ -42,6 +47,7 @@ admin.site.register(BaseStation, BaseStationAdmin)
 admin.site.register(AlarmRecord, AlarmRecordAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserGroup, UserGroupAdmin)
+admin.site.register(SystemLog, SystemLogAdmin)
 admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
 admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
 
