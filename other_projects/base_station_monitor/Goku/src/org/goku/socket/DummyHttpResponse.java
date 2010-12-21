@@ -109,6 +109,9 @@ public class DummyHttpResponse implements HttpServletResponse {
 		return null;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public String encodeRedirectUrl(String arg0) {
 		return null;
 	}
@@ -117,6 +120,9 @@ public class DummyHttpResponse implements HttpServletResponse {
 		return null;
 	}
 
+	/**
+	 * @deprecated
+	 */	
 	public String encodeUrl(String arg0) {
 		return null;
 	}
@@ -148,6 +154,9 @@ public class DummyHttpResponse implements HttpServletResponse {
 	public void setStatus(int arg0) {
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void setStatus(int arg0, String arg1) {
 
 	}

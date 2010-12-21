@@ -120,8 +120,13 @@ public class MasterServerServlet extends BaseRouteServlet{
 	protected void index_page(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		//response.getWriter().write("Welcome master server!");
-		static_serve("org/goku/master/help_doc.txt", "text/plain", response);
+		static_serve("org/goku/master/statics/index_home_page.txt", HTML, response);
 	}
+	
+	public void help_doc(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		static_serve("org/goku/master/statics/help_doc.txt", TEXT, response);
+	}	
 	
 	/**
 	 * 返回基站列表 
@@ -250,12 +255,15 @@ public class MasterServerServlet extends BaseRouteServlet{
 			HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().println("OK");
 	}
-	/**
-	 * 登录系统
-	 */
+
 	public void init_sql(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		static_serve("org/goku/master/init_db_sql.txt", "text/plain", response);
+		static_serve("org/goku/master/statics/init_db_sql.txt", "text/plain", response);
+	}
+	
+	public void settings_doc(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		static_serve("org/goku/master/statics/settings_doc.txt", "text/plain", response);
 	}
 	
 	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out, RouteServerManager rm, String mode){

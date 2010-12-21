@@ -33,6 +33,7 @@ public class DummyHttpRequest implements HttpServletRequest {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Enumeration getAttributeNames() {
 		return null;
 	}
@@ -69,6 +70,7 @@ public class DummyHttpRequest implements HttpServletRequest {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Enumeration getLocales() {
 		return null;
 	}
@@ -77,10 +79,12 @@ public class DummyHttpRequest implements HttpServletRequest {
 		return this.param.get(arg0);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Map getParameterMap() {
 		return this.param;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Enumeration getParameterNames() {
 		return null;
 	}
@@ -97,6 +101,9 @@ public class DummyHttpRequest implements HttpServletRequest {
 		return null;
 	}
 
+	/**
+	 * @deprecated
+	 */	
 	public String getRealPath(String arg0) {
 		return null;
 	}
@@ -178,10 +185,12 @@ public class DummyHttpRequest implements HttpServletRequest {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Enumeration getHeaderNames() {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Enumeration getHeaders(String arg0) {
 		return null;
 	}
@@ -245,7 +254,10 @@ public class DummyHttpRequest implements HttpServletRequest {
 	public boolean isRequestedSessionIdFromURL() {
 		return false;
 	}
-
+	
+	/**
+	 * @deprecated
+	 */
 	public boolean isRequestedSessionIdFromUrl() {
 		return false;
 	}
