@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -86,7 +87,18 @@ public class DummyHttpRequest implements HttpServletRequest {
 
 	@SuppressWarnings("rawtypes")
 	public Enumeration getParameterNames() {
-		return null;
+		final Iterator iter = this.param.keySet().iterator();
+		return new Enumeration(){
+			@Override
+			public boolean hasMoreElements() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public Object nextElement() {
+				return iter.next();
+			}			
+		};
 	}
 
 	public String[] getParameterValues(String arg0) {

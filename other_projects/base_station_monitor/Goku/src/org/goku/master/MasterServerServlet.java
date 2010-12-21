@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -13,7 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,6 +36,8 @@ import org.goku.db.QueryParameter;
 import org.goku.db.QueryResult;
 import org.goku.http.BaseRouteServlet;
 import org.goku.http.HTTPRemoteClient;
+import org.goku.http.HttpResponse;
+import org.goku.http.SimpleHttpClient;
 
 public class MasterServerServlet extends BaseRouteServlet{
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -264,6 +270,60 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void settings_doc(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		static_serve("org/goku/master/statics/settings_doc.txt", "text/plain", response);
+	}
+	
+	/**
+	 * 将请求转发到视频转发服务器。
+	 */
+	public void start_record(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException {
+		forwardToRoute("start_record", request, response);
+	}
+	
+	public void stop_record(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("stop_record", request, response);
+	}
+
+	/**
+	 * 将请求转发到视频转发服务器。
+	 */	
+	@SuppressWarnings("unchecked")
+	protected void forwardToRoute(String action, HttpServletRequest request,
+			HttpServletResponse response)throws ServletException, IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		String sid = this.getStringParam(request, "sid", null);
+		if(uuid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			BaseStation info = (BaseStation)server.storage.load(BaseStation.class, uuid);
+			if(info == null){
+				response.getWriter().println("1:BTS not found");
+			}else {
+				User userObj = (User)cache.get(sid);
+				if(userObj == null){
+					response.getWriter().println("1:Session is expired or logout");
+				}else{
+					if(info.routeServer != null && !info.equals("")){
+						log.debug("Forward request to route:" + info.routeServer);
+						SimpleHttpClient http = new SimpleHttpClient(new URL("http://" + info.routeServer));
+						
+						Map<String, String> param = new HashMap<String, String>();
+						String name = null;
+						for(Enumeration<String> enums = request.getParameterNames(); enums.hasMoreElements();){
+							name = enums.nextElement();
+							param.put(name, request.getParameter(name));
+						}
+						param.put("user", userObj.name);
+						
+						HttpResponse resp = http.post("/", param);
+						response.getWriter().println(resp.getResponseMessage());
+					}else {
+						response.getWriter().println("9:BTS not connect to route server");
+					}
+				}
+			}
+		}
 	}
 	
 	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out, RouteServerManager rm, String mode){
