@@ -1,5 +1,6 @@
 package org.goku.master;
 
+import java.io.File;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +64,13 @@ public class MasterVideoServer {
 				);
 		
 		routeManager = new RouteServerManager(threadPool, storage);
+		
+		//开始转发服务器，性能监控功能。
+		String statistics = settings.getString("statistics_path", null);
+		if(statistics != null){
+			routeManager.enableRouteStatistics(new File(statistics));
+		}
+		
 		threadPool.execute(routeManager);
 		log.info("Start route server manager...");
 		

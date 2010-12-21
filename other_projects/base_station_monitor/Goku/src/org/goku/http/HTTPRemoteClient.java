@@ -61,6 +61,23 @@ public class HTTPRemoteClient {
 		}
 	}	
 	
+	
+	/**
+	 * 更新服务器的状态。
+	 */	
+	public String statisticsStatus(){
+		HttpResponse resp = null;		
+		try {
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("reset", "Y");
+			resp = http.get("/?q=status", param);
+			return resp.getResponseMessage();
+		} catch (IOException e) {
+			log.error("Failed to get route server status, ", e);
+			return "";
+		}
+	}		
+	
 	/**
 	 * 通知中心服务器，转发服务器已启动。
 	 * @param host 转发服务器的名称。

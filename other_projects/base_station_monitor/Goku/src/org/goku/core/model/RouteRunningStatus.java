@@ -1,11 +1,14 @@
 package org.goku.core.model;
 
+import java.util.Date;
+
 /**
  * 系统运行状态。
  * @author deon
  */
 public class RouteRunningStatus {
 	private Object lock = new Object();
+	public Date statusTime = new Date(System.currentTimeMillis());
 	/**
 	 * 接受数据量
 	 */
@@ -55,7 +58,7 @@ public class RouteRunningStatus {
 		synchronized(lock){
 			this.receiveData = 0;
 			this.sendData = 0;
-			this.clientRequestCount = 0;
+			//this.clientRequestCount = 0;
 		}
 	}
 }

@@ -2,6 +2,8 @@ package org.goku.video;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -181,9 +183,13 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 */
     public void status(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
+    	DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     	//response.getWriter().write("Welcome routing_status!");
     	String reset = this.getStringParam(request, "reset", "");
     	RouteRunningStatus status = server.getStatus(runningStatus, reset.equals("Y"));
+    	response.getWriter().println("Time:" + format.format(status.statusTime));
+    	//response.getWriter().println("UCT:" + status.statusTime.getTime());
+    	response.getWriter().println("UCT:" + status.statusTime.getTime()/1000);
     	response.getWriter().println("recvData:" + status.receiveData);
     	response.getWriter().println("sentData:" + status.sendData);
     	response.getWriter().println("activeVideo:" + status.activeVideo);
@@ -195,7 +201,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
     protected void index_page(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
     	static_serve("org/goku/video/help_doc.txt", "text/plain", response);
-    } 
+    }
 	
     class RealPlayRouting implements VideoDestination{
     	private OutputStream os = null;

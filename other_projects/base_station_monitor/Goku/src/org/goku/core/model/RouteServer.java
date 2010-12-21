@@ -115,6 +115,10 @@ public class RouteServer {
 		return true;
 	}
 	
+	public String statisticsStatus(){
+		return http.statisticsStatus();
+	}
+	
 	public boolean equals(Object o){
 		if(o instanceof RouteServer){
 			return this.ipAddress.equals(((RouteServer) o).ipAddress);

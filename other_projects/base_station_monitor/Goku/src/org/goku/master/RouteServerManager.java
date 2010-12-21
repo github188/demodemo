@@ -1,7 +1,13 @@
 package org.goku.master;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -30,6 +36,9 @@ public class RouteServerManager implements Runnable {
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
 	private long expiredTime = 1000 * 30;
+	
+	private File statisticsDir = null;
+	//private boolean supportStatisticsRunningStatus = false;
 	
 	public RouteServerManager(ThreadPoolExecutor executor, DataStorage storage){
 		this.executor = executor;
@@ -88,6 +97,18 @@ public class RouteServerManager implements Runnable {
 		return route;
 	}
 	
+	public void enableRouteStatistics(File rootPath){
+		if(!rootPath.isDirectory()){
+			if(!rootPath.mkdirs()){
+				log.warn("Failed to create route statistics path:" + rootPath.getAbsolutePath());
+			}
+		}
+		if(rootPath.isDirectory()){
+			this.statisticsDir = rootPath;
+			log.warn("init route statistics path:" + rootPath.getAbsolutePath());
+		}
+	}
+	
 	/**
 	 * 重新调度组内Route的服务器负载。
 	 * @param groupName
@@ -134,9 +155,34 @@ public class RouteServerManager implements Runnable {
 				s.lastActive = System.currentTimeMillis();
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status OK!");
 				s.updating();
+				if(statisticsDir != null){
+					this.updateRouteServerStatistics(s);
+				}
 			}else {
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status ERR!");
 				this.removeRouteServer(s.ipAddress);
+			}
+		}
+	}
+	
+	protected void updateRouteServerStatistics(RouteServer s){
+		DateFormat format= new SimpleDateFormat("_MM_dd");
+		String name = s.ipAddress.replace(":", "_") + format.format(new Date()) + ".st";
+		String status = s.statisticsStatus();
+		FileWriter out = null;
+		try{
+			out = new FileWriter(new File(this.statisticsDir, name), true);
+			out.write("#---------------------------------\n");
+			out.write(status);
+		}catch(IOException e){
+			log.error(e.toString(), e);
+		}finally{
+			if(out != null){
+				try {
+					out.close();
+				} catch (IOException e) {
+					log.error(e.toString(), e);
+				}
 			}
 		}
 	}
