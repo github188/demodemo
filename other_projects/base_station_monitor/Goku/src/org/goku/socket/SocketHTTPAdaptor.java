@@ -49,7 +49,8 @@ public class SocketHTTPAdaptor {
 			resp.flushBuffer();
 		} catch (ServletException e) {
 			log.error(e.toString(), e);
-		}		
+			client.write("505:System error".getBytes());
+		}
 	}
 	
 	protected Map<String, String> parseCommand(String command){

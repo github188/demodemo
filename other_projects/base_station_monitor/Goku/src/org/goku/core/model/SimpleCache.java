@@ -3,6 +3,7 @@ package org.goku.core.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 public class SimpleCache {
 	private Map<String, CacheItem> cache = Collections.synchronizedMap(new HashMap<String, CacheItem>());
@@ -38,7 +39,9 @@ public class SimpleCache {
 	}	
 	
 	private void cleanObject(){
-		for(String key: cache.keySet()){
+		Vector<String> keys = new Vector<String>();
+		keys.addAll(cache.keySet());
+		for(String key: keys){
 			CacheItem item = cache.get(key); 
 			if(item != null &&
 			   System.currentTimeMillis() - item.lastAccess 
