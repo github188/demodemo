@@ -8,17 +8,30 @@ using namespace std;
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
-	/*
+
 	GokuClient *client; //("127.0.0.1");
 
-	client = new GokuClient("127.0.0.1:8081");
-	int code = clinet->login("test1", "pass");
+	string host("127.0.0.1:8000");
+
+	client = new GokuClient(host, host);
+
+	//string user = ""
+	int code = client->login("test1", "pass");
 	cout << "login status:" << code << "\n";
 	int count = client->list_basestation();
 	cout << "list station:" << count << "\n";
-	delete client;
-	*/
 
+	if(count > 0){
+		for (int i = 0; i < count; i++){
+			cout << "uuid:" << client->station_list[i]->uuid << "\n" << endl;
+			cout << "route:" << client->station_list[i]->route << "\n" << endl;
+		}
+	}
+
+	delete client;
+
+
+	/*
 	BaseStation bs(*new string("123$1$2"));
 
 	cout << "uuid:" << bs.uuid << "\n";
@@ -27,5 +40,6 @@ int main() {
 	cout << "route:" << bs.route << "\n";
 	cout << "status:" << bs.status << "\n";
 
+	*/
 	return 0;
 }
