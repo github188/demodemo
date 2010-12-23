@@ -7,6 +7,7 @@ import java.nio.channels.SocketChannel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.video.VideoRecorderManager;
 
 public class SimpleSocketServer implements Runnable {
 	private Log log = LogFactory.getLog("server.socket");
@@ -17,6 +18,7 @@ public class SimpleSocketServer implements Runnable {
 	private SocketHTTPAdaptor httpAdapter = null;
 	private SocketVideoAdapter videoAdapter = null;
 	private String servelt = null;
+	private VideoRecorderManager recordManager = null;
 	
 	/**
 	 * 对象自身的一个引用，因为serverHandler内部需要使用。可能会引起对象无法内存回
@@ -38,6 +40,7 @@ public class SimpleSocketServer implements Runnable {
 		if(selectionKey == null){
 			httpAdapter = new SocketHTTPAdaptor(servelt);
 			videoAdapter = new SocketVideoAdapter();
+			videoAdapter.setRecorderManager(recordManager);
 			serverChannel = manager.listen("0.0.0.0", this.listenPort, this);
 		}else if(selectionKey.isAcceptable()){
 			try {
@@ -86,6 +89,10 @@ public class SimpleSocketServer implements Runnable {
 	public void setServlet(String servlet){
 		this.servelt = servlet;
 	}
+	
+	public void setRecorderManager(VideoRecorderManager manager){
+		this.recordManager = manager;
+	}	
 	
 	/**
 	 * 由Selection线程调用。

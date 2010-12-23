@@ -81,6 +81,8 @@ public class VideoRouteServer {
 				);
 		socketManager = new SocketManager(threadPool);
 		threadPool.execute(socketManager);
+		
+		log.info("Start video record manager..");
 		recordManager = new VideoRecorderManager(settings, storage);
 		threadPool.execute(recordManager);
 		
@@ -100,6 +102,7 @@ public class VideoRouteServer {
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
 		socketServer.setServlet(servelt);
+		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
 		
 		final int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);

@@ -15,6 +15,7 @@ import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
 import org.goku.socket.SimpleSocketServer;
 import org.goku.socket.SocketManager;
+import org.goku.video.VideoRecorderManager;
 
 /**
  * 监控管理服务器，负责调度不同的转发服务器，实现监控服务。
@@ -31,6 +32,7 @@ public class MasterVideoServer {
 	public SimpleSocketServer socketServer = null;
 	public SocketManager socketManager = null;	
 	public RouteServerManager routeManager = null;
+	public VideoRecorderManager recordManager = null;
 	private boolean running = true;
 	
 	private ThreadPoolExecutor threadPool = null;
@@ -74,11 +76,16 @@ public class MasterVideoServer {
 		threadPool.execute(routeManager);
 		log.info("Start route server manager...");
 		
+		log.info("Start video record manager..");
+		recordManager = new VideoRecorderManager(settings, storage);
+		threadPool.execute(recordManager);		
+		
 		socketManager = new SocketManager(threadPool);
 		threadPool.execute(socketManager);		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
 		socketServer.setServlet(servelt);
+		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);

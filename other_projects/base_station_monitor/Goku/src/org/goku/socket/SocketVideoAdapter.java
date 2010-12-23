@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.video.VideoRecorderManager;
 import org.goku.video.VideoRouteServer;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.VideoDestination;
@@ -26,6 +27,7 @@ import org.goku.video.odip.VideoDestination;
 public class SocketVideoAdapter {
 	private Log log = LogFactory.getLog("client.socket.video");
 	private VideoRouteServer server = null;
+	private VideoRecorderManager recordManager = null;
 	public SocketVideoAdapter(){
 		server = VideoRouteServer.getInstance();		
 	}
@@ -44,8 +46,19 @@ public class SocketVideoAdapter {
 		}
 	}
 	
+	public void setRecorderManager(VideoRecorderManager manager){
+		this.recordManager = manager;
+	}
+	
 	protected void doRealPlay(SocketClient client, String uuid){
-		if(client.connectionMode == SocketClient.MODE_HTTP){
+		if(server == null){
+			try {
+				client.write("It's not a route server.".getBytes());
+			} catch (IOException e) {
+				log.error(e.toString(), e);
+			}
+		}
+		if(server != null && client.connectionMode == SocketClient.MODE_HTTP){
 			MonitorClient mc = server.getMonitorClient(uuid);
 			if(mc != null){
 				log.info("Start real play client id " + uuid);
@@ -61,7 +74,7 @@ public class SocketVideoAdapter {
 	
 	protected void doRePlay(SocketClient client, String uuid) throws IOException{
 		if(client.connectionMode == SocketClient.MODE_HTTP){
-			File videoPath = server.recordManager.getAlarmRecordFile(uuid);
+			File videoPath = recordManager.getAlarmRecordFile(uuid);
 			if(videoPath != null){
 				log.info("Start replay uuid " + uuid + ", path:" + videoPath.getAbsolutePath());
 				client.replay = new FileReplayController(client, videoPath);

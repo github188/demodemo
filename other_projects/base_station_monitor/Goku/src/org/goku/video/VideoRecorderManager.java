@@ -177,7 +177,7 @@ public class VideoRecorderManager implements Runnable{
 			}
 		}
 		this.rootPath = dirFile;
-		log.info("Data root path:" + this.rootPath.getAbsolutePath());
+		log.info("Video root path:" + this.rootPath.getAbsolutePath());
 	}
 
 	@Override
