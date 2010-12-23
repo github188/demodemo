@@ -55,6 +55,12 @@ static int str2int(const wstring src){
 	return ret;
 }
 
+static void int2str(wstring &buffer, int i){
+	wstringstream out;
+	out << i;
+	buffer.append(out.str());
+}
+
 class BaseStation{
 private:
 	void _build(wstring &info){
@@ -121,13 +127,14 @@ public:
 	virtual void close(){};
 	virtual int read_buffer(char *buffer, int size){
 		write_log("read_buffer in SimpleSocket");
-		return 0;
+		return -1;
 	};
 
 	int write_wstring(wstring &data){
 		//data.append("\n");
 		//cout << "write:" << data << "len:" << data.length() << endl;
 		//memset((char *) &serv_addr, 0, sizeof(serv_addr));
+		write_log(L"write_wstring:" + data);
 		int writeLen = wcstombs(buffer, data.c_str(), data.length());
 		int len = write_data(buffer, writeLen);
 	    bufferLimit = bufferPos = 0;
@@ -192,18 +199,66 @@ protected:
 };
 
 #include "LinuxSocket.cpp"
+#define CSimpleSocket LinuxSimpleSocket
 /*
 class WinSimpleSocket: public SimpleSocket{
 };
 */
 
+class VideoPlayControl{
+public:
+	DataCallBack callback;
+	SimpleSocket *socket;
+	int sessionId;
+	int status;  //0 not start, -1 end, 1 running
+	VideoPlayControl(SimpleSocket *sc, DataCallBack handle, int sid){
+		socket = sc;
+		callback = handle;
+		sessionId = sid;
+		status = 0;
+	}
+
+	void seek(wstring &uuid){
+
+	}
+
+	void close(wstring &uuid){
+
+	}
+};
+
+
+void *video_read_thread(void *param){
+	VideoPlayControl *control = (VideoPlayControl *)param;
+	char buffer[1024 * 4];
+	int ret = 0;
+
+	control->status = 1;
+
+	write_log("start video read thread");
+	while(1){
+		ret = control->socket->read_buffer(buffer, sizeof(buffer));
+		if(ret > 0){
+			control->callback(control->sessionId, buffer, ret);
+		}else {
+			control->status = -1;
+			break;
+		}
+	}
+	write_log("end video read thread.");
+
+	control->status = -1;
+}
+
+
+
 class GokuClient{
-	LinuxSimpleSocket *socket;
+	SimpleSocket *socket;
 	wstring buffer;
 	wstring cmd_msg; //last command status.
 public:
 	GokuClient(wstring &primary_server, wstring &secondary_server){
-		socket = new LinuxSimpleSocket(primary_server, secondary_server);
+		socket = new CSimpleSocket(primary_server, secondary_server);
 		socket->connect_server();
 	}
 
@@ -270,12 +325,26 @@ public:
 	 *
 	 */
 	int list_alarm();
-	int real_play(wstring &uuid, DataCallBack callback, int session=0);
-	int replay(wstring &uuid, DataCallBack callback, int session=0);
+	VideoPlayControl* real_play(wstring &uuid, DataCallBack callback, int session=0);
+	VideoPlayControl* replay(wstring &uuid, DataCallBack callback, int session=0){
+		wstring master_server = socket->ipaddr + L":";
+		int2str(master_server, socket->port);
+		SimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
+
+		VideoPlayControl *control = (VideoPlayControl *)NULL;
+		if (masterSocket->connect_server() > 0){
+			control = new VideoPlayControl(masterSocket, callback, session);
+			buffer = L"video>replay?uuid=" + uuid + L"\n";
+			masterSocket->write_wstring(buffer);
+			start_new_thread(video_read_thread, control);
+		}
+
+		return control;
+	}
 
 protected:
 	int execute_command(wstring &cmd){
-		write_log(L"execute_command:" + cmd);
+		//write_log(L"execute_command:" + cmd);
 		wstring code;
 		cmd.append(L"\n");
 		socket->write_wstring(cmd);

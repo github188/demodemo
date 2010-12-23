@@ -11,6 +11,9 @@ void output(wstring &src){
 	cout << buffer;
 }
 
+int call_back(int sessionId, char *pBuffer, int len){
+	cout << "call_back session " << sessionId << " size:" << len << "\n";
+}
 
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
@@ -41,6 +44,12 @@ int main() {
 			cout << "\n" << endl;
 		}
 	}
+
+	host = L"1001";
+	client->replay(host, &call_back, 1);
+
+	cout << "waiting replay video....";
+	sleep(10);
 
 	delete client;
 

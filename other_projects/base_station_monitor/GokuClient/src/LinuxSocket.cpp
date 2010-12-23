@@ -5,6 +5,8 @@
 #include <netdb.h>
 #include <stdlib.h>
 
+#include <pthread.h>
+
 class LinuxSimpleSocket: public SimpleSocket{
 public:
 	LinuxSimpleSocket(wstring &ps, wstring &ss): SimpleSocket(ps, ss) {
@@ -14,6 +16,9 @@ public:
 	int connect_server(){
 		socketOk = 0;
 		initServerAddr();
+
+		//cout << "";
+
 		struct sockaddr_in serv_addr;
 		struct hostent *server;
 		char buffer[1024];
@@ -23,6 +28,9 @@ public:
 
 	    memset(buffer, 0, sizeof(buffer));
 	    int writeLen = wcstombs(buffer, ipaddr.c_str(), ipaddr.length());
+
+	    cout << "connect to " << buffer;
+	    cout << ":" << port << "\n";
 
 	    server = gethostbyname(buffer);
 	    if (server == NULL) {
@@ -44,8 +52,10 @@ public:
 			}else{
 				write_log(L"connect to " + ipaddr + L" ok!");
 				socketOk = 1;
+				return 1;
 			}
 	    }
+	    return -1;
 	}
 
 	int read_buffer(char *buffer, int size){
@@ -94,3 +104,10 @@ protected:
 		}
 	};
 };
+
+void start_new_thread(void *(*start_routine)(void *), void *para){
+	write_log("start_new_thread...");
+	pthread_t *thread1 = new pthread_t();
+	int ret = pthread_create(thread1, NULL, start_routine, para);
+}
+
