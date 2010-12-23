@@ -210,7 +210,7 @@ public:
 	DataCallBack callback;
 	SimpleSocket *socket;
 	int sessionId;
-	int status;  //0 not start, -1 end, 1 running
+	int status;  //0 not start, -1 end, 1 running, -2 start error
 	VideoPlayControl(SimpleSocket *sc, DataCallBack handle, int sid){
 		socket = sc;
 		callback = handle;
@@ -218,11 +218,18 @@ public:
 		status = 0;
 	}
 
-	void seek(wstring &uuid){
-
+	~VideoPlayControl(){
+		delete socket;
 	}
 
-	void close(wstring &uuid){
+	void seek(int pos){
+		wstring cmd(L"video>seek?pos=");
+		int2str(cmd, pos);
+		cmd.append(L"\n");
+		socket->write_wstring(cmd);
+	}
+
+	void close(){
 
 	}
 };
@@ -233,6 +240,8 @@ void *video_read_thread(void *param){
 	char buffer[1024 * 4];
 	int ret = 0;
 
+	wstring ack(L"video>ack\n");
+
 	control->status = 1;
 
 	write_log("start video read thread");
@@ -240,6 +249,7 @@ void *video_read_thread(void *param){
 		ret = control->socket->read_buffer(buffer, sizeof(buffer));
 		if(ret > 0){
 			control->callback(control->sessionId, buffer, ret);
+			control->socket->write_wstring(ack);
 		}else {
 			control->status = -1;
 			break;
@@ -284,13 +294,8 @@ public:
 
 	int logout(){
 		buffer = L"cmd>logout";
-		socket->write_wstring(buffer);
-		socket->readline(buffer);
-		wstring code;
-		int pos = split_next(buffer, code, ':', 0);
-		wstringstream ss(code);
-		ss >> pos;
-		return pos;
+		int ret = execute_command(buffer);
+		return ret;
 	}
 	/**
 	 *
@@ -325,18 +330,42 @@ public:
 	 *
 	 */
 	int list_alarm();
-	VideoPlayControl* real_play(wstring &uuid, DataCallBack callback, int session=0);
-	VideoPlayControl* replay(wstring &uuid, DataCallBack callback, int session=0){
+
+	VideoPlayControl* real_play(wstring &uuid, DataCallBack callback, int session=0){
+		BaseStation* bs = NULL;
+		VideoPlayControl *control = (VideoPlayControl *)NULL;
+		for (int i = 0; i < station_list.size(); i++){
+			if(station_list[i]->uuid.compare(uuid) == 0){
+				bs = station_list[i];
+				break;
+			}
+		}
+		if(bs != NULL){
+			SimpleSocket *masterSocket = new CSimpleSocket(bs->route, bs->route);
+			control = new VideoPlayControl(masterSocket, callback, session);
+			if (masterSocket->connect_server() > 0){
+				buffer = L"video>real?uuid=" + uuid + L"\n";
+				masterSocket->write_wstring(buffer);
+				start_new_thread(video_read_thread, control);
+			}else {
+				control->status = -2;
+			}
+		}
+		return control;
+	}
+
+	VideoPlayControl* replay(wstring &videoId, DataCallBack callback, int session=0){
 		wstring master_server = socket->ipaddr + L":";
 		int2str(master_server, socket->port);
 		SimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
 
-		VideoPlayControl *control = (VideoPlayControl *)NULL;
+		VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
 		if (masterSocket->connect_server() > 0){
-			control = new VideoPlayControl(masterSocket, callback, session);
-			buffer = L"video>replay?uuid=" + uuid + L"\n";
+			buffer = L"video>replay?uuid=" + videoId + L"\n";
 			masterSocket->write_wstring(buffer);
 			start_new_thread(video_read_thread, control);
+		}else {
+			control->status = -2;
 		}
 
 		return control;
