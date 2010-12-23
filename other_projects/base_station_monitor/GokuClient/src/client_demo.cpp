@@ -4,6 +4,13 @@
 
 using namespace std;
 
+void output(wstring &src){
+	char buffer[1024];
+	memset(buffer, 0, sizeof(buffer));
+	int writeLen = wcstombs(buffer, src.c_str(), src.length());
+	cout << buffer;
+}
+
 
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
@@ -11,20 +18,27 @@ int main() {
 
 	GokuClient *client; //("127.0.0.1");
 
-	string host("127.0.0.1:8000");
+	wstring host(L"127.0.0.1:8000");
 
 	client = new GokuClient(host, host);
 
+	write_log("start client...");
 	//string user = ""
-	int code = client->login("test1", "pass");
+	int code = client->login(L"test1", L"pass");
+	//write_log("login status:")
 	cout << "login status:" << code << "\n";
 	int count = client->list_basestation();
 	cout << "list station:" << count << "\n";
 
 	if(count > 0){
 		for (int i = 0; i < count; i++){
-			cout << "uuid:" << client->station_list[i]->uuid << "\n" << endl;
-			cout << "route:" << client->station_list[i]->route << "\n" << endl;
+			cout << "uuid:";
+			output(client->station_list[i]->uuid);
+			cout << "\n" << endl;
+
+			cout << "route:";
+			output(client->station_list[i]->route);
+			cout << "\n" << endl;
 		}
 	}
 

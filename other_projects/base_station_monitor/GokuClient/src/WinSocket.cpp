@@ -27,7 +27,7 @@ public:
 
 protected:
 	virtual int write_data(const char *buff, int len){
-		char sendcmd_startch[200];
+		//char sendcmd_startch[200];
 		//wcstombs(sendcmd_startch, buff, len);
 		return cs.Send(sendcmd_startch, len);
 	}

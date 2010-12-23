@@ -11,13 +11,31 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <fstream>
+#include <stdlib.h>
 
-//#include <stdio.h>
 using namespace std;
 
-//int split_next(string &src, string &des, char ch, int start);
+static int write_log(const wstring &src){
+	ofstream out_log("client_log.txt", ios::app);
+	char buffer[1024];
+	//memset(buffer, 0, sizeof(buffer));
+	int writeLen = wcstombs(buffer, src.c_str(), src.length());
+	buffer[writeLen] = 0;
 
-static int split_next(const string &src, string &des, char ch, int start){
+	//write_log(buffer);
+	cout << buffer << endl;
+	out_log << buffer << endl;
+	out_log.close();
+}
+
+static int write_log(const char *src){
+	ofstream out_log("client_log.txt", ios::app);
+	out_log << src << endl;
+	out_log.close();
+}
+
+static int split_next(const wstring &src, wstring &des, char ch, int start){
 	int pos = 0;
 	pos = src.find(ch, start);
 	des.clear();
@@ -30,8 +48,8 @@ static int split_next(const string &src, string &des, char ch, int start){
 	return pos;
 }
 
-static int str2int(const string src){
-	stringstream ss(src);
+static int str2int(const wstring src){
+	wstringstream ss(src);
 	int ret;
 	ss >> ret;
 	return ret;
@@ -39,7 +57,7 @@ static int str2int(const string src){
 
 class BaseStation{
 private:
-	void _build(string &info){
+	void _build(wstring &info){
 		int pos = 0;
 		pos = split_next(info, uuid, '$', 0);
 		pos = split_next(info, devType, '$', pos + 1);
@@ -47,18 +65,18 @@ private:
 		pos = split_next(info, status, '$', pos + 1);
 
 		if(devType.length() > 0){
-			stringstream ss(devType);
+			wstringstream ss(devType);
 			ss >> idevType;
 		}
 	}
 
 public:
-	string uuid;
-	string devType;
-	string route;
-	string status;
+	wstring uuid;
+	wstring devType;
+	wstring route;
+	wstring status;
 	int idevType;
-	BaseStation(string &info){
+	BaseStation(wstring &info){
 		_build(info);
 	}
 
@@ -66,21 +84,21 @@ public:
 
 class AlarmRecord{
 private:
-	void _build(string &info){
+	void _build(wstring &info){
 		int pos = 0;
 		pos = split_next(info, uuid, '$', 0);
 	}
 
 public:
-	string uuid;
-	string baseStation;
-	string alarmType;
-	string alarmStatus;
-	string user;
-	string startTime;
-	string endTime;
-	string level;
-	AlarmRecord(string &info){
+	wstring uuid;
+	wstring baseStation;
+	wstring alarmType;
+	wstring alarmStatus;
+	wstring user;
+	wstring startTime;
+	wstring endTime;
+	wstring level;
+	AlarmRecord(wstring &info){
 		_build(info);
 	}
 };
@@ -89,9 +107,9 @@ typedef int(*DataCallBack)(int sessionId, char *pBuffer, int len);
 
 class SimpleSocket{
 public:
-	string ipaddr;
+	wstring ipaddr;
 	int port;
-	SimpleSocket(string &pserver, string &sserver){
+	SimpleSocket(wstring &pserver, wstring &sserver){
 		primary = 0;
 		primary_server = pserver;
 		secondary_server = sserver;
@@ -102,21 +120,22 @@ public:
 	virtual int connect_server(){};
 	virtual void close(){};
 	virtual int read_buffer(char *buffer, int size){
-		cout << "read_buffer in SimpleSocket";
+		write_log("read_buffer in SimpleSocket");
 		return 0;
 	};
 
-	int write_string(string &data){
+	int write_wstring(wstring &data){
 		//data.append("\n");
 		//cout << "write:" << data << "len:" << data.length() << endl;
-		int len = write_data(data.c_str(), data.length());
+		//memset((char *) &serv_addr, 0, sizeof(serv_addr));
+		int writeLen = wcstombs(buffer, data.c_str(), data.length());
+		int len = write_data(buffer, writeLen);
 	    bufferLimit = bufferPos = 0;
 	    return len;
 	};
 
-	int readline(string &des, long timeout=3){
+	int readline(wstring &des, long timeout=3){
 		des.clear();
-		//cout << "readline buffer len:" << sizeof(buffer) <<endl;
 		char ch = 0;
 		if(bufferPos >= bufferLimit){
 			bufferLimit = read_buffer(buffer, sizeof(buffer));
@@ -130,19 +149,19 @@ public:
 				des.append(1, ch);
 			}
 			if(bufferPos >= bufferLimit){
-				sleep(1);
+				//sleep(1);
 				bufferLimit = read_buffer(buffer, sizeof(buffer));
 				bufferPos = 0;
 				timeout--;
 			}
 		}
-		cout << "readline:" << des << endl;
+		write_log(L"readline:" + des);
 		return des.length();
 	};
 
 protected:
-	string primary_server;
-	string secondary_server;
+	wstring primary_server;
+	wstring secondary_server;
 	int primary;
 
 	char buffer[4 * 1024];
@@ -150,11 +169,11 @@ protected:
 	int bufferLimit;
 
 	virtual int write_data(const char *buffer, int size){
-		cout << "write_data..." <<endl;
+		write_log(L"write_data in SimpleSocket...");
 	};
 
 	void initServerAddr(){
-		string cur;
+		wstring cur;
 		if(primary == 0){
 			cur = primary_server;
 			primary = 1;
@@ -164,28 +183,26 @@ protected:
 		}
 		int pos = split_next(cur, ipaddr, ':', 0);
 
-		string tempPort;
+		wstring tempPort;
 
 		split_next(cur, tempPort, ':', pos + 1);
-		stringstream ss(tempPort);
+		wstringstream ss(tempPort);
 		ss >> port;
 	}
 };
 
-
+#include "LinuxSocket.cpp"
 /*
 class WinSimpleSocket: public SimpleSocket{
-
-
 };
 */
 
 class GokuClient{
 	LinuxSimpleSocket *socket;
-	string buffer;
-	string cmd_msg; //last command status.
+	wstring buffer;
+	wstring cmd_msg; //last command status.
 public:
-	GokuClient(string &primary_server, string &secondary_server){
+	GokuClient(wstring &primary_server, wstring &secondary_server){
 		socket = new LinuxSimpleSocket(primary_server, secondary_server);
 		socket->connect_server();
 	}
@@ -198,25 +215,25 @@ public:
 	/**
 	 * login to master server;
 	 */
-	int login(const char *username, const char *password){
-		string user(username);
-		string pass(password);
+	int login(const wchar_t *username, const wchar_t *password){
+		wstring user(username);
+		wstring pass(password);
 		return login(user, pass);
 	}
 
-	int login(string &user, string &password){
-		buffer = "cmd>login?user=" + user + "&password=" + password;
+	int login(wstring &user, wstring &password){
+		buffer = L"cmd>login?user=" + user + L"&password=" + password;
 		int ret = execute_command(buffer);
 		return ret;
 	}
 
 	int logout(){
-		buffer = "cmd>logout";
-		socket->write_string(buffer);
+		buffer = L"cmd>logout";
+		socket->write_wstring(buffer);
 		socket->readline(buffer);
-		string code;
+		wstring code;
 		int pos = split_next(buffer, code, ':', 0);
-		stringstream ss(code);
+		wstringstream ss(code);
 		ss >> pos;
 		return pos;
 	}
@@ -229,7 +246,7 @@ public:
 		}
 		station_list.clear();
 
-		buffer = "cmd>list_bs";
+		buffer = L"cmd>list_bs";
 		int ret = execute_command(buffer);
 
 		int pos = split_next(cmd_msg, buffer, '$', 0);
@@ -253,15 +270,15 @@ public:
 	 *
 	 */
 	int list_alarm();
-	int real_play(string &uuid, DataCallBack callback, int session=0);
-	int replay(string &uuid, DataCallBack callback, int session=0);
+	int real_play(wstring &uuid, DataCallBack callback, int session=0);
+	int replay(wstring &uuid, DataCallBack callback, int session=0);
 
 protected:
-	int execute_command(string &cmd){
-		cout << "execute_command:" << cmd << "\n" <<endl;
-		string code;
-		cmd.append("\n");
-		socket->write_string(cmd);
+	int execute_command(wstring &cmd){
+		write_log(L"execute_command:" + cmd);
+		wstring code;
+		cmd.append(L"\n");
+		socket->write_wstring(cmd);
 		socket->readline(cmd_msg);
 		split_next(cmd_msg, code, ':', 0);
 		return str2int(code);
