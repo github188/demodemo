@@ -22,7 +22,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="2"
-			CharacterSet="1"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -188,6 +188,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\GokuClient.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayWnd.cpp"
 				>
 			</File>
@@ -219,12 +223,20 @@
 				RelativePath=".\testMulStreamDlg.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\WinSocket.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\GokuClient.h"
+				>
+			</File>
 			<File
 				RelativePath=".\PlayWnd.h"
 				>

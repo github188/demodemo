@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CtestMulStreamDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON1, &CtestMulStreamDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CtestMulStreamDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -199,7 +200,7 @@ UINT recvThread(LPVOID param)
 	int nport=*(int *)param;
 	CSocket *cs=new CSocket();
 	cs->Create();
-	if(cs->Connect(_T("127.0.0.1"), 8083)==FALSE)
+	if(cs->Connect(_T("127.0.0.1"), 8001)==FALSE)
 	{
 		MessageBox(NULL,_T("Error"),_T("Error"),MB_OK);
 		return -1;
@@ -207,12 +208,13 @@ UINT recvThread(LPVOID param)
 	int totalNum=4094;
 	BYTE buf[1024];
 	CString sendcmd_start;
-	sendcmd_start.Format(_T("test_id%d\n"), nport);
+	sendcmd_start.Format(_T("video>replay?uuid=test_id%d\n"), nport);
 //	char sendcmd_start[]="test_id1\n";
-	char sendcmd_ack[]="OK\n";
-	char sendcmd_startch[MAX_PATH];
-	wcstombs(sendcmd_startch, sendcmd_start, sendcmd_start.GetLength());
-	cs->Send(sendcmd_startch, sizeof(sendcmd_startch));
+	char sendcmd_ack[]="video>ack\n";
+	char sendcmd_startch[200];
+	//wcstombs(sendcmd_startch, sendcmd_start, sendcmd_start.GetLength());
+	//sendcmd_ack[]=0
+	cs->Send(sendcmd_startch, sendcmd_start.GetLength());
 //	cs->Send(sendcmd_start, sizeof(sendcmd_start));
 	bool bfinish=false;
 	while(!bfinish)
@@ -240,4 +242,29 @@ UINT recvThread(LPVOID param)
 	cs->Close();
 	MessageBox(NULL,_T("receive end"),_T("receive end"),MB_OK);
 	return 0;
+}
+
+void CtestMulStreamDlg::OnBnClickedButton2()
+{
+	GokuClient *client; //("127.0.0.1");
+
+	wstring host(L"127.0.0.1:8000");
+
+	client = new GokuClient(host, host);
+
+	int code = client->login(L"test1", L"pass");
+	if(code == 0){
+		//MessageBox(NULL,_T("login ok"), _T("login ok"),MB_OK);
+	}
+	write_log(L"login status:");
+	cout << "login status:" << code << "\n";
+	int count = client->list_basestation();
+	cout << "list station:" << count << "\n";
+	wstring xx;
+	int2str(xx, count);
+	write_log(L"station:" + xx);
+	for(int i = 0; i < count; i++){
+		write_log(L"uuid:" + client->station_list[i]->uuid);
+		write_log(L"route:" + client->station_list[i]->route);
+	}
 }

@@ -5,6 +5,10 @@
 #pragma once
 #include "PlayWnd.h"
 #include "include/iPlay.h"
+#include "GokuClient.cpp"
+
+static void *video_read_thread(void *param);
+static int start_new_thread(void *fun, void *param);
 
 UINT recvThread(LPVOID param);
 
@@ -37,4 +41,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
 };

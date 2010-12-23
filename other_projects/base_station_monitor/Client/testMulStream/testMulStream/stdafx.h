@@ -40,10 +40,13 @@
 
 #include <afxsock.h>            // MFC socket extensions
 
-
-
-
-
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <cstring>
+#include <fstream>
+#include <stdlib.h>
 
 
 #ifdef _UNICODE
