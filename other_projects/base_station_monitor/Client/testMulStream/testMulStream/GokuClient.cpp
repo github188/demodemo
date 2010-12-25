@@ -111,7 +111,7 @@ typedef int(*DataCallBack)(int sessionId, char *pBuffer, int len);
 class SimpleSocket{
 public:
 	wstring ipaddr;
-	int port;
+	unsigned int port;
 	SimpleSocket(wstring &pserver, wstring &sserver){
 		primary = 0;
 		primary_server = pserver;
@@ -208,15 +208,18 @@ public:
 	int connect_server(){
 		//const char *host = ipaddr.c_str();
 		//const char *Lhost = ipaddr.c_str();
-		CString host("127.0.0.1");
+		//host.l
 		initServerAddr();
+		//CString host(ipaddr.c_str());
 		if(cs.Create() == FALSE){
 			MessageBox(NULL,_T("Error create"), _T("Error create"),MB_OK);
 			return -1;
 		}
-		if(cs.Connect(_T("127.0.0.1"), 8000)==FALSE)
+		CString host(ipaddr.c_str());
+		//MessageBox(NULL,_T("Error 2"), host, MB_OK);
+		if(cs.Connect(host, port)==FALSE)
 		{
-			MessageBox(NULL,_T("Error"), _T("Error"),MB_OK);
+			MessageBox(NULL,_T("Error 3"), _T("Error connect"),MB_OK);
 			return -1;
 		}
 		return 1;
@@ -224,10 +227,13 @@ public:
 	int read_buffer(char *buffer, int size){
 		wstring xx;
 		int len = cs.Receive(buffer, size);
-		buffer[len] = 0;
+		//buffer[len] = 0;
 		int2str(xx, len);
 		write_log(L"read buffer:" + xx);
-		write_log((const char *)buffer);
+		if(len > 0 && len < 1024){
+			buffer[len] = 0;
+			write_log((const char *)buffer);
+		}
 
 		return len;
 	}
@@ -244,8 +250,11 @@ private:
 
 };
 
-static int start_new_thread(void *fun, void *param){
-	return 0;
+static int start_new_thread(AFX_THREADPROC fun, LPVOID param){
+	CWinThread *mythread;
+	//Need delete the thread object when the thead is stopped?
+	mythread = AfxBeginThread(fun, param);
+	return 1;
 };
 
 
@@ -258,6 +267,11 @@ class VideoPlayControl{
 public:
 	DataCallBack callback;
 	SimpleSocket *socket;
+	
+	/*
+	不能在界面线程调用socket，发送和接受方法。其他线成把需要发送的命令保存到list,由socket现成统一发送。
+	*/
+	vector<wstring*> vedio_command_list;
 	int sessionId;
 	int status;  //0 not start, -1 end, 1 running, -2 start error
 	VideoPlayControl(SimpleSocket *sc, DataCallBack handle, int sid){
@@ -271,42 +285,66 @@ public:
 		delete socket;
 	}
 
+	void real_play(wstring &uuid){
+		 vedio_command_list.push_back(new wstring(L"video>real?uuid=" + uuid + L"\n"));
+	}
+
+	void replay(wstring &uuid){
+		vedio_command_list.push_back(new wstring(L"video>replay?uuid=" + uuid + L"\n"));
+	}
+
 	void seek(int pos){
-		wstring cmd(L"video>seek?pos=");
-		int2str(cmd, pos);
-		cmd.append(L"\n");
-		socket->write_wstring(cmd);
+		wstring *cmd = new wstring(L"video>seek?pos=");
+		int2str(*cmd, pos);
+		vedio_command_list.push_back(cmd);
+		//cmd.append(L"\n");
+		//socket->write_wstring(cmd);
 	}
 
 	void close(){
-
+		socket->close();
 	}
 };
 
 
-static void *video_read_thread(void *param){
+static UINT video_read_thread(LPVOID param){
 	VideoPlayControl *control = (VideoPlayControl *)param;
-	char buffer[1024 * 4];
+	int bufferLen = 4096 + 100;
+	char* buffer = new char[bufferLen];
 	int ret = 0;
+	for(int i=0; i < bufferLen; i++){
+		buffer[i] = 0;
+	}
 
 	wstring ack(L"video>ack\n");
 
-	control->status = 1;
-
 	write_log("start video read thread");
-	while(1){
-		ret = control->socket->read_buffer(buffer, sizeof(buffer));
-		if(ret > 0){
-			control->callback(control->sessionId, buffer, ret);
-			control->socket->write_wstring(ack);
-		}else {
-			control->status = -1;
-			break;
+	if (control->socket->connect_server() > 0){
+		control->status = 1;
+		while(1){
+			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
+				control->socket->write_wstring(*control->vedio_command_list[i]);
+			}
+			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
+				delete control->vedio_command_list[i];
+			}
+			control->vedio_command_list.clear();
+
+			ret = control->socket->read_buffer(buffer, bufferLen);
+			if(ret > 0){
+				control->callback(control->sessionId, buffer, ret);
+				control->socket->write_wstring(ack);
+			}else {
+				control->status = -1;
+				break;
+			}
 		}
 	}
 	write_log("end video read thread.");
+	delete buffer;
 
 	control->status = -1;
+	control->close();
 
 	return 0;
 };
@@ -395,13 +433,7 @@ public:
 		if(bs != NULL){
 			SimpleSocket *masterSocket = new CSimpleSocket(bs->route, bs->route);
 			control = new VideoPlayControl(masterSocket, callback, session);
-			if (masterSocket->connect_server() > 0){
-				buffer = L"video>real?uuid=" + uuid + L"\n";
-				masterSocket->write_wstring(buffer);
-				start_new_thread(video_read_thread, control);
-			}else {
-				control->status = -2;
-			}
+			control->real_play(uuid);
 		}
 		return control;
 	}
@@ -412,13 +444,8 @@ public:
 		SimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
 
 		VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
-		if (masterSocket->connect_server() > 0){
-			buffer = L"video>replay?uuid=" + videoId + L"\n";
-			masterSocket->write_wstring(buffer);
-			start_new_thread(video_read_thread, control);
-		}else {
-			control->status = -2;
-		}
+		control->replay(videoId);
+		start_new_thread(video_read_thread, control);
 
 		return control;
 	}

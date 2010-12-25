@@ -179,6 +179,10 @@ HCURSOR CtestMulStreamDlg::OnQueryDragIcon()
 
 void CtestMulStreamDlg::OnBnClickedButton1()
 {
+	GokuClient *client; //("127.0.0.1");
+	wstring host(L"127.0.0.1:8000");
+	client = new GokuClient(host, host);
+
 	// TODO: Add your control notification handler code here
 	for(int i=0;i<9;i++)
 	{
@@ -188,11 +192,29 @@ void CtestMulStreamDlg::OnBnClickedButton1()
 			CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
 			HWND hwnd=pwnd->GetSafeHwnd();
 			BOOL bPlayRet=PLAY_Play(i, hwnd);
-			int *tmp=new int(i);
+			//int *tmp=new int(i);
+			host = L"test_id";
+			int2str(host, i);
+			client->replay(host, play_video, i);
 			//start a thread to receive the video information.
-			mythread = AfxBeginThread(recvThread, tmp);
+			//mythread = AfxBeginThread(recvThread, tmp);
+
 		}
 	}
+}
+
+int play_video(int sessionId, char *pBuffer, int len){
+	wstring log;
+	log.append(L"play video session:");
+	int2str(log, sessionId);
+	log.append(L" buffer len:");
+	int2str(log, len);
+	write_log(log);
+	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
+	{
+		::Sleep(1000);
+	}
+	return 1;
 }
 
 UINT recvThread(LPVOID param)

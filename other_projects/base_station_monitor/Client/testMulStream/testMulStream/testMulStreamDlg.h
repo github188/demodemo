@@ -7,8 +7,11 @@
 #include "include/iPlay.h"
 #include "GokuClient.cpp"
 
-static void *video_read_thread(void *param);
-static int start_new_thread(void *fun, void *param);
+UINT video_read_thread(LPVOID param);
+int start_new_thread(AFX_THREADPROC fun, LPVOID param);
+int play_video(int sessionId, char *pBuffer, int len);
+//static void *video_read_thread(void *param);
+//static int start_new_thread(void *fun, void *param);
 
 UINT recvThread(LPVOID param);
 
