@@ -1,10 +1,13 @@
 package org.goku.image;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.mortbay.log.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ASC100Client {
+	private Log log = null;
 	private ASC100MX mx = null;
 	private String location = "";
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
@@ -13,7 +16,8 @@ public class ASC100Client {
 	
 	public ASC100Client(String location){
 		this.location = location;
-	}	
+		log = LogFactory.getLog("asc100." + location);
+	};
 	
 	public void process(ByteBuffer buffer){
 		//当前数据包处理状态。
@@ -45,7 +49,7 @@ public class ASC100Client {
 					if(checksum == this.getCheckSum(data)){
 						processData(cmd, data);
 					}else {
-						Log.warn("check sum error, drop data");
+						log.warn("check sum error, drop data");
 					}
 				}
 			}else if(status == 0xfe){
@@ -67,8 +71,9 @@ public class ASC100Client {
 	 * 发送一个终端命令，封装了“图像监控系统通信协议v1.34".
 	 * @param cmd
 	 * @param data
+	 * @throws IOException 
 	 */
-	public void sendCommand(byte cmd, byte data[]){
+	public void sendCommand(byte cmd, byte data[]) throws IOException{
 		synchronized(outBuffer){
 			outBuffer.reset();
 			outBuffer.put((byte)0xff);
@@ -85,7 +90,11 @@ public class ASC100Client {
 			
 			outBuffer.putShort(getCheckSum(data));
 			outBuffer.put((byte)0xfe);
-			mx.send(this, outBuffer);
+			if(mx != null){
+				mx.send(this, outBuffer);
+			}else {
+				log.warn("Can't send data, the client have not register to MX");
+			}
 		}
 	}
 	
@@ -93,7 +102,7 @@ public class ASC100Client {
 		if(this.lastCmd == 0x02){
 			
 		}
-	}	
+	}
 	
 	public void setASC100MX(ASC100MX mx){
 		this.mx = mx;
@@ -104,6 +113,10 @@ public class ASC100Client {
 	}
 	
 	public void readImage(){
-		sendCommand((byte)0x02, new byte[]{06});
+		try {
+			sendCommand((byte)0x02, new byte[]{06});
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
 	}
 }

@@ -66,7 +66,7 @@ public class SocketManager implements Runnable{
 			this.register(serverChannel, SelectionKey.OP_ACCEPT, handler);
 			log.info(String.format("Binding port %d for %s", port, handler.toString()));
 		}catch(IOException e){
-			log.error("Failed to bind port " + port);
+			log.error("Failed to bind port " + port, e);
 		}
 		
 		return serverChannel;
