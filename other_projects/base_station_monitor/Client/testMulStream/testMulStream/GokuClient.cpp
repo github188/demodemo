@@ -7,6 +7,10 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 using namespace std;
 
 static int write_log(const wstring &src){
