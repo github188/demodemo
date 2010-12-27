@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CtestMulStreamDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON1, &CtestMulStreamDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CtestMulStreamDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CtestMulStreamDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -106,6 +107,13 @@ BOOL CtestMulStreamDlg::OnInitDialog()
 
 	int widthTotal=rectTotal.Width()-90;
 	int heightTotal=rectTotal.Height()-40;
+
+	CRect rectBig(rectTotal.left, rectTotal.top,
+		rectTotal.left+widthTotal, rectTotal.top+heightTotal);
+
+	pwBig=new CPlayWnd();
+	pwBig->Create(NULL, NULL, NULL, rectBig, this, 2011);
+	pwBig->ShowWindow(SW_HIDE);
 
 	int widthEach=(widthTotal-4*frameWidth)/3;
 	int heightEach=(heightTotal-4*frameWidth)/3;
@@ -179,6 +187,8 @@ HCURSOR CtestMulStreamDlg::OnQueryDragIcon()
 
 void CtestMulStreamDlg::OnBnClickedButton1()
 {
+	PLAY_Stop(1);
+	pwBig->ShowWindow(SW_HIDE);
 	GokuClient *client; //("127.0.0.1");
 	wstring host(L"127.0.0.1:8000");
 	client = new GokuClient(host, host);
@@ -190,6 +200,7 @@ void CtestMulStreamDlg::OnBnClickedButton1()
 		if(bOpenRet)
 		{
 			CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+			pwnd->ShowWindow(SW_SHOW);
 			HWND hwnd=pwnd->GetSafeHwnd();
 			BOOL bPlayRet=PLAY_Play(i, hwnd);
 			//int *tmp=new int(i);
@@ -289,4 +300,27 @@ void CtestMulStreamDlg::OnBnClickedButton2()
 		write_log(L"uuid:" + client->station_list[i]->uuid);
 		write_log(L"route:" + client->station_list[i]->route);
 	}
+}
+
+void CtestMulStreamDlg::OnBnClickedButton3()
+{
+	// TODO: Add your control notification handler code here
+	GokuClient *client; //("127.0.0.1");
+	wstring host(L"127.0.0.1:8000");
+	client = new GokuClient(host, host);
+
+	for(int i=0;i<9;i++)
+	{
+		PLAY_Stop(i);
+		CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+		pwnd->ShowWindow(SW_HIDE);
+	}
+
+	pwBig->ShowWindow(SW_SHOW);
+	Invalidate();
+	BOOL bOpenRet = PLAY_OpenStream(1,0,0,1024*100);
+	HWND hwnd=pwBig->GetSafeHwnd();
+	BOOL bPlayRet=PLAY_Play(1, hwnd);
+	host = L"test_id1";
+	client->replay(host, play_video, 1);
 }

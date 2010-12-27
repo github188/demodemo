@@ -35,6 +35,7 @@ protected:
 	CList<CWnd *,CWnd *> playwndList;
 	int frameWidth;
 	CWinThread *mythread;
+	CPlayWnd *pwBig;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
@@ -45,4 +46,5 @@ protected:
 public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
 };

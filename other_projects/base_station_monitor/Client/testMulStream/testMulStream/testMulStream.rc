@@ -16,7 +16,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(中华人民共和国) resources
+// Chinese (P.R.C.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
@@ -71,12 +71,12 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\testMulStream.ico"
-#endif    // 中文(中华人民共和国) resources
+#endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 英语(美国) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -110,6 +110,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,263,179,50,14
     PUSHBUTTON      "Play Multi",IDC_BUTTON1,263,7,50,14
     PUSHBUTTON      "Button2",IDC_BUTTON2,265,33,48,15
+    PUSHBUTTON      "Play Single",IDC_BUTTON3,263,60,50,14
 END
 
 
@@ -190,7 +191,7 @@ BEGIN
     IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
 END
 
-#endif    // 英语(美国) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
