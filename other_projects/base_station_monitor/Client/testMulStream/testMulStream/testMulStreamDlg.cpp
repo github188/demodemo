@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CtestMulStreamDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON1, &CtestMulStreamDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CtestMulStreamDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CtestMulStreamDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CtestMulStreamDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -108,11 +109,11 @@ BOOL CtestMulStreamDlg::OnInitDialog()
 	int widthTotal=rectTotal.Width()-90;
 	int heightTotal=rectTotal.Height()-40;
 
-	CRect rectBig(rectTotal.left, rectTotal.top,
+	prectBig=new CRect(rectTotal.left, rectTotal.top,
 		rectTotal.left+widthTotal, rectTotal.top+heightTotal);
 
 	pwBig=new CPlayWnd();
-	pwBig->Create(NULL, NULL, NULL, rectBig, this, 2011);
+	pwBig->Create(NULL, NULL, NULL, *prectBig, this, 2011);
 	pwBig->ShowWindow(SW_HIDE);
 
 	int widthEach=(widthTotal-4*frameWidth)/3;
@@ -187,8 +188,8 @@ HCURSOR CtestMulStreamDlg::OnQueryDragIcon()
 
 void CtestMulStreamDlg::OnBnClickedButton1()
 {
-	PLAY_Stop(1);
-	pwBig->ShowWindow(SW_HIDE);
+	//PLAY_Stop(1);
+	//pwBig->ShowWindow(SW_HIDE);
 	GokuClient *client; //("127.0.0.1");
 	wstring host(L"127.0.0.1:8000");
 	client = new GokuClient(host, host);
@@ -323,4 +324,18 @@ void CtestMulStreamDlg::OnBnClickedButton3()
 	BOOL bPlayRet=PLAY_Play(1, hwnd);
 	host = L"test_id1";
 	client->replay(host, play_video, 1);
+}
+
+void CtestMulStreamDlg::OnBnClickedButton4()
+{
+	// TODO: Add your control notification handler code here
+	for(int i=0;i<9;i++)
+	{
+		CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+		pwnd->ShowWindow(SW_HIDE);
+	}
+	Invalidate();
+	CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(0));
+	pwnd->MoveWindow(prectBig);
+	pwnd->ShowWindow(SW_SHOW);
 }
