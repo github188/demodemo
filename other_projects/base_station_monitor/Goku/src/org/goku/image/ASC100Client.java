@@ -23,6 +23,7 @@ public class ASC100Client {
 	private String location = "";
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private ByteBuffer inBuffer = ByteBuffer.allocate(64 * 1024);
+	private ImageInfo image = null;
 	
 	private byte lastCmd = 0;
 	
@@ -123,13 +124,74 @@ public class ASC100Client {
 			if(cmd == 0x00){
 				eventProxy.notFoundImage(new ImageClientEvent(this));
 			}else if(cmd == 0x06){
-				processImageData(inBuffer);
+				try {
+					processImageData(inBuffer);
+				} catch (IOException e) {
+					log.error(e.toString(), e);
+				}
 			}
 		}
 	}
 	
-	private void processImageData(ByteBuffer inBuffer){
-		
+	private void processImageData(ByteBuffer inBuffer) throws IOException{
+		int count = inBuffer.getShort();
+		int curFrame = inBuffer.getShort();
+		int len = inBuffer.getShort();
+		int tem = inBuffer.get();
+		len += (tem << 24);
+				
+		if(curFrame == 0){
+			inBuffer.getShort();
+			image = new ImageInfo();
+			image.setFameCount(count);
+			image.setDataSize(len);
+			image.imageStatus = inBuffer.get();
+			image.channel = inBuffer.get();
+			
+			int xxLen = inBuffer.getShort();
+			tem = inBuffer.get();
+			len += (tem << 24);
+			if(len != xxLen){
+				log.error(String.format("The picture length error, %s(head) != %s(picdata)", len, xxLen));
+			}
+			image.imageSize = inBuffer.get();
+			image.zipRate = inBuffer.get();
+			this.sendCommand((byte)0x21, new byte[]{});
+		}else if (image != null){
+			int paddingLen = inBuffer.getShort();
+			if(paddingLen == inBuffer.remaining()){
+				image.recieveData(curFrame, inBuffer);
+			}else {
+				log.error(String.format("The picture data error, %s(remaining) != %s(buffer)", paddingLen, inBuffer.remaining()));				
+			}
+			if(!image.haveMoreData()){
+				int[] retry = image.getReTryFrames();
+				if(retry == null){
+					sendRetryFrame(new int[]{});
+					image.buffer.position(0);
+					ImageClientEvent event = new ImageClientEvent(this);
+					event.image = this.image;
+					this.eventProxy.recevieImageOK(event);
+					this.image = null;
+				}else {
+					sendRetryFrame(retry);
+				}
+			}
+		}else {
+			log.error(String.format("Get picture data, but not found picture head."));
+		}
+	}
+	
+	private void sendRetryFrame(int[] frames) throws IOException{
+		outBuffer.clear();
+		outBuffer.putShort((short)frames.length);
+		for(int i: frames){
+			outBuffer.putShort((short)i);
+		}
+		byte[] data = new byte[outBuffer.position()];
+		outBuffer.flip();
+		outBuffer.get(data);
+		this.sendCommand((byte)0x20, data);
 	}
 	
 	public void setASC100MX(ASC100MX mx){
