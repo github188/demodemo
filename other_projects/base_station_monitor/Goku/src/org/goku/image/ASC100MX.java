@@ -28,9 +28,9 @@ public class ASC100MX implements Runnable{
 	
 	private ByteBuffer writeBuffer = null;
 	
-	public ASC100MX(Settings settings){
-		this.localPort = settings.getInt(Settings.UDP_LOCAL_PORT, 0);
-		this.remotePort = settings.getInt(Settings.UDP_REMOTE_PORT, 0);
+	public ASC100MX(int remotePort, int localPort){
+		this.localPort = localPort; 
+		this.remotePort = remotePort;
 	}
 	
 	/**

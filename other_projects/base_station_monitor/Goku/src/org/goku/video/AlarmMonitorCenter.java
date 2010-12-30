@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.image.ASC100Client;
 import org.goku.video.odip.MonitorClient;
 
 /**

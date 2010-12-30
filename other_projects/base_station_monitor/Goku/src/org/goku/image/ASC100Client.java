@@ -2,15 +2,27 @@ package org.goku.image;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.BaseStation;
 
+/**
+ * 图片监控客户端。
+ * @author deon
+ */
 public class ASC100Client {
+	public BaseStation info = null;
+	public Collection<ImageClientListener> ls = Collections.synchronizedCollection(new ArrayList<ImageClientListener>());
+
 	private Log log = null;
 	private ASC100MX mx = null;
 	private String location = "";
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
+	private ByteBuffer inBuffer = ByteBuffer.allocate(64 * 1024);
 	
 	private byte lastCmd = 0;
 	
@@ -19,15 +31,19 @@ public class ASC100Client {
 		log = LogFactory.getLog("asc100." + location);
 	};
 	
+	public ASC100Client(BaseStation info){
+		this(info.locationId);
+		this.info = info;
+	};
+	
 	public void process(ByteBuffer buffer){
 		//当前数据包处理状态。
 		byte status = (byte)0xff; 
-		byte cur = 0;
+		short cur = 0;
 		byte cmd = 0;
 		short len = 0;
 		
-		byte[] data = null;
-		int position = 0;
+		inBuffer.clear();
 		short checksum = 0;
 		while(buffer.hasRemaining()){
 			cur = buffer.get();
@@ -35,19 +51,19 @@ public class ASC100Client {
 			if(status == 0xff){	//开始标志
 				cmd = buffer.get();
 				len = buffer.getShort();
-				data = new byte[len];				
 				status = 0;
-				position = 0;
 			}else if(status == 0){ //数据处理
-				if(cur == 0xFD);
-				cur += buffer.get(); //转义。
-				data[position] = cur;
-				position++;
-				if(position == len){
+				if(cur == 0xFD){
+					cur += buffer.get(); //转义。
+				}
+				len--;
+				inBuffer.put((byte)cur);
+				if(len == 0){
 					checksum = buffer.getShort();
 					status = (byte)0xfe;
-					if(checksum == this.getCheckSum(data)){
-						processData(cmd, data);
+					inBuffer.flip();
+					if(checksum == this.getCheckSum(inBuffer.asReadOnlyBuffer())){
+						processData(cmd, inBuffer);
 					}else {
 						log.warn("check sum error, drop data");
 					}
@@ -59,13 +75,13 @@ public class ASC100Client {
 		
 	}
 	
-	public short getCheckSum(byte[] data){
+	public short getCheckSum(ByteBuffer data){
 		short sum = 0;
-		for(byte b:data){
-			sum += b;
+		while(data.hasRemaining()){
+			sum += data.get();
 		}
 		return sum;
-	}
+	}	
 	
 	/**
 	 * 发送一个终端命令，封装了“图像监控系统通信协议v1.34".
@@ -74,8 +90,9 @@ public class ASC100Client {
 	 * @throws IOException 
 	 */
 	public void sendCommand(byte cmd, byte data[]) throws IOException{
+		ByteBuffer temp = null;
 		synchronized(outBuffer){
-			outBuffer.reset();
+			outBuffer.clear();
 			outBuffer.put((byte)0xff);
 			outBuffer.put(cmd);
 			outBuffer.putShort((short)data.length);
@@ -87,8 +104,11 @@ public class ASC100Client {
 					outBuffer.put((byte)(b - 0xfd));
 				}
 			}
+			temp = outBuffer.asReadOnlyBuffer();
+			temp.limit(outBuffer.position());
+			temp.position(4);
 			
-			outBuffer.putShort(getCheckSum(data));
+			outBuffer.putShort(getCheckSum(temp));
 			outBuffer.put((byte)0xfe);
 			if(mx != null){
 				mx.send(this, outBuffer);
@@ -98,10 +118,18 @@ public class ASC100Client {
 		}
 	}
 	
-	public void processData(byte cmd, byte data[]){
+	public void processData(byte cmd, ByteBuffer inBuffer){
 		if(this.lastCmd == 0x02){
-			
+			if(cmd == 0x00){
+				eventProxy.notFoundImage(new ImageClientEvent(this));
+			}else if(cmd == 0x06){
+				processImageData(inBuffer);
+			}
 		}
+	}
+	
+	private void processImageData(ByteBuffer inBuffer){
+		
 	}
 	
 	public void setASC100MX(ASC100MX mx){
@@ -119,4 +147,33 @@ public class ASC100Client {
 			log.error(e.toString(), e);
 		}
 	}
+	
+	public void addListener(ImageClientListener l){
+		if(!this.ls.contains(l)){
+			this.ls.add(l);
+		}
+	}
+	
+	public void removeListener(ImageClientListener l){
+		if(this.ls.contains(l)){
+			this.ls.remove(l);
+		}
+	}
+	
+	public ImageClientListener eventProxy = new ImageClientListener(){
+
+		@Override
+		public void recevieImageOK(ImageClientEvent event) {
+			for(ImageClientListener l: ls){
+				l.recevieImageOK(event);
+			}
+		}
+
+		@Override
+		public void notFoundImage(ImageClientEvent event) {
+			for(ImageClientListener l: ls){
+				l.notFoundImage(event);
+			}
+		}
+	};
 }
