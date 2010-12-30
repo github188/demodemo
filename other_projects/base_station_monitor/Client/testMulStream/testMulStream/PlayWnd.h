@@ -2,7 +2,8 @@
 
 
 // CPlayWnd
-#define	VIDEO_BACK_COLOR	RGB(51,54,110)
+//#define	VIDEO_BACK_COLOR	RGB(51,54,110)
+#define	VIDEO_BACK_COLOR	RGB(0,0,0)
 
 class CPlayWnd : public CWnd
 {
