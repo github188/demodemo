@@ -16,6 +16,8 @@ class Settings(object):
         self.path = os.path.join(SETTINGS_DIRECTORY, "goku.cfg")
         self._config_obj = ConfigObj(self.path, unrepr=True)
         
+        self.set("APP_ROOT", SETTINGS_DIRECTORY, autosave=False)
+        
     def __setitem__(self, name, value):
         self.set(name, value)
     

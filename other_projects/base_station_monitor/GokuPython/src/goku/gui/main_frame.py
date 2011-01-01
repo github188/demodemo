@@ -44,8 +44,12 @@ class MainFrame(wx.Frame):
         self._mgr = wx.aui.AuiManager()
         self._mgr.SetManagedWindow(self)
         
-        self._mgr.AddPane(self._createCenterPane(), wx.aui.AuiPaneInfo().Name("Editor").
+        self._mgr.AddPane(self._createCenterPanel(), wx.aui.AuiPaneInfo().Name("Editor").
                           CenterPane())
+
+        self._mgr.AddPane(self._createAlarmPanel(), wx.aui.AuiPaneInfo().Name("AlarmPanel").
+                           Caption("AlarmPanel").Bottom().Layer(0).Position(0).
+                           CloseButton(True).MaximizeButton(True))
         
         self._mgr.AddPane(self._createNavigationTree(), wx.aui.AuiPaneInfo().Name("NavigationBar").
                            Caption("Navigation Bar").Left().Layer(0).Position(0).
@@ -55,15 +59,18 @@ class MainFrame(wx.Frame):
         for ii in xrange(len(all_panes)):
             if not all_panes[ii].IsToolbar():
                 all_panes[ii].Hide()
-        self._mgr.GetPane("NavigationBar").Show().Left().Layer(0).Row(0).Position(0)
-        self._mgr.GetPane("Editor").Show()
+        self._mgr.GetPane("NavigationBar").Show().Left().Layer(1).Row(0).Position(0)
+
+        self._mgr.GetPane("Editor").Show().Center().Layer(0).Row(0).Position(0)
+        self._mgr.GetPane("AlarmPanel").Show().Bottom().Layer(0).Row(0).Position(1)
+        
         perspective_all = self._mgr.SavePerspective()
         
         self._perspectives.append(perspective_all)
 
         self._mgr.Update()        
     
-    def _createCenterPane(self):
+    def _createCenterPanel(self):
         self.notebook = NoteBook(self, None)
         from video_panel import BasicVideoPlan
         self._editor_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
@@ -72,6 +79,14 @@ class MainFrame(wx.Frame):
         sizer = wx.BoxSizer()
         sizer.Add(self._editor_panel, 1, wx.EXPAND, )
         return self.notebook
+    
+    def _createAlarmPanel(self):
+        self.notebook = NoteBook(self, None)
+        self._editor_panel = wx.Panel(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
+        self.notebook.AddPage(self._editor_panel, "Edit")
+        sizer = wx.BoxSizer()
+        sizer.Add(self._editor_panel, 1, wx.EXPAND, )
+        return self.notebook    
     
     def _createNavigationTree(self):
         from navigation import NavigationBar
