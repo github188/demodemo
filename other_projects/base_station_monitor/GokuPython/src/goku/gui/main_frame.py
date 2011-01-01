@@ -13,6 +13,8 @@ try:
 except ImportError:
     from wx.lib import flatnotebook as fnb
 
+from goku.core import SETTINGS
+
 ID_ABOUT = 101
 ID_EXIT  = 102
 
@@ -85,6 +87,11 @@ class MainFrame(wx.Frame):
         
     def _get_video_window(self, index):
         pass
+    
+    def _save_mainframe_size_and_position(self):
+#        SETTINGS["mainframe size"] = self.GetSizeTuple()
+        SETTINGS['current_perspective'] = self._current_perspective
+        SETTINGS["mainframe position"] = self.GetPositionTuple()    
         
 class EditorPanel(scroll.ScrolledPanel):
 

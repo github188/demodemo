@@ -5,6 +5,7 @@ Created on 2011-1-1
 '''
 
 import wx
+from core import SETTINGS
 from goku.gui import MainFrame
 
 class GoKuApp(wx.App):
@@ -15,6 +16,9 @@ class GoKuApp(wx.App):
         return True
 
 def main():
+    data = SETTINGS['center_server']
+    print "center_server:%s" % str(data)
+    
     app = GoKuApp(0)
     app.MainLoop()
     

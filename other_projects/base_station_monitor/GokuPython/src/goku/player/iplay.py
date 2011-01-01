@@ -13,6 +13,6 @@ class Player(object):
         d = self.winDll.PLAY_OpenFile(nPort, sFile)
         print "open file on hwnd:%s" % type(hwnd)
                 
-        b = self.winDll.PLAY_Play(nPort, hwnd)     
+        b = self.winDll.PLAY_Play(nPort, hwnd)
         
         print "open file on hwnd:%s" % hwnd
