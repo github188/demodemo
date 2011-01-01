@@ -23,13 +23,16 @@ class MainFrame(wx.Frame):
         self.SetStatusText("This is the statusbar")
 
         menu = wx.Menu()
-        menu.Append(ID_ABOUT, "&About",
+        menu.Append(ID_ABOUT, "&TestPlay",
                     "More information about this program")
         menu.AppendSeparator()
         menu.Append(ID_EXIT, "E&xit", "Terminate the program")
 
         menuBar = wx.MenuBar()
         menuBar.Append(menu, "&File");
+        
+        self.Bind(wx.EVT_MENU, self.OnPlay, id=ID_ABOUT)        
+        #self.Bind(menu, self.OnPlay)
 
         self._perspectives = []
         self.SetMenuBar(menuBar)
@@ -60,16 +63,28 @@ class MainFrame(wx.Frame):
     
     def _createCenterPane(self):
         self.notebook = NoteBook(self, None)
-        self._editor_panel = EditorPanel(self.notebook)
+        from video_panel import BasicVideoPlan
+        self._editor_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
+        #self._editor_panel = EditorPanel(self.notebook)
         self.notebook.AddPage(self._editor_panel, "Edit")
         sizer = wx.BoxSizer()
-        sizer.Add(self._editor_panel, 1, wx.EXPAND)
+        sizer.Add(self._editor_panel, 1, wx.EXPAND, )
         return self.notebook
     
     def _createNavigationTree(self):
         from navigation import NavigationBar
         self.navigation_tree = NavigationBar(self, self._editor_panel)
-        return self.navigation_tree    
+        return self.navigation_tree
+    
+    def OnPlay(self, e):
+        win = self._editor_panel.get_video_window(1)
+        from goku.player.iplay import Player        
+        player = Player(win)
+        player.open_file("0001")     
+        print "on play"
+        
+    def _get_video_window(self, index):
+        pass
         
 class EditorPanel(scroll.ScrolledPanel):
 
