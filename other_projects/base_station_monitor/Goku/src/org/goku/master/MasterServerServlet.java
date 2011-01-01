@@ -284,6 +284,26 @@ public class MasterServerServlet extends BaseRouteServlet{
 	throws IOException, ServletException{
 		forwardToRoute("stop_record", request, response);
 	}
+	
+	public void rpc_add_location(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException{
+		
+	}
+	
+	public void rpc_add_bts(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException{
+		
+	}
+	
+	public void rpc_delete(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException{
+		
+	}	
+	
+	public void rpc_list_bts(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException{
+		
+	}
 
 	/**
 	 * 将请求转发到视频转发服务器。
