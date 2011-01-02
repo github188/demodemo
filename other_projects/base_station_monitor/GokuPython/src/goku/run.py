@@ -46,6 +46,7 @@ def _init_i18n(app_root, lang):
                             languages = lang).install(True)
     except Exception, e:
         logging.exception(e)
+        globals()['_'] = lambda x: x
     
 def _init_logging(settings):    
     log_path = os.path.join(settings['DATA_ROOT'], "app.log")
