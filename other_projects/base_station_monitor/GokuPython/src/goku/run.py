@@ -15,6 +15,7 @@ class GoKuApp(wx.App):
         frame = MainFrame(None, -1, "Hello from wxPython")
         frame.Show(True)
         self.SetTopWindow(frame)
+        frame.CenterOnScreen()
         return True
 
 def main():

@@ -73,24 +73,38 @@ class MainFrame(wx.Frame):
     def _createCenterPanel(self):
         self.notebook = NoteBook(self, None)
         from video_panel import BasicVideoPlan
-        self._editor_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
-        #self._editor_panel = EditorPanel(self.notebook)
-        self.notebook.AddPage(self._editor_panel, "Edit")
-        sizer = wx.BoxSizer()
-        sizer.Add(self._editor_panel, 1, wx.EXPAND, )
+        self._video_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
+        self.notebook.AddPage(self._video_panel, "Video")
+        
+        self._image_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
+        self.notebook.AddPage(self._image_panel, "Image")    
+        #sizer = wx.BoxSizer()
+        #sizer.Add(self._editor_panel, 1, wx.EXPAND, )
         return self.notebook
     
     def _createAlarmPanel(self):
-        self.notebook = NoteBook(self, None)
-        self._editor_panel = wx.Panel(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
-        self.notebook.AddPage(self._editor_panel, "Edit")
-        sizer = wx.BoxSizer()
-        sizer.Add(self._editor_panel, 1, wx.EXPAND, )
-        return self.notebook    
+        self.alarmPanel = NoteBook(self, None)
+        from alarm_panel import AlarmPanel as AlarmTablePanel
+        self._realTimeAlarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
+        self.alarmPanel.AddPage(self._realTimeAlarm, "RealTime")
+        self._realTimeAlarm.SetBackgroundColour('#c56c00')
+        #self.SetBackgroundColour('#c56c00')
+
+        self._Level1Alarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
+        self.alarmPanel.AddPage(self._Level1Alarm, "Level1")
+        self._Level1Alarm.SetBackgroundColour('#c56c55')
+
+        self._Level2Alarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
+        self.alarmPanel.AddPage(self._Level2Alarm, "Level2")
+        self._Level2Alarm.SetBackgroundColour('#996c55')
+        
+        #sizer = wx.BoxSizer()
+        #sizer.Add(self._realTimeAlarm, 1, wx.EXPAND, )
+        return self.alarmPanel    
     
     def _createNavigationTree(self):
         from navigation import NavigationBar
-        self.navigation_tree = NavigationBar(self, self._editor_panel)
+        self.navigation_tree = NavigationBar(self, None)
         return self.navigation_tree
     
     def OnPlay(self, e):
@@ -138,10 +152,10 @@ class EditorPanel(scroll.ScrolledPanel):
             self.editor.save()        
 
 class NoteBook(fnb.FlatNotebook):
-
     def __init__(self, parent, app, size=(200, 250), style=None):
         self._parent = parent
-        style = style and style or fnb.FNB_NODRAG | fnb.FNB_HIDE_ON_SINGLE_TAB | fnb.FNB_VC8
+        #| fnb.FNB_HIDE_ON_SINGLE_TAB
+        style = style and style or fnb.FNB_NODRAG | fnb.FNB_VC8
         fnb.FlatNotebook.__init__(self, parent, style=style, size=size)
         self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
         self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CLOSING, self.OnPageClosing)
