@@ -29,6 +29,10 @@ class LocationNode(object):
     
     @property
     def is_leaf(self): return False
+    
+class AlarmRecord(object):
+    def bind(self, data):
+        self.__dict__.update(data)        
 
 class BTSNode(object):
     def __init__(self, code='', name=''):
@@ -76,6 +80,18 @@ class CenterServer(object):
         else:
             logging.info("load_bts_list: %s" % ret['status'])
         return node
+    
+    def load_alarm_list(self, ):
+        ret = self.proxy.rpc_list_alarm()
+        alarm_list = []
+        if ret['status'] == '0':
+            for r in ret['data']['data']:
+                alarm_list.append(AlarmRecord())
+                alarm_list[-1].bind(r)
+        else:
+            logging.info("load_alarm_list: %s" % ret['status'])
+            
+        return alarm_list
         
 class RouteServer(object):
     def __init__(self, ):

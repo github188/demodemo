@@ -112,7 +112,6 @@ class MainFrame(wx.Frame):
         return self.navigation_tree
     
     def OnPlay(self, e):
-        self.OnShow()
         """
         win = self._editor_panel.get_video_window(1)
         from goku.player.iplay import Player        
@@ -120,6 +119,11 @@ class MainFrame(wx.Frame):
         player.open_file("0001")     
         print "on play"
         """
+        from goku.models import server
+        alarm_list = server.load_alarm_list()
+        
+        self._realTimeAlarm.alarmTable.update_list(alarm_list)
+        
         
     def _get_video_window(self, index):
         pass

@@ -26,6 +26,7 @@ class AlarmTable(HTL.HyperTreeList):
                                    wx.TR_COLUMN_LINES |
                                    wx.TR_HAS_VARIABLE_ROW_HEIGHT)
         
+        self.AddColumn(_("uuid"))
         self.AddColumn(_("Location"))
         self.AddColumn(_("BTSType"))
         self.AddColumn(_("AlarmType"))
@@ -41,6 +42,19 @@ class AlarmTable(HTL.HyperTreeList):
         self.SetColumnWidth(3, 120)
         self.SetColumnWidth(4, 120)
         self.SetColumnWidth(5, 120)
-        self.SetColumnWidth(6, 60)
+        self.SetColumnWidth(6, 120)
+        self.SetColumnWidth(7, 60)
         
+        self.root = self.AddRoot("alarms")
+    
+    def update_list(self, data):
+        self.DeleteAllItems()        
+        self.root = self.AddRoot("alarms")
+        for e in data:
+            item = self.AppendItem(self.root, e.uuid)
+            self.SetItemText(item, e.alarmType, 3)
+            self.SetItemText(item, e.baseStation, 4)
+            self.SetItemText(item, e.startTime, 5)
+            self.SetItemText(item, e.endTime, 6)
+            self.SetItemText(item, e.alarmStatus, 7)
         
