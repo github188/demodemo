@@ -323,6 +323,34 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}
 		JSONValue.writeJSONString(data, response.getWriter());
 	}
+	
+	public void rpc_list_alarm(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException{
+		response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("utf8");	
+		String sid = this.getStringParam(request, "sid", null);
+		
+		Map<String, Object> data = new HashMap<String, Object>();
+		if(sid == null){
+			data.put("status", "-2");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				data.put("status", "1");
+			}else {
+				data.put("status", "0");
+				QueryParameter param = new QueryParameter();
+				param.qsid = this.getStringParam(request, "qsid", null);
+				param.limit = this.getIntParam(request, "limit", 100);
+				param.offset = this.getIntParam(request, "offset", 0);
+				param.order = this.getStringParam(request, "order", null);
+				
+				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
+				data.put("data", alarms);
+			}
+		}
+		JSONValue.writeJSONString(data, response.getWriter());
+	}	
 
 	/**
 	 * 将请求转发到视频转发服务器。
