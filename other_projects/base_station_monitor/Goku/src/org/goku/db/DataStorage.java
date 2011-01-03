@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
 import org.goku.settings.Settings;
@@ -50,6 +51,8 @@ public abstract class DataStorage {
 			return new JDBCDataStorage(param);
 		}
 	}
+	
+	public abstract Location getRootLocation(User user);
 	
 	/**
 	 * 根据用户取到可以监控的基站。

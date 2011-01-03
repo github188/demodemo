@@ -19,6 +19,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
 import org.goku.settings.Settings;
@@ -513,6 +514,12 @@ public class JDBCDataStorage extends DataStorage {
 	}	
 	
 	public QueryResult queryData(Class obj, QueryParameter param){
+		return null;
+	}
+
+	@Override
+	public Location getRootLocation(User user) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

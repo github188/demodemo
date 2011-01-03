@@ -1,8 +1,15 @@
 package org.goku.core.model;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-public class BaseStation {
+import org.json.simple.JSONStreamAware;
+import org.json.simple.JSONValue;
+
+public class BaseStation  implements JSONStreamAware{
 	public static final String ORM_TABLE = "base_station";
 	public static final String[] ORM_FIELDS = new String[]{"uuid", "connectionStatus",
 		"groupName", "routeServer", "locationId", 
@@ -18,6 +25,8 @@ public class BaseStation {
 	 * 基站的唯一标识，在客户端界面显示，初始化时配置。
 	 */
 	public String uuid;
+	
+	public String name;
 	
 	/**
 	 * 基站的连接状态，
@@ -84,5 +93,17 @@ public class BaseStation {
 			return this.uuid.equals(((BaseStation) o).uuid);
 		}
 		return false;
+	}	
+	
+	@Override
+	public void writeJSONString(Writer out) throws IOException {
+        Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("uuid", uuid);
+        obj.put("name", name);
+        obj.put("devType", devType);
+        obj.put("routeServer", routeServer);
+        obj.put("status", getStatus());
+        
+        JSONValue.writeJSONString(obj, out);
 	}	
 }

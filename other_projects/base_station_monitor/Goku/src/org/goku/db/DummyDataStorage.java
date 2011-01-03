@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
 import org.goku.settings.Settings;
@@ -217,5 +218,40 @@ public class DummyDataStorage extends DataStorage {
 		result.count = result.data.size();
 		
 		return result;
+	}
+
+	@Override
+	public Location getRootLocation(User user) {
+		Location root = new Location();
+		root.uuid = "001";
+		root.name = "杭州";
+
+		Location subNode = new Location();
+		subNode.uuid = "002";
+		subNode.name = "滨江";
+		
+		root.children.add(subNode);
+		
+
+		subNode = new Location();
+		subNode.uuid = "003";
+		subNode.name = "萧山";
+		root.children.add(subNode);
+		
+		BaseStation station = new BaseStation();
+		station.uuid = "10010";
+		station.name = "诺西大楼";
+		station.devType = 1;
+		station.routeServer = "127.0.0.1:8080";
+		subNode.listBTS.add(station);
+
+		station = new BaseStation();
+		station.uuid = "10012";
+		station.name = "信诚路口";
+		station.devType = 1;
+		station.routeServer = "127.0.0.1:8080";
+		subNode.listBTS.add(station);		
+		
+		return root;
 	}
 }

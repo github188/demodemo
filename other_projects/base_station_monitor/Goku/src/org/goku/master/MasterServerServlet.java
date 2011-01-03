@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.SimpleCache;
 import org.goku.core.model.SystemLog;
@@ -38,6 +39,7 @@ import org.goku.http.BaseRouteServlet;
 import org.goku.http.HTTPRemoteClient;
 import org.goku.http.HttpResponse;
 import org.goku.http.SimpleHttpClient;
+import org.json.simple.JSONValue;
 
 public class MasterServerServlet extends BaseRouteServlet{
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -298,11 +300,28 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void rpc_delete(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException{
 		
-	}	
+	}
 	
 	public void rpc_list_bts(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException{
-		
+		response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("utf8");	
+		String sid = this.getStringParam(request, "sid", null);
+		Map<String, Object> data = new HashMap<String, Object>();		
+		if(sid == null){
+			data.put("status", "-2");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				data.put("status", "1");
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				data.put("status", "0");
+				Location node = server.storage.getRootLocation(userObj);
+				data.put("data", node);
+			}
+		}
+		JSONValue.writeJSONString(data, response.getWriter());
 	}
 
 	/**
