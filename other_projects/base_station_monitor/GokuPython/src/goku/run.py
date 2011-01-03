@@ -10,7 +10,10 @@ import gettext
 
 class GoKuApp(wx.App):
     def OnInit(self):
-        frame = GoKuApp.LoginFrame(None, -1, _("Application Title"))
+        #frame = GoKuApp.LoginFrame(None, -1, _("Application Title"))
+        from goku.models import server
+        server.login("test1", "pass")
+        frame = GoKuApp.MainFrame(None, -1, _("Application Title"))
         frame.app = self
         frame.Show(True)
         self.SetTopWindow(frame)

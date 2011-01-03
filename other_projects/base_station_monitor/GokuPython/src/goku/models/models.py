@@ -3,30 +3,45 @@ import logging
 __all__ = ['LocationNode', 'BTSNode', 'CenterServer', 'RouteServer']
 
 class LocationNode(object):
-    def __init__(self, code, name):
-        self.code = code
+    def __init__(self, code=None, name=None):
+        self.uuid = code
         self.name = name
         self.children = []
+        self.btsList = []
     
     def add_children(self, node):
         self.children.append(node)
+        
+    def bind(self, data):
+        self.uuid = data['uuid']
+        self.name = data['name']
+        self.children = []
+        for sub in data['children']:
+            self.children.append(LocationNode())
+            self.children[-1].bind(sub)
+        for sub in data['listBTS']:
+            self.children.append(BTSNode())
+            self.children[-1].bind(sub)
     
     @property
     def view_label(self):
-        return self.name
+        return "%s-%s" % (self.uuid, self.name)
     
     @property
     def is_leaf(self): return False
 
 class BTSNode(object):
-    def __init__(self, code, name):
-        self.code = code
+    def __init__(self, code='', name=''):
+        self.uuid = code
         self.name = name
         self.children = []
+        
+    def bind(self, data):
+        self.__dict__.update(data)        
 
     @property
     def view_label(self):
-        return self.name
+        return "%s-%s" % (self.uuid, self.name)
     
     @property
     def is_leaf(self): return True
@@ -46,7 +61,21 @@ class CenterServer(object):
             code, msg = ret.split(":", 1)
         else:
             code = "-2"
+        if code == '0':
+            x, sid = ret.split("$", 1)
+            self.proxy.sid = sid
+        
         return code
+    
+    def load_bts_list(self):
+        ret = self.proxy.rpc_list_bts()
+        node = None
+        if ret['status'] == '0':
+            node = LocationNode()
+            node.bind(ret['data'])
+        else:
+            logging.info("load_bts_list: %s" % ret['status'])
+        return node
         
 class RouteServer(object):
     def __init__(self, ):

@@ -2,7 +2,7 @@
 from images import ArtProvider
 from components.treeabstract import ToolBarTree
 from components.action import ToolActionItem, MenuActionItem
-import os
+import os, logging
 import wx
 from goku.models import *
 
@@ -34,6 +34,9 @@ class NavigationBar(ToolBarTree):
         #self.root_template = TextTemplate("root")
         self.pupulate_tree()
         self.loadTreeData(LocationNode("001", "Root"))
+        self.loaded = False
+        #self.Bind(wx.EVT_SHOW, self.LoadBTSTree)
+        self.LoadBTSTree(3)
         
     def init_toolbar_actions(self):
         _ToolData = [ ToolActionItem(*args) for args in
@@ -47,6 +50,14 @@ class NavigationBar(ToolBarTree):
     def pupulate_tree(self, templates_dir=None):
         self._images = TreeImageList()
         self.tree.SetImageList(self._images)
+        
+    def LoadBTSTree(self, e):
+        logging.info("LoadBTSTree")
+        if not self.loaded: 
+            self.loaded = True
+            from goku.models import server
+            root = server.load_bts_list()
+            self.loadTreeData(root)        
         
     def cur_select_node(self):
         nodes = self.tree.GetSelections()
@@ -114,7 +125,7 @@ class NavigationBar(ToolBarTree):
         for node in child_list:
             sub_node = self._create_tree_node(parent, node,)
             if isinstance(node, (LocationNode, )):
-                self._import_tree_data(node, node.children)
+                self._import_tree_data(sub_node, node.children)
         
     def _create_tree_node(self, parent_node, pydata,
                           norm_icon_index=None, exp_icon_index=None):        
