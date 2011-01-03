@@ -10,7 +10,8 @@ import gettext
 
 class GoKuApp(wx.App):
     def OnInit(self):
-        frame = GoKuApp.MainFrame(None, -1, _("Application Title"))
+        frame = GoKuApp.LoginFrame(None, -1, _("Application Title"))
+        frame.app = self
         frame.Show(True)
         self.SetTopWindow(frame)
         frame.CenterOnScreen()
@@ -21,18 +22,22 @@ def main():
     if not frozen:
         app_root = os.path.dirname(os.path.dirname(__file__))
     elif frozen in ('dll', 'console_exe', 'windows_exe'):
-        app_root = os.path.join(os.path.dirname(sys.executable))    
+        app_root = os.path.join(os.path.dirname(sys.executable))
     sys.path.insert(0, app_root)
     
     from goku.core import SETTINGS
-    from goku.gui import MainFrame    
+    from goku.gui import MainFrame
+    from goku.gui.login_frame import LoginFrame
+    from goku.models import connect
     GoKuApp.MainFrame = MainFrame
+    GoKuApp.LoginFrame = LoginFrame
     
     #data = SETTINGS['center_server']
     SETTINGS.set("APP_ROOT", app_root, False, True)
     _init_logging(SETTINGS)
     _init_i18n(app_root, SETTINGS['lang'])
     
+    connect(SETTINGS['center_server'])
     app = GoKuApp(0)
     app.MainLoop()
     
@@ -43,7 +48,7 @@ def _init_i18n(app_root, lang):
     try:
         gettext.install('lang', locale_path, unicode=False)
         gettext.translation('lang', locale_path, 
-                            languages = lang).install(True)
+                            languages = [lang, ]).install(True)
     except Exception, e:
         logging.exception(e)
         globals()['_'] = lambda x: x

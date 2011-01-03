@@ -7,7 +7,7 @@ from goku.gui.images import ArtProvider
 import os, logging
 import wx
 
-def _(x): return x
+#def _(x): return x
 
 class _ActionItem(object):
 

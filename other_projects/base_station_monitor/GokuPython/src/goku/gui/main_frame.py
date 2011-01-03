@@ -33,12 +33,16 @@ class MainFrame(wx.Frame):
         menuBar = wx.MenuBar()
         menuBar.Append(menu, "&File");
         
-        self.Bind(wx.EVT_MENU, self.OnPlay, id=ID_ABOUT)        
+        self.Bind(wx.EVT_MENU, self.OnPlay, id=ID_ABOUT)
+        
+        #self.Bind(wx.EVT_SHOW, self.OnShow)
+          
         #self.Bind(menu, self.OnPlay)
 
         self._perspectives = []
         self.SetMenuBar(menuBar)
         self._init_layout()
+        self.login_ok = False
     
     def _init_layout(self):
         self._mgr = wx.aui.AuiManager()
@@ -74,10 +78,10 @@ class MainFrame(wx.Frame):
         self.notebook = NoteBook(self, None)
         from video_panel import BasicVideoPlan
         self._video_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
-        self.notebook.AddPage(self._video_panel, "Video")
+        self.notebook.AddPage(self._video_panel, _("Video"))
         
         self._image_panel = BasicVideoPlan(self.notebook, style=wx.SUNKEN_BORDER) #EditorPanel(self.notebook)
-        self.notebook.AddPage(self._image_panel, "Image")    
+        self.notebook.AddPage(self._image_panel, _("Image"))    
         #sizer = wx.BoxSizer()
         #sizer.Add(self._editor_panel, 1, wx.EXPAND, )
         return self.notebook
@@ -86,16 +90,16 @@ class MainFrame(wx.Frame):
         self.alarmPanel = NoteBook(self, None)
         from alarm_panel import AlarmPanel as AlarmTablePanel
         self._realTimeAlarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
-        self.alarmPanel.AddPage(self._realTimeAlarm, "RealTime")
+        self.alarmPanel.AddPage(self._realTimeAlarm, _("RealTime"))
         self._realTimeAlarm.SetBackgroundColour('#c56c00')
         #self.SetBackgroundColour('#c56c00')
 
         self._Level1Alarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
-        self.alarmPanel.AddPage(self._Level1Alarm, "Level1")
+        self.alarmPanel.AddPage(self._Level1Alarm, _("Level1"))
         self._Level1Alarm.SetBackgroundColour('#c56c55')
 
         self._Level2Alarm = AlarmTablePanel(self.alarmPanel) #EditorPanel(self.notebook)
-        self.alarmPanel.AddPage(self._Level2Alarm, "Level2")
+        self.alarmPanel.AddPage(self._Level2Alarm, _("Level2"))
         self._Level2Alarm.SetBackgroundColour('#996c55')
         
         #sizer = wx.BoxSizer()
@@ -108,11 +112,14 @@ class MainFrame(wx.Frame):
         return self.navigation_tree
     
     def OnPlay(self, e):
+        self.OnShow()
+        """
         win = self._editor_panel.get_video_window(1)
         from goku.player.iplay import Player        
         player = Player(win)
         player.open_file("0001")     
         print "on play"
+        """
         
     def _get_video_window(self, index):
         pass
@@ -120,7 +127,18 @@ class MainFrame(wx.Frame):
     def _save_mainframe_size_and_position(self):
 #        SETTINGS["mainframe size"] = self.GetSizeTuple()
         SETTINGS['current_perspective'] = self._current_perspective
-        SETTINGS["mainframe position"] = self.GetPositionTuple()    
+        SETTINGS["mainframe position"] = self.GetPositionTuple()
+        
+    def OnShow(self, *args):
+        if not self.login_ok:
+            self.login_ok = True
+            from dailogs import LoginDialog
+            xx = LoginDialog(self, -1, _("User login"))
+            xx.ShowModal()
+            xx.Destroy()
+            if not xx.login_ok:
+                self.Close()
+                self.Destroy()
         
 class EditorPanel(scroll.ScrolledPanel):
 

@@ -26,13 +26,13 @@ class AlarmTable(HTL.HyperTreeList):
                                    wx.TR_COLUMN_LINES |
                                    wx.TR_HAS_VARIABLE_ROW_HEIGHT)
         
-        self.AddColumn("Location")
-        self.AddColumn("BTSType")
-        self.AddColumn("AlarmType")
-        self.AddColumn("BTS")
-        self.AddColumn("StartTime")
-        self.AddColumn("EndTime")
-        self.AddColumn("Status")
+        self.AddColumn(_("Location"))
+        self.AddColumn(_("BTSType"))
+        self.AddColumn(_("AlarmType"))
+        self.AddColumn(_("BTS"))
+        self.AddColumn(_("StartTime"))
+        self.AddColumn(_("EndTime"))
+        self.AddColumn(_("Status"))
         #self.AddColumn("Hex")
         self.SetMainColumn(0)
         self.SetColumnWidth(0, 80)
@@ -41,6 +41,6 @@ class AlarmTable(HTL.HyperTreeList):
         self.SetColumnWidth(3, 120)
         self.SetColumnWidth(4, 120)
         self.SetColumnWidth(5, 120)
-        self.SetColumnWidth(6, 30)
+        self.SetColumnWidth(6, 60)
         
         
