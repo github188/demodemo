@@ -17,13 +17,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteRunningStatus;
+import org.goku.socket.SelectionHandler;
 import org.goku.socket.SocketManager;
 
 /**
  * 监控客户端，处理于摄像头的交互。
  * @author deon
  */
-public class MonitorClient implements Runnable{
+public class MonitorClient implements Runnable, SelectionHandler{
 	public BaseStation info = null;
 	public Collection<MonitorClientListener> ls = Collections.synchronizedCollection(new ArrayList<MonitorClientListener>());
 	

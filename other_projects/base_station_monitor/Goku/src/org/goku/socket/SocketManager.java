@@ -16,7 +16,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.goku.video.odip.MonitorClient;
 
 /**
  * 实现Socket的连接管理，在Socket有可读数据时分配一个线程处理数据。
@@ -43,6 +42,9 @@ public class SocketManager implements Runnable{
 		}
 		try{
 			socketChannel = SocketChannel.open();
+			if(handler instanceof ChannelHandler){
+				((ChannelHandler)handler).setSocketChannel(socketChannel);
+			}
 			socketChannel.socket().setSoTimeout(5 * 1000);
 			socketChannel.configureBlocking(false);
 			socketChannel.connect(new InetSocketAddress(host, port));		
@@ -61,6 +63,9 @@ public class SocketManager implements Runnable{
 		ServerSocketChannel serverChannel = null;
 		try{
 			serverChannel = ServerSocketChannel.open();
+			if(handler instanceof ChannelHandler){
+				((ChannelHandler)handler).setSocketChannel(serverChannel);
+			}		
 			serverChannel.socket().bind(new InetSocketAddress(port)); 
 			serverChannel.configureBlocking(false); 
 			this.register(serverChannel, SelectionKey.OP_ACCEPT, handler);
@@ -98,12 +103,8 @@ public class SocketManager implements Runnable{
 				synchronized(paddings){
 					for(ChangeRequest req: this.paddings){
 						SelectionKey key = req.channel.register(this.selector, req.ops, req.att);
-						if(req.att instanceof MonitorClient){
-							((MonitorClient)req.att).setSelectionKey(key);
-						}else if(req.att instanceof SimpleSocketServer){
-							((SimpleSocketServer)req.att).setSelectionKey(key);
-						}else if(req.att instanceof SocketClient){
-							((SocketClient)req.att).setSelectionKey(key);							
+						if(req.att instanceof SelectionHandler){
+							((SelectionHandler)req.att).setSelectionKey(key);
 						}
 					}
 					this.paddings.clear();

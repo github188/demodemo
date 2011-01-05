@@ -16,7 +16,7 @@ import org.goku.core.model.User;
  * 另外保存一些和客户端相关的描述信息。
  * @author deon
  */
-public class SocketClient implements Runnable {
+public class SocketClient implements SelectionHandler, Runnable {
 	public static final int MODE_HTTP = 1;
 	public static final int MODE_REALLPLY = 2;
 	public static final int MODE_REPLAY = 3;
