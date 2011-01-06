@@ -67,6 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="lib/iplay.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -147,6 +148,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="lib/iplay.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -206,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GokuClient.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrm.cpp"
 				>
 			</File>
@@ -261,6 +267,10 @@
 			</File>
 			<File
 				RelativePath=".\FileView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GokuClient.h"
 				>
 			</File>
 			<File

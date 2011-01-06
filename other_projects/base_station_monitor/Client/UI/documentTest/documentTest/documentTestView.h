@@ -15,6 +15,8 @@
 
 #pragma once
 #include "PlayWnd.h"
+#include "include/iPlay.h"
+#include "GokuClient.cpp"
 
 class CdocumentTestView : public CView
 {
@@ -33,6 +35,7 @@ public:
 public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	void clickOnTreeItem();
 protected:
 
 // 实现
@@ -58,6 +61,8 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void OnInitialUpdate();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTestPlayvideo();
+	afx_msg void OnFileNew();
 };
 
 #ifndef _DEBUG  // documentTestView.cpp 中的调试版本

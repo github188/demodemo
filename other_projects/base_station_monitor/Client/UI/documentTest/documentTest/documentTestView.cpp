@@ -30,6 +30,8 @@ IMPLEMENT_DYNCREATE(CdocumentTestView, CView)
 BEGIN_MESSAGE_MAP(CdocumentTestView, CView)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_COMMAND(ID_TEST_PLAYVIDEO, &CdocumentTestView::OnTestPlayvideo)
+	ON_COMMAND(ID_FILE_NEW, &CdocumentTestView::OnFileNew)
 END_MESSAGE_MAP()
 
 // CdocumentTestView ¹¹Ôì/Îö¹¹
@@ -196,4 +198,54 @@ void CdocumentTestView::OnSize(UINT nType, int cx, int cy)
 	//	}
 	//	GetClientRect(&mRect);
 	//}
+}
+
+int play_video(int sessionId, char *pBuffer, int len){
+	wstring log;
+	log.append(L"play video session:");
+	int2str(log, sessionId);
+	log.append(L" buffer len:");
+	int2str(log, len);
+	write_log(log);
+	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
+	{
+		::Sleep(1000);
+	}
+	return 1;
+}
+
+void CdocumentTestView::clickOnTreeItem()
+{
+	GokuClient *client; //("127.0.0.1");
+	wstring host(L"127.0.0.1:8000");
+	client = new GokuClient(host, host);
+
+	for(int i=0;i<9;i++)
+	{
+		BOOL bOpenRet = PLAY_OpenStream(i,0,0,1024*100);
+		if(bOpenRet)
+		{
+			CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+			pwnd->ShowWindow(SW_SHOW);
+			HWND hwnd=pwnd->GetSafeHwnd();
+			BOOL bPlayRet=PLAY_Play(i, hwnd);
+			//int *tmp=new int(i);
+			host = L"1001000";
+			int2str(host, i);
+			client->replay(host, play_video, i);
+			//start a thread to receive the video information.
+			//mythread = AfxBeginThread(recvThread, tmp);
+		}
+	}
+}
+void CdocumentTestView::OnTestPlayvideo()
+{
+	// TODO: Add your command handler code here
+	clickOnTreeItem();
+}
+
+void CdocumentTestView::OnFileNew()
+{
+	// TODO: Add your command handler code here
+	clickOnTreeItem();
 }
