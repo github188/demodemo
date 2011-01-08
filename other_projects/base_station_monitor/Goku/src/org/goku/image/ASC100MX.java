@@ -161,7 +161,7 @@ public class ASC100MX implements Runnable{
 		
 		InetSocketAddress addr = (InetSocketAddress)client;
 		
-		String ipAddr = addr.getAddress().getHostName();
+		String ipAddr = addr.getAddress().getHostAddress();
 		for(int i = 0; i < channelCount; i++){
 			short node2 = data.get();
 			short node1 = data.get();

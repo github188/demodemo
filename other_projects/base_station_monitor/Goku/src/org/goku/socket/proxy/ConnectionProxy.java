@@ -47,8 +47,9 @@ public class ConnectionProxy implements SelectionHandler, ChannelHandler, Runnab
 					destProxy = new ReadableProxy(destChannel, sourceChannel);
 					manager.register(destChannel, SelectionKey.OP_READ, destProxy);				
 				}
-			}catch(IOException e){
+			}catch(IOException e){			
 				try {
+					log.debug("Can't connect to distination, close the source client, Error:" + e.toString());
 					sourceChannel.close();
 				} catch (IOException e1) {
 					log.error(e1.toString(), e);

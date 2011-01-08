@@ -19,11 +19,12 @@ import org.goku.socket.SocketManager;
 public class ListenProxy implements SelectionHandler, ChannelHandler, Runnable {
 	private Log log = LogFactory.getLog("proxy.server");
 	
+	public long lastActive = 0;
 	private SocketManager manager = null;	
 	private ServerSocketChannel channel = null;
 	private SelectionKey selectionKey = null;
 	private String destHost = null;
-	private int port = 0;
+	private int port = 0;	
 	
 	public ListenProxy(SocketManager manager, String dest) throws IOException{
 		this.manager = manager;
@@ -36,6 +37,7 @@ public class ListenProxy implements SelectionHandler, ChannelHandler, Runnable {
 			port = Integer.parseInt(hostInfo[1]);
 		}catch(Exception e){
 		}
+		this.lastActive = System.currentTimeMillis();
 	}
 
 	@Override
@@ -47,6 +49,7 @@ public class ListenProxy implements SelectionHandler, ChannelHandler, Runnable {
 		if(this.selectionKey.isAcceptable()){
 			try{
 				SocketChannel client = channel.accept();
+				this.lastActive = System.currentTimeMillis();
 				log.debug("Accept proxy client:" + client.socket().getRemoteSocketAddress() + "@" + destHost + ":" + port);
 				client.configureBlocking(false);
 				client.socket().setTcpNoDelay(true);
@@ -60,7 +63,11 @@ public class ListenProxy implements SelectionHandler, ChannelHandler, Runnable {
 			}
 		}
 	}
-
+	
+	public int listenPort(){
+		return this.channel.socket().getLocalPort();
+	}
+	
 	@Override
 	public void setSelectionKey(SelectionKey key) {
 		this.selectionKey = key;
@@ -69,6 +76,7 @@ public class ListenProxy implements SelectionHandler, ChannelHandler, Runnable {
 	public void close(){
 		try {
 			channel.close();
+			log.debug("Close proxy " + toString());
 		}catch(IOException e) {
 			log.error(e.toString(), e);
 		}

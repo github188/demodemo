@@ -6,6 +6,7 @@ import static org.goku.http.BaseRouteServlet.SESSION_USER;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -56,6 +57,10 @@ public class DummyHttpRequest implements HttpServletRequest {
 	}
 
 	public String getLocalAddr() {
+		InetSocketAddress addr = (InetSocketAddress)client.socket.socket().getLocalSocketAddress();
+		if(addr != null){
+			return addr.getAddress().getHostAddress();
+		}		
 		return null;
 	}
 

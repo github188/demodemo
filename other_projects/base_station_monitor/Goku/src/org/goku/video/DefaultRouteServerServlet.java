@@ -79,6 +79,34 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	}
 	
 	/**
+	 * 开启设备代理。
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	public void create_proxy(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+	    MonitorClient client = null;
+		if(uuid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+		    client = server.getMonitorClient(uuid);
+		    if(client == null){
+		    	response.getWriter().println("1:BTS not found");
+		    }else {
+		    	int port = server.proxyServer.createProxy(client.ipAddr);
+		    	if (port > 0){
+		    		response.getWriter().println("0:create proxy ok");
+		    		response.getWriter().println(request.getLocalAddr() + ":" + port);
+		    	}else {
+		    		response.getWriter().println("2:Not found free port");		    		
+		    	}
+		    }
+		}
+	}	
+	
+	/**
 	 * 停止录像。
 	 * @param request
 	 * @param response

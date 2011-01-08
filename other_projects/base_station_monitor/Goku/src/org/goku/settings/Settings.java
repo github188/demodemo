@@ -21,6 +21,10 @@ public class Settings {
 	public final static String CORE_ROUTE_THREAD_COUNT = "core_route_thread_count";
 	public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	
+	public final static String PROXY_PORT_START = "proxy_port_start";
+	public final static String PROXY_PORT_END = "proxy_port_end";
+	public final static String PROXY_TIMEOUT = "proxy_timeout";
+	
 	public final static String UDP_LOCAL_PORT = "udp_local_port";
 	public final static String UDP_REMOTE_PORT = "udp_remote_port";
 	

@@ -19,6 +19,7 @@ import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
 import org.goku.socket.SimpleSocketServer;
 import org.goku.socket.SocketManager;
+import org.goku.socket.proxy.SocketProxyServer;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.VideoRoute;
 
@@ -41,6 +42,8 @@ public class VideoRouteServer {
 	public HTTPRemoteClient master = null;
 	public AlarmMonitorCenter manager = null;	
 	public VideoRecorderManager recordManager = null;
+	public SocketProxyServer proxyServer = null;
+	
 	public SimpleHTTPServer httpServer = null;
 	public String groupName = null;
 	
@@ -104,6 +107,15 @@ public class VideoRouteServer {
 		socketServer.setServlet(servelt);
 		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
+		
+		int startPort = settings.getInt(Settings.PROXY_PORT_START, 9000);
+		int endPort = settings.getInt(Settings.PROXY_PORT_END, 9000);
+		
+		int timeOut = settings.getInt(Settings.PROXY_TIMEOUT, 300);
+		proxyServer = new SocketProxyServer(socketManager, startPort, endPort);
+		proxyServer.timeOut = timeOut * 1000;
+		threadPool.execute(proxyServer);
+		log.info(String.format("Start video proxy server, %s->%s, timeout:%ss.", startPort, endPort, timeOut));
 		
 		final int httpPort = settings.getInt(Settings.HTTP_PORT, 8082);
 		log.info("Start http server at port " + httpPort);

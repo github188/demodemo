@@ -312,6 +312,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 	throws IOException, ServletException{
 		forwardToRoute("stop_record", request, response);
 	}
+
+	public void create_proxy(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("create_proxy", request, response);
+	}	
 	
 	public void rpc_add_location(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException{
