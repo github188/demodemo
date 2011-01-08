@@ -70,13 +70,18 @@ public class BaseStation  implements JSONStreamAware{
 
 	/**
 	 * alarm状态。
-	 */		
+	 */
 	public String alarmStatus;
 	
 	/**
-	 * 设备类型， (视频｜图片)
+	 * 设备类型， (视频｜图片|地点)
 	 */
 	public int devType;
+	
+	/**
+	 * 摄像头, 例如：1:通道1$1:通道2
+	 */
+	public String channels;
 	//public 
 	
 	public String getStatus(){
@@ -105,5 +110,5 @@ public class BaseStation  implements JSONStreamAware{
         obj.put("status", getStatus());
         
         JSONValue.writeJSONString(obj, out);
-	}	
+	}
 }

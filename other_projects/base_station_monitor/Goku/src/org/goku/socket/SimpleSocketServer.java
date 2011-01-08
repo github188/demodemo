@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.video.VideoRecorderManager;
 
-public class SimpleSocketServer implements Runnable {
+public class SimpleSocketServer implements Runnable, SelectionHandler {
 	private Log log = LogFactory.getLog("server.socket");
 	private SocketManager manager = null;
 	private ServerSocketChannel serverChannel = null;
@@ -25,6 +25,7 @@ public class SimpleSocketServer implements Runnable {
 	 * 收。SimpleSocketServer本身不应该被大量创建。
 	 */
 	private SimpleSocketServer server = null;
+	private boolean started = false;
 	
 	public int listenPort = 0;
 	
@@ -37,7 +38,8 @@ public class SimpleSocketServer implements Runnable {
 	@Override
 	public void run() {
 		//第一次运行初始化Server.
-		if(selectionKey == null){
+		if(!started){
+			started = true;
 			httpAdapter = new SocketHTTPAdaptor(servelt);
 			videoAdapter = new SocketVideoAdapter();
 			videoAdapter.setRecorderManager(recordManager);

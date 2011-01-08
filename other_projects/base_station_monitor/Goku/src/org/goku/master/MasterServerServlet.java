@@ -13,11 +13,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -158,6 +160,30 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}
 		}
 	}
+	
+	/**
+	 * 返回基站列表 
+	 */
+	public void list_bs_tree(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		String mode = this.getStringParam(request, "mode", null);
+		
+		if(sid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				//response.getWriter().println("0:Base station list$" + list.size());
+				Location node = server.storage.getRootLocation(userObj);
+				response.getWriter().println("0:Base station list");
+				outputStationTreeInfo(node, response.getWriter(), server.routeManager, mode);
+				response.getWriter().println("");
+			}
+		}
+	}	
 	
 	/**
 	 * 返回告警信息列表。 
@@ -393,18 +419,69 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}
 	}
 	
-	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out, RouteServerManager rm, String mode){
-		String data = null;
-		for(BaseStation info: list){
-			String routeAddr = info.routeServer;
-			if(mode != null && mode.equals("socket")){
-				RouteServer route = rm.getRouteReserver(info.routeServer);
-				routeAddr = route.getConnectAddr(mode);
+	private void outputStationTreeInfo(Location root, PrintWriter out, RouteServerManager rm, String mode){
+		Queue<Location> nodes = new ArrayDeque<Location>(500);
+		nodes.add(root);
+		out.println(getLocationInfo(null, root));
+		Location node = null;
+		int count = 0;
+		while(nodes.size() > 0){
+			node = nodes.poll();
+			for(Location sub: node.children){
+				out.println(getLocationInfo(node, sub));
+				nodes.add(sub);
+				count++;
+				if(count % 100 == 0)out.flush();
 			}
-			routeAddr = routeAddr == null ? "": routeAddr;
-			
-			data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
-			out.println(data);
+			for(BaseStation sub: node.listBTS){
+				out.println(getStationInfo(node, sub, rm, mode));
+				count++;
+				if(count % 100 == 0)out.flush();
+			}
+		}
+	}
+	
+	private String getLocationInfo(Location root, Location node){
+		String data = null;
+		data = node.uuid + "$3$0$0";
+		if(root != null){
+			data += "$" + root.uuid;
+		}else {
+			data += "$0";
+		}
+		data += "$" + node.name;
+		
+		return data;
+	}
+	
+	private String getStationInfo(Location root, BaseStation info, RouteServerManager rm, String mode){
+		String data = null;
+		String routeAddr = info.routeServer;
+		if(mode != null && mode.equals("socket")){
+			RouteServer route = rm.getRouteReserver(info.routeServer);
+			if(route != null){
+				routeAddr = route.getConnectAddr(mode);
+			}else {
+				routeAddr = "";
+			}
+		}
+		routeAddr = routeAddr == null ? "": routeAddr;
+		
+		data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
+		if(root != null){
+			data += "$" + root.uuid;
+		}else {
+			data += "$0";
+		}
+		data += "$" + info.name;
+		data += "$" + info.channels;
+		
+		return data;
+	}
+	
+	private void outputStationInfo(Collection<BaseStation> list, PrintWriter out, RouteServerManager rm, String mode){
+		for(BaseStation info: list){
+			out.println(getStationInfo(null, info, rm, mode));
 		}
 	}
 	

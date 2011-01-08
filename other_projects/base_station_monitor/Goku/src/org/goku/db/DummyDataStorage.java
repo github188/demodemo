@@ -243,6 +243,7 @@ public class DummyDataStorage extends DataStorage {
 		station.name = "诺西大楼";
 		station.devType = 1;
 		station.routeServer = "127.0.0.1:8080";
+		station.channels = "1:通道1,2:通道2";
 		subNode.listBTS.add(station);
 
 		station = new BaseStation();
@@ -250,7 +251,8 @@ public class DummyDataStorage extends DataStorage {
 		station.name = "信诚路口";
 		station.devType = 1;
 		station.routeServer = "127.0.0.1:8080";
-		subNode.listBTS.add(station);		
+		station.channels = "1:通道1,2:通道2";
+		subNode.listBTS.add(station);
 		
 		return root;
 	}
