@@ -186,6 +186,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\BTSInfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BTSMonitor.cpp"
 				>
 			</File>
@@ -203,6 +207,10 @@
 			</File>
 			<File
 				RelativePath=".\FileView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\logfile.cpp"
 				>
 			</File>
 			<File
@@ -230,6 +238,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\util.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewTree.cpp"
 				>
 			</File>
@@ -239,6 +251,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\BTSInfo.h"
+				>
+			</File>
 			<File
 				RelativePath=".\BTSMonitor.h"
 				>
@@ -260,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\logfile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrm.h"
 				>
 			</File>
@@ -273,6 +293,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\util.h"
 				>
 			</File>
 			<File
