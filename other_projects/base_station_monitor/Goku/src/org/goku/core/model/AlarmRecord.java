@@ -40,7 +40,7 @@ public class AlarmRecord implements JSONStreamAware{
 	
 	public String getLevel(){
 		return "error";
-	}	
+	}
 	
 	public void generatePK(){
 		long t = System.currentTimeMillis();

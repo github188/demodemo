@@ -2,7 +2,9 @@ package org.goku.socket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -22,8 +24,12 @@ public class DummyHttpResponse implements HttpServletResponse {
 	};
 	
 	public DummyHttpResponse(SocketClient client){
-		this.client = client;		
-		writer = new PrintWriter(buffer);
+		this.client = client;
+		try {
+			writer = new PrintWriter(new OutputStreamWriter(buffer, "utf8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void flushBuffer() throws IOException {
