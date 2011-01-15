@@ -32,3 +32,29 @@ void util::str2widechar(CString &src, WCHAR **des){
 	int nLen = MultiByteToWideChar(CP_ACP, 0,lpStr, -1, NULL, NULL);
 	MultiByteToWideChar(CP_ACP, 0, lpStr, -1, *des, nLen);
 }
+
+void util::widechar2str(WCHAR *src, CString &des)
+{
+	DWORD dwNum=::WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0, NULL, FALSE);
+	char *psText=new char[dwNum];
+	WideCharToMultiByte (CP_OEMCP,NULL,src,-1,psText,dwNum,NULL,FALSE);
+	des=psText;
+}
+
+void util::widechar2str(WCHAR *src, char **des)
+{
+	DWORD dwNum=::WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0, NULL, FALSE);
+	WideCharToMultiByte (CP_OEMCP,NULL,src,-1,*des,dwNum,NULL,FALSE);
+}
+
+void util::nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen)
+{
+	u_short *ps=(u_short *)&netbuffer[2];
+	u_short pconvs;
+	for(int i=0;i<netlen/2;i++)
+	{
+		pconvs=ntohs(*ps);
+		ps++;
+		memcpy(&dstlocal[i], &pconvs, sizeof(pconvs));
+	}
+}
