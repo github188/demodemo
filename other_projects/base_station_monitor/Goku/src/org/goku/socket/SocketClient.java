@@ -32,6 +32,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * 用户登录Session的用户名。
 	 */
 	public User loginUser = null;
+	public String encoding = "unicode";
 	public int connectionMode = MODE_HTTP;
 	
 	public FileReplayController replay = null;

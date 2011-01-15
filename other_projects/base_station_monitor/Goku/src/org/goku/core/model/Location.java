@@ -28,6 +28,14 @@ public class Location implements JSONStreamAware{
 		
 	}
 	
+	public int getTreeCount(){
+		int count = 1 + listBTS.size();
+		for(Location l : children){
+			count += l.getTreeCount();
+		}
+		return count;
+	}
+	
 	@Override
 	public void writeJSONString(Writer out) throws IOException {
         Map<String, Object> obj = new HashMap<String, Object>();

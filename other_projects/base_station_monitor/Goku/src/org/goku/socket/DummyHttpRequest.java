@@ -4,7 +4,9 @@ import static org.goku.http.BaseRouteServlet.SESSION_ID;
 import static org.goku.http.BaseRouteServlet.SESSION_USER;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.security.Principal;
@@ -177,9 +179,12 @@ public class DummyHttpRequest implements HttpServletRequest {
 		}
 	}
 
-	public void setCharacterEncoding(String arg0)
+	public void setCharacterEncoding(String encoding)
 			throws UnsupportedEncodingException {
-
+		//validate the encoding.
+		new OutputStreamWriter(new ByteArrayOutputStream(0), 
+				encoding);
+		this.client.encoding = encoding;
 	}
 
 	public String getAuthType() {

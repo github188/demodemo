@@ -38,7 +38,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
-    	response.setCharacterEncoding("utf-8");
+    	//response.setCharacterEncoding("utf-8");
 		response.setContentType(TEXT);
     	String action = request.getParameter("q");
 		Method m = handler.get(action);
@@ -103,5 +103,15 @@ public abstract class BaseRouteServlet extends HttpServlet{
     		intVal = Integer.parseInt(val);
     	}
     	return intVal;
+    }
+    
+    public void set_encoding(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    	String encode = this.getStringParam(request, "code", "utf8");
+    	try{
+    		request.setCharacterEncoding(encode);
+    		response.getWriter().println("0:set encoding ok$" + encode);
+    	}catch(Exception e){
+    		response.getWriter().println("1:not supported encode");
+    	}
     }
 }

@@ -26,7 +26,7 @@ public class DummyHttpResponse implements HttpServletResponse {
 	public DummyHttpResponse(SocketClient client){
 		this.client = client;
 		try {
-			writer = new PrintWriter(new OutputStreamWriter(buffer, "utf8"));
+			writer = new PrintWriter(new OutputStreamWriter(buffer, this.client.encoding));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -75,8 +75,8 @@ public class DummyHttpResponse implements HttpServletResponse {
 
 	}
 
-	public void setCharacterEncoding(String arg0) {
-
+	public void setCharacterEncoding(String encoding) {
+		this.client.encoding = encoding;		
 	}
 
 	public void setContentLength(int arg0) {

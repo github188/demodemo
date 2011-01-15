@@ -178,7 +178,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}else {
 				//response.getWriter().println("0:Base station list$" + list.size());
 				Location node = server.storage.getRootLocation(userObj);
-				response.getWriter().println("0:Base station list");
+				response.getWriter().println("0:Base station list$" + node.getTreeCount());
 				outputStationTreeInfo(node, response.getWriter(), server.routeManager, mode);
 				response.getWriter().println("");
 			}
