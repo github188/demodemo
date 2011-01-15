@@ -141,15 +141,22 @@ public:
 	    return len;
 	};
 
+	int read_string_buffer(wchar_t *wbuffer, int size){
+		int len = 0;
+		len = read_buffer(buffer, size);
+		len = mbstowcs(wbuffer, buffer, len);
+		return len;
+	}
+
 	int readline(wstring &des, long timeout=3){
 		des.clear();
 		char ch = 0;
 		if(bufferPos >= bufferLimit){
-			bufferLimit = read_buffer(buffer, sizeof(buffer));
+			bufferLimit = read_string_buffer(wbuffer, sizeof(wbuffer));
 			bufferPos = 0;
 		}
 		for(;bufferPos < bufferLimit && timeout > 0;){
-			ch = buffer[bufferPos++];
+			ch = wbuffer[bufferPos++];
 			if(ch == '\n'){
 				break;
 			}else{
@@ -157,7 +164,7 @@ public:
 			}
 			if(bufferPos >= bufferLimit){
 				//sleep(1);
-				bufferLimit = read_buffer(buffer, sizeof(buffer));
+				bufferLimit = read_string_buffer(wbuffer, sizeof(wbuffer));
 				bufferPos = 0;
 				timeout--;
 			}
@@ -172,6 +179,7 @@ protected:
 	int primary;
 
 	char buffer[4 * 1024];
+	wchar_t wbuffer[4 * 1024];
 	int bufferPos;
 	int bufferLimit;
 
