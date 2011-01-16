@@ -43,9 +43,20 @@ void GokuClient::listbtstree()
 	buffer.Append("cmd>list_bs_tree");
 	buffer.Append("\n");
 	socket->write_wstring(buffer);
-	do{
+	//do{
+	//	socket->readline(cmd_msg);
+	//	cmd_msg.Append("\n");
+	//	printf(cmd_msg);
+	//}while(cmd_msg!="\n" && cmd_msg!="\r");
+
+	socket->readline(cmd_msg);
+	CString temp;
+	int pos=util::split_next(cmd_msg, temp, '$', 0);
+	util::split_next(cmd_msg, temp, '$', pos+1);
+	int line=util::str2int(temp);
+	for(int i=0;i<line;i++)
+	{
 		socket->readline(cmd_msg);
-		cmd_msg.Append("\n");
-		printf(cmd_msg);
-	}while(cmd_msg!="\n");
+		printf("%s\n",cmd_msg);
+	}
 }

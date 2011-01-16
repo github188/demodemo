@@ -6,13 +6,10 @@
 int GokuSocket::read_buffer(char *buffer, int size)
 {
 	CString xx;
-	char *ubuffer=new char[4096];
-	memset(ubuffer, 0, 4096);
-	int len = cs.Receive(ubuffer, size);
-	//int len = cs.Receive(buffer, size);
-	//received is unicode, translate it.
-	util::widechar2str((WCHAR *)ubuffer, &buffer);
-	delete []ubuffer;
+	int len = cs.Receive(buffer, size);
+	WCHAR *ubuffer=new WCHAR[len];
+	util::nettolocal(ubuffer, buffer, len);
+	util::widechar2str(ubuffer, &buffer);
 	util::int2str(xx, len);
 	CLogFile::WriteLog("read buffer:" + xx);
 	if(len > 0 && len < 1024){
