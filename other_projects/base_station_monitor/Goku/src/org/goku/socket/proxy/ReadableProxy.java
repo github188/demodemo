@@ -58,6 +58,7 @@ public class ReadableProxy implements SelectionHandler, Runnable {
 						outChannel.write(readBuffer);
 						if(this.selectionKey.isValid()){
 							this.selectionKey.interestOps(SelectionKey.OP_READ);
+							this.selectionKey.selector().wakeup();
 						}
 					}else {
 						this.close();
