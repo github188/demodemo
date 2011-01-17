@@ -92,6 +92,11 @@ public class BaseStation  implements JSONStreamAware{
 		}
 	}
 	
+	public String getName(){
+		return name == null || "".equals(name.trim())
+				? uuid : name;
+	}
+	
 	public boolean equals(Object o){
 		if(o instanceof BaseStation){
 			BaseStation bs = (BaseStation)o;

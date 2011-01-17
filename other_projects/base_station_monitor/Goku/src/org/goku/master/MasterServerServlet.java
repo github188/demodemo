@@ -467,10 +467,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 			if(route != null){
 				routeAddr = route.getConnectAddr(mode);
 			}else {
-				routeAddr = "";
+				routeAddr = null;
 			}
 		}
-		routeAddr = routeAddr == null ? "": routeAddr;
+		routeAddr = routeAddr == null || "".equals(routeAddr.trim()) 
+					? "0": routeAddr;
 		
 		data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
 		if(root != null){
@@ -478,7 +479,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}else {
 			data += "$0";
 		}
-		data += "$" + info.name;
+		data += "$" + info.getName();
 		data += "$" + info.channels;
 		
 		return data;
