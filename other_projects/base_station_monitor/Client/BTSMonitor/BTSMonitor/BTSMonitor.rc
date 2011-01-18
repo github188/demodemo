@@ -73,12 +73,14 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDI_WARNING_VIEW_HC     ICON                    "res\\icon2.ico"
 IDR_MAINFRAME           ICON                    "res\\BTSMonitor.ico"
 IDR_BTSMonitorTYPE      ICON                    "res\\BTSMonitorDoc.ico"
 IDI_FILE_VIEW           ICON                    "res\\file_view.ico"
 IDI_FILE_VIEW_HC        ICON                    "res\\file_view_hc.ico"
 IDI_CLASS_VIEW          ICON                    "res\\class_view.ico"
 IDI_CLASS_VIEW_HC       ICON                    "res\\class_view_hc.ico"
+IDI_WARNING_VIEW        ICON                    "res\\icon1.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -103,6 +105,11 @@ IDR_EXPLORER            BITMAP                  "res\\explorer.bmp"
 IDB_EXPLORER_24         BITMAP                  "res\\explorer_hc.bmp"
 IDR_MENU_IMAGES         BITMAP                  "res\\menuimages.bmp"
 IDB_MENU_IMAGES_24      BITMAP                  "res\\menuimages_hc.bmp"
+IDB_CAMERA_VIEW         BITMAP                  "res\\file_vie.bmp"
+IDB_SYSTEMLARGE         BITMAP                  "res\\filelarg.bmp"
+IDB_SYSTEMSMALL         BITMAP                  "res\\filesmal.bmp"
+IDB_MONITOR_LARGE       BITMAP                  "res\\writelar.bmp"
+IDB_MONITOR_SMALL       BITMAP                  "res\\writesma.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -169,28 +176,21 @@ END
 
 IDR_MAINFRAME MENU 
 BEGIN
-    POPUP "文件(&F)"
+    POPUP "系统(&S)"
     BEGIN
-        MENUITEM "新建(&N)\tCtrl+N",              ID_FILE_NEW
-        MENUITEM "打开(&O)...\tCtrl+O",           ID_FILE_OPEN
-        MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
-        MENUITEM "另存为(&A)...",                  ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "打印(&P)...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "打印预览(&V)",                    ID_FILE_PRINT_PREVIEW
-        MENUITEM "打印设置(&R)...",                 ID_FILE_PRINT_SETUP
-        MENUITEM SEPARATOR
-        MENUITEM "最近的文件",                       ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM "查找(&F)",                      ID_FIND_CAMERA
         MENUITEM SEPARATOR
         MENUITEM "退出(&X)",                      ID_APP_EXIT
     END
-    POPUP "编辑(&E)"
+    POPUP "监控(&M)"
     BEGIN
-        MENUITEM "撤消(&U)\tCtrl+Z",              ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
-        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "单视图",                         ID_VV1
+        MENUITEM "四视图",                         ID_VV4
+        MENUITEM "六视图",                         ID_VV6
+        MENUITEM "八视图",                         ID_VV8
+        MENUITEM "九视图",                         ID_VV9
+        MENUITEM "十六视图",                        ID_VV16
+        MENUITEM "二十五视图",                       ID_VV25
     END
     POPUP "视图(&V)"
     BEGIN
@@ -309,6 +309,39 @@ BEGIN
     DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
 END
 
+IDD_RUNTIME_WARNING DIALOGEX 0, 0, 115, 63
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LST_RUNTIME_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,71,37
+END
+
+IDD_CRITICAL_WARNING DIALOGEX 0, 0, 105, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LIST_CRITICAL_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,60,50
+END
+
+IDD_GENERAL_WARNING DIALOGEX 0, 0, 94, 56
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LIST_GENERAL_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,53,30
+END
+
+IDD_DLG_FIND DIALOGEX 0, 0, 252, 105
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "查找"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,195,11,50,14
+    PUSHBUTTON      "取消",IDCANCEL,195,34,50,14
+    LTEXT           "查找目标",IDC_STATIC,8,13,35,9
+    EDITTEXT        IDC_FINDSTR,41,11,150,14,ES_AUTOHSCROLL
+    GROUPBOX        "搜索条件",IDC_STATIC,7,33,181,51
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -364,6 +397,38 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_RUNTIME_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 108
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_CRITICAL_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 98
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+    END
+
+    IDD_GENERAL_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 87
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 49
+    END
+
+    IDD_DLG_FIND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -376,6 +441,8 @@ END
 STRINGTABLE 
 BEGIN
     IDP_OLE_INIT_FAILED     "OLE 初始化失败。请确保 OLE 库是正确的版本。"
+    IDS_FIND_CAMERA         "查找"
+    IDS_RIBBON_FIND_CAMERA  "查找(&F)"
 END
 
 STRINGTABLE 

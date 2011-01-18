@@ -14,7 +14,8 @@
 
 #pragma once
 #include "FileView.h"
-#include "ClassView.h"
+#include "CameraView.h"
+#include "WarningWnd.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -46,22 +47,31 @@ protected:  // 控件条嵌入成员
 	CMFCRibbonApplicationButton m_MainButton;
 	CMFCToolBarImages m_PanelImages;
 	CMFCRibbonStatusBar  m_wndStatusBar;
-	CFileView         m_wndFileView;
-	CClassView        m_wndClassView;
+
+	CCameraView		  m_wndCameraView;
+	CWarningWnd		  m_wndWarningView;
 
 // 生成的消息映射函数
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnApplicationLook(UINT id);
 	afx_msg void OnUpdateApplicationLook(CCmdUI* pCmdUI);
-	afx_msg void OnFilePrint();
-	afx_msg void OnFilePrintPreview();
-	afx_msg void OnUpdateFilePrintPreview(CCmdUI* pCmdUI);
+	//afx_msg void OnFilePrint();
+	//afx_msg void OnFilePrintPreview();
+	//afx_msg void OnUpdateFilePrintPreview(CCmdUI* pCmdUI);
+	afx_msg LRESULT OnNotifyMessage(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnMonitorWindowType(UINT uID);
 	DECLARE_MESSAGE_MAP()
 
 	void InitializeRibbon();
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+public:
+	afx_msg void OnFindCamera();
+private:
+	BOOL m_bFindNext;
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 

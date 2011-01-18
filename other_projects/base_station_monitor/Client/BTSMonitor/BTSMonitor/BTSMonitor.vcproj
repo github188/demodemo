@@ -202,11 +202,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ClassView.cpp"
+				RelativePath=".\CameraView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CriticalWarning.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DlgFind.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\FileView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GeneralWarning.cpp"
 				>
 			</File>
 			<File
@@ -215,6 +227,14 @@
 			</File>
 			<File
 				RelativePath=".\MainFrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RuntimeWarning.cpp"
 				>
 			</File>
 			<File
@@ -245,6 +265,10 @@
 				RelativePath=".\ViewTree.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\WarningWnd.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -268,11 +292,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ClassView.h"
+				RelativePath=".\CameraView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\const.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CriticalWarning.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DlgFind.h"
 				>
 			</File>
 			<File
 				RelativePath=".\FileView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GeneralWarning.h"
 				>
 			</File>
 			<File
@@ -284,7 +324,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RuntimeWarning.h"
 				>
 			</File>
 			<File
@@ -303,12 +351,20 @@
 				RelativePath=".\ViewTree.h"
 				>
 			</File>
+			<File
+				RelativePath=".\WarningWnd.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\res\bitmap1.bmp"
+				>
+			</File>
 			<File
 				RelativePath=".\res\BTSMonitor.ico"
 				>
@@ -354,6 +410,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\file_vie.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\file_view.ico"
 				>
 			</File>
@@ -362,7 +422,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\filelarg.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\filelarge.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\filesmal.bmp"
 				>
 			</File>
 			<File
@@ -375,6 +443,14 @@
 			</File>
 			<File
 				RelativePath=".\res\fileview_hc.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon1.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon2.ico"
 				>
 			</File>
 			<File
@@ -406,7 +482,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\writelar.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\writelarge.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\writesma.bmp"
 				>
 			</File>
 			<File
@@ -420,5 +504,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="BTSMonitor.rc"
+		/>
 	</Globals>
 </VisualStudioProject>
