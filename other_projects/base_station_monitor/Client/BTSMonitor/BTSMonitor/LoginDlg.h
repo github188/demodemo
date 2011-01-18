@@ -2,7 +2,7 @@
 
 
 // CLoginDlg dialog
-#include "GokuClient.h"
+#include "BTSMonitor.h"
 
 class CLoginDlg : public CDialog
 {

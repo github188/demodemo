@@ -40,9 +40,9 @@ void CLoginDlg::OnBnClickedOk()
 	CString password;
 	this->GetDlgItemText(IDC_EDIT_USER, username);
 	((CEdit *)this->GetDlgItem(IDC_EDIT_PWD))->GetWindowText(password);
-	CString host="127.0.0.1:8000";
-	GokuClient gkclient(host, host);
-	if(gkclient.login(username, password)==0)
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	
+	if(pApp->pgkclient->login(username, password)==0)
 	{
 		OnOK();
 	}

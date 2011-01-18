@@ -19,6 +19,7 @@
 
 #include "resource.h"       // 主符号
 #include "LoginDlg.h"
+#include "GokuClient.h"
 
 // CBTSMonitorApp:
 // 有关此类的实现，请参阅 BTSMonitor.cpp
@@ -29,6 +30,8 @@ class CBTSMonitorApp : public CWinAppEx
 public:
 	CBTSMonitorApp();
 
+public:
+	GokuClient *pgkclient;
 
 // 重写
 public:
