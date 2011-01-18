@@ -8,6 +8,7 @@
 #define IDD_RUNTIME_WARNING             101
 #define IDS_FIND_CAMERA                 101
 #define IDS_RIBBON_FIND_CAMERA          102
+#define IDP_SOCKETS_INIT_FAILED         104
 #define IDB_WRITESMALL                  110
 #define IDB_WRITELARGE                  111
 #define IDB_MAIN                        112
@@ -112,10 +113,13 @@
 #define IDD_CRITICAL_WARNING            314
 #define IDD_GENERAL_WARNING             315
 #define IDD_DLG_FIND                    316
+#define IDD_DLG_LOGIN                   317
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
 #define IDC_FINDSTR                     1001
+#define IDC_EDIT_USER                   1002
+#define IDC_EDIT_PWD                    1003
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -130,9 +134,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

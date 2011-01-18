@@ -238,6 +238,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LoginDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrm.cpp"
 				>
 			</File>
@@ -345,6 +349,10 @@
 			</File>
 			<File
 				RelativePath=".\logfile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LoginDlg.h"
 				>
 			</File>
 			<File

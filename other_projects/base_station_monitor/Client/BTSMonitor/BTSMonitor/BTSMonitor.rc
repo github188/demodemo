@@ -53,11 +53,11 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
     "#pragma code_page(936)\r\n"
-    "#include ""res\\BTSMonitor.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
-    "#include ""l.CHS\\afxres.rc""          // 标准组件\r\n"
-    "#include ""l.CHS\\afxprint.rc""        // 打印/打印预览资源\r\n"
+    "#include ""res\\BTSMonitor.rc2""  // ·? Microsoft Visual C++ ±à?-μ?×ê?′\r\n"
+    "#include ""l.CHS\\afxres.rc""          // ±ê×?×é?t\r\n"
+    "#include ""l.CHS\\afxprint.rc""        // ′òó?/′òó??¤àà×ê?′\r\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.CHS\\afxribbon.rc""               // MFC 功能区和控件条资源\r\n"
+    "#include ""l.CHS\\afxribbon.rc""               // MFC 1|?ü??oí???tì?×ê?′\r\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -443,6 +443,7 @@ BEGIN
     IDP_OLE_INIT_FAILED     "OLE 初始化失败。请确保 OLE 库是正确的版本。"
     IDS_FIND_CAMERA         "查找"
     IDS_RIBBON_FIND_CAMERA  "查找(&F)"
+    IDP_SOCKETS_INIT_FAILED "Windows 套接字初始化失败。"
 END
 
 STRINGTABLE 
@@ -617,6 +618,56 @@ BEGIN
 END
 
 #endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DLG_LOGIN DIALOGEX 0, 0, 290, 169
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "??",IDOK,157,148,50,14
+    PUSHBUTTON      "??",IDCANCEL,233,148,50,14
+    LTEXT           "???",IDC_STATIC,52,53,25,8
+    LTEXT           "??",IDC_STATIC,52,77,17,8
+    EDITTEXT        IDC_EDIT_USER,89,52,98,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PWD,89,76,98,14,ES_PASSWORD | ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DLG_LOGIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 283
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 162
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
