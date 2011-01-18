@@ -18,7 +18,7 @@
 #endif
 
 #include "resource.h"       // 主符号
-
+#include "LoginDlg.h"
 
 // CBTSMonitorApp:
 // 有关此类的实现，请参阅 BTSMonitor.cpp

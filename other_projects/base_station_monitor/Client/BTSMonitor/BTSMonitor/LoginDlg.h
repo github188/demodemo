@@ -2,6 +2,7 @@
 
 
 // CLoginDlg dialog
+#include "GokuClient.h"
 
 class CLoginDlg : public CDialog
 {

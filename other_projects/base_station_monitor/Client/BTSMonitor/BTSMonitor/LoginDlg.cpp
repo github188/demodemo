@@ -36,6 +36,18 @@ END_MESSAGE_MAP()
 void CLoginDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
-	
-	OnOK();
+	CString username;
+	CString password;
+	this->GetDlgItemText(IDC_EDIT_USER, username);
+	((CEdit *)this->GetDlgItem(IDC_EDIT_PWD))->GetWindowText(password);
+	CString host="127.0.0.1:8000";
+	GokuClient gkclient(host, host);
+	if(gkclient.login(username, password)==0)
+	{
+		OnOK();
+	}
+	else
+	{
+		this->MessageBox("登录错误，请检查用户名密码是否正确");
+	}
 }
