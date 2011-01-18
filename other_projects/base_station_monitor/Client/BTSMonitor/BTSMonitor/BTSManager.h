@@ -5,6 +5,6 @@
 class BTSManager
 {
 public:
-	void buildbtsTree(CString &buffer, const CTreeCtrl &tree);
-	CMap<int, int, BTSInfo, const BTSInfo &> btsmap;
+	void buildbtsTree(CString &buffer, CTreeCtrl *tree);
+	CMap<int, int, BTSInfo*, BTSInfo*> btsmap;
 };
