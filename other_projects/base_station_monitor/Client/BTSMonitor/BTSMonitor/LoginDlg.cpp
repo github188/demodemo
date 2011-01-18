@@ -44,6 +44,8 @@ void CLoginDlg::OnBnClickedOk()
 	
 	if(pApp->pgkclient->login(username, password)==0)
 	{
+		pApp->btsTotalStr.Empty();
+		pApp->pgkclient->listbtstree(pApp->btsTotalStr);
 		OnOK();
 	}
 	else

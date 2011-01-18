@@ -32,6 +32,7 @@ public:
 
 public:
 	GokuClient *pgkclient;
+	CString btsTotalStr;
 
 // ÖØÐ´
 public:

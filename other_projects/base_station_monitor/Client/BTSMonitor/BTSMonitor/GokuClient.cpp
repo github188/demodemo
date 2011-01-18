@@ -37,7 +37,7 @@ int GokuClient::logout()
 	return ret;
 }
 
-void GokuClient::listbtstree()
+void GokuClient::listbtstree(CString &str)
 {
 	buffer.Empty();
 	buffer.Append("cmd>list_bs_tree");
@@ -57,6 +57,10 @@ void GokuClient::listbtstree()
 	for(int i=0;i<line;i++)
 	{
 		socket->readline(cmd_msg);
-		printf("%s\n",cmd_msg);
+		str.Append(cmd_msg);
+		if(i<line-1)
+		{
+			str.Append("\n");
+		}
 	}
 }

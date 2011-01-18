@@ -15,7 +15,7 @@ void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 			break;
 		}
 		iright=ipos;
-		btsline=buffer.Mid(ileft, iright);
+		btsline=buffer.Mid(ileft, iright-ileft+1);
 		ileft=ipos+1;
 
 		BTSInfo *pinfo=new BTSInfo(btsline);
@@ -30,6 +30,7 @@ void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 			//btsmap.Lookup(util::str2int(pinfo->parentuuid), &pInfo);
 			BTSInfo *pParentInfo=btsmap[util::str2int(pinfo->parentuuid)];
 			pinfo->insertIntoTree(tree, pParentInfo->getPosInTree());
+			btsmap.SetAt(util::str2int(pinfo->uuid), pinfo);
 		}
 	}
 }

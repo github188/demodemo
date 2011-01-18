@@ -23,7 +23,7 @@ public:
 
 	int logout();
 
-	void listbtstree();
+	void listbtstree(CString &str);
 
 protected:
 	int execute_command(CString &cmd);

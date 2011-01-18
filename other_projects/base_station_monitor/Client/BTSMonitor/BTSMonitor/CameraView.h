@@ -27,6 +27,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void InitCameraView(void);
 	void AdjustLayout(void);
+	void fillinData(void);
 private:
 	HTREEITEM m_hItemCurFind;
 	HTREEITEM m_hRootItem;
