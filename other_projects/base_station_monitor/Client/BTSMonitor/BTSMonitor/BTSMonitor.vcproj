@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BTSManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BTSMonitor.cpp"
 				>
 			</File>
@@ -222,6 +226,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GokuClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GokuSocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\logfile.cpp"
 				>
 			</File>
@@ -235,6 +247,10 @@
 			</File>
 			<File
 				RelativePath=".\RuntimeWarning.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SimpleSocket.cpp"
 				>
 			</File>
 			<File
@@ -280,6 +296,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BTSManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\BTSMonitor.h"
 				>
 			</File>
@@ -316,6 +336,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GokuClient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GokuSocket.h"
+				>
+			</File>
+			<File
 				RelativePath=".\logfile.h"
 				>
 			</File>
@@ -333,6 +361,10 @@
 			</File>
 			<File
 				RelativePath=".\RuntimeWarning.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SimpleSocket.h"
 				>
 			</File>
 			<File
