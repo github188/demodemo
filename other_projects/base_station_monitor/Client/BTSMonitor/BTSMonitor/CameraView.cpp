@@ -73,9 +73,8 @@ void CCameraView::OnSize(UINT nType, int cx, int cy)
 
 void CCameraView::fillinData()
 {
-	BTSManager btsmanager;
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	btsmanager.buildbtsTree(pApp->btsTotalStr, &m_ctrlCameraTree);
+	pApp->pgkclient->btsmanager.buildbtsTree(pApp->btsTotalStr, &m_ctrlCameraTree);
 }
 
 void CCameraView::InitCameraView(void)

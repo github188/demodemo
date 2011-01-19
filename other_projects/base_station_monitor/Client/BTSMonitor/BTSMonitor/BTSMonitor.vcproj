@@ -282,6 +282,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\VideoPlayControl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewTree.cpp"
 				>
 			</File>
@@ -385,6 +389,10 @@
 			</File>
 			<File
 				RelativePath=".\util.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VideoPlayControl.h"
 				>
 			</File>
 			<File

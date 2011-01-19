@@ -41,6 +41,10 @@ void CLoginDlg::OnBnClickedOk()
 	this->GetDlgItemText(IDC_EDIT_USER, username);
 	((CEdit *)this->GetDlgItem(IDC_EDIT_PWD))->GetWindowText(password);
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	CString host;
+	this->GetDlgItemText(IDC_EDIT_SERVER, host);
+	host.Append(":8000");
+	pApp->pgkclient =new GokuClient(host, host);
 	
 	if(pApp->pgkclient->login(username, password)==0)
 	{
@@ -52,4 +56,16 @@ void CLoginDlg::OnBnClickedOk()
 	{
 		this->MessageBox("登录错误，请检查用户名密码是否正确");
 	}
+}
+
+BOOL CLoginDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  Add extra initialization here
+	CString server="127.0.0.1";
+	this->SetDlgItemText(IDC_EDIT_SERVER, server);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }

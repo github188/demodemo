@@ -58,9 +58,35 @@ void GokuClient::listbtstree(CString &str)
 	{
 		socket->readline(cmd_msg);
 		str.Append(cmd_msg);
-		if(i<line-1)
-		{
-			str.Append("\n");
-		}
+		//if(i<line-1)
+		//{
+		//	str.Append("\n");
+		//}
+		str.Append("\n");
 	}
+}
+
+VideoPlayControl* GokuClient::real_play(CString &uuid, DataCallBack callback, int session)
+{
+	VideoPlayControl *control;
+	BTSInfo* bsinfo = this->btsmanager.btsmap[util::str2int(uuid)];
+	if(bsinfo != NULL){
+		CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
+		control = new VideoPlayControl(masterSocket, callback, session);
+		control->real_play(uuid);
+	}
+	return control;
+}
+
+VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, int session)
+{
+	CString master_server = socket->ipaddr + ":";
+	util::int2str(master_server, socket->port);
+	CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
+
+	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
+	control->replay(videoId);
+	CWinThread *playThread=AfxBeginThread(video_read_thread, control);
+
+	return control;
 }

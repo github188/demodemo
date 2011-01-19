@@ -105,9 +105,6 @@ BOOL CBTSMonitorApp::InitInstance()
 	//临界区初始化
 	CLogFile::InitCriticalSection();
 
-	CString host="127.0.0.1:8000";
-	pgkclient =new GokuClient(host, host);
-
 	CLoginDlg dlg;
 	if(dlg.DoModal()==IDCANCEL)
 	{
