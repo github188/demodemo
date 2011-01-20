@@ -20,7 +20,10 @@
 #include "BTSMonitorDoc.h"
 #include "BTSMonitorView.h"
 
-
+#include "include/iPlay.h"
+#include "util.h"
+#include "logfile.h"
+#include "GokuClient.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -389,7 +392,54 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case	MSG_FULL_WINDOW:
-		TRACE("FULL Window\r\n");
+		{
+			AfxMessageBox("FULL Window is still under developing!");
+			/*
+			if (m_vvControl.vvStatus.fullwindow)
+			{
+				SetWindowPlacement(&m_vvControl.vvStatus.oldplacement);
+				m_vvControl.vvStatus.fullwindow = FALSE;
+			}
+			else
+			{
+				GetWindowPlacement(&m_vvControl.vvStatus.oldplacement);
+				CRect WindowRect;
+				GetWindowRect(&WindowRect);
+				CRect ClientRect;
+				RepositionBars(0, 0xffff, AFX_IDW_PANE_FIRST, reposQuery, &ClientRect);
+				ClientToScreen(&ClientRect);
+				// 获取屏幕的分辨率
+				int nFullWidth=GetSystemMetrics(SM_CXSCREEN);
+				int nFullHeight=GetSystemMetrics(SM_CYSCREEN);
+				//将除控制条外的客户区全屏显示到从(0,0) 到(nFullWidth, nFullHeight)区域, 将(0,0)和
+				//(nFullWidth, nFullHeight)两个点外扩充原窗口和除控制条之外的 客户区位置间的差值, 就得到
+				//全屏显示的窗口位置 .
+				
+				//m_FullScreenRect.left=WindowRect.left－ClientRect.left;
+				//m_FullScreenRect.top=WindowRect.top－ClientRect.top;
+				//m_FullScreenRect.right=WindowRect.right－ClientRect.right＋nFullWidth;
+				//m_FullScreenRect.bottom=WindowRect.bottom－ClientRect.bottom＋nFullHeight;
+				//m_bFullScreen=TRUE; // 设置全屏显示标志为 TRUE
+				
+				CRect rcFull;
+				rcFull.top = 0;
+				rcFull.left= 0;
+				rcFull.right = nFullWidth;
+				rcFull.bottom = nFullHeight;
+
+				// 进入全屏显示状态
+				WINDOWPLACEMENT wndpl;
+				wndpl.length=sizeof(WINDOWPLACEMENT);
+				wndpl.flags=0;
+				wndpl.showCmd=SW_SHOWNORMAL;
+				wndpl.rcNormalPosition=rcFull; //m_FullScreenRect;
+				SetWindowPlacement(&wndpl);
+
+				m_vvControl.vvStatus.fullwindow = TRUE;
+
+			}
+			*/
+		}
 		break;
 	case	MSG_VV_1:
 		{
@@ -433,7 +483,14 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 			m_vvControl.vvStatus.vvcount = VV_25;
 		}
 		break;
+	case	MSG_SELECT_CAMERA_DEVICE:
+		{
+			char* p = (char*)lParam;
+			CString strCamera(p);
+			StartMonitorBTS(strCamera);
+		}
 
+		break;
 	default:;
 		//ASSERT(FALSE);
 
@@ -447,4 +504,98 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 	}
 
 	return 0;
+}
+
+void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
+{
+	CString sVVFile;
+	CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
+	CString sVideo[] = {"test01.h264","test02.h264","test03.h264","test04.h264","test05.h264","test06.h264","test07.h264"};
+	if ( strBtsInfo.Find("1") > -1)
+	{
+		sVVFile = path + sVideo[0];
+	}
+	else if (strBtsInfo.Find("2") > -1)
+	{
+		sVVFile = path + sVideo[1];
+	}
+	else if (strBtsInfo.Find("3") > -1)
+	{
+		sVVFile = path + sVideo[2];
+	}
+	else if (strBtsInfo.Find("4") > -1)
+	{
+		sVVFile = path + sVideo[3];
+	}
+	else if (strBtsInfo.Find("5") > -1)
+	{
+		sVVFile = path + sVideo[4];
+	}
+	else if (strBtsInfo.Find("6") > -1)
+	{
+		sVVFile = path + sVideo[5];
+	}
+	else
+		sVVFile = path + sVideo[6];
+
+	int nActView = m_vvControl.vvStatus.activeid;
+	
+	BOOL bPlayFile = FALSE;
+	if (bPlayFile)
+	{
+		PLAY_OpenFile(nActView, sVVFile.GetBuffer());
+	
+		PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+	}
+	else //Play From the Server, remote Camera
+	{	
+
+		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+		GokuClient *client; //("127.0.0.1");
+		//wstring host(L"127.0.0.1:8000");
+		CString host("127.0.0.1:8000");
+		client = new GokuClient(host, host);
+
+		//for(int i=0;i<9;i++)
+		//{
+			BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*100);
+			if(bOpenRet)
+			{
+				//CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+				//pwnd->ShowWindow(SW_SHOW);
+				//HWND hwnd=pwnd->GetSafeHwnd();
+				//BOOL bPlayRet=PLAY_Play(i, hwnd);
+				PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+				//int *tmp=new int(i);
+				host = L"1001000";
+				util::int2str(host, nActView);
+				client->replay(host, play_video, nActView);
+				//pApp->pgkclient->replay(host, play_video, nActView);
+				//start a thread to receive the video information.
+				//mythread = AfxBeginThread(recvThread, tmp);
+			}
+		//}
+		
+	}	
+	
+
+}
+
+int play_video(int  sessionId, char * pBuffer, int  len)
+{
+	//wstring log;
+	//log.append(L"play video session:");
+	CString sLog("play video session:");
+	util::int2str(sLog, sessionId);
+	//log.append(L" buffer len:");
+	sLog += " buffer len:";
+	util::int2str(sLog, len);
+	CLogFile::WriteLog(sLog);
+	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
+	{
+		::Sleep(1000);
+	}
+	return 1;
 }

@@ -21,7 +21,11 @@ int util::str2int(const CString src){
 }
 
 void util::int2str(CString &buffer, int i){
-	buffer.Format("%d",i);
+	
+	//buffer.Format("%d",i);
+	CString sAppend;
+	sAppend.Format("%d", i);
+	buffer += sAppend;
 }
 
 /*

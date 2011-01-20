@@ -447,7 +447,7 @@ LRESULT CMainFrame::OnNotifyMessage(WPARAM wParam, LPARAM lParam)
 {
 	switch (wParam)
 	{
-	case	MSG_SELECT_VIDEO:
+	case	MSG_SELECT_CAMERA_DEVICE:
 		{
 			CView *pView = GetActiveView();
 			int i=0;
@@ -465,7 +465,9 @@ LRESULT CMainFrame::OnNotifyMessage(WPARAM wParam, LPARAM lParam)
 void CMainFrame::OnMonitorWindowType(UINT nID)
 {
 	// TODO: Add your command handler code here
-	CView *pView = GetActiveView();
+
+	/*/Comment out following..
+	//CView *pView = GetActiveView(); 
 	if (pView)
 	{
 		CWnd *pWnd = pView->GetParent();
@@ -475,5 +477,10 @@ void CMainFrame::OnMonitorWindowType(UINT nID)
 			::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)(nID - ID_VV1 + 3),0);
 		}
 	}
+	*/
+
+	CView *pView = ( (CBTSMonitorApp*)AfxGetApp() )->GetBaseView();
+	if (pView && pView->m_hWnd)
+		::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)(nID - ID_VV1 + 3),0);
 
 }

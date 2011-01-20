@@ -105,6 +105,9 @@ BOOL CBTSMonitorApp::InitInstance()
 	//临界区初始化
 	CLogFile::InitCriticalSection();
 
+	CString host="127.0.0.1:8000";
+	pgkclient =new GokuClient(host, host);
+
 	CLoginDlg dlg;
 	if(dlg.DoModal()==IDCANCEL)
 	{
@@ -204,6 +207,39 @@ void CBTSMonitorApp::SaveCustomState()
 {
 }
 
+CView *CBTSMonitorApp::GetBaseView()
+{
+	if(m_pDocManager)
+	{
+		POSITION pos1 = m_pDocManager->GetFirstDocTemplatePosition();
+		while (pos1)
+		{
+			CDocTemplate *pDocTemplate = m_pDocManager->GetNextDocTemplate(pos1);
+			if(pDocTemplate)
+			{
+				POSITION pos2 = pDocTemplate->GetFirstDocPosition();
+				while (pos2)
+				{
+					CDocument *pDoc = pDocTemplate->GetNextDoc(pos2);
+					if(pDoc)
+					{
+						POSITION pos3 = pDoc->GetFirstViewPosition();
+						while (pos3)
+						{
+							CView *pView = pDoc->GetNextView(pos3);
+							if(pView)
+							{
+								if(pView->IsKindOf(RUNTIME_CLASS(CBTSMonitorView)))
+									return pView;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return NULL;
+}
 // CBTSMonitorApp 消息处理程序
 
 

@@ -37,12 +37,17 @@ typedef struct tagVV_STATUS
 	int  activeid;  //acitve vv id
 	BOOL fullwindow;
 	VV_COUNT vvcount;  
+	WINDOWPLACEMENT oldplacement;
 }VV_STATUS;
 typedef struct tagVV_CONTROL
 {
 	VV_STATUS  vvStatus;
 	VV_INFO    vvInfo[cnMAX_VV];
 }VV_CONTROL;
+
+/////////////////////////////////////
+int play_video(int  sessionId, char * pBuffer, int  len);
+
 /////////////////////////////////////
 class CBTSMonitorView : public CView
 {
@@ -95,6 +100,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	void SelectVideoView(int nVideoViewID);
 //	afx_msg void OnVv1();
+	void StartMonitorBTS(CString strBtsInfo);
 };
 
 #ifndef _DEBUG  // BTSMonitorView.cpp 中的调试版本

@@ -21,6 +21,7 @@
 #include "LoginDlg.h"
 #include "GokuClient.h"
 
+
 // CBTSMonitorApp:
 // 有关此类的实现，请参阅 BTSMonitor.cpp
 //
@@ -29,8 +30,7 @@ class CBTSMonitorApp : public CWinAppEx
 {
 public:
 	CBTSMonitorApp();
-	~CBTSMonitorApp() {delete pgkclient;}
-
+	~CBTSMonitorApp(){ delete pgkclient; };
 public:
 	GokuClient *pgkclient;
 	CString btsTotalStr;
@@ -49,6 +49,9 @@ public:
 
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	CView* CBTSMonitorApp::GetBaseView();
 };
 
 extern CBTSMonitorApp theApp;

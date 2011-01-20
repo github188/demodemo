@@ -10,6 +10,8 @@
 // 保留所有权利。
 
 #include "stdafx.h"
+#include "BTSMonitor.h"
+#include "const.h"
 #include "ViewTree.h"
 
 #ifdef _DEBUG
@@ -30,6 +32,7 @@ CViewTree::~CViewTree()
 }
 
 BEGIN_MESSAGE_MAP(CViewTree, CTreeCtrl)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, &CViewTree::OnNMDblclk)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -48,4 +51,27 @@ BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	}
 
 	return bRes;
+}
+
+void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+    UINT nFlags;
+	CPoint curPoint;
+	GetCursorPos(&curPoint);
+	ScreenToClient(&curPoint);
+	HTREEITEM htItem = HitTest(curPoint, &nFlags);
+	
+	CString strText = GetItemText(htItem);
+
+	HTREEITEM itemChild = GetChildItem(htItem);
+	if ( !itemChild ) //juge wheth the item is leaf or not.
+	{
+		//Open the related Video stream..On the current selected windows.
+		CView *pView = ( (CBTSMonitorApp*)AfxGetApp() )->GetBaseView();
+		if (pView && pView->m_hWnd)
+			::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,MSG_SELECT_CAMERA_DEVICE,((LPARAM)strText.GetBuffer(strText.GetLength())));
+	}
+
+	*pResult = 0;
 }

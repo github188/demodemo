@@ -53,11 +53,11 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
     "#pragma code_page(936)\r\n"
-    "#include ""res\\BTSMonitor.rc2""  // ·? Microsoft Visual C++ ±à?-μ?×ê?′\r\n"
-    "#include ""l.CHS\\afxres.rc""          // ±ê×?×é?t\r\n"
-    "#include ""l.CHS\\afxprint.rc""        // ′òó?/′òó??¤àà×ê?′\r\n"
+    "#include ""res\\BTSMonitor.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""          // 标准组件\r\n"
+    "#include ""l.CHS\\afxprint.rc""        // 打印/打印预览资源\r\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.CHS\\afxribbon.rc""               // MFC 1|?ü??oí???tì?×ê?′\r\n"
+    "#include ""l.CHS\\afxribbon.rc""               // MFC 功能区和控件条资源\r\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -342,7 +342,7 @@ BEGIN
     GROUPBOX        "搜索条件",IDC_STATIC,7,33,181,51
 END
 
-IDD_DLG_LOGIN DIALOGEX 0, 0, 290, 169
+IDD_DLG_LOGIN DIALOGEX 0, 0, 208, 90
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "大光明基站监控系统"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -448,9 +448,9 @@ BEGIN
     IDD_DLG_LOGIN, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 283
+        RIGHTMARGIN, 201
         TOPMARGIN, 6
-        BOTTOMMARGIN, 162
+        BOTTOMMARGIN, 83
     END
 END
 #endif    // APSTUDIO_INVOKED

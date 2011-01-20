@@ -2,6 +2,32 @@
 
 #include "util.h"
 
+/*
+<<<<< .mine
+class BTSInfo{
+private:
+	void buildClass(const CString &info);
+
+public:
+	CString uuid;
+	CString devType;
+	CString route;
+	CString status;
+	int idevType;
+
+public:
+	BTSInfo(const CString &info)
+	{
+		buildClass(info);
+	}
+	
+	void printitself()
+	{
+		_tprintf("uuid %s, devType %s, route %s, status %s\n",
+				uuid, devType, route, status);
+	}
+*/
+
 class BTSInfo{
 private:
 	void buildClass(const CString &info);
@@ -86,4 +112,5 @@ public:
 			_tprintf("channelInfo %s\n",channelInfo);
 		}
 	}
+//>>>>>>> .r455
 };

@@ -120,7 +120,6 @@
 #define IDC_FINDSTR                     1001
 #define IDC_EDIT_USER                   1002
 #define IDC_EDIT_PWD                    1003
-#define IDC_EDIT1                       1004
 #define IDC_EDIT_SERVER                 1004
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
@@ -138,7 +137,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

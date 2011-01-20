@@ -16,7 +16,7 @@ public:
 	int status;  //0 not start, -1 end, 1 running, -2 start error
 
 	//不能在界面线程调用socket，发送和接受方法。其他线程把需要发送的命令保存到list,由socket线程统一发送。
-	vector<CString *> vedio_command_list;
+	vector<CString> vedio_command_list;
 
 	VideoPlayControl(CSimpleSocket *sc, DataCallBack handle, int sid){
 		socket = sc;
@@ -51,14 +51,16 @@ static UINT video_read_thread(LPVOID param){
 	CString ack("video>ack\n");
 
 	CLogFile::WriteLog("start video read thread");
-	if (control->socket->connect_server() > 0){
+
+	if (control->socket->connect_server() > 0)
+	{
 		control->status = 1;
 		while(1){
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
-				control->socket->write_wstring(*control->vedio_command_list[i]);
+					control->socket->write_wstring(control->vedio_command_list[i]);
 			}
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
-				delete control->vedio_command_list[i];
+				//delete control->vedio_command_list[i]; //crash
 			}
 			control->vedio_command_list.clear();
 

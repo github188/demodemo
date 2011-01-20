@@ -59,8 +59,10 @@ int CSimpleSocket::readline(CString &des, long timeout)
 }
 
 int CSimpleSocket::write_wstring(CString &data)
-{
-	CLogFile::WriteLog("write_wstring:" + data);
+{	
+
+	CString sLog;
+	//CLogFile::WriteLog("write_wstring:" + data);
 	int writeLen = data.GetLength();
 	int len = write_data(data, writeLen);
 	bufferLimit = bufferPos = 0;

@@ -82,7 +82,9 @@ VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, in
 {
 	CString master_server = socket->ipaddr + ":";
 	util::int2str(master_server, socket->port);
-	CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
+	
+	//CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
+	CSimpleSocket * masterSocket = new CSimpleSocketImpl(master_server, master_server);
 
 	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
 	control->replay(videoId);
