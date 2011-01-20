@@ -35,7 +35,7 @@ int GokuSocket::connect_server()
 	CString host=ipaddr;
 	if(cs.Connect(host, port)==FALSE)
 	{
-		MessageBox(NULL,_T("Error 3"), _T("Error connect"),MB_OK);
+		MessageBox(NULL,_T("Error connect"), _T("Error connect"),MB_OK);
 		return -1;
 	}
 	return 1;
