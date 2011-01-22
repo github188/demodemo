@@ -61,7 +61,7 @@ static UINT video_read_thread(LPVOID param){
 			}
 			//for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
 			//	delete control->vedio_command_list[i]; //crash
-			}
+			//}
 			control->vedio_command_list.clear();
 
 			ret = control->socket->read_buffer(buffer, bufferLen);
