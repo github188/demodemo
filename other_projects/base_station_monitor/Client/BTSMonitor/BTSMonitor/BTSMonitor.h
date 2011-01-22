@@ -30,7 +30,7 @@ class CBTSMonitorApp : public CWinAppEx
 {
 public:
 	CBTSMonitorApp();
-	~CBTSMonitorApp(){ delete pgkclient; };
+	~CBTSMonitorApp(){ };
 public:
 	GokuClient *pgkclient;
 	CString btsTotalStr;
