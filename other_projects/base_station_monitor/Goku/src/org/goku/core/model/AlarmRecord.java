@@ -22,16 +22,20 @@ public class AlarmRecord implements JSONStreamAware{
 	
 	public String uuid = null;
 	public String baseStation = "";
+	public String channelId = ""; //发生告警的通道号
 	public String startTimeString;
-	public String alarmType = "";
+	public String alarmCode = "";
+	public String alarmCategory = "1"; //图片,视频,无视频／图片
 	/**
 	 * 告警处理状态，超时，正在发生，手动取消，删除
 	 */
-	public String alarmStatus = "";
-	public String user = "";
+	public String alarmStatus = "1";
+	public String user = "";        //告警确认人
 	public Date startTime = null;
 	public Date endTime = null;
 	public String videoPath;
+
+	public Date comfirmTime = null; //告警确认时间
 	
 	/**
 	 * 零时保存。
@@ -40,6 +44,10 @@ public class AlarmRecord implements JSONStreamAware{
 	
 	public String getLevel(){
 		return "error";
+	}
+	
+	public String getChannelId(){
+		return this.baseStation + ":" + this.channelId;
 	}
 	
 	public void generatePK(){
@@ -54,7 +62,7 @@ public class AlarmRecord implements JSONStreamAware{
         obj.put("uuid", uuid);
         obj.put("baseStation", baseStation);
         obj.put("alarmStatus", alarmStatus);
-        obj.put("alarmType", alarmType);
+        obj.put("alarmType", alarmCode);
         obj.put("level", getLevel());
         obj.put("startTime", format.format(startTime));
         obj.put("endTime", format.format(endTime));

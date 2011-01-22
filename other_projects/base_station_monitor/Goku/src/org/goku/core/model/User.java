@@ -16,4 +16,9 @@ public class User {
 	
 	public String status = "ok";
 	public Date lastActive;
+	
+	/**
+	 * 最后一次查询实时告警的时间, 在查询实时告警时，只更新这个时间以后的告警。
+	 */
+	public Date lastRealAlarmTime = null;
 }

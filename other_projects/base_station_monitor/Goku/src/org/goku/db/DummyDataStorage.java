@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -65,7 +66,13 @@ public class DummyDataStorage extends DataStorage {
 
 	@Override
 	public boolean save(Object obj) {
-		// TODO Auto-generated method stub
+		//if(thi)
+		if(obj instanceof AlarmRecord){
+			if(this.load(obj.getClass(), ((AlarmRecord)obj).uuid) == null){
+				Collection<Object> objList = objects.get(obj.getClass());			
+				objList.add(obj);
+			}
+		}
 		return false;
 	}
 
@@ -107,7 +114,7 @@ public class DummyDataStorage extends DataStorage {
 		for(Object o: objList){
 			AlarmRecord uu = (AlarmRecord)o;
 			log.info("uuid:" + uu.uuid + ", videoPath:" + uu.videoPath +
-					", alarm code:" + uu.alarmType + 
+					", alarm code:" + uu.alarmCode + 
 					", BTS id:" + uu.baseStation +
 					", level:" + uu.getLevel());
 		}
@@ -155,7 +162,7 @@ public class DummyDataStorage extends DataStorage {
 						alarm.startTime = new Date();
 						alarm.endTime = new Date();
 						if(bsinfo.length > 2){
-							alarm.alarmType = bsinfo[2];
+							alarm.alarmCode = bsinfo[2];
 						}
 						if(bsinfo.length > 3){
 							alarm.baseStation = bsinfo[3];
@@ -209,9 +216,21 @@ public class DummyDataStorage extends DataStorage {
 
 	public QueryResult queryData(Class cls, QueryParameter param){
 		QueryResult result = new QueryResult();
-		result.data = objects.get(cls);
-		if(result.data == null){
-			result.data = new Vector();
+		result.data = new Vector();
+		//result.data = objects.get(cls);
+		if(objects.get(cls) != null){
+			result.data.addAll(objects.get(cls)); // = new Vector();
+		}
+		Object val = param.param.get("startTime__>=");
+		if(val != null){
+			AlarmRecord alarm = null;
+			long curTime = ((Date)val).getTime();
+			for(Iterator i = result.data.iterator(); i.hasNext();){
+				alarm = (AlarmRecord)i.next();
+				if(alarm.startTime.getTime() < curTime){
+					i.remove();
+				}
+			}
 		}
 		
 		result.sessionId = "0001";

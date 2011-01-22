@@ -82,6 +82,11 @@ public class BaseStation  implements JSONStreamAware{
 	 * 摄像头, 例如：1:通道1$1:通道2
 	 */
 	public String channels;
+	
+	/**
+	 * 端局类型. (客户定义)
+	 */	
+	public String btsCategory;
 	//public 
 	
 	public String getStatus(){

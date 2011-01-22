@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -205,11 +206,54 @@ public class MasterServerServlet extends BaseRouteServlet{
 				param.offset = this.getIntParam(request, "offset", 0);
 				param.order = this.getStringParam(request, "order", null);
 				
+				int category = this.getIntParam(request, "c", 2);
+				Map<String, Object> filter = new HashMap<String, Object>();
+				if(category == 1){
+					filter.put("startTime__>=", userObj.lastRealAlarmTime);
+					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
+				}
+				
+				//基站ID过滤
+				String bsId = this.getStringParam(request, "uuid", null);
+				if(bsId != null && !"".equals(bsId) && !"all".equals(bsId)){
+					filter.put("uuid__=", bsId);
+				}
+				
+				param.param = filter;
 				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
 				outputAlarmList(alarms, response.getWriter());
 			}
 		}
-	}	
+	}
+	
+	/**
+	 * 告警确认操作. 
+	 */
+	public void alarm_action(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		String uuid = this.getStringParam(request, "uuid", null);
+		
+		if(sid == null || uuid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				AlarmRecord alarm = (AlarmRecord)server.storage.load(AlarmRecord.class, uuid);
+				if(alarm == null){
+					response.getWriter().println("2:Not found alarm by uuid");
+				}else {
+					alarm.alarmStatus = this.getStringParam(request, "status", "1");
+					alarm.user = userObj.name;
+					alarm.comfirmTime = new Date(System.currentTimeMillis());
+					server.storage.save(alarm);
+					response.getWriter().println("0:Alarm confirm$" + alarm.alarmStatus);
+				}
+			}
+		}
+	}
 		
 	/**
 	 * 返回基站列表 
@@ -254,6 +298,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 					request.setAttribute(SESSION_USER, userObj);
 					SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
 					response.getWriter().println("0:login ok$" + key);
+					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}else {
 					SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
 					response.getWriter().println("2:password error");
@@ -298,6 +343,31 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void settings_doc(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		static_serve("org/goku/master/statics/settings_doc.txt", "text/plain", response);
+	}
+	
+	/**
+	 * 模拟创建一条告警记录，用于开发测试阶段使用。
+	 */
+	public void mock_alarm(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException{
+		String uuid = this.getStringParam(request, "uuid", "1001:1");
+		
+		AlarmRecord alarm = new AlarmRecord();
+		alarm.startTime = new Date();
+		alarm.endTime = new Date();
+		
+		alarm.alarmCode = this.getStringParam(request, "alarmCode", "001");
+		alarm.alarmStatus = "1";
+		alarm.alarmCategory = this.getStringParam(request, "category", "1");
+		alarm.videoPath = this.getStringParam(request, "f", "001.h264");
+		
+		alarm.baseStation = uuid.split(":", 2)[0];
+		alarm.channelId = uuid.split(":", 2)[1];
+		alarm.generatePK();
+		
+		server.storage.save(alarm);
+		
+		response.getWriter().println("0:mock_ok");		
 	}
 	
 	/**
@@ -497,10 +567,13 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String data = null;
 		for(Iterator iter = result.data.iterator(); iter.hasNext();){
 			alarm = (AlarmRecord)iter.next();
-			data = String.format("%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarm.alarmType, alarm.baseStation,
-					alarm.alarmStatus, alarm.getLevel(), 
+			data = String.format("%s$%s$%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarm.alarmCode, alarm.getChannelId(),
+					alarm.alarmStatus, alarm.getLevel(),
 					format.format(alarm.startTime),
-					format.format(alarm.endTime));
+					format.format(alarm.endTime),
+					alarm.alarmCategory, 
+					"001"
+					);
 			out.println(data);
 		}
 		out.println();

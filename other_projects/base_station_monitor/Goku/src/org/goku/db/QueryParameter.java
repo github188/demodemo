@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class QueryParameter {
 	public String qsid = null;
-	public Map<String, String> param = new HashMap<String, String>();
+	public Map<String, Object> param = new HashMap<String, Object>();
 	
 	public int offset = 0;
 	public int limit = 100;

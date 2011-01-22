@@ -46,7 +46,7 @@ public class VideoRecorderManager implements Runnable{
 	 */
 	public String startAlarmRecord(MonitorClient client, AlarmRecord alarm){
 		Date startTime = new Date();
-		String path = getSavePath(startTime, client.info.uuid, alarm.user, alarm.alarmType);
+		String path = getSavePath(startTime, client.info.uuid, alarm.user, alarm.alarmCode);
 		alarm.videoPath = path;
 		alarm.generatePK();
 			
@@ -68,7 +68,7 @@ public class VideoRecorderManager implements Runnable{
 		alarm.user = user;
 		alarm.baseStation = client.info.uuid;
 		alarm.startTime = new Date();
-		alarm.alarmType = "none";
+		alarm.alarmCode = "none";
 		
 		return startAlarmRecord(client, alarm);
 	}
