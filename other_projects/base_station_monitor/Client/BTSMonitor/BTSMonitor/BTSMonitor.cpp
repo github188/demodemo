@@ -252,6 +252,8 @@ int CBTSMonitorApp::ExitInstance()
 {
 	// TODO: Add your specialized code here and/or call the base class
 	ExitSkinMagicLib();	
-
+	
+	delete pgkclient;
+	
 	return CWinAppEx::ExitInstance();
 }
