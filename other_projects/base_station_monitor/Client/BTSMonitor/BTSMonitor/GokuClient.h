@@ -19,7 +19,7 @@ public:
 		socket->connect_server();
 	}
 
-	~GokuClient(){}
+	~GokuClient(){delete socket;}
 
 	/**
 	 * login to master server;
