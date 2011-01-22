@@ -50,6 +50,8 @@
 
 #include <afxsock.h>
 
+#include "SkinMagicLib.h"
+#pragma comment(lib,"SkinMagic.lib")
 
 
 
