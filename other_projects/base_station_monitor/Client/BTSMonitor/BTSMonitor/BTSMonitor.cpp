@@ -108,6 +108,9 @@ BOOL CBTSMonitorApp::InitInstance()
 	CString host="127.0.0.1:8000";
 	pgkclient =new GokuClient(host, host);
 
+	VERIFY( 1 == InitSkinMagicLib(AfxGetInstanceHandle(), NULL, NULL, NULL ));
+	VERIFY( 1 == LoadSkinFromResource(NULL, "corona" ,"SKINMAGIC" ));//¼ÓÔØ¾²Ì¬Æ¤·ô×ÊÔ´
+	VERIFY( 1 == SetDialogSkin( "Dialog" ) );
 	CLoginDlg dlg;
 	if(dlg.DoModal()==IDCANCEL)
 	{
@@ -244,3 +247,11 @@ CView *CBTSMonitorApp::GetBaseView()
 
 
 
+
+int CBTSMonitorApp::ExitInstance()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	ExitSkinMagicLib();	
+
+	return CWinAppEx::ExitInstance();
+}
