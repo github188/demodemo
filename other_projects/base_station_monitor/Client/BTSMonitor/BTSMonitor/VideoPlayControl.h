@@ -59,8 +59,8 @@ static UINT video_read_thread(LPVOID param){
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
 					control->socket->write_wstring(control->vedio_command_list[i]);
 			}
-			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
-				//delete control->vedio_command_list[i]; //crash
+			//for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
+			//	delete control->vedio_command_list[i]; //crash
 			}
 			control->vedio_command_list.clear();
 
@@ -75,7 +75,8 @@ static UINT video_read_thread(LPVOID param){
 		}
 	}
 	CLogFile::WriteLog("end video read thread.");
-	delete buffer;
+
+	delete []buffer;
 
 	control->status = -1;
 	control->close();
