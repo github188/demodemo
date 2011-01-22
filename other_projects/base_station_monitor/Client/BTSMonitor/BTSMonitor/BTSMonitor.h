@@ -52,6 +52,7 @@ public:
 
 public:
 	CView* CBTSMonitorApp::GetBaseView();
+	virtual int ExitInstance();
 };
 
 extern CBTSMonitorApp theApp;
