@@ -1,7 +1,13 @@
 package org.goku.video;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -47,6 +53,35 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    }else {
 		    	client.realPlay();
 		    	response.getWriter().println("0:Video request OK");
+		    }
+		}
+	}
+	
+	/**
+	 * 使用录像文件，模拟一个摄像头通道。用于开发调试。
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	public void mock_video(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		int channel = this.getIntParam(request, "ch", -1);
+		String alarm = this.getStringParam(request, "alarm", null);
+	    MonitorClient client = null;
+		if(uuid == null || alarm == null || channel == -1){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+		    client = server.getMonitorClient(uuid);
+		    File videoPath = server.recordManager.getAlarmRecordFile(alarm);
+		    if(client == null){
+		    	response.getWriter().println("1:BTS not found");
+		    }else if(videoPath == null){
+		    	response.getWriter().println("2:Not found video file");
+		    }else {
+		    	MockRealVideo mock = new MockRealVideo(videoPath, client, channel);
+		    	mock.start();		    	
+		    	response.getWriter().println("0:Video Mock OK");
 		    }
 		}
 	}
@@ -229,6 +264,50 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
     protected void index_page(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
     	static_serve("org/goku/video/help_doc.txt", "text/plain", response);
+    }
+    
+    class MockRealVideo extends Thread{
+    	public MonitorClient client = null;
+    	public File file = null;
+    	public int channelId = 0;
+    	private FileChannel channel = null;
+    	private MappedByteBuffer buffer = null;    	
+    	public int fileSize = 0;
+    	
+    	MockRealVideo(File path, MonitorClient client, int ch){
+    		this.file = path;
+    		this.channelId = ch;
+    		this.client = client;
+    	}
+    	
+    	public void run(){
+    		fileSize = (int)file.length();
+    		try {
+				channel = new FileInputStream(file).getChannel();
+				buffer = channel.map(MapMode.READ_ONLY, 0, fileSize);    		
+			} catch (Exception e) {
+				log.warn("Failed to start video mock with path:" + file.getAbsoluteFile());
+			}
+			log.info("Start mock for " + client.info.uuid + ":" + channelId + 
+					" file:" + file.getAbsolutePath() + 
+					" size:" + this.fileSize); 
+			int frameSize = 1024 * 4;
+			if(buffer != null && fileSize > frameSize){
+				while(client.getClientStatus() == null){
+					if(buffer.position() + frameSize > fileSize){
+						buffer.position(0);
+					}
+					buffer.limit(buffer.position() + frameSize);
+					log.info("Route mock video, position=" + buffer.position());
+					client.route.route(buffer, 0, channelId);
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+			log.info("Stop video mock " + client.info.uuid + ":" + channelId);
+    	}
     }
 	
     class RealPlayRouting implements VideoDestination{

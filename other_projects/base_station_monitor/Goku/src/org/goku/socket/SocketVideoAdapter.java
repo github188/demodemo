@@ -126,7 +126,9 @@ public class SocketVideoAdapter {
 
 		@Override
 		public void write(byte[] data, int type, int channel) throws IOException {
-			client.write(data);
+			if(this.channelId == channel){
+				client.write(data);
+			}
 		}
 
 		@Override

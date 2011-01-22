@@ -47,7 +47,7 @@ public class VideoRoute {
 	 * @param channel -- 视通通道号
 	 */	
 	public void route(ByteBuffer source, int sourceType, int channel){
-		final byte[] data = new byte[source.limit()];
+		final byte[] data = new byte[source.limit() - source.position()];
 		source.get(data);
 		synchronized(destList){
 			VideoDestination dest = null;

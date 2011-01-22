@@ -21,7 +21,7 @@ public class FileReplayController {
 		buffer = channel.map(MapMode.READ_ONLY, 0, fileSize);
 	}
 	
-	public void nextFrame() throws IOException{		
+	public void nextFrame() throws IOException{
 		int nextPos = buffer.position();
 		nextPos = Math.min(nextPos + frameSize, fileSize);
 		buffer.limit(nextPos);
