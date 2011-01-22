@@ -254,7 +254,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		}		
 
 		@Override
-		public void write(byte[] data) throws IOException {
+		public void write(byte[] data, int type, int channel) throws IOException {
 			if(!this.running) throw new IOException("Destination closed.");
 			this.os.write(data);
 			os.flush();

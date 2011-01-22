@@ -13,7 +13,7 @@ public interface VideoDestination {
 	 * 处理转发的数据，调用者保证接口的线程安全。只能有一个线程在调用写操作。
 	 * @param data 
 	 */	
-	public void write(byte[] data) throws IOException;
+	public void write(byte[] data, int type, int channel) throws IOException;
 	
 	/**
 	 * 关闭目地, 内部处理异常。

@@ -27,7 +27,7 @@ public class FileVideoRecorder implements VideoDestination{
 	}
 
 	@Override
-	public void write(byte[] data) throws IOException {
+	public void write(byte[] data, int type, int channel) throws IOException {
 		log.info("File " + path.getName() + " write:" + data.length + " bytes.");
 		if(os == null){
 			os = new FileOutputStream(path);

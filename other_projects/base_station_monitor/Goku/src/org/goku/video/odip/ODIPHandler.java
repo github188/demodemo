@@ -290,13 +290,8 @@ public class ODIPHandler {
 	
 	protected void ackVideoData(ProtocolHeader header, ByteBuffer buffer){
 		
-		int channel = header.getByte(8) + 1; 
-		if(channel != this.client.channelId){
-			log.warn(String.format("Got other channel video data, %s!=%s", 
-					channel, this.client.channelId));
-		}else {
-			log.debug("Get video data, len:" + header.externalLength);
-			this.client.route.route(buffer, 0);
-		}
+		int channel = header.getByte(8) + 1;
+		log.debug("Get video data, len:" + header.externalLength);
+		this.client.route.route(buffer, 0, channel);
 	}
 }

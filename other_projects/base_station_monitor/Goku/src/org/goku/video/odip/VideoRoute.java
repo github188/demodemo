@@ -44,8 +44,9 @@ public class VideoRoute {
 	 * 如果写目的出现异常，关闭目的，并从转发列表中删除。
 	 * @param source
 	 * @param sourceType -- 源数据类型， 用于处理双码流情况。
+	 * @param channel -- 视通通道号
 	 */	
-	public void route(ByteBuffer source, int sourceType){
+	public void route(ByteBuffer source, int sourceType, int channel){
 		final byte[] data = new byte[source.limit()];
 		source.get(data);
 		synchronized(destList){
@@ -56,9 +57,9 @@ public class VideoRoute {
 					iter.remove();
 					if(this.destList.size() <= 0){
 						this.client.videoDestinationEmpty();
-					}					
+					}
 				}else if(dest.accept(sourceType)){
-					executor.execute(new RoutingTask(dest, data));
+					executor.execute(new RoutingTask(dest, data, sourceType, channel));
 				}
 			}
 		}
@@ -97,9 +98,12 @@ public class VideoRoute {
 	class RoutingTask implements Runnable{
 		private VideoDestination dest = null;
 		private byte[] data = null;
-		public RoutingTask(VideoDestination dest, byte[] data){
+		private int type, channel;
+		public RoutingTask(VideoDestination dest, byte[] data, int type, int channel){
 			this.dest = dest;
 			this.data = data;
+			this.type = type;
+			this.channel = channel;
 		}
 
 		@Override
@@ -113,7 +117,7 @@ public class VideoRoute {
 				后面的包。
 				*/
 				synchronized(dest){
-					dest.write(this.data);
+					dest.write(this.data, this.type, this.channel);
 				}
 			}catch(Throwable e){
 				log.warn("Routting error:", e);

@@ -17,7 +17,7 @@ import org.goku.video.odip.VideoDestination;
  * 
  * 命令格式：
  * 
- * video>real?uuid=1111
+ * video>real?uuid=1111&ch=1
  * video>replay?uuid=1111
  * video>seek?pos=1111
  * video>ack
@@ -36,7 +36,7 @@ public class SocketVideoAdapter {
 		Map<String, String> param = parseCommand(command);
 		String cmd = param.get("q");
 		if(cmd.equals("real")){
-			doRealPlay(client, param.get("uuid"));
+			doRealPlay(client, param.get("uuid"), param.get("ch"));
 		}else if(cmd.equals("replay")){
 			doRePlay(client, param.get("uuid"));
 		}else if(cmd.equals("seek")){
@@ -50,7 +50,7 @@ public class SocketVideoAdapter {
 		this.recordManager = manager;
 	}
 	
-	protected void doRealPlay(SocketClient client, String uuid){
+	protected void doRealPlay(SocketClient client, String uuid, String ch){
 		if(server == null){
 			try {
 				client.write("It's not a route server.".getBytes());
@@ -62,7 +62,11 @@ public class SocketVideoAdapter {
 			MonitorClient mc = server.getMonitorClient(uuid);
 			if(mc != null){
 				log.info("Start real play client id " + uuid);
-				mc.route.addDestination(new SocketVideoPlayer(client));
+				int channel = 0;
+				try{
+					channel = Integer.parseInt(ch);
+				}catch(Exception e){};
+				mc.route.addDestination(new SocketVideoPlayer(client, channel));
 				client.connectionMode = SocketClient.MODE_REALLPLY;
 			}else {
 				client.closeSocket();
@@ -109,8 +113,10 @@ public class SocketVideoAdapter {
 	
 	class SocketVideoPlayer implements VideoDestination{
 		private SocketClient client = null;
-		public SocketVideoPlayer(SocketClient client){
+		private int channelId = 0;
+		public SocketVideoPlayer(SocketClient client, int channelId){
 			this.client = client;
+			this.channelId = channelId;
 		}
 
 		@Override
@@ -119,7 +125,7 @@ public class SocketVideoAdapter {
 		}
 
 		@Override
-		public void write(byte[] data) throws IOException {
+		public void write(byte[] data, int type, int channel) throws IOException {
 			client.write(data);
 		}
 
