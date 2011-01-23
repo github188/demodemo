@@ -1,5 +1,6 @@
 #pragma once
 #include "afxcmn.h"
+#include "afxwin.h"
 
 
 // CRuntimeWarning dialog
@@ -26,4 +27,6 @@ public:
 
 public:
 	void AddListView(void);
+private:
+	CImageList m_imagelist;
 };
