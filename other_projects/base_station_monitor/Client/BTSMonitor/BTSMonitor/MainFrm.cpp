@@ -21,6 +21,8 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 // CMainFrame
@@ -54,6 +56,21 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
+	//CMFCRibbonBar     m_wndRibbonBar;
+	//CMFCRibbonApplicationButton m_MainButton;
+	//CMFCToolBarImages m_PanelImages;
+	//CMFCRibbonStatusBar  m_wndStatusBar;
+
+	//int nCnt = m_wndStatusBar.GetCount();
+	//int i=0;
+	//for(i=0;i<nCnt;i++)
+	//{
+	//	CMFCRibbonStatusBarPane *pStatusBarPane = (CMFCRibbonStatusBarPane*)m_wndStatusBar.GetElement(i);
+	//	delete pStatusBarPane;
+	//}
+
+
+
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

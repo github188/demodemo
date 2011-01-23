@@ -5,6 +5,12 @@
 #include "BTSMonitor.h"
 #include "PlayView.h"
 #include "const.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 // CPlayView
 
 IMPLEMENT_DYNCREATE(CPlayView, CView)

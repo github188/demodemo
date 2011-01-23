@@ -3,6 +3,12 @@
 #include "logfile.h"
 #include "util.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 int CSimpleSocket::read_buffer(char *buffer, int size)
 {
 	CLogFile::WriteLog("read_buffer in SimpleSocket");

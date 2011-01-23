@@ -22,6 +22,8 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 
@@ -46,6 +48,8 @@ CBTSMonitorApp::CBTSMonitorApp()
 
 	// TODO: 在此处添加构造代码，
 	// 将所有重要的初始化放置在 InitInstance 中
+
+	pgkclient = NULL;
 }
 
 // 唯一的一个 CBTSMonitorApp 对象
@@ -111,6 +115,7 @@ BOOL CBTSMonitorApp::InitInstance()
 	VERIFY( 1 == InitSkinMagicLib(AfxGetInstanceHandle(), NULL, NULL, NULL ));
 	VERIFY( 1 == LoadSkinFromResource(NULL, "corona" ,"SKINMAGIC" ));//加载静态皮肤资源
 	VERIFY( 1 == SetDialogSkin( "Dialog" ) );
+
 	CLoginDlg dlg;
 	if(dlg.DoModal()==IDCANCEL)
 	{
@@ -244,6 +249,7 @@ CView *CBTSMonitorApp::GetBaseView()
 	return NULL;
 }
 // CBTSMonitorApp 消息处理程序
+
 
 
 

@@ -81,6 +81,9 @@ IDI_FILE_VIEW_HC        ICON                    "res\\file_view_hc.ico"
 IDI_CLASS_VIEW          ICON                    "res\\class_view.ico"
 IDI_CLASS_VIEW_HC       ICON                    "res\\class_view_hc.ico"
 IDI_WARNING_VIEW        ICON                    "res\\icon1.ico"
+IDI_UNKNOWN             ICON                    "res\\ico00001.ico"
+IDI_UNACK               ICON                    "res\\ico00002.ico"
+IDI_ACK                 ICON                    "res\\ico00003.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -458,6 +461,22 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// SKINMAGIC
+//
+
+CORONA                  SKINMAGIC               "res\\corona.smf"
+DEVIOR                  SKINMAGIC               "res\\Devior.smf"
+FUTUREIII               SKINMAGIC               "res\\futuraIII.smf"
+KROMO                   SKINMAGIC               "res\\Kromo.smf"
+KROMOBLUE               SKINMAGIC               "res\\KromoBlue.smf"
+TUSK                    SKINMAGIC               "res\\Tusk.smf"
+XPBLUE                  SKINMAGIC               "res\\xpblue.smf"
+XPGREAN                 SKINMAGIC               "res\\xpgrean.smf"
+XPLUS                   SKINMAGIC               "res\\x-plus.smf"
+XPSTEEL                 SKINMAGIC               "res\\xpsteel.smf"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -639,21 +658,6 @@ BEGIN
     IDS_RIBBON_STATUSBAR    "×´Ì¬À¸"
     IDS_RIBBON_VIEW         "ÊÓÍ¼"
 END
-
-////////////////////////////////////////////////////////////////////////
-// SKINMAGIC add by liang 2010-01-20
-//
-CORONA                  SKINMAGIC DISCARDABLE   "res\\corona.smf"
-DEVIOR                  SKINMAGIC DISCARDABLE   "res\\Devior.smf"
-FUTUREIII                  SKINMAGIC DISCARDABLE   "res\\futuraIII.smf"
-KROMO                   SKINMAGIC DISCARDABLE   "res\\Kromo.smf"
-KROMOBLUE                   SKINMAGIC DISCARDABLE   "res\\KromoBlue.smf"
-TUSK                 SKINMAGIC DISCARDABLE   "res\\Tusk.smf"
-XPBLUE                  SKINMAGIC DISCARDABLE   "res\\xpblue.smf"
-XPGREAN                 SKINMAGIC DISCARDABLE   "res\\xpgrean.smf"
-XPLUS                   SKINMAGIC DISCARDABLE   "res\\x-plus.smf"
-XPSTEEL                 SKINMAGIC DISCARDABLE   "res\\xpsteel.smf"
-
 
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,12 @@
 #include "util.h"
 #include "GokuClient.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 int GokuClient::execute_command(CString &cmd)
 {
 	CString code;

@@ -5,6 +5,11 @@
 #include "BTSMonitor.h"
 #include "CriticalWarning.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 // CCriticalWarning dialog
 
@@ -47,7 +52,8 @@ BOOL CCriticalWarning::OnInitDialog()
 		"告警类型",
 		"基站",
 		"开始时间",
-		"结束时间"
+		"结束时间",
+		"确认状态"
 	};
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
 	for (int i=0; i<nCnt; i++)

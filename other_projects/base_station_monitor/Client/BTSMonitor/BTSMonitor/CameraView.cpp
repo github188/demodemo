@@ -6,6 +6,11 @@
 #include "CameraView.h"
 #include "BTSManager.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 // CCameraView
 
 IMPLEMENT_DYNAMIC(CCameraView, CDockablePane)

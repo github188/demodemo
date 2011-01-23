@@ -6,6 +6,11 @@
 #include "LoginDlg.h"
 
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 // CLoginDlg dialog
 
 IMPLEMENT_DYNAMIC(CLoginDlg, CDialog)
@@ -44,7 +49,9 @@ void CLoginDlg::OnBnClickedOk()
 	CString host;
 	this->GetDlgItemText(IDC_EDIT_SERVER, host);
 	host.Append(":8000");
-	pApp->pgkclient =new GokuClient(host, host);
+
+	if (pApp->pgkclient == NULL)
+		pApp->pgkclient =new GokuClient(host, host);
 	
 	if(pApp->pgkclient->login(username, password)==0)
 	{

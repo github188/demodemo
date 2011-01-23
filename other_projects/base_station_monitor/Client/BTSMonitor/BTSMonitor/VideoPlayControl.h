@@ -8,6 +8,8 @@ using namespace std;
 
 typedef int(*DataCallBack)(int sessionId, char *pBuffer, int len);
 
+UINT video_read_thread(LPVOID param);
+
 class VideoPlayControl{
 public:
 	DataCallBack callback;
@@ -41,6 +43,8 @@ public:
 	}
 };
 
+
+/*
 static UINT video_read_thread(LPVOID param){
 	VideoPlayControl *control = (VideoPlayControl *)param;
 	int bufferLen = 4096 + 100;
@@ -76,12 +80,12 @@ static UINT video_read_thread(LPVOID param){
 	}
 	CLogFile::WriteLog("end video read thread.");
 
-	delete []buffer;
+	delete[] buffer;
 
 	control->status = -1;
 	control->close();
 
 	return 0;
 }
-
+*/
 #endif

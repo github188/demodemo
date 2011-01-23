@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "util.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 int util::split_next(const CString &src, CString &des, char ch, int start)
 {
 	int pos = 0;

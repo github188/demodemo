@@ -3,6 +3,12 @@
 #include "logfile.h"
 #include "GokuSocket.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 int GokuSocket::read_buffer(char *buffer, int size)
 {
 	CString xx;
@@ -16,6 +22,8 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		buffer[len] = 0;
 		CLogFile::WriteLog((const char *)buffer);
 	}
+
+	delete []ubuffer;
 	return len;
 }
 

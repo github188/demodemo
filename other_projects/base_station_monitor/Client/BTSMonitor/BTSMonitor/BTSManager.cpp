@@ -2,6 +2,16 @@
 #include "util.h"
 #include "BTSManager.h"
 
+//#ifdef _DEBUG
+//#define new DEBUG_NEW
+//#endif
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 {
 	int ipos=0;
@@ -32,5 +42,8 @@ void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 			pinfo->insertIntoTree(tree, pParentInfo->getPosInTree());
 			btsmap.SetAt(util::str2int(pinfo->uuid), pinfo);
 		}
+
+		if (pinfo)
+			delete pinfo;
 	}
 }
