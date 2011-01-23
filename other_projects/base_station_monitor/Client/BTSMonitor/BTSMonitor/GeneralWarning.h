@@ -22,4 +22,6 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	CMFCListCtrl  m_lstGeneralWarning;
+private:
+	CImageList m_imagelist;
 };
