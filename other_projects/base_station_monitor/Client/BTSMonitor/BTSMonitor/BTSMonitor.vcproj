@@ -383,6 +383,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SkinMagicLib.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -497,6 +501,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ico00001.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ico00002.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ico00003.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon1.ico"
 				>
 			</File>
@@ -549,10 +565,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 		<Global
