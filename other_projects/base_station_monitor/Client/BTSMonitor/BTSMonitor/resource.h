@@ -8,6 +8,8 @@
 #define IDD_RUNTIME_WARNING             101
 #define IDS_FIND_CAMERA                 101
 #define IDS_RIBBON_FIND_CAMERA          102
+#define IDS_STRING103                   103
+#define IDS_WARNING                     103
 #define IDP_SOCKETS_INIT_FAILED         104
 #define IDB_WRITESMALL                  110
 #define IDB_WRITELARGE                  111
@@ -114,10 +116,11 @@
 #define IDD_GENERAL_WARNING             315
 #define IDD_DLG_FIND                    316
 #define IDD_DLG_LOGIN                   317
-#define IDI_UNKNOW                      318
 #define IDI_UNKNOWN                     318
 #define IDI_UNACK                       319
 #define IDI_ACK                         320
+#define IDR_MENU_WARNING                321
+#define IDD_POP_VIDEO                   322
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
@@ -125,6 +128,7 @@
 #define IDC_EDIT_USER                   1002
 #define IDC_EDIT_PWD                    1003
 #define IDC_EDIT_SERVER                 1004
+#define IDC_WARNING_VIDEO               1004
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -134,14 +138,17 @@
 #define ID_VV9                          32785
 #define ID_VV16                         32786
 #define ID_VV25                         32787
+#define ID_WARNING_ACK                  32788
+#define ID_WARNING_SCROOLING_ON         32791
+#define ID_WARNING_SCROOLING_OFF        32792
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1004
+#define _APS_NEXT_RESOURCE_VALUE        323
+#define _APS_NEXT_COMMAND_VALUE         32793
+#define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
