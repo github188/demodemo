@@ -271,6 +271,17 @@ BEGIN
     MENUITEM "水绿色主题",                       ID_VIEW_APPLOOK_OFF_2007_AQUA
 END
 
+IDR_MENU_WARNING MENU 
+BEGIN
+    POPUP "WARNING"
+    BEGIN
+        MENUITEM "确认告警",                        ID_WARNING_ACK
+        MENUITEM SEPARATOR
+        MENUITEM "实时滚动",                        ID_WARNING_SCROOLING_ON
+        MENUITEM "停止滚动",                        ID_WARNING_SCROOLING_OFF
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -358,6 +369,14 @@ BEGIN
     LTEXT           "密码",IDC_STATIC,39,37,17,8
     LTEXT           "服务器",IDC_STATIC,39,55,25,8
     EDITTEXT        IDC_EDIT_SERVER,71,55,98,14,ES_AUTOHSCROLL
+END
+
+IDD_POP_VIDEO DIALOGEX 0, 0, 195, 163
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "告警视频"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,69,149,50,14
 END
 
 
@@ -455,6 +474,11 @@ BEGIN
         TOPMARGIN, 6
         BOTTOMMARGIN, 98
     END
+
+    IDD_POP_VIDEO, DIALOG
+    BEGIN
+        RIGHTMARGIN, 194
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -485,6 +509,7 @@ BEGIN
     IDP_OLE_INIT_FAILED     "OLE 初始化失败。请确保 OLE 库是正确的版本。"
     IDS_FIND_CAMERA         "查找"
     IDS_RIBBON_FIND_CAMERA  "查找(&F)"
+    IDS_WARNING             "WARNING"
     IDP_SOCKETS_INIT_FAILED "Windows 套接字初始化失败。"
 END
 
@@ -657,6 +682,11 @@ BEGIN
     IDS_RIBBON_STYLE_DESC   "选择一个主题"
     IDS_RIBBON_STATUSBAR    "状态栏"
     IDS_RIBBON_VIEW         "视图"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WARNING_ACK          "对未确认的告警进行确认操作"
 END
 
 #endif    // Chinese (P.R.C.) resources
