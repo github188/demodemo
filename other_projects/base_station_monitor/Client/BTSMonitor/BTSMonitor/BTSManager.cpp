@@ -43,7 +43,7 @@ void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 			btsmap.SetAt(util::str2int(pinfo->uuid), pinfo);
 		}
 
-		if (pinfo)
-			delete pinfo;
+		//if (pinfo)
+		//	delete pinfo;
 	}
 }

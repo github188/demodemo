@@ -109,8 +109,8 @@ BOOL CBTSMonitorApp::InitInstance()
 	//临界区初始化
 	CLogFile::InitCriticalSection();
 
-	CString host="127.0.0.1:8000";
-	pgkclient =new GokuClient(host, host);
+	//CString host="127.0.0.1:8000";
+	//pgkclient =new GokuClient(host, host);
 
 	VERIFY( 1 == InitSkinMagicLib(AfxGetInstanceHandle(), NULL, NULL, NULL ));
 	VERIFY( 1 == LoadSkinFromResource(NULL, "corona" ,"SKINMAGIC" ));//加载静态皮肤资源
