@@ -336,7 +336,7 @@ void CBTSMonitorView::OnInitialUpdate()
 		m_vvControl.vvInfo[i].vv = (CPlayView*)RUNTIME_CLASS(CPlayView)->CreateObject();
 		// AFX_WS_DEFAULT_VIEW´ú±í(WS_BORDER | WS_VISIBLE | WS_CHILD)
 		//m_vvControl.vvInfo[i].vv->Create(NULL, NULL, AFX_WS_DEFAULT_VIEW, rect, this, 1000+i);
-		m_vvControl.vvInfo[i].vv->Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rect, this, 2000+i);
+		m_vvControl.vvInfo[i].vv->Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rect, this, ID_PLAYVIDEO_VIEW+i);
 
 		m_vvControl.vvInfo[i].vv->ShowWindow(SW_SHOW);
 

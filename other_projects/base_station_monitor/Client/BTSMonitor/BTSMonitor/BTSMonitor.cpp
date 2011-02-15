@@ -172,6 +172,8 @@ protected:
 // й╣ож
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	virtual BOOL OnInitDialog();
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
@@ -205,6 +207,12 @@ void CBTSMonitorApp::PreLoadState()
 	bNameValid = strName.LoadString(IDS_EXPLORER);
 	ASSERT(bNameValid);
 	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EXPLORER);
+
+	//WARNING Menu
+	bNameValid = strName.LoadString(IDS_WARNING);
+	ASSERT(bNameValid);
+	GetContextMenuManager()->AddMenu(strName, IDR_MENU_WARNING);
+
 }
 
 void CBTSMonitorApp::LoadCustomState()
@@ -262,4 +270,14 @@ int CBTSMonitorApp::ExitInstance()
 	delete pgkclient;
 	
 	return CWinAppEx::ExitInstance();
+}
+
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  Add extra initialization here
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }

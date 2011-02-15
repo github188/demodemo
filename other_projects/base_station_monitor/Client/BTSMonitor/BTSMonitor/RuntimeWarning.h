@@ -2,9 +2,9 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
-
+#include "const.h"
 // CRuntimeWarning dialog
-
+class CWarnPopVideo;
 class CRuntimeWarning : public CPropertyPage
 {
 	DECLARE_DYNAMIC(CRuntimeWarning)
@@ -29,4 +29,17 @@ public:
 	void AddListView(void);
 private:
 	CImageList m_imagelist;
+	CWarnPopVideo* m_pPopVideoDlg[cnMAX_POP_WINDOW];
+public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnNMRClickLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
+//	afx_msg void OnWarningAck();
+//	afx_msg void OnDummyCompile();
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+	afx_msg void OnWarningAck();
+	afx_msg void OnWarningScroolingOff();
+	afx_msg void OnWarningScroolingOn();
+private:
+	int m_nCurItem;
 };

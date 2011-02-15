@@ -46,14 +46,14 @@ BOOL CGeneralWarning::OnInitDialog()
 	// TODO:  Add extra initialization here
 	CString strHeader[] = 
 	{
+		"状态"
 		"UUID",
 		"位置",
 		"端局类型",
 		"告警类型",
 		"基站",
 		"开始时间",
-		"结束时间",
-		"确认状态"
+		"结束时间"
 	};
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
 	for (int i=0; i<nCnt; i++)

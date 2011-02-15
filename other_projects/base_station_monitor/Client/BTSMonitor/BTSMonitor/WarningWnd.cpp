@@ -45,6 +45,12 @@ CWarningWnd::~CWarningWnd()
 BEGIN_MESSAGE_MAP(CWarningWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+//	ON_WM_CONTEXTMENU()
+//	ON_COMMAND(ID_WARNING_ACK, &CWarningWnd::OnWarningAck)
+//	ON_UPDATE_COMMAND_UI(ID_WARNING_ACK, &CWarningWnd::OnUpdateWarningAck)
+//	ON_COMMAND(ID_WARNING_SCROOLING_OFF, &CWarningWnd::OnWarningScroolingOff)
+//	ON_COMMAND(ID_WARNING_SCROOLING_ON, &CWarningWnd::OnWarningScroolingOn)
+//	ON_COMMAND(ID_DUMMY_COMPILE, &CWarningWnd::OnDummyCompile)
 END_MESSAGE_MAP()
 
 
@@ -147,3 +153,76 @@ void CWarningWnd::OnSize(UINT nType, int cx, int cy)
 	m_wndTabs.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 
 }
+
+//void CWarningWnd::OnContextMenu(CWnd* pWnd, CPoint point)
+//{
+//	// TODO: Add your message handler code here
+//	CMFCTabCtrl* pTab = (CMFCTabCtrl*) &m_wndTabs;
+//	ASSERT_VALID(pTab);
+//
+//	int nVisibleTab = pTab->GetFirstVisibleTabNum();
+//	int nActTab = pTab->GetActiveTab();
+//	CWnd *pActWindow = pTab->GetActiveWindow();
+//	CWnd *pActWnd = pTab->GetActiveWnd();
+//	
+//	CRect rc;
+//	GetClientRect(&rc);
+//	if (pActWnd->m_hWnd == m_pRuntimePg->m_hWnd)
+//	{
+//		if (point != CPoint(-1, -1))
+//		{
+//			CPoint ptList = point;
+//			m_pRuntimePg->ScreenToClient(&ptList);
+//
+//			UINT flags = 0;
+//			int itemClicked = m_pRuntimePg->m_lstRuntimeWarning.HitTest(ptList, &flags);
+//			if (itemClicked > -1)
+//			{
+//				//pTab->SetFocus();
+//				m_pRuntimePg->SetFocus();
+//				//HMENU hMenu = theApp.GetContextMenuManager()->GetMenuById(IDR_MENU_WARNING);
+//				//theApp.GetContextMenuManager()->ShowPopupMenu(IDR_MENU_WARNING,point.x, point.y, this);
+//				theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EXPLORER, point.x, point.y, this, TRUE);	
+//
+//			}
+//		}
+//
+//		
+//	}
+//	else if (pActWnd->m_hWnd == m_pCriticalPg->m_hWnd)
+//		;
+//	else if (pActWnd->m_hWnd == m_pGereralPg->m_hWnd)
+//		;
+//	else
+//	{
+//		CDockablePane::OnContextMenu(pWnd, point);
+//		return;
+//	}
+//
+//}
+
+//void CWarningWnd::OnWarningAck()
+//{
+//	// TODO: Add your command handler code here
+//}
+
+//void CWarningWnd::OnUpdateWarningAck(CCmdUI *pCmdUI)
+//{
+//	// TODO: Add your command update UI handler code here
+//	pCmdUI->Enable(TRUE);
+//}
+
+//void CWarningWnd::OnWarningScroolingOff()
+//{
+//	// TODO: Add your command handler code here
+//}
+
+//void CWarningWnd::OnWarningScroolingOn()
+//{
+//	// TODO: Add your command handler code here
+//}
+
+//void CWarningWnd::OnDummyCompile()
+//{
+//	// TODO: Add your command handler code here
+//}

@@ -53,6 +53,11 @@ void CLoginDlg::OnBnClickedOk()
 	if (pApp->pgkclient == NULL)
 		pApp->pgkclient =new GokuClient(host, host);
 	
+#ifdef _DEBUG
+	username = "test1";
+	password = "pass";
+#endif
+
 	if(pApp->pgkclient->login(username, password)==0)
 	{
 		pApp->btsTotalStr.Empty();
@@ -72,6 +77,13 @@ BOOL CLoginDlg::OnInitDialog()
 	// TODO:  Add extra initialization here
 	CString server="127.0.0.1";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
+
+
+	//LogOn ICON
+	CStatic*   pStatic =   (CStatic*)GetDlgItem(IDC_OGON_PIC);
+	//pStatic->ModifyStyle(0xF, SS_BITMAP|SS_CENTERIMAGE);
+	HICON  hIcon1  =  AfxGetApp()->LoadIcon(IDI_LOGON);
+	pStatic->SetIcon(hIcon1);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

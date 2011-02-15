@@ -18,6 +18,11 @@
 #include "const.h"
 #include "MainFrm.h"
 
+//
+#include "WarningConfig.h"
+#include "WarningMgr.h"
+#include "TaskMgr.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,6 +45,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FIND_CAMERA, &CMainFrame::OnFindCamera)
 	ON_MESSAGE(WM_NOTIFY_MESSAGE, &CMainFrame::OnNotifyMessage)
 	ON_COMMAND_RANGE(ID_VV1, ID_VV25, OnMonitorWindowType)
+	ON_COMMAND(ID_TASK_MGR, &CMainFrame::OnTaskMgr)
+	ON_COMMAND(ID_SYSTEM_CONFIG, &CMainFrame::OnSystemConfig)
+	ON_COMMAND(ID_WARNING_MGR, &CMainFrame::OnWarningMgr)
+	ON_COMMAND(ID_USER_MGR, &CMainFrame::OnUserMgr)
 END_MESSAGE_MAP()
 
 // CMainFrame 构造/析构
@@ -166,41 +175,42 @@ void CMainFrame::InitializeRibbon()
 	pMainPanel->Add(new CMFCRibbonButton(ID_APP_EXIT, strTemp, 1, 1)); //CMFCRibbonMainPanelButton(ID_APP_EXIT, strTemp,1,1));
 
 
-	strTemp = "主页";
+	strTemp = "系统";//Page1
 	CMFCRibbonCategory* pCategoryHome = m_wndRibbonBar.AddCategory(strTemp, IDB_MONITOR_SMALL, IDB_MONITOR_LARGE);
 
-	strTemp = "监控视窗";
-	CMFCRibbonPanel* pPanelClipboard = pCategoryHome->AddPanel(strTemp, m_PanelImages.ExtractIcon(27));
+	strTemp = "监控窗口"; //page1->pan1
+	CMFCRibbonPanel* pPanelVV = pCategoryHome->AddPanel(strTemp, m_PanelImages.ExtractIcon(27));
+	pPanelVV->SetJustifyColumns();
 
-	strTemp = "1视窗";
+	strTemp = "单窗";	 //page1-Pan1-btn
 	CMFCRibbonButton* pBtnVV1 = new CMFCRibbonButton(ID_VV1, strTemp, 0, 0);
-	pPanelClipboard->Add(pBtnVV1);
+	pPanelVV->Add(pBtnVV1);
 
-	strTemp = "4视窗";
+	strTemp = "4窗";//page1-Pan1-btn
 	CMFCRibbonButton* pBtnVV4 = new CMFCRibbonButton(ID_VV4, strTemp, 1);
-	pPanelClipboard->Add(pBtnVV4);
-	strTemp = "6视窗";
+	pPanelVV->Add(pBtnVV4);
+	strTemp = "6窗";//page1-Pan1-btn
 	CMFCRibbonButton* pBtnVV6 = new CMFCRibbonButton(ID_VV6, strTemp, 2);
-	pPanelClipboard->Add(pBtnVV6);
-	strTemp = "8视窗";
+	pPanelVV->Add(pBtnVV6);
+	strTemp = "8窗";
 	CMFCRibbonButton* pBtnVV8 = new CMFCRibbonButton(ID_VV8, strTemp, 3);
-	pPanelClipboard->Add(pBtnVV8);
-	strTemp = " 9视窗";
+	pPanelVV->Add(pBtnVV8);
+	strTemp = "9窗";
 	CMFCRibbonButton* pBtnVV9 = new CMFCRibbonButton(ID_VV9, strTemp, 4);
-	pPanelClipboard->Add(pBtnVV9);
+	pPanelVV->Add(pBtnVV9);
 
-	strTemp = "16视窗";
+	strTemp = "16窗";
 	CMFCRibbonButton* pBtnVV16 = new CMFCRibbonButton(ID_VV16, strTemp, 5);
-	pPanelClipboard->Add(pBtnVV16);
-	strTemp = "25视窗";
+	pPanelVV->Add(pBtnVV16);
+	strTemp = "25窗";
 	CMFCRibbonButton* pBtnVV25 = new CMFCRibbonButton(ID_VV25, strTemp, 6);
-	pPanelClipboard->Add(pBtnVV25);
+	pPanelVV->Add(pBtnVV25);
 
 	//bNameValid = strTemp.LoadString(IDS_RIBBON_SELECTALL);
 	//ASSERT(bNameValid);
-	//pPanelClipboard->Add(new CMFCRibbonButton(ID_EDIT_SELECT_ALL, strTemp, -1));
+	//pPanelVV->Add(new CMFCRibbonButton(ID_EDIT_SELECT_ALL, strTemp, -1));
 
-	// 创建和添加“视图”面板:
+	// 创建和添加“视图”面板: ////page1-Pan2-btn
 	bNameValid = strTemp.LoadString(IDS_RIBBON_VIEW);
 	ASSERT(bNameValid);
 	CMFCRibbonPanel* pPanelView = pCategoryHome->AddPanel(strTemp, m_PanelImages.ExtractIcon (7));
@@ -209,6 +219,37 @@ void CMainFrame::InitializeRibbon()
 	ASSERT(bNameValid);
 	CMFCRibbonButton* pBtnStatusBar = new CMFCRibbonCheckBox(ID_VIEW_STATUS_BAR, strTemp);
 	pPanelView->Add(pBtnStatusBar);
+
+
+	// 创建和添加“系统配置”面板: ////page1-Pan3-btn
+	strTemp = "配置与管理";
+	CMFCRibbonPanel* pPanelCfgAndMgr = pCategoryHome->AddPanel(strTemp);
+	
+	strTemp = "配置";
+	CMFCRibbonButton* pBtnSysCfg = new CMFCRibbonButton(ID_SYSTEM_CONFIG, strTemp,-1,1);
+	pPanelCfgAndMgr->Add(pBtnSysCfg);
+
+	// 创建和添加“任务管理”面板: ////page1-Pan4-btn
+	strTemp = "任务";
+	//CMFCRibbonPanel* pPanelTaskMgr = pCategoryHome->AddPanel(strTemp);
+	//strTemp = "";
+	CMFCRibbonButton* pBtnTaskMgr = new CMFCRibbonButton(ID_TASK_MGR, strTemp,-1,2);
+	pPanelCfgAndMgr->Add(pBtnTaskMgr);
+
+
+	// 创建和添加“告警管理”面板: ////page1-Pan5-btn
+	strTemp = "告警";
+	//CMFCRibbonPanel* pPanelAlertMgr = pCategoryHome->AddPanel(strTemp);
+	//strTemp = "";
+	CMFCRibbonButton* pBtnAlertCfg = new CMFCRibbonButton(ID_WARNING_MGR, strTemp,-1,3);
+	pPanelCfgAndMgr->Add(pBtnAlertCfg);
+
+	// 创建和添加“用户管理”面板: ////page1-Pan5-btn
+	strTemp = "用户";
+	//CMFCRibbonPanel* pPanelUserMgr = pCategoryHome->AddPanel(strTemp);
+	//strTemp = "";
+	CMFCRibbonButton* pBtnUser = new CMFCRibbonButton(ID_USER_MGR, strTemp,-1,4);
+	pPanelCfgAndMgr->Add(pBtnUser);
 
 
 	/*/不需要主页
@@ -500,4 +541,40 @@ void CMainFrame::OnMonitorWindowType(UINT nID)
 	if (pView && pView->m_hWnd)
 		::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)(nID - ID_VV1 + 3),0);
 
+}
+
+void CMainFrame::OnTaskMgr()
+{
+	// TODO: Add your command handler code here
+	CTaskMgr taskMgr;
+	if ( IDOK == taskMgr.DoModal())
+	{
+		;
+	}
+
+}
+
+void CMainFrame::OnSystemConfig()
+{
+	// TODO: Add your command handler code here
+	CWarningConfig systemCfg;
+	if ( IDOK == systemCfg.DoModal())
+	{
+		;
+	}
+}
+
+void CMainFrame::OnWarningMgr()
+{
+	// TODO: Add your command handler code here
+	CWarningMgr alertMgr;
+	if ( IDOK == alertMgr.DoModal())
+	{
+		;
+	}
+}
+
+void CMainFrame::OnUserMgr()
+{
+	// TODO: Add your command handler code here
 }

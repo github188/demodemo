@@ -18,17 +18,35 @@ IMPLEMENT_DYNAMIC(CCameraView, CDockablePane)
 CCameraView::CCameraView()
 : m_sFindStr(_T(""))
 {
+	VERIFY ( m_pBtnFind = new CMFCButton() );
+	VERIFY ( m_pEdtFind = new CEdit() );
+	VERIFY ( m_pStcFind = new CStatic() );
 
+	VERIFY (m_hBrush = ::CreateSolidBrush(RGB(208,212,221)) );
 }
 
 CCameraView::~CCameraView()
 {
+	if (m_pBtnFind)
+		delete m_pBtnFind;
+
+	if (m_pEdtFind)
+		delete m_pEdtFind;
+	
+	if (m_pStcFind)
+		delete m_pStcFind;
+
 }
 
 
 BEGIN_MESSAGE_MAP(CCameraView, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
+	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(ID_BTN_FIND, &CCameraView::OnFindBTS)
+	ON_UPDATE_COMMAND_UI(ID_BTN_FIND, &CCameraView::OnUpdateFindBTS)
+
 END_MESSAGE_MAP()
 
 
@@ -54,6 +72,25 @@ int CCameraView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("未能创建文件视图\n");
 		return -1;      // 未能创建
 	}
+
+	//
+	HFONT hFont;   
+	hFont =  CreateFont(12,0,0,0,400,0,0,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH || FF_DONTCARE,"宋体");
+	m_pStcFind->Create("查询设备",WS_CHILD|WS_VISIBLE, CRect(20,3,70,20), this);
+	m_pStcFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
+
+	//m_wndEdit.Create(WS_CHILD | WS_VISIBLE | WS_BORDER |   WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_WANTRETURN, CRect(10, 10, 400, 300), this, IDC_EDIT1);
+	//m_wndEdit.ModifyStyleEx(0, WS_EX_CLIENTEDGE);
+	//m_wndEdit.CreateEx(WS_EX_CLIENTEDGE, _T("EDIT"), NULL, WS_CHILD | WS_VISIBLE/* | WS_BORDER*/ |  WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_WANTRETURN, CRect(10, 10, 400, 300), this, IDC_EDIT1);
+	m_pEdtFind->Create(WS_CHILD | WS_VISIBLE,CRect(75,3,170,20), this ,ID_EBOX_FIND);
+	m_pEdtFind->ModifyStyleEx(0,   WS_EX_CLIENTEDGE,   SWP_DRAWFRAME);
+	m_pEdtFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
+
+	//
+	m_pBtnFind->Create("查找",WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON,CRect(175,3,230,20), this ,ID_BTN_FIND);
+	m_pBtnFind->EnableWindow();
+	m_pBtnFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
+
 
 	// 加载视图图像:
 	m_lstImages.Create(IDB_CAMERA_VIEW, 16, 0, RGB(255, 0, 255));
@@ -154,7 +191,7 @@ void CCameraView::AdjustLayout(void)
 	CRect rectClient;
 	GetClientRect(rectClient);
 
-	m_ctrlCameraTree.SetWindowPos(NULL, rectClient.left + 1, rectClient.top + 1, rectClient.Width() - 2, rectClient.Height() - 2, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_ctrlCameraTree.SetWindowPos(NULL, rectClient.left + 1, rectClient.top + 1+20, rectClient.Width() - 2, rectClient.Height() - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 
 }
 
@@ -267,4 +304,50 @@ BOOL CCameraView::FindNextTarget(void)
 	//-----------------------
 
 	return bRet;
+}
+
+BOOL CCameraView::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+	COLORREF   rgbBackGnd   =   RGB(208,212,221); 
+	CBrush   brush; 
+	brush.CreateSolidBrush(rgbBackGnd); 
+	CBrush *pOldbrush = pDC->SelectObject(&brush);
+	CRect   rect;     
+	GetClientRect(&rect); 
+	// pDC->Rectangle(&rect);
+	pDC->FillRect(rect,&brush);
+
+	return CDockablePane::OnEraseBkgnd(pDC);
+}
+
+HBRUSH CCameraView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	//HBRUSH hbr = CDockablePane::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  Change any attributes of the DC here
+	if (nCtlColor == CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT);
+		//pDC->SetBkColor(RGB(208,212,221));
+		return m_hBrush;
+	}
+	else if (nCtlColor == CTLCOLOR_BTN)
+	{
+		//pWnd->EnableWindow();
+	}
+
+	HBRUSH hbr = CDockablePane::OnCtlColor(pDC, pWnd, nCtlColor);
+	// TODO:  Return a different brush if the default is not desired
+	return hbr;
+}
+void CCameraView::OnFindBTS()
+{
+	AfxMessageBox("Dynamic Create Button OK!");
+}
+
+void CCameraView::OnUpdateFindBTS(CCmdUI* pCmdUI) 
+{
+	// TODO: Add your command update UI handler code here
+	pCmdUI->Enable(true);
 }

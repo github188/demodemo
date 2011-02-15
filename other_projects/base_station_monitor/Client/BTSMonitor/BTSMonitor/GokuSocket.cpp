@@ -13,6 +13,9 @@ int GokuSocket::read_buffer(char *buffer, int size)
 {
 	CString xx;
 	int len = cs.Receive(buffer, size);
+	
+	if (len<0)		return 0; //if socket failed to logon, here will be returned -1, add this to viod crash.
+
 	WCHAR *ubuffer=new WCHAR[len];
 	util::nettolocal(ubuffer, buffer, len);
 	util::widechar2str(ubuffer, &buffer);

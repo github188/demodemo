@@ -35,6 +35,13 @@ public:
 protected:
 	CMFCTabCtrl m_wndTabs;
 	CFont m_Font;
+public:
+//	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+//	afx_msg void OnWarningAck();
+//	afx_msg void OnUpdateWarningAck(CCmdUI *pCmdUI);
+//	afx_msg void OnWarningScroolingOff();
+//	afx_msg void OnWarningScroolingOn();
+//	afx_msg void OnDummyCompile();
 };
 
 
