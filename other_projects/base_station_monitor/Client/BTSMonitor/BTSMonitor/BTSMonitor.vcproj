@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PopPlayView.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\RuntimeWarning.cpp"
 				>
 			</File>
@@ -281,6 +285,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\TaskMgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\util.cpp"
 				>
 			</File>
@@ -293,7 +301,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WarningConfig.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WarningMgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WarningWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WarnPopVideo.cpp"
 				>
 			</File>
 		</Filter>
@@ -371,6 +391,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PopPlayView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -395,6 +419,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TaskMgr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\util.h"
 				>
 			</File>
@@ -407,7 +435,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WarningConfig.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WarningMgr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WarningWnd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WarnPopVideo.h"
 				>
 			</File>
 		</Filter>
@@ -416,6 +456,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\Alert_02.ico"
+				>
+			</File>
 			<File
 				RelativePath=".\res\bitmap1.bmp"
 				>
@@ -441,6 +485,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size24\ChinaMobile2.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\class_view.ico"
 				>
 			</File>
@@ -454,6 +502,14 @@
 			</File>
 			<File
 				RelativePath=".\res\classview_hc.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_log2.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_Logo.bmp"
 				>
 			</File>
 			<File
@@ -513,11 +569,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ico00004.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon1.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon2.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
 				>
 			</File>
 			<File
@@ -533,6 +597,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size48\setting3.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size16\settings.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\sort.bmp"
 				>
 			</File>
@@ -541,11 +617,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\Task.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\Toolbar.bmp"
 				>
 			</File>
 			<File
 				RelativePath=".\res\Toolbar256.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\User.ico"
 				>
 			</File>
 			<File
@@ -565,6 +649,50 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
+		<File
+			RelativePath=".\res\corona.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\Devior.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\futuraIII.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\Kromo.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\KromoBlue.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\Tusk.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\x-plus.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\xpblue.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\xpgrean.smf"
+			>
+		</File>
+		<File
+			RelativePath=".\res\xpsteel.smf"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global
