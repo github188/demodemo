@@ -21,6 +21,9 @@
 #define ID_PLAYVIDEO_VIEW			2000			
 #define ID_POPVIDEO_VIEW			2100	
 
+//
+#define ID_USER_CONTROL				2200			
+
 //Warning Ack...
 typedef enum tagWARNING_STATUS
 {
