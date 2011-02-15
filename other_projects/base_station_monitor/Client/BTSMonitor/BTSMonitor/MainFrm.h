@@ -72,6 +72,10 @@ private:
 	BOOL m_bFindNext;
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnTaskMgr();
+	afx_msg void OnSystemConfig();
+	afx_msg void OnWarningMgr();
+	afx_msg void OnUserMgr();
 };
 
 
