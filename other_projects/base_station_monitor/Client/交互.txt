@@ -1,0 +1,9 @@
+realplay和replay的区别是
+realplay使用uuid，然后通过uuid来得到对应的bsinfo，来连接到对应的server，最后发送请求，并启动线程。
+而replay直接向服务器发送videoID，即可启动线程进行接收和播放。
+
+命令：
+CString cmd="video>real?uuid=";
+CString cmd="video>replay?uuid=";
+CString ack("video>ack\n");
+

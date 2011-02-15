@@ -80,6 +80,7 @@ VideoPlayControl* GokuClient::real_play(CString &uuid, DataCallBack callback, in
 		CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
 		control = new VideoPlayControl(masterSocket, callback, session);
 		control->real_play(uuid);
+		CWinThread *playThread=AfxBeginThread(video_read_thread, control);
 	}
 	return control;
 }
