@@ -3,7 +3,6 @@
 #include "ViewTree.h"
 
 // CCameraView
-
 class CCameraView : public CDockablePane
 {
 	DECLARE_DYNAMIC(CCameraView)
@@ -17,14 +16,19 @@ public:
 	}
 
 protected:
-	CViewTree m_ctrlCameraTree;
+	CViewTree  m_ctrlCameraTree;
 	CImageList m_lstImages;
-
+	//CMFCButton* m_pBtnFind;
+	CButton*	m_pBtnFind;
+	CEdit*	    m_pEdtFind;
+	CStatic*    m_pStcFind;
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnFindBTS();
+	afx_msg void OnUpdateFindBTS(CCmdUI* pCmdUI);
 	void InitCameraView(void);
 	void AdjustLayout(void);
 	void fillinData(void);
@@ -37,6 +41,11 @@ public:
 	BOOL FindNextTarget(void);
 private:
 	CString m_sFindStr;
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+private:
+	HBRUSH m_hBrush;
 };
 
 
