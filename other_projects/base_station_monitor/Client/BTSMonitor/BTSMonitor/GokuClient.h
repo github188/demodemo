@@ -2,6 +2,7 @@
 
 #include "GokuSocket.h"
 #include "BTSManager.h"
+#include "AlarmManager.h"
 #include "VideoPlayControl.h"
 
 class GokuClient{
@@ -11,6 +12,7 @@ class GokuClient{
 
 public:
 	BTSManager btsmanager;
+	AlarmManager alarmmanager;
 
 public:
 	GokuClient(CString &primary_server, CString &secondary_server)
@@ -30,6 +32,9 @@ public:
 	int logout();
 
 	void listbtstree(CString &str);
+	void getAlarmStr(CString &alarmStr);
+	void getRealTimeAlarmStr(CString &alarmStr);
+	bool confirmAlarm(CString uuid);
 	
 	VideoPlayControl* real_play(CString &uuid, DataCallBack callback, int session=0);
 	VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);

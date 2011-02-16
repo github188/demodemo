@@ -72,6 +72,67 @@ void GokuClient::listbtstree(CString &str)
 	}
 }
 
+void GokuClient::getAlarmStr(CString &alarmStr)
+{
+	alarmStr.Empty();
+	buffer.Empty();
+	buffer.Append("cmd>list_al");
+	buffer.Append("\n");
+	socket->write_wstring(buffer);
+
+	socket->readline(cmd_msg);
+	CString temp;
+	int pos=util::split_next(cmd_msg, temp, '$', 0);
+	util::split_next(cmd_msg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	for(int i=0;i<linenum;i++)
+	{
+		socket->readline(cmd_msg);
+		alarmStr.Append(cmd_msg);
+		alarmStr.Append("\n");
+	}
+}
+
+void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
+{
+	alarmStr.Empty();
+	buffer.Empty();
+	buffer.Append("cmd>list_al?c=1");
+	buffer.Append("\n");
+	socket->write_wstring(buffer);
+
+	socket->readline(cmd_msg);
+	CString temp;
+	int pos=util::split_next(cmd_msg, temp, '$', 0);
+	util::split_next(cmd_msg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	for(int i=0;i<linenum;i++)
+	{
+		socket->readline(cmd_msg);
+		alarmStr.Append(cmd_msg);
+		alarmStr.Append("\n");
+	}
+}
+
+bool GokuClient::confirmAlarm(CString uuid)
+{
+	buffer.Empty();
+	buffer.Append("cmd>alarm_action?uuid=");
+	buffer.Append(uuid);
+	buffer.Append("&status=3");
+	buffer.Append("\n");
+	socket->write_wstring(buffer);
+
+	socket->readline(cmd_msg);
+	CString temp;
+	util::split_next(cmd_msg, temp, '$', 0);
+	int retval=util::str2int(temp);
+	if(retval==0)
+		return true;
+	else
+		return false;
+}
+
 VideoPlayControl* GokuClient::real_play(CString &uuid, DataCallBack callback, int session)
 {
 	VideoPlayControl *control;

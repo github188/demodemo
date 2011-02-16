@@ -61,7 +61,9 @@ void CLoginDlg::OnBnClickedOk()
 	if(pApp->pgkclient->login(username, password)==0)
 	{
 		pApp->btsTotalStr.Empty();
+		pApp->alarmStr.Empty();
 		pApp->pgkclient->listbtstree(pApp->btsTotalStr);
+		pApp->pgkclient->getAlarmStr(pApp->alarmStr);
 		OnOK();
 	}
 	else

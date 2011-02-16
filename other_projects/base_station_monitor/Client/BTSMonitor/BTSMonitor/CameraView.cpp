@@ -117,6 +117,7 @@ void CCameraView::fillinData()
 {
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	pApp->pgkclient->btsmanager.buildbtsTree(pApp->btsTotalStr, &m_ctrlCameraTree);
+	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 }
 
 void CCameraView::InitCameraView(void)

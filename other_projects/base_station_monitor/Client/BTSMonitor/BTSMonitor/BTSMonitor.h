@@ -34,6 +34,7 @@ public:
 public:
 	GokuClient *pgkclient;
 	CString btsTotalStr;
+	CString alarmStr;
 
 // ÖØÐ´
 public:
