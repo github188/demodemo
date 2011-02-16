@@ -146,6 +146,9 @@ void CRuntimeWarning::AddListView(void)
 		m_lstRuntimeWarning.InsertItem(0,"",1);
 		m_lstRuntimeWarning.SetItem(0,1,LVIF_TEXT,sUUID,0,0,0,0);
 	}
+	
+	//fill data
+	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 }
 
 void CRuntimeWarning::OnTimer(UINT_PTR nIDEvent)
