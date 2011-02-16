@@ -25,6 +25,7 @@ public class AlarmRecord implements JSONStreamAware{
 	public String channelId = ""; //发生告警的通道号
 	public String startTimeString;
 	public String alarmCode = "";
+	public String alarmLevel = "1";
 	public String alarmCategory = "1"; //图片,视频,无视频／图片
 	/**
 	 * 告警处理状态，超时，正在发生，手动取消，删除
@@ -43,7 +44,7 @@ public class AlarmRecord implements JSONStreamAware{
 	public transient FileVideoRecorder recorder = null;
 	
 	public String getLevel(){
-		return "error";
+		return this.alarmLevel;
 	}
 	
 	public String getChannelId(){
