@@ -148,6 +148,7 @@ void CRuntimeWarning::AddListView(void)
 	}
 	
 	//fill data
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 }
 
