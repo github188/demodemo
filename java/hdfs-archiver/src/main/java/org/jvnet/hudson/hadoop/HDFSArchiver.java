@@ -11,7 +11,10 @@ import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import com.mongodb.gridfs.GridFS;
@@ -97,6 +100,15 @@ public class HDFSArchiver {
 		file.save();
 
 		return true;
+	}
+	
+	public List searchFile(String path, int offset, int limit){
+		DBObject f = new BasicDBObject();
+		f.put("filename", path);
+		DBCursor cursor = fs.getFileList(f);
+		List result = cursor.skip(offset).limit(limit).toArray();
+		cursor.close();
+		return result;
 	}
 	
 	public boolean isConnected(){
