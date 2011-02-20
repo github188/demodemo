@@ -131,6 +131,12 @@
 #define IDI_LOGON                       337
 #define IDB_BITMAP1                     339
 #define IDB_DGM_LOGO                    339
+#define IDI_LEVEL_2                     341
+#define IDI_ICON3                       342
+#define IDI_LEVEL_1                     342
+#define IDI_LEVEL_3                     343
+#define IDI_LEVEL_4                     344
+#define IDI_LEVEL_5                     345
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
@@ -207,7 +213,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        340
+#define _APS_NEXT_RESOURCE_VALUE        343
 #define _APS_NEXT_COMMAND_VALUE         32801
 #define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           314
