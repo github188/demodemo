@@ -2,32 +2,6 @@
 
 #include "util.h"
 
-/*
-<<<<< .mine
-class BTSInfo{
-private:
-	void buildClass(const CString &info);
-
-public:
-	CString uuid;
-	CString devType;
-	CString route;
-	CString status;
-	int idevType;
-
-public:
-	BTSInfo(const CString &info)
-	{
-		buildClass(info);
-	}
-	
-	void printitself()
-	{
-		_tprintf("uuid %s, devType %s, route %s, status %s\n",
-				uuid, devType, route, status);
-	}
-*/
-
 class BTSInfo{
 private:
 	void buildClass(const CString &info);
@@ -42,6 +16,7 @@ public:
 	CString channelInfo;
 	int idevType;
 	static const char splitch='$';
+	CStringArray ch_list;
 
 	HTREEITEM posInTree;
 
@@ -90,6 +65,24 @@ public:
 			nImage=2;
 		}
 		posInTree=tree->InsertItem(name, nImage, nImage, parentItem);
+
+		//liang add for channel
+		if ( !channelInfo.IsEmpty() )
+		{
+			HTREEITEM hItem;
+			nImage = 1;
+			int i=0;
+			for(;i< ch_list.GetSize(); i++)
+			{
+				hItem= tree->InsertItem(ch_list.GetAt(i), nImage, nImage, posInTree);
+				//tree->SetItemData(hItem,(DWORD)posInTree);
+			}
+
+			if (hItem)
+				posInTree = hItem;
+		}
+
+		
 		return posInTree;
 	}
 
@@ -112,5 +105,5 @@ public:
 			_tprintf("channelInfo %s\n",channelInfo);
 		}
 	}
-//>>>>>>> .r455
+
 };
