@@ -67,7 +67,7 @@ protected:
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 public:
-	afx_msg void OnFindCamera();
+//	afx_msg void OnFindCamera();
 private:
 	BOOL m_bFindNext;
 public:
