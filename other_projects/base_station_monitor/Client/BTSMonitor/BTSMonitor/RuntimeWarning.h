@@ -42,4 +42,5 @@ public:
 	afx_msg void OnWarningScroolingOn();
 private:
 	int m_nCurItem;
+	long m_alarmIndex;
 };
