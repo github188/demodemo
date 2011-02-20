@@ -42,7 +42,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	//ON_COMMAND(ID_FILE_PRINT_DIRECT, &CMainFrame::OnFilePrint)
 	//ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnFilePrintPreview)
 	//ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnUpdateFilePrintPreview)
-	ON_COMMAND(ID_FIND_CAMERA, &CMainFrame::OnFindCamera)
+//	ON_COMMAND(ID_FIND_CAMERA, &CMainFrame::OnFindCamera)
 	ON_MESSAGE(WM_NOTIFY_MESSAGE, &CMainFrame::OnNotifyMessage)
 	ON_COMMAND_RANGE(ID_VV1, ID_VV25, OnMonitorWindowType)
 	ON_COMMAND(ID_TASK_MGR, &CMainFrame::OnTaskMgr)
@@ -58,9 +58,6 @@ CMainFrame::CMainFrame()
 {
 	// TODO: 在此添加成员初始化代码
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_VS_2005);
-
-	m_bFindNext = FALSE;
-
 }
 
 CMainFrame::~CMainFrame()
@@ -164,15 +161,14 @@ void CMainFrame::InitializeRibbon()
 	m_wndRibbonBar.SetApplicationButton(&m_MainButton, CSize (45, 45));
 	CMFCRibbonMainPanel* pMainPanel = m_wndRibbonBar.AddMainCategory(strTemp, IDB_SYSTEMSMALL, IDB_SYSTEMLARGE);
 
-	bNameValid = strTemp.LoadString(IDS_RIBBON_FIND_CAMERA);
-	ASSERT(bNameValid);
-	pMainPanel->Add(new CMFCRibbonButton(ID_FIND_CAMERA, strTemp, 0, 0));
-
-	pMainPanel->Add(new CMFCRibbonSeparator(TRUE));
+	//bNameValid = strTemp.LoadString(IDS_RIBBON_FIND_CAMERA);
+	//ASSERT(bNameValid);
+	//pMainPanel->Add(new CMFCRibbonButton(ID_FIND_CAMERA, strTemp, 0, 0));
+	//pMainPanel->Add(new CMFCRibbonSeparator(TRUE));
 
 	bNameValid = strTemp.LoadString(IDS_RIBBON_EXIT);
 	ASSERT(bNameValid);
-	pMainPanel->Add(new CMFCRibbonButton(ID_APP_EXIT, strTemp, 1, 1)); //CMFCRibbonMainPanelButton(ID_APP_EXIT, strTemp,1,1));
+	pMainPanel->Add(new CMFCRibbonButton(ID_APP_EXIT, strTemp, 0, 0)); //CMFCRibbonMainPanelButton(ID_APP_EXIT, strTemp,1,1));
 
 
 	strTemp = "系统";//Page1
@@ -252,44 +248,6 @@ void CMainFrame::InitializeRibbon()
 	pPanelCfgAndMgr->Add(pBtnUser);
 
 
-	/*/不需要主页
-	// 为“剪贴板”面板添加“主”类别:
-	bNameValid = strTemp.LoadString(IDS_RIBBON_HOME);
-	ASSERT(bNameValid);
-	CMFCRibbonCategory* pCategoryHome = m_wndRibbonBar.AddCategory(strTemp, IDB_WRITESMALL, IDB_WRITELARGE);
-
-	// 创建“剪贴板”面板:
-	bNameValid = strTemp.LoadString(IDS_RIBBON_CLIPBOARD);
-	ASSERT(bNameValid);
-	CMFCRibbonPanel* pPanelClipboard = pCategoryHome->AddPanel(strTemp, m_PanelImages.ExtractIcon(27));
-
-	bNameValid = strTemp.LoadString(IDS_RIBBON_PASTE);
-	ASSERT(bNameValid);
-	CMFCRibbonButton* pBtnPaste = new CMFCRibbonButton(ID_EDIT_PASTE, strTemp, 0, 0);
-	pPanelClipboard->Add(pBtnPaste);
-
-	bNameValid = strTemp.LoadString(IDS_RIBBON_CUT);
-	ASSERT(bNameValid);
-	pPanelClipboard->Add(new CMFCRibbonButton(ID_EDIT_CUT, strTemp, 1));
-	bNameValid = strTemp.LoadString(IDS_RIBBON_COPY);
-	ASSERT(bNameValid);
-	pPanelClipboard->Add(new CMFCRibbonButton(ID_EDIT_COPY, strTemp, 2));
-	bNameValid = strTemp.LoadString(IDS_RIBBON_SELECTALL);
-	ASSERT(bNameValid);
-	pPanelClipboard->Add(new CMFCRibbonButton(ID_EDIT_SELECT_ALL, strTemp, -1));
-
-	// 创建和添加“视图”面板:
-	bNameValid = strTemp.LoadString(IDS_RIBBON_VIEW);
-	ASSERT(bNameValid);
-	CMFCRibbonPanel* pPanelView = pCategoryHome->AddPanel(strTemp, m_PanelImages.ExtractIcon (7));
-
-	bNameValid = strTemp.LoadString(IDS_RIBBON_STATUSBAR);
-	ASSERT(bNameValid);
-	CMFCRibbonButton* pBtnStatusBar = new CMFCRibbonCheckBox(ID_VIEW_STATUS_BAR, strTemp);
-	pPanelView->Add(pBtnStatusBar);
-
-	*/
-
 	// 将元素添加到选项卡右侧:
 	bNameValid = strTemp.LoadString(IDS_RIBBON_STYLE);
 	ASSERT(bNameValid);
@@ -308,9 +266,9 @@ void CMainFrame::InitializeRibbon()
 	// 添加快速访问工具栏命令:
 	CList<UINT, UINT> lstQATCmds;
 
-	lstQATCmds.AddTail(ID_FIND_CAMERA);
+	//lstQATCmds.AddTail(ID_FIND_CAMERA);
 
-	m_wndRibbonBar.SetQuickAccessCommands(lstQATCmds);
+	//m_wndRibbonBar.SetQuickAccessCommands(lstQATCmds);
 
 	m_wndRibbonBar.AddToTabs(new CMFCRibbonButton(ID_APP_ABOUT, _T("\na"), m_PanelImages.ExtractIcon (0)));
 }
@@ -455,26 +413,26 @@ void CMainFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(IsPrintPreview());
 }
 */
-void CMainFrame::OnFindCamera()
-{
-	// TODO: Add your command handler code here
-	if (m_bFindNext)
-	{
-		BOOL bFind = m_wndCameraView.FindNextTarget( );
-		if (!bFind)
-			AfxMessageBox("没有找到!");
-	}
-	else // new finding requist
-	{
-		CDlgFind findDlg;
-		if (IDOK == findDlg.DoModal() )
-		{
-			BOOL bFind = m_wndCameraView.FindNewTarget(findDlg.GetFindStr());
-			if (!bFind)
-				AfxMessageBox("没有找到!");
-		}
-	}
-}
+//void CMainFrame::OnFindCamera()
+//{
+//	// TODO: Add your command handler code here
+//	if (m_bFindNext)
+//	{
+//		BOOL bFind = m_wndCameraView.FindNextTarget( );
+//		if (!bFind)
+//			AfxMessageBox("没有找到!");
+//	}
+//	else // new finding requist
+//	{
+//		CDlgFind findDlg;
+//		if (IDOK == findDlg.DoModal() )
+//		{
+//			BOOL bFind = m_wndCameraView.FindNewTarget(findDlg.GetFindStr());
+//			if (!bFind)
+//				AfxMessageBox("没有找到!");
+//		}
+//	}
+//}
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
@@ -487,9 +445,13 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 				{
 					if (pMsg->lParam>0)
 					{
-						m_bFindNext=TRUE;
-						OnFindCamera();
-						m_bFindNext=FALSE;
+						//m_bFindNext=TRUE;
+						BOOL bFind = m_wndCameraView.FindNextTarget( );
+						if (!bFind)
+							AfxMessageBox("没有找到!");
+
+						//OnFindCamera();
+						//m_bFindNext=FALSE;
 					}
 				}
 				break;				

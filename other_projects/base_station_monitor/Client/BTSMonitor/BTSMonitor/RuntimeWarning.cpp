@@ -19,6 +19,7 @@ IMPLEMENT_DYNAMIC(CRuntimeWarning, CPropertyPage)
 CRuntimeWarning::CRuntimeWarning()
 	: CPropertyPage(CRuntimeWarning::IDD)
 	, m_nCurItem(0)
+	, m_alarmIndex(0)
 {
 	int i=0;
 	for (;i<cnMAX_POP_WINDOW; i++)
@@ -79,14 +80,15 @@ BOOL CRuntimeWarning::OnInitDialog()
 
 	CString strHeader[] = 
 	{
-		"状态",
-		"UUID",
-		"位置",
-		"端局类型",
-		"告警类型",
-		"基站",
-		"开始时间",
-		"结束时间"
+		"告警状态", //level
+		"UUID",		//UUID
+		"位置",		//place
+		"端局类型", //BTSType
+		"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
+		"基站",		//BTSID
+		"开始时间", //start tiem
+		"结束时间", //end   time
+		"处理状态" //status
 	};
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
 	for (int i=0; i<nCnt; i++)
@@ -96,20 +98,19 @@ BOOL CRuntimeWarning::OnInitDialog()
 	m_lstRuntimeWarning.SetImageList(&m_imagelist,LVSIL_SMALL);
 	
 	CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
-	HICON hIcon = pApp->LoadIconA(IDI_UNKNOWN);
-	if (hIcon)
-		m_imagelist.Add(hIcon);
+	HICON hIcon = pApp->LoadIconA(IDI_LEVEL_1);
+	if (hIcon)		m_imagelist.Add(hIcon);
+	hIcon = pApp->LoadIconA(IDI_LEVEL_2);
+	if (hIcon)		m_imagelist.Add(hIcon);
+	hIcon = pApp->LoadIconA(IDI_LEVEL_3);
+	if (hIcon)		m_imagelist.Add(hIcon);
+	hIcon = pApp->LoadIconA(IDI_LEVEL_4);
+	if (hIcon)		m_imagelist.Add(hIcon);
+	hIcon = pApp->LoadIconA(IDI_LEVEL_5);
+	if (hIcon)		m_imagelist.Add(hIcon);
 
-	hIcon = pApp->LoadIconA(IDI_UNACK);
-	if (hIcon)
-		m_imagelist.Add(hIcon);
 
-	hIcon = pApp->LoadIconA(IDI_ACK);
-	if (hIcon)
-		m_imagelist.Add(hIcon);
-
-
-	SetTimer(WM_RUNTIME_TIMER,1000,NULL);
+	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
 
 	int i=0;
 	for (;i<cnMAX_POP_WINDOW; i++)
@@ -118,7 +119,8 @@ BOOL CRuntimeWarning::OnInitDialog()
 	}
 
 	
-
+	AddListView();
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -138,6 +140,7 @@ void CRuntimeWarning::OnSize(UINT nType, int cx, int cy)
 
 void CRuntimeWarning::AddListView(void)
 {
+	/*
 	CString sUUID;
 	CString str("100");
 	for (int i=0; i<10; i++)
@@ -146,10 +149,51 @@ void CRuntimeWarning::AddListView(void)
 		m_lstRuntimeWarning.InsertItem(0,"",1);
 		m_lstRuntimeWarning.SetItem(0,1,LVIF_TEXT,sUUID,0,0,0,0);
 	}
-	
+	*/
+
 	//fill data
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
+
+
+	CString sLocation, sTemp;
+	AlarmInfo* pAlarmInfo = NULL;
+	POSITION pos = pApp->pgkclient->alarmmanager.alarmList.GetHeadPosition();
+	while( pos!=NULL )
+	{
+		pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
+		if (pAlarmInfo)
+		{
+			//"告警状态", //level
+			m_lstRuntimeWarning.InsertItem(m_alarmIndex,"",0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+
+			//"UUID",		//UUID
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
+			//"位置",		//place
+			sLocation = pApp->pgkclient->btsmanager.GetCameraPlace(pAlarmInfo->uuid);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,2,LVIF_TEXT,sLocation,0,0,0,0);
+			//"端局类型", //BTSType
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,3,LVIF_TEXT,pAlarmInfo->BTSType,0,0,0,0);
+			//"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
+			sTemp = pAlarmInfo->BTSType==1?"实时告警":"历史告警";
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,4,LVIF_TEXT,sTemp,0,0,0,0);
+			//"基站",		//BTSID
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,5,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
+			//"开始时间", //start tiem
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
+			//"结束时间", //end   time
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
+			//"处理状态" //status
+			sTemp = pAlarmInfo->status==1 ? "未处理":
+				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,sTemp,0,0,0,0);	
+		}
+	}
+
+
+
+	
 }
 
 void CRuntimeWarning::OnTimer(UINT_PTR nIDEvent)

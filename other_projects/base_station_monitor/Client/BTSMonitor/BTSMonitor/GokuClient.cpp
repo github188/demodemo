@@ -138,7 +138,9 @@ VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCal
 	VideoPlayControl *control;
 	BTSInfo* bsinfo = this->btsmanager.btsmap[util::str2int(uuid)];
 	if(bsinfo != NULL){
-		CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
+		//CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
+		CSimpleSocketImpl *masterSocket = new CSimpleSocketImpl(bsinfo->route, bsinfo->route);
+
 		control = new VideoPlayControl(masterSocket, callback, session);
 		control->real_play(uuid, channel);
 		CWinThread *playThread=AfxBeginThread(video_read_thread, control);

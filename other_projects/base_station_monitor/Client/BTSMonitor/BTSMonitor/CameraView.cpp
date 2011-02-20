@@ -343,7 +343,14 @@ HBRUSH CCameraView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 }
 void CCameraView::OnFindBTS()
 {
-	AfxMessageBox("Dynamic Create Button OK!");
+	CString str;
+	m_pEdtFind ->GetWindowText(str);
+
+	if ( str.IsEmpty() ) return;
+
+	BOOL bFind = FindNewTarget( str );
+	if (!bFind)
+		AfxMessageBox("ц╩спур╣╫!");
 }
 
 void CCameraView::OnUpdateFindBTS(CCmdUI* pCmdUI) 

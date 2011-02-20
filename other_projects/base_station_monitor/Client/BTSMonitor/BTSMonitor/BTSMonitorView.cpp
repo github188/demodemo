@@ -511,7 +511,9 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 
 void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 {
+	
 	CString sVVFile;
+	/*
 	CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
 	CString sVideo[] = {"test01.h264","test02.h264","test03.h264","test04.h264","test05.h264","test06.h264","test07.h264"};
 	if ( strBtsInfo.Find("1") > -1)
@@ -540,6 +542,7 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 	}
 	else
 		sVVFile = path + sVideo[6];
+	*/
 
 	int nActView = m_vvControl.vvStatus.activeid;
 	
@@ -555,11 +558,14 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
-		GokuClient *client; //("127.0.0.1");
+		//GokuClient *client; //("127.0.0.1");
 		//wstring host(L"127.0.0.1:8000");
-		CString host("127.0.0.1:8000");
-		client = new GokuClient(host, host);
-
+		CString host("192.168.1.200:8000");
+		CString sUUID, sChannelID;
+		int pos = util::split_next(strBtsInfo,sUUID,'$',0);
+		pos = util::split_next(strBtsInfo,sChannelID,'$',pos+1);
+		//client = new GokuClient(host, host);
+	
 		//for(int i=0;i<9;i++)
 		//{
 			BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*100);
@@ -572,9 +578,12 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 				PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
 
 				//int *tmp=new int(i);
-				host = L"1001000";
-				util::int2str(host, nActView);
-				client->replay(host, play_video, nActView);
+				//util::int2str(host, nActView);
+				//client->replay(host, play_video, nActView); //Play Local Vedio
+
+				//Play Remote Vedio runatime			
+				pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
+				
 				//pApp->pgkclient->replay(host, play_video, nActView);
 				//start a thread to receive the video information.
 				//mythread = AfxBeginThread(recvThread, tmp);
@@ -598,7 +607,7 @@ int play_video(int  sessionId, char * pBuffer, int  len)
 	CLogFile::WriteLog(sLog);
 	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
 	{
-		::Sleep(1000);
+		::Sleep(100);
 	}
 	return 1;
 }
