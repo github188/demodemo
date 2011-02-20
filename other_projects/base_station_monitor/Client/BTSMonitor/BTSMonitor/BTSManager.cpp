@@ -47,3 +47,32 @@ void BTSManager::buildbtsTree(CString &buffer, CTreeCtrl *tree)
 		//	delete pinfo;
 	}
 }
+
+//Get Place by uuid.
+CString BTSManager::GetCameraPlace(CString sBtsID)
+{
+	POSITION pos = btsmap.GetStartPosition();
+	int iKey;
+	BTSInfo* pBTSInfo=NULL;
+	while (pos != NULL)
+	{
+		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
+		if (pBTSInfo && pBTSInfo->uuid == sBtsID)
+			return pBTSInfo->name;
+	}
+	return CString("");
+}
+
+CString BTSManager::GetCameraUUID(CString sDevName)
+{
+	POSITION pos = btsmap.GetStartPosition();
+	int iKey;
+	BTSInfo* pBTSInfo=NULL;
+	while (pos != NULL)
+	{
+		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
+		if (pBTSInfo && pBTSInfo->name == sDevName)
+			return pBTSInfo->uuid;
+	}
+	return CString("");
+}

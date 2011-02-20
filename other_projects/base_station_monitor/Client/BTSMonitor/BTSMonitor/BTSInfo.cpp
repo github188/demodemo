@@ -12,6 +12,20 @@ void BTSInfo::buildClass(const CString &info){
 		if(devType!="3")
 		{
 			pos = util::split_next(info, channelInfo, splitch, pos+1);
+			//liang add, parse channel detail info.
+			if (channelInfo.GetLength() > 0)
+			{
+				int pos1=0;
+				CString sChannel;
+				char token = ',';
+				pos1 = util::split_next(channelInfo, sChannel,token, 0);
+				while( sChannel.GetLength()>0 )
+				{
+					ch_list.Add(sChannel);
+					sChannel.Empty();
+					pos1 = util::split_next(channelInfo, sChannel,token, pos1+1);
+				}
+			}
 		}
 
 		if(devType.GetLength() > 0){

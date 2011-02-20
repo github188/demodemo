@@ -32,7 +32,6 @@ public:
 	}
 
 	void real_play(CString &uuid, CString &channel);
-
 	void replay(CString &uuid);
 
 	void seek(int pos){
