@@ -525,7 +525,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\DGM_log2.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_Logo.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\exit.ico"
 				>
 			</File>
 			<File
@@ -589,11 +597,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ico00005.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon1.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon2.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon3.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon4.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon5.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\LogOn.ico"
 				>
 			</File>
 			<File
@@ -613,11 +641,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size48\setting3.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size48\setting3.ico"
+				RelativePath=".\res\setting3.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
 				>
 			</File>
 			<File
