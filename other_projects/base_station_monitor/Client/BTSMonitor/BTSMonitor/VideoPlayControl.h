@@ -31,7 +31,7 @@ public:
 		delete socket;
 	}
 
-	void real_play(CString &uuid);
+	void real_play(CString &uuid, CString &channel);
 
 	void replay(CString &uuid);
 

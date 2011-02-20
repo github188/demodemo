@@ -7,10 +7,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-void VideoPlayControl::real_play(CString &uuid)
+void VideoPlayControl::real_play(CString &uuid, CString &channel)
 {
 	CString cmd="video>real?uuid=";
 	cmd.Append(uuid);
+	cmd.Append("&ch=");
+	cmd.Append(channel);
 	cmd.Append("\n");
 	vedio_command_list.push_back(cmd);
 }

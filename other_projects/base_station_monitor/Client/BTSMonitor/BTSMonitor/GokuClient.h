@@ -36,7 +36,7 @@ public:
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
 	
-	VideoPlayControl* real_play(CString &uuid, DataCallBack callback, int session=0);
+	VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
 
 protected:

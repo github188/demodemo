@@ -133,14 +133,14 @@ bool GokuClient::confirmAlarm(CString uuid)
 		return false;
 }
 
-VideoPlayControl* GokuClient::real_play(CString &uuid, DataCallBack callback, int session)
+VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
 {
 	VideoPlayControl *control;
 	BTSInfo* bsinfo = this->btsmanager.btsmap[util::str2int(uuid)];
 	if(bsinfo != NULL){
 		CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
 		control = new VideoPlayControl(masterSocket, callback, session);
-		control->real_play(uuid);
+		control->real_play(uuid, channel);
 		CWinThread *playThread=AfxBeginThread(video_read_thread, control);
 	}
 	return control;
