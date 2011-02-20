@@ -86,6 +86,11 @@ IDI_UNACK               ICON                    "res\\ico00002.ico"
 IDI_ACK                 ICON                    "res\\ico00003.ico"
 IDI_ICON_SETTING        ICON                    "res\\setting3.ico"
 IDI_LOGON               ICON                    "res\\LogOn.ico"
+IDI_LEVEL_2             ICON                    "res\\ico00004.ico"
+IDI_LEVEL_1             ICON                    "res\\icon3.ico"
+IDI_LEVEL_3             ICON                    "res\\icon4.ico"
+IDI_LEVEL_4             ICON                    "res\\icon5.ico"
+IDI_LEVEL_5             ICON                    "res\\ico00005.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -377,7 +382,7 @@ BEGIN
     LTEXT           "ÃÜ¡¡Âë",IDC_STATIC,27,43,25,8
     LTEXT           "·þÎñÆ÷",IDC_STATIC,27,63,25,8
     EDITTEXT        IDC_EDIT_SERVER,59,61,98,14,ES_AUTOHSCROLL
-    ICON            "",IDC_OGON_PIC,164,6,21,20
+    ICON            "",IDC_OGON_PIC,0,0,21,20
 END
 
 IDD_POP_VIDEO DIALOGEX 0, 0, 195, 163
@@ -587,9 +592,7 @@ BEGIN
 
     IDD_DLG_LOGIN, DIALOG
     BEGIN
-        LEFTMARGIN, 7
         RIGHTMARGIN, 185
-        TOPMARGIN, 6
         BOTTOMMARGIN, 111
     END
 
