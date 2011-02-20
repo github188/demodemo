@@ -62,7 +62,23 @@ void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	ScreenToClient(&curPoint);
 	HTREEITEM htItem = HitTest(curPoint, &nFlags);
 	
-	CString strText = GetItemText(htItem);
+	if ( ItemHasChildren(htItem) )
+		return;
+
+	//CString strText = GetItemText(htItem);
+	CString strText, sUUID, sInfo, sChannelID;
+	HTREEITEM hParentItem = GetParentItem(htItem);
+	if (hParentItem)
+	{
+		strText = GetItemText(hParentItem);
+		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+		sUUID = pApp->pgkclient->btsmanager.GetCameraUUID(strText);
+		sChannelID = GetItemText(htItem);
+		sChannelID = sChannelID.Left(sChannelID.Find(':'));
+
+		sInfo = sUUID + '$' + sChannelID;
+
+	}
 
 	HTREEITEM itemChild = GetChildItem(htItem);
 	if ( !itemChild ) //juge wheth the item is leaf or not.
@@ -70,7 +86,7 @@ void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		//Open the related Video stream..On the current selected windows.
 		CView *pView = ( (CBTSMonitorApp*)AfxGetApp() )->GetBaseView();
 		if (pView && pView->m_hWnd)
-			::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,MSG_SELECT_CAMERA_DEVICE,((LPARAM)strText.GetBuffer(strText.GetLength())));
+			::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,MSG_SELECT_CAMERA_DEVICE,((LPARAM)sInfo.GetBuffer(sInfo.GetLength())));
 	}
 
 	*pResult = 0;
