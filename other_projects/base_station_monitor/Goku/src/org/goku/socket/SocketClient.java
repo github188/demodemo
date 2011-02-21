@@ -45,10 +45,12 @@ public class SocketClient implements SelectionHandler, Runnable {
 	
 	protected ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 	protected StringBuffer curCmd = null;
+	private String remoteIP = null;
 
 	public SocketClient(SocketChannel client, SimpleSocketServer server){
 		this.socket = client;
 		this.server = server;
+		remoteIP = socket.socket().getRemoteSocketAddress().toString();
 	}
 
 	/**
@@ -160,7 +162,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	}
 	
 	public String toString(){
-		String remoteIp = socket.socket().getRemoteSocketAddress().toString();
+		String remoteIp = this.remoteIP;
 		if(this.loginUser != null){
 			remoteIp = loginUser.name + "@" + remoteIp;
 		}

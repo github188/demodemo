@@ -93,9 +93,9 @@ public class ODIPHandler {
 			if(!protoHeader.supportCommand()){
 				log.warn(String.format("Drop unknown ODIP message, cmd=0x%x", 
 						protoHeader.cmd));
-			}else if(this.waitAck != 0 && protoHeader.cmd != this.waitAck){
-				log.warn(String.format("Drop the ODIP message, waitAck=0x%x, return=0x%x", 
-						this.waitAck, protoHeader.cmd));
+			//}else if(this.waitAck != 0 && protoHeader.cmd != this.waitAck){
+			//	log.warn(String.format("Drop the ODIP message, waitAck=0x%x, return=0x%x", 
+			//			this.waitAck, protoHeader.cmd));
 			}else {
 				this.processODIPMessage(protoHeader, buffer);
 			}
@@ -176,7 +176,7 @@ public class ODIPHandler {
 	 * 0x11
 	 * @param action 1--开始监控， 0--关闭监控。
 	 */
-	public void videoStreamControl(int action){
+	public void videoStreamControl(int action, int channelId){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
 		
@@ -187,7 +187,7 @@ public class ODIPHandler {
 		header.version = 0;
 		
 		//header.setByte(this.client.channelId + 7, (byte)1);
-		header.setByte(this.client.channelId + 7, (byte)action);
+		header.setByte(channelId + 7, (byte)action);
 		
 		header.mapToBuffer(buffer);
 

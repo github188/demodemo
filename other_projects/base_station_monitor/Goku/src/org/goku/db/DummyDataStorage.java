@@ -258,10 +258,10 @@ public class DummyDataStorage extends DataStorage {
 		root.children.add(subNode);
 		
 		BaseStation station = new BaseStation();
-		station.uuid = "10010";
+		station.uuid = "1001";
 		station.name = "诺西大楼";
 		station.devType = 1;
-		station.routeServer = "127.0.0.1:8080";
+		station.routeServer = "192.168.1.200:8001";
 		station.channels = "1:通道1,2:通道2";
 		subNode.listBTS.add(station);
 

@@ -61,12 +61,15 @@ public class SocketVideoAdapter {
 		if(server != null && client.connectionMode == SocketClient.MODE_HTTP){
 			MonitorClient mc = server.getMonitorClient(uuid);
 			if(mc != null){
-				log.info("Start real play client id " + uuid);
+				log.info("Start real play client id " + uuid + ", ch:" + ch);
 				int channel = 0;
 				try{
 					channel = Integer.parseInt(ch);
 				}catch(Exception e){};
 				mc.route.addDestination(new SocketVideoPlayer(client, channel));
+				
+				//向设备发送视频请求。
+				mc.realPlay(channel);
 				client.connectionMode = SocketClient.MODE_REALLPLY;
 			}else {
 				client.closeSocket();

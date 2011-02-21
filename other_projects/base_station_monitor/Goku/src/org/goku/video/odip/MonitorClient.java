@@ -119,11 +119,12 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 开启实时监控。
 	 * @param player 收实时监控视频数据。
 	 */
-	public void realPlay(){
+	public void realPlay(int channel){
 		if(this.getClientStatus() != null){
 			if(!this.status.realPlaying){
+				this.handler.videoStreamControl(CTRL_VIDEO_START, channel);
 				//this.handler.requestConnection(REQ_CONN_REAL_PLAY);
-				this.handler.videoStreamControl(CTRL_VIDEO_START);
+				//this.handler.videoStreamControl(CTRL_VIDEO_START);
 			}
 		}else {
 			log.warn("Can't open real play in disconnected client.");
@@ -156,7 +157,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 当视频接受端为空时调用。发送关闭视频流的命令。
 	 */
 	public void videoDestinationEmpty(){
-		this.handler.videoStreamControl(CTRL_VIDEO_STOP);
+		this.handler.videoStreamControl(CTRL_VIDEO_STOP, 1);
 	}
 
 	public void close(){
@@ -322,8 +323,10 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	
 	public void setClientStatus(ClientStatus status){
 		this.status = status;
-		this.status.lastActionTime = System.currentTimeMillis();
-		this.status.lastActiveTime = System.currentTimeMillis();
+		if(status != null){
+			this.status.lastActionTime = System.currentTimeMillis();
+			this.status.lastActiveTime = System.currentTimeMillis();
+		}
 	}
 	
 	public ClientStatus getClientStatus(){

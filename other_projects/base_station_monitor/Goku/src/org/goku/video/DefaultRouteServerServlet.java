@@ -41,6 +41,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	public void real_play(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
+		int ch = this.getIntParam(request, "ch", 1);
 	    MonitorClient client = null;
 		if(uuid == null){
 			response.getWriter().println("-2:Parameter error");
@@ -51,7 +52,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    }else if(client.getClientStatus() == null){
 		    	response.getWriter().println("2:BTS disconnected");
 		    }else {
-		    	client.realPlay();
+		    	client.realPlay(ch);
 		    	response.getWriter().println("0:Video request OK");
 		    }
 		}
@@ -95,6 +96,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	public void start_record(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
+		int ch = this.getIntParam(request, "ch", 1);
 		String user = this.getStringParam(request, "user", null);
 	    MonitorClient client = null;
 		if(uuid == null || user == null){
@@ -107,7 +109,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    	response.getWriter().println("2:BTS disconnected");
 		    }else {
 		    	String sid = server.recordManager.startManualRecord(client, user);
-		    	client.realPlay();
+		    	client.realPlay(ch);
 		    	response.getWriter().println("0:Start video recording$" + sid);
 		    }
 		}
