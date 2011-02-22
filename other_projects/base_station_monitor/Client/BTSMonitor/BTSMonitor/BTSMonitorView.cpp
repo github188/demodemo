@@ -560,7 +560,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 		//GokuClient *client; //("127.0.0.1");
 		//wstring host(L"127.0.0.1:8000");
-		CString host("192.168.1.200:8000");
+		//CString host("192.168.1.200:8000");
+		CString host("127.0.0.1:8000");
 		CString sUUID, sChannelID;
 		int pos = util::split_next(strBtsInfo,sUUID,'$',0);
 		pos = util::split_next(strBtsInfo,sChannelID,'$',pos+1);
@@ -568,7 +569,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 	
 		//for(int i=0;i<9;i++)
 		//{
-			BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*100);
+			PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
+			BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
 			if(bOpenRet)
 			{
 				//CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
@@ -607,7 +609,7 @@ int play_video(int  sessionId, char * pBuffer, int  len)
 	CLogFile::WriteLog(sLog);
 	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
 	{
-		::Sleep(100);
+		::Sleep(45);
 	}
 	return 1;
 }

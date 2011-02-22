@@ -31,3 +31,6 @@ BTSMonitor.rc
 //IDI_ICON_SETTING        ICON                    "F:\\Projects\\Video\\BTSMonitor\\BTS_Doc\\ICO\\Size48\\setting3.ico"
 //IDI_LOGON               ICON                    "F:\\Projects\\Video\\BTSMonitor\\BTS_Doc\\ICO\\Size64\\LogOn.ico"
 //IDB_DGM_LOGO            BITMAP                  "F:\\Projects\\Video\\BTSMonitor\\BTS_Doc\\ICO\\DGM_log2.bmp"
+
+
+http://127.0.0.1:8081/?q=mock_video&uuid=1001&ch=1&alarm=10010007

@@ -77,7 +77,7 @@ BOOL CLoginDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	CString server="192.168.1.200";
+	CString server="127.0.0.1";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
 
 
