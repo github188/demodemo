@@ -541,7 +541,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}
 		}
 		routeAddr = routeAddr == null || "".equals(routeAddr.trim()) 
-					? "192.168.1.200:8001": routeAddr;
+					? "0": routeAddr;
 		
 		data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
 		if(root != null){
