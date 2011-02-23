@@ -302,10 +302,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 					buffer.limit(buffer.position() + frameSize);
 					log.info("Route mock video, position=" + buffer.position());
 					client.route.route(buffer, 0, channelId);
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-					}
+					//if(client.)
 				}
 			}
 			log.info("Stop video mock " + client.info.uuid + ":" + channelId);
