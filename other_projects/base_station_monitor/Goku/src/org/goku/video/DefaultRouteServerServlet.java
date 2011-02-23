@@ -293,7 +293,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 			log.info("Start mock for " + client.info.uuid + ":" + channelId + 
 					" file:" + file.getAbsolutePath() + 
 					" size:" + this.fileSize); 
-			int frameSize = 1024 * 4;
+			int frameSize = 1024 * 100;
 			if(buffer != null && fileSize > frameSize){
 				while(client.getClientStatus() == null){
 					if(buffer.position() + frameSize > fileSize){
@@ -303,6 +303,10 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 					log.info("Route mock video, position=" + buffer.position());
 					client.route.route(buffer, 0, channelId);
 					//if(client.)
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 			log.info("Stop video mock " + client.info.uuid + ":" + channelId);
