@@ -60,22 +60,20 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * 有可读数据时，调用处理数据。
 	 */
 	public void run() {
-		synchronized(this){
-			try {
-				if(this.selectionKey.isReadable()){
-					this.read();
-					if(this.selectionKey.isValid()){
-						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
-						this.selectionKey.selector().wakeup();
-					}
+		try {
+			if(this.selectionKey.isReadable()){
+				this.read();
+				if(this.selectionKey.isValid()){
+					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
+					this.selectionKey.selector().wakeup();
 				}
-				if(this.selectionKey.isValid() && this.selectionKey.isWritable()){
-					this.writeBuffer();
-				}
-			} catch (Exception e) {
-				log.error(e.toString(), e);
-				this.selectionKey.cancel();
 			}
+			if(this.selectionKey.isValid() && this.selectionKey.isWritable() && this.writeQueue.size() > 0){
+				this.writeBuffer();
+			}
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			this.selectionKey.cancel();
 		}
 	}
 	
@@ -93,6 +91,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 					buffer = this.writeQueue.peek();
 				}
 			}
+			this.writeQueue.notifyAll();
 		}
 		if(this.writeQueue.size() > 0){
 			log.warn(String.format("The client too slow, Write buffer queue size:%s, to:%s", this.writeQueue.size(), toString()));
@@ -104,16 +103,18 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * @throws IOException 
 	 */
 	public void read() throws IOException{
-		readBuffer.clear();
-		int readLen = this.socket.read(readBuffer);
-		if(readLen == -1){
-			this.closeSocket();
-		}else{
-			readBuffer.flip();
-			if(log.isDebugEnabled()){
-				log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), toString()));
+		synchronized(this){
+			readBuffer.clear();
+			int readLen = this.socket.read(readBuffer);
+			if(readLen == -1){
+				this.closeSocket();
+			}else{
+				readBuffer.flip();
+				if(log.isDebugEnabled()){
+					log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), toString()));
+				}
+				this.processBuffer(readBuffer);
 			}
-			this.processBuffer(readBuffer);
 		}
 	}
 	
@@ -121,43 +122,29 @@ public class SocketClient implements SelectionHandler, Runnable {
 		ByteBuffer buffer = ByteBuffer.allocate(src.length);
 		buffer.put(src);
 		buffer.flip();
-		this.write(buffer);
+		this.write(buffer, true);
 	}
 	
-	public void putWriteBuffer(ByteBuffer data){
-		synchronized(this.writeQueue){
-			this.writeQueue.offer(data);
-			//如果当前Socket没有注册写操作.
-			if((this.selectionKey.interestOps() & SelectionKey.OP_WRITE) == 0){
-				this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
-				this.selectionKey.selector().wakeup();				
-			}
-		}
-	}
-	
-	protected void write(ByteBuffer src) throws IOException{
-		//src.order(ByteOrder.BIG_ENDIAN);
+	protected void write(ByteBuffer src, boolean sync) throws IOException{
 		if(log.isDebugEnabled()){
 			log.debug(String.format("write buffer size:%s, to:%s", src.remaining(), toString()));
 		}
-		synchronized(this.writeQueue){
-			if(this.writeQueue.isEmpty()){
-				this.socket.write(src);
-				if(src.hasRemaining()){  //还有未写完的数据，放到队列等待Socket可写后再写。
-					if(log.isDebugEnabled()){
-						log.debug(String.format("Write blocking, insert data to buffer queue."));
-					}
-					this.writeQueue.offer(src);
-					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
-					this.selectionKey.selector().wakeup();
-				}
-			}else {
-				if(!this.writeQueue.offer(src)){
-					log.warn("Write buffer queue full, client:" + this.toString());
-				}else {
-					if(log.isDebugEnabled()){
-						log.debug(String.format("Insert data to buffer queue, size:%s, to:%s", src.remaining(), toString()));
-					}
+		
+		if(!this.writeQueue.offer(src)){
+			log.warn("Write buffer queue full, client:" + this.toString());
+		}
+		
+		//如果当前Socket没有注册写操作.
+		if(this.writeQueue.size() == 1 &&
+		  (this.selectionKey.interestOps() & SelectionKey.OP_WRITE) != SelectionKey.OP_WRITE){
+			this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+			this.selectionKey.selector().wakeup();
+		}
+		while(sync && src.remaining() > 0){
+			synchronized(writeQueue){
+				try {
+					writeQueue.wait();
+				} catch (InterruptedException e) {
 				}
 			}
 		}

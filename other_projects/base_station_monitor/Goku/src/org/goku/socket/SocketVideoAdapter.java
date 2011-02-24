@@ -131,7 +131,7 @@ public class SocketVideoAdapter {
 		@Override
 		public void write(ByteBuffer data, int type, int channel) throws IOException {
 			if(this.channelId == channel){
-				client.putWriteBuffer(data);
+				client.write(data, false);
 			}
 		}
 

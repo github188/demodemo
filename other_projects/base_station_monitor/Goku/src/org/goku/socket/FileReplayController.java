@@ -26,7 +26,7 @@ public class FileReplayController {
 			int nextPos = buffer.position();
 			nextPos = Math.min(nextPos + frameSize, fileSize);
 			buffer.limit(nextPos);
-			client.write(buffer);
+			client.write(buffer, false);
 			if(nextPos >= fileSize){
 				this.close();
 			}
