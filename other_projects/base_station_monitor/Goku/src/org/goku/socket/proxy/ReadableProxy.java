@@ -55,7 +55,13 @@ public class ReadableProxy implements SelectionHandler, Runnable {
 						log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), idName));
 					}
 					if(len > 0){
-						outChannel.write(readBuffer);
+						while(readBuffer.remaining() > 0){
+							outChannel.write(readBuffer);
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+							}
+						}
 						if(this.selectionKey.isValid()){
 							this.selectionKey.interestOps(SelectionKey.OP_READ);
 							this.selectionKey.selector().wakeup();
