@@ -121,10 +121,10 @@ public class SocketManager implements Runnable{
 					/*
 					 * 避免当前Key再次被select,导致多一个线程同时处理相同的collection.
 					 * 数据处理完成后，需要重新设置需要监控的操作。
-					 */
-					key.interestOps(0);
+					 */					
+					key.interestOps(key.interestOps() & ~key.readyOps());
 					
-					Object att = key.attachment();					
+					Object att = key.attachment();
 					if(att != null && att instanceof Runnable){
 						this.threadPool.execute((Runnable)att);
 					}else {

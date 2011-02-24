@@ -12,7 +12,7 @@ public class FileReplayController {
 	private FileChannel channel = null;
 	private MappedByteBuffer buffer = null;
 	private int fileSize = 0;
-	private int frameSize = 1024 * 4;
+	private int frameSize = 1024 * 40;
 	
 	public FileReplayController(SocketClient client, File path) throws IOException{
 		this.client = client;
@@ -22,12 +22,14 @@ public class FileReplayController {
 	}
 	
 	public void nextFrame() throws IOException{
-		int nextPos = buffer.position();
-		nextPos = Math.min(nextPos + frameSize, fileSize);
-		buffer.limit(nextPos);
-		client.write(buffer);
-		if(nextPos >= fileSize){
-			this.close();
+		if(!client.writeBusy()){
+			int nextPos = buffer.position();
+			nextPos = Math.min(nextPos + frameSize, fileSize);
+			buffer.limit(nextPos);
+			client.write(buffer);
+			if(nextPos >= fileSize){
+				this.close();
+			}
 		}
 	}
 

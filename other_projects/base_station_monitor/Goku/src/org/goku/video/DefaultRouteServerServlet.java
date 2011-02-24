@@ -2,9 +2,9 @@ package org.goku.video;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -336,9 +336,11 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		}		
 
 		@Override
-		public void write(byte[] data, int type, int channel) throws IOException {
+		public void write(ByteBuffer data, int type, int channel) throws IOException {
 			if(!this.running) throw new IOException("Destination closed.");
-			this.os.write(data);
+			byte[] buffer = new byte[data.remaining()];
+			data.get(buffer);
+			this.os.write(buffer);
 			os.flush();
 		}
 

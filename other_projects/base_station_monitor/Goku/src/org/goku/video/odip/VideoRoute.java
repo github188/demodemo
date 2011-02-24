@@ -1,5 +1,6 @@
 package org.goku.video.odip;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,21 +48,34 @@ public class VideoRoute {
 	 * @param channel -- 视通通道号
 	 */	
 	public void route(ByteBuffer source, int sourceType, int channel){
-		final byte[] data = new byte[source.limit() - source.position()];
-		source.get(data);
+		final ByteBuffer buffer = ByteBuffer.allocate(source.remaining());
+		buffer.put(source);
+		buffer.flip();
+		long et = 0, st = 0;
 		synchronized(destList){
 			VideoDestination dest = null;
 			for(Iterator<VideoDestination> iter = destList.iterator(); iter.hasNext();){
 				dest = iter.next();
 				if(dest.isClosed()){
 					iter.remove();
-					if(this.destList.size() <= 0){
-						this.client.videoDestinationEmpty();
-					}
 				}else if(dest.accept(sourceType)){
-					executor.execute(new RoutingTask(dest, data, sourceType, channel));
+					try {
+						st = System.currentTimeMillis();
+						dest.write(buffer.duplicate(), sourceType, channel);
+						et = System.currentTimeMillis() - st;
+						if(et > 100){
+							log.warn("Destination too slow, dest:" + dest.toString() + ", write time:" + et + "ms.");							
+						}
+					} catch (IOException e) {
+						log.warn("Routting error, the destination will removed.:" + e.toString());
+						iter.remove();
+						dest.close();				
+					}
 				}
 			}
+		}
+		if(this.destList.size() <= 0){
+			this.client.videoDestinationEmpty();
 		}
 	}
 	
@@ -93,37 +107,5 @@ public class VideoRoute {
 	
 	public int destinationSize(){
 		return this.destList.size();
-	}
-	
-	class RoutingTask implements Runnable{
-		private VideoDestination dest = null;
-		private byte[] data = null;
-		private int type, channel;
-		public RoutingTask(VideoDestination dest, byte[] data, int type, int channel){
-			this.dest = dest;
-			this.data = data;
-			this.type = type;
-			this.channel = channel;
-		}
-
-		@Override
-		public void run() {
-			try{
-				/*
-				避免多个线程同时写一个目地, 如果出现一个很慢的目地，将导致线程阻塞
-				知道线程池耗尽。
-				
-				可以考虑，如果使用信号量，如果在同一个目地上阻塞的线程过多。直接丢弃
-				后面的包。
-				*/
-				synchronized(dest){
-					dest.write(this.data, this.type, this.channel);
-				}
-			}catch(Throwable e){
-				log.warn("Routting error:", e);
-				removeDestination(this.dest);
-				dest.close();				
-			}
-		}
 	}
 }

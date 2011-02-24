@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +14,7 @@ public class FileVideoRecorder implements VideoDestination{
 	private Log log = LogFactory.getLog("recorder.file");
 	
 	private File path = null;
-	private OutputStream os = null;
+	private FileOutputStream os = null;
 	
 	//private 
 	public FileVideoRecorder(File path){
@@ -27,12 +28,12 @@ public class FileVideoRecorder implements VideoDestination{
 	}
 
 	@Override
-	public void write(byte[] data, int type, int channel) throws IOException {
-		log.info("File " + path.getName() + " write:" + data.length + " bytes.");
+	public void write(ByteBuffer data, int type, int channel) throws IOException {
+		log.info("File " + path.getName() + " write:" + data.remaining() + " bytes.");
 		if(os == null){
 			os = new FileOutputStream(path);
 		}
-		os.write(data);
+		os.getChannel().write(data);
 		os.flush();
 	}
 	

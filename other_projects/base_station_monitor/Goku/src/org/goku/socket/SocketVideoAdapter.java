@@ -2,6 +2,7 @@ package org.goku.socket;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +93,7 @@ public class SocketVideoAdapter {
 			}
 		}else {
 			client.closeSocket();
-		}		
+		}
 	}	
 	
 	protected void doSeek(SocketClient client, String pos) throws IOException{
@@ -128,9 +129,9 @@ public class SocketVideoAdapter {
 		}
 
 		@Override
-		public void write(byte[] data, int type, int channel) throws IOException {
+		public void write(ByteBuffer data, int type, int channel) throws IOException {
 			if(this.channelId == channel){
-				client.write(data);
+				client.putWriteBuffer(data);
 			}
 		}
 

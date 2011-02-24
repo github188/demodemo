@@ -1,6 +1,7 @@
 package org.goku.video.odip;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public interface VideoDestination {
 	/**
@@ -10,10 +11,10 @@ public interface VideoDestination {
 	public boolean accept(int sourceType);
 	
 	/**
-	 * 处理转发的数据，调用者保证接口的线程安全。只能有一个线程在调用写操作。
+	 * 实现接口需要考虑性能因素。该方法要求最高的性能。
 	 * @param data 
 	 */	
-	public void write(byte[] data, int type, int channel) throws IOException;
+	public void write(ByteBuffer data, int type, int channel) throws IOException;
 	
 	/**
 	 * 关闭目地, 内部处理异常。

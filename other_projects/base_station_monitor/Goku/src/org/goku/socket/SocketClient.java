@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +48,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	protected ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 	protected StringBuffer curCmd = null;
 	private String remoteIP = null;
+	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(10);
 
 	public SocketClient(SocketChannel client, SimpleSocketServer server){
 		this.socket = client;
@@ -62,14 +65,37 @@ public class SocketClient implements SelectionHandler, Runnable {
 				if(this.selectionKey.isReadable()){
 					this.read();
 					if(this.selectionKey.isValid()){
-						this.selectionKey.interestOps(SelectionKey.OP_READ);
+						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
 					}
+				}
+				if(this.selectionKey.isWritable()){
+					this.writeBuffer();
 				}
 			} catch (Exception e) {
 				log.error(e.toString(), e);
 				this.selectionKey.cancel();
 			}
+		}
+	}
+	
+	protected void writeBuffer() throws IOException{
+		synchronized(this.writeQueue){
+			ByteBuffer buffer = this.writeQueue.peek();
+			while(buffer != null){
+				this.socket.write(buffer);
+				if(buffer.hasRemaining()){
+					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+					this.selectionKey.selector().wakeup();
+					break;
+				}else {
+					this.writeQueue.remove();
+					buffer = this.writeQueue.peek();
+				}
+			}
+		}
+		if(this.writeQueue.size() > 0){
+			log.warn(String.format("The client too slow, Write buffer queue size:%s, to:%s", this.writeQueue.size(), toString()));
 		}
 	}
 	
@@ -98,20 +124,51 @@ public class SocketClient implements SelectionHandler, Runnable {
 		this.write(buffer);
 	}
 	
+	public void putWriteBuffer(ByteBuffer data){
+		synchronized(this.writeQueue){
+			this.writeQueue.offer(data);
+			//如果当前Socket没有注册写操作.
+			if((this.selectionKey.interestOps() & SelectionKey.OP_WRITE) == 0){
+				this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+				this.selectionKey.selector().wakeup();				
+			}
+		}
+	}
+	
 	protected void write(ByteBuffer src) throws IOException{
 		//src.order(ByteOrder.BIG_ENDIAN);
 		if(log.isDebugEnabled()){
-			log.debug(String.format("Write data size:%s, to:%s", src.remaining(), toString()));
+			log.debug(String.format("write buffer size:%s, to:%s", src.remaining(), toString()));
 		}
-		synchronized(this.socket){
-			while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
+		synchronized(this.writeQueue){
+			if(this.writeQueue.isEmpty()){
 				this.socket.write(src);
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}				
+				if(src.hasRemaining()){  //还有未写完的数据，放到队列等待Socket可写后再写。
+					if(log.isDebugEnabled()){
+						log.debug(String.format("Write blocking, insert data to buffer queue."));
+					}
+					this.writeQueue.offer(src);
+					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+					this.selectionKey.selector().wakeup();
+				}
+			}else {
+				if(!this.writeQueue.offer(src)){
+					log.warn("Write buffer queue full, client:" + this.toString());
+				}else {
+					if(log.isDebugEnabled()){
+						log.debug(String.format("Insert data to buffer queue, size:%s, to:%s", src.remaining(), toString()));
+					}
+				}
 			}
 		}
+	}
+	
+	/**
+	 * 如果写缓存队列大于5个包，认为客户端太忙.
+	 * @return
+	 */
+	public boolean writeBusy(){
+		return this.writeQueue.size() > 5;
 	}
 	
 	protected void processBuffer(ByteBuffer in){
