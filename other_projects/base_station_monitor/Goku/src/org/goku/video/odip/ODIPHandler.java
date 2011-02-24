@@ -176,7 +176,7 @@ public class ODIPHandler {
 	 * 0x11
 	 * @param action 1--开始监控， 0--关闭监控。
 	 */
-	public void videoStreamControl(int action, int channelId){
+	public void videoStreamControl(int action, int channelId, int mode){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
 		
@@ -195,7 +195,9 @@ public class ODIPHandler {
 		buffer.flip();
 		client.write(buffer);
 		
-		this.client.status.realPlaying = action == Constant.CTRL_VIDEO_START;	
+		if(this.client.info.getChannel(channelId) != null){
+			this.client.info.getChannel(channelId).videoStatus(mode, action == Constant.CTRL_VIDEO_START);
+		}
 	}
 	
 	/**
@@ -292,6 +294,10 @@ public class ODIPHandler {
 		
 		int channel = header.getByte(8) + 1;
 		log.debug("Get video data, len:" + header.externalLength);
+		
+		//5 -- 副码流1
+		//6 -- 副码流2
+		int type = header.getByte(24); 
 		this.client.route.route(buffer, 0, channel);
 	}
 }

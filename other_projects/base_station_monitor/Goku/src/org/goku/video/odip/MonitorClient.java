@@ -16,6 +16,7 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.MonitorChannel;
 import org.goku.core.model.RouteRunningStatus;
 import org.goku.socket.SelectionHandler;
 import org.goku.socket.SocketManager;
@@ -121,10 +122,11 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 */
 	public void realPlay(int channel){
 		if(this.getClientStatus() != null){
-			if(!this.status.realPlaying){
-				this.handler.videoStreamControl(CTRL_VIDEO_START, channel);
-				//this.handler.requestConnection(REQ_CONN_REAL_PLAY);
-				//this.handler.videoStreamControl(CTRL_VIDEO_START);
+			MonitorChannel ch = info.getChannel(channel -1);
+			if(ch == null){
+				log.warn("Not found chanel id:" + channel);
+			}else {
+				this.handler.videoStreamControl(CTRL_VIDEO_START, channel, MonitorChannel.MAIN_VIDEO);
 			}
 		}else {
 			log.warn("Can't open real play in disconnected client.");
@@ -157,7 +159,9 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 当视频接受端为空时调用。发送关闭视频流的命令。
 	 */
 	public void videoDestinationEmpty(){
-		this.handler.videoStreamControl(CTRL_VIDEO_STOP, 1);
+		for(MonitorChannel ch: info.getChannels()){
+			this.handler.videoStreamControl(CTRL_VIDEO_STOP, ch.id, MonitorChannel.MAIN_VIDEO);
+		}
 	}
 
 	public void close(){

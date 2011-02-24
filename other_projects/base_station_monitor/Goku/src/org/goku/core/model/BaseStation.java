@@ -2,8 +2,10 @@ package org.goku.core.model;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONStreamAware;
@@ -79,7 +81,7 @@ public class BaseStation  implements JSONStreamAware{
 	public int devType;
 	
 	/**
-	 * 摄像头, 例如：1:通道1$1:通道2
+	 * 摄像头, 例如：1:通道1,2:通道2
 	 */
 	public String channels;
 	
@@ -92,6 +94,8 @@ public class BaseStation  implements JSONStreamAware{
 	 * 基站的位置，（关联Location对象，例如：杭州，萧山)
 	 */	
 	public String locationUUID;
+	
+	private MonitorChannel[] channelList = null;
 	
 	//public 
 	
@@ -114,7 +118,49 @@ public class BaseStation  implements JSONStreamAware{
 			return this.uuid.equals(((BaseStation) o).uuid);
 		}
 		return false;
-	}	
+	}
+	
+	public MonitorChannel getChannel(int id){
+		if(this.channelList == null){
+			this.initChannelList();
+		}
+		if(id >= 0 && id < this.channelList.length){
+			return this.channelList[id];
+		}	
+		return null;
+	}
+	
+	public MonitorChannel[] getChannels(){
+		List<MonitorChannel> temp = new ArrayList<MonitorChannel>();
+		for(int i = 0; i < this.channelList.length; i++){
+			if(this.channelList[i] != null){
+				temp.add(this.channelList[i]);
+			}
+		}
+		return temp.toArray(new MonitorChannel[]{});
+	}
+	
+	private void initChannelList(){
+		List<MonitorChannel> temp = new ArrayList<MonitorChannel>();
+		MonitorChannel ch = null;
+		
+		int maxId = 0;
+		for(String x : this.channels.split(",")){
+			String[] info = x.split(":", 2);
+			ch = new MonitorChannel();
+			try{
+				ch.id = Integer.parseInt(info[0]);
+			}catch(Throwable e){}
+			maxId = maxId > ch.id ? maxId : ch.id;
+			ch.name = info[1];
+			temp.add(ch);
+		}
+		
+		this.channelList = new MonitorChannel[maxId];
+		for(MonitorChannel ch1: temp){
+			this.channelList[ch1.id] = ch1;
+		}
+	}
 	
 	@Override
 	public void writeJSONString(Writer out) throws IOException {
