@@ -59,6 +59,11 @@ public class DummyDataStorage extends DataStorage {
 				AlarmRecord uu = (AlarmRecord)o;
 				if(uu.uuid.equals(pk)) return uu;
 			}
+		}else if(cls.equals(Location.class)){
+			for(Object o: objList){
+				Location uu = (Location)o;
+				if(uu.uuid.equals(pk)) return uu;
+			}
 		}
 		
 		return null;
@@ -109,6 +114,14 @@ public class DummyDataStorage extends DataStorage {
 			log.info("name:" + uu.uuid + ", location:" + uu.locationId);
 		}
 		
+		log.warn("--------Location----------");
+		objList = objects.get(Location.class);
+		for(Object o: objList){
+			Location uu = (Location)o;
+			log.info("name:" + uu.uuid + ", location:" + uu.name + ", parent:" + uu.parent);
+		}
+		
+		
 		log.warn("--------Alarm Record----------");
 		objList = objects.get(AlarmRecord.class);
 		for(Object o: objList){
@@ -126,13 +139,18 @@ public class DummyDataStorage extends DataStorage {
 	private void loadStanloneDB(){
 		Collection<Object> bsList = new Vector<Object>();
 		Collection<Object> alarmList = new Vector<Object>();
+		Collection<Object> localList = new Vector<Object>();
 		
 		objects.put(BaseStation.class, bsList);
 		objects.put(AlarmRecord.class, alarmList);
+		objects.put(Location.class, localList);
 		
 		File file = new File("standlone.db");
 		if(file.isFile()){
 			log.info("Loading db file:" + file.getAbsolutePath());
+			log.info("BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>");
+			log.info("RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>");
+			log.info("LO:<uuid>$<name>$<parent>");
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				
@@ -145,12 +163,19 @@ public class DummyDataStorage extends DataStorage {
 					if(line.startsWith("BS:")){
 						line = line.split(":", 2)[1];
 						BaseStation bs = new BaseStation();
-						String[] bsinfo = line.split("\\$", 4);
+						String[] bsinfo = line.split("\\$");
 						log.debug("Bsinfo:" + bsinfo[0]);
 						bs.uuid = bsinfo[0];
 						bs.devType = Integer.parseInt(bsinfo[1]);
 						bs.groupName = bsinfo[2];
 						bs.locationId = bsinfo[3];
+						if(bsinfo.length > 4){
+							bs.channels = bsinfo[4];
+						}
+						if(bsinfo.length > 5){
+							bs.locationUUID = bsinfo[5];
+						}
+						
 						bsList.add(bs);
 					}else if(line.startsWith("RE:")){
 						line = line.split(":", 2)[1];
@@ -167,10 +192,25 @@ public class DummyDataStorage extends DataStorage {
 						if(bsinfo.length > 3){
 							alarm.baseStation = bsinfo[3];
 						}
+						if(bsinfo.length > 4){
+							alarm.channelId = bsinfo[4];
+						}
+						if(bsinfo.length > 5){
+							alarm.alarmStatus = bsinfo[5];
+						}
 						alarmList.add(alarm);						
+					}else if(line.startsWith("LO:")){
+						line = line.split(":", 2)[1];
+						Location local = new Location();
+						String[] bsinfo = line.split("\\$");
+						log.debug("Location:" + bsinfo[0]);
+						local.uuid =bsinfo[0];
+						local.name = bsinfo[1];
+						if(bsinfo.length > 2){
+							local.parent = bsinfo[2];
+						}
+						localList.add(local);						
 					}
-					
-					
 				}
 			} catch (Exception e) {
 				log.error(e.toString(), e);
@@ -239,6 +279,7 @@ public class DummyDataStorage extends DataStorage {
 		return result;
 	}
 
+	/*
 	@Override
 	public Location getRootLocation(User user) {
 		Location root = new Location();
@@ -274,5 +315,5 @@ public class DummyDataStorage extends DataStorage {
 		subNode.listBTS.add(station);
 		
 		return root;
-	}
+	}*/
 }

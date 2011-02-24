@@ -87,6 +87,12 @@ public class BaseStation  implements JSONStreamAware{
 	 * 端局类型. (客户定义)
 	 */	
 	public String btsCategory;
+	
+	/**
+	 * 基站的位置，（关联Location对象，例如：杭州，萧山)
+	 */	
+	public String locationUUID;
+	
 	//public 
 	
 	public String getStatus(){

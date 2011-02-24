@@ -479,7 +479,7 @@ public class JDBCDataStorage extends DataStorage {
 			sql_station = "select b.* from base_station b" +
 						  "join relation_station_group rsg on(b.uuid=rsg.base_station_id)" +
 						  "join relation_user_group rg on(rsg.user_group_id=rg.user_group_id)" +
-						  "where rg.user_id=${0}";
+						  "where rg.user_id=${0} order by b.uuid asc";
 		}
 		
 		Collection stationList = this.list(BaseStation.class, 
@@ -517,9 +517,5 @@ public class JDBCDataStorage extends DataStorage {
 		return null;
 	}
 
-	@Override
-	public Location getRootLocation(User user) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	//private 
 }

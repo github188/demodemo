@@ -69,7 +69,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 						this.selectionKey.selector().wakeup();
 					}
 				}
-				if(this.selectionKey.isWritable()){
+				if(this.selectionKey.isValid() && this.selectionKey.isWritable()){
 					this.writeBuffer();
 				}
 			} catch (Exception e) {

@@ -34,7 +34,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	/**
 	 * 监控视频通道编号，从1开始。
 	 */
-	public int channelId = 0;
+	//public int channelId = 0;
 	public String ipAddr = "";
 	public int retryError = 0;
 	
@@ -70,10 +70,10 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 */
 	public void connect() throws IOException{
 		String[] address = this.info.locationId.split(":");
-		if(address.length != 3){
+		if(address.length < 2){
 			throw new IOException("Invalid location Id, <host>:<port>:<channel id>");
 		}
-		this.channelId = Integer.parseInt(address[2]);
+		//this.channelId = Integer.parseInt(address[2]);
 		this.ipAddr = address[0] + ":" + address[1];
 		this.socketChannel = this.socketManager.connect(address[0],
 				Integer.parseInt(address[1]),

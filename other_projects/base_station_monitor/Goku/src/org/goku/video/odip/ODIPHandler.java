@@ -200,7 +200,6 @@ public class ODIPHandler {
 	
 	/**
 	 *CMD_CONNECT
-	 */
 	public void requestConnection(byte type){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
@@ -224,6 +223,7 @@ public class ODIPHandler {
 			client.write(buffer);		
 		}
 	}
+	 */
 	
 	/*
 	public void login(String user, String password){

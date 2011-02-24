@@ -1,7 +1,9 @@
 package org.goku.db;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.goku.core.model.BaseStation;
@@ -52,7 +54,7 @@ public abstract class DataStorage {
 		}
 	}
 	
-	public abstract Location getRootLocation(User user);
+	//public abstract Location getRootLocation(User user);
 	
 	/**
 	 * 根据用户取到可以监控的基站。
@@ -89,4 +91,60 @@ public abstract class DataStorage {
 	 * @return
 	 */
 	public abstract QueryResult queryData(Class obj, QueryParameter param);	
+	
+	public Location getRootLocation(User user) {
+		Collection<BaseStation> baseList = this.listStation(user);
+		Map<String, Location> cache = new HashMap<String, Location>();
+		
+		Location l = null, root = null;
+		Location[] tmp = null;
+		Collection<Location> unkownRoot = new ArrayList<Location>();
+		for(BaseStation bs : baseList){
+			l = cache.get(bs.locationUUID);
+			if(l == null){
+				tmp = this.loadTreeByLeaf(bs.locationUUID, cache);
+				l = tmp[1];
+				if(root == null){
+					root = tmp[0];
+				}else if(tmp[0] != null && !root.equals(tmp[0]) && !unkownRoot.contains(tmp[0])){
+					unkownRoot.add(tmp[0]);					
+				}
+			}
+			l.listBTS.add(bs);
+		}
+		if(root != null && !unkownRoot.isEmpty()){
+			root.children.addAll(unkownRoot);
+		}else if(root == null){
+			root = new Location();
+			root.uuid = "0";
+			root.name = "NotFound";
+		}
+		return root;
+	}
+	
+	protected Location[] loadTreeByLeaf(final String uuid, final Map<String, Location> cache){
+		Location[] result = new Location[2];
+		Location l = (Location)this.load(Location.class, uuid);
+		if(l == null){
+			l = new Location();
+			l.uuid = uuid;
+			l.name = uuid;
+			result[0] = l;
+			result[1] = l;
+			cache.put(uuid, l);
+		}else {
+			cache.put(uuid, l);
+			result[1] = l;
+			if(l.parent == null || "".equals(l.parent)){
+				result[0] = l;
+			}else if(cache.containsKey(l.parent)){
+				cache.get(l.parent).children.add(l);
+			}else {
+				Location[] temp = loadTreeByLeaf(l.parent, cache);
+				result[0] = temp[0];
+				temp[1].children.add(l);
+			}
+		}
+		return result;		
+	}	
 }
