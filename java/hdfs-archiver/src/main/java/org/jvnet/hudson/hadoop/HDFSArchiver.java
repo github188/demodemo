@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
@@ -28,12 +35,23 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class HDFSArchiver {
 	private Log log = LogFactory.getLog("hdfs.archiver");
+	public static final String version = "0.1.1";
+	
+	public static final String VERSION = "version";
+	public static final String PREFIX = "prefix";
+	public static final String HTTPPORT = "http_port";
+	public static final String DBNAME = "dbname";
+	public static final String GRIDFS = "fs";
+		
 	public int httpPort = 8924;
+	public String prefix = null;
 	public String[] conns = null;
-	public String archiveRoot = "/archiver";
+	public String defaultDB = "archiver";
 	public File rootPath = null;
 	
-	public GridFS fs = null;
+	public GridFS defaultFs = null;
+	public Map<String, GridFS> fsCache = new HashMap<String, GridFS>();
+	
 	public Map<String, SoftReference<ZipFileWrapper>> zipCache = new HashMap<String, SoftReference<ZipFileWrapper>>();//cache.put(sid, new SoftReference<ChartData>(chart));
 		
 	protected static HDFSArchiver ins = null;
@@ -55,15 +73,51 @@ public class HDFSArchiver {
 	}
 	
 	public static void main(String[] args) throws IOException{
-		if(args.length == 1){
-			HDFSArchiver archiver = new HDFSArchiver("8924", args, ".");
-			archiver.start();
-		}else {
-			System.out.println("Usage:java HDFSArchiver <HDFS namenode>");
+		Options options = new Options();
+		options.addOption(VERSION, false, "show version.");
+		options.addOption(PREFIX, true, "the prefix of HTTP service.");
+		options.addOption(HTTPPORT, true, "http listen port.");
+		options.addOption(DBNAME, true, "default db name");
+		options.addOption(GRIDFS, true, "Mongodb server set address. e.g. 127.0.0.1:2017");
+		options.getOption(GRIDFS).setArgs(Option.UNLIMITED_VALUES);
+		
+		final String usage = "GridFS [options]";
+		CommandLine cmd = null;
+		
+		try{
+			CommandLineParser parser = new PosixParser();
+			cmd = parser.parse(options, args);			
+		}catch(ParseException e){
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp(usage, options);
+			System.exit(-1);
 		}
+		
+		if(cmd.hasOption(VERSION)){
+			System.out.println("GridFS " + version);
+			return;
+		}
+		
+		String prefix = cmd.getOptionValue(PREFIX, "/");
+		String httpPort = cmd.getOptionValue(HTTPPORT, "8924");
+		String dbName = cmd.getOptionValue(DBNAME, "archive");
+		String[] addrs = cmd.getOptionValues(GRIDFS);
+		
+		if(addrs != null && addrs.length > 0){
+			HDFSArchiver archiver = new HDFSArchiver(httpPort, addrs, ".");
+			archiver.defaultDB = dbName;
+			archiver.prefix = prefix;
+			archiver.start();
+			System.out.println("Stopped.");
+		}else {
+			System.out.println("least one '-fs <ip:port>' is required.");
+		}
+		
 	}
 	
 	public void start() throws IOException{
+		log.info("defaultDB:" + defaultDB);
+		log.info("prefix:" + prefix);
 		connectHDFS();
 		startHTTPServer();
 	}
@@ -71,23 +125,26 @@ public class HDFSArchiver {
 	private void connectHDFS() throws IOException{
 		List addrs = new ArrayList();
 		for(String x : conns){
-			log.info("DB conn:" + x);
+			log.info("MonogoDB addr:" + x);
 			String[] addr = x.split(":");
 			int port = Integer.parseInt(addr[1]);			
 			addrs.add(new ServerAddress(addr[0], port));
 		}
 		Mongo mongo = new Mongo(addrs);	
 		mongo.slaveOk();
-		DB db = mongo.getDB("archive"); // new DB(mongo, "archive");
-		fs = new GridFS(db);
+		DB db = mongo.getDB(this.defaultDB); // new DB(mongo, "archive");
+		defaultFs = new GridFS(db);
 	}
 	
 	private void startHTTPServer(){
 		Server server = new Server(httpPort);
         ServletHandler handler = new ServletHandler();
         server.setHandler(handler);
-        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.UploadFile", "/upload");
-        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", "/*");
+        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.UploadFile", this.prefix + "upload");
+        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", this.prefix + "*");
+        if(this.prefix.length() > 1){
+        	handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", "/*");
+        }
         try {
         	log.info("Start http server at " + httpPort);
 			server.start();
@@ -103,14 +160,25 @@ public class HDFSArchiver {
 		if(path.startsWith("/")) path = path.substring(1);
 		log.info("archivePath:" + path);
 		
-		GridFSInputFile file = fs.createFile(in, path);
-		file.save();
-
+		if(path.indexOf('$') > 0){
+			String[] t = path.split("\\$", 2);
+			getGridFS(t[0]).createFile(in, t[1]).save();
+			//defaultFs.createFile(in, path);
+		}else {
+			defaultFs.createFile(in, path).save();
+		}
 		return true;
 	}
 	
 	public List searchFile(String path, int offset, int limit){
 		DBCursor cursor = null;
+		GridFS fs = defaultFs;
+		if(path.indexOf('$') > 0){
+			String[] t = path.split("\\$", 2);
+			fs = getGridFS(t[0]);
+			path = t[1];
+		}
+		
 		if(path != null && !"".equals(path.trim())){
 			DBObject f = new BasicDBObject();
 			path = path.replace("*", ".*");
@@ -125,7 +193,22 @@ public class HDFSArchiver {
 	}
 	
 	public GridFSDBFile getFile(String path){
-		return fs.findOne(path);
+		if(path.indexOf('$') > 0){
+			String[] t = path.split("\\$", 2);
+			return getGridFS(t[0]).findOne(t[1]);
+		}else{		
+			return defaultFs.findOne(path);
+		}
+	}
+	
+	private GridFS getGridFS(String name){
+		name = name.replace('/', '_');
+		GridFS fs = fsCache.get(name);
+		if(fs == null){
+			fs = new GridFS(defaultFs.getDB().getMongo().getDB(name));
+		}
+		fsCache.put(name, fs);
+		return fs;
 	}
 	
 	public ZipFile getCachedZip(String path){
@@ -154,6 +237,7 @@ public class HDFSArchiver {
 				ZipFileWrapper cache = new ZipFileWrapper();
 				try {
 					cache.rawFile = File.createTempFile("archive", "tmp");
+					cache.rawFile.deleteOnExit();
 					log.debug("cache zip file:" + path + "-->" + cache.rawFile.getAbsolutePath());
 					file.writeTo(cache.rawFile);
 					cache.file = new ZipFile(cache.rawFile, ZipFile.OPEN_READ);
@@ -168,7 +252,7 @@ public class HDFSArchiver {
 	}
 	
 	public boolean isConnected(){
-		return fs != null;
+		return defaultFs != null;
 	}
 	
 	class ZipFileWrapper{

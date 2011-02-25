@@ -99,6 +99,13 @@ public class DirectoryList extends BaseServlet{
     	context.put("offset", offset);
     	context.put("limit", limit);
     	
+    	String prefix = HDFSArchiver.getArchiver().prefix;
+    	
+    	if(path.indexOf('$') > 0){
+    		prefix += path.split("\\$", 2)[0] + "$";
+    	}
+    	context.put("prefix", prefix);
+    	
     	context.put("fileList", fileList);
     	this.outputStatic("gui_header.html", response.getWriter());
     	this.renderTemplate("dir_list.html", context, response.getWriter());
@@ -190,6 +197,9 @@ public class DirectoryList extends BaseServlet{
     	context.put("path", path);    	
     	context.put("fileList", list);
     	context.put("zipFile", request.getAttribute("zipFile"));
+    	context.put("prefix", HDFSArchiver.getArchiver().prefix);    	
+    	//context.put("fileList", fileList);
+    	
     	this.outputStatic("gui_header.html", response.getWriter());
     	this.renderTemplate("zip_dir_list.html", context, response.getWriter());
     	this.outputStatic("gui_footer.html", response.getWriter());    	

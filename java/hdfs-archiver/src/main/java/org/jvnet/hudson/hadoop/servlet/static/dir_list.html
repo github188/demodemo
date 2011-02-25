@@ -15,10 +15,10 @@
 			<tr>
 				<td>
 					<c:if test='${item.filename.endsWith(".zip")}'>
-						<a href="/${item.filename}!/">${item.filename}</a>
+						<a href="${prefix}${item.filename}!/">${item.filename}</a>
 					</c:if>
 					<c:else>
-						<a href="/${item.filename}">${item.filename}</a>
+						<a href="${prefix}${item.filename}">${item.filename}</a>
 					</c:else>
 				</td>
 				<td>${item.length}</td>

@@ -9,7 +9,7 @@
 		</tr>
 		<c:for var="item" items="${fileList}">
 			<tr>
-				<td><a href="/${zipFile}!/${item.name}">${item.name}</a></td>
+				<td><a href="${prefix}${zipFile}!/${item.name}">${item.name}</a></td>
 				<td>
 				<c:if test="${item.isDirectory}">0</c:if>
 				<c:else>${item.size}</c:else>
