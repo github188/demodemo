@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jvnet.hudson.hadoop.HDFSArchiver;
 import org.xidea.lite.TemplateEngine;
 import org.xidea.lite.parser.impl.HotTemplateEngine;
 
@@ -38,7 +39,8 @@ public class BaseServlet extends HttpServlet{
 	    byte[] buffer = new byte[128 * 1024];
 	    if(ins != null){
 	    	int len = ins.read(buffer);
-	    	out.write(new String(buffer, 0, len, "utf8"));
+	    	String prefix = HDFSArchiver.getArchiver().prefix;
+	    	out.write(new String(buffer, 0, len, "utf8").replace("${prefix}", prefix));
 	    }
 	}
 	

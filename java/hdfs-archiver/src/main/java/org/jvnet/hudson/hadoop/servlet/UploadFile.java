@@ -58,9 +58,11 @@ public class UploadFile extends BaseServlet{
 				    	stream.close();
 				    } else {
 				        processUploadedFile(item, getArchivePath(user, dir, path));
+				        response.setHeader("upload_status", "ok");
 				    }
 				}
 			} catch (FileUploadException e) {
+				response.setHeader("upload_status", e.toString());
 				log.error(e.toString(), e);
 			}
     	}else {

@@ -143,7 +143,7 @@ public class HDFSArchiver {
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.UploadFile", this.prefix + "upload");
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", this.prefix + "*");
         if(this.prefix.length() > 1){
-        	handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", "/*");
+        	handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.WelcomeIndex", "/*");
         }
         try {
         	log.info("Start http server at " + httpPort);
