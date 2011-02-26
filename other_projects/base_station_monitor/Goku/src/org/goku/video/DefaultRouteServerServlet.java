@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.RouteRunningStatus;
 import org.goku.http.BaseRouteServlet;
 import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.MonitorClientEvent;
 import org.goku.video.odip.VideoDestination;
 import org.mortbay.util.ajax.Continuation;
 import org.mortbay.util.ajax.ContinuationSupport;
@@ -86,6 +87,25 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    }
 		}
 	}
+	
+	public void mock_alarm(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+		String uuid = this.getStringParam(request, "uuid", "1001");
+		String channel = this.getStringParam(request, "ch", "1");
+		String code = this.getStringParam(request, "code", "1");
+		
+		if(request.getMethod().equals("POST")){
+			MonitorClient client = server.getMonitorClient(uuid);
+			MonitorClientEvent event = new MonitorClientEvent(client);
+			if(client != null){
+				event.alarmChannel = Integer.parseInt(channel);
+				event.alarmCode = code;
+				client.eventProxy.alarm(event);
+			}
+		}
+		
+		static_serve("org/goku/video/mock_alarm.txt", "text/html", response);
+	}	
 	
 	/**
 	 * 开始视频录像。

@@ -18,4 +18,15 @@ public abstract class AbstractMonitorListener implements MonitorClientListener{
 	public void alarm(MonitorClientEvent event) {
 	}
 	
+	@Override
+	public void writeIOException(MonitorClientEvent event) {
+	}
+
+	@Override
+	public void loginError(MonitorClientEvent event) {
+	}
+
+	@Override
+	public void loginOK(MonitorClientEvent event) {
+	}	
 }

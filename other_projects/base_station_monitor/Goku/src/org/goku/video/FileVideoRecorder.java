@@ -1,10 +1,12 @@
 package org.goku.video;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,30 +17,60 @@ public class FileVideoRecorder implements VideoDestination{
 	
 	private File path = null;
 	private FileOutputStream os = null;
+	private int channel = 0;
+	private int type = 0;
+	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(100); 
+	private Thread writer = null;
 	
 	//private 
-	public FileVideoRecorder(File path){
+	public FileVideoRecorder(final File path, int type, int channel){
 		this.path = path;
+		this.type = type;
+		this.channel = channel;
+		writer = new Thread(){
+			public void run(){
+				try {
+					os = new FileOutputStream(path);
+					while(os != null){
+						ByteBuffer data = writeQueue.poll();
+						if(data == null){
+							synchronized(writeQueue){
+								writeQueue.wait();
+							}
+							continue;
+						}else {
+							os.getChannel().write(data);
+						}
+					}
+				} catch (FileNotFoundException e) {
+					log.error(e.toString(), e);
+				} catch (InterruptedException e) {
+					log.error(e.toString(), e);
+				} catch (IOException e) {
+					log.error(e.toString(), e);
+				}
+			}
+		};
+		writer.start();
 	}
 
 	@Override
 	public boolean accept(int sourceType) {
-		// TODO Auto-generated method stub
-		return true;
+		return this.type == sourceType;
 	}
 
 	@Override
 	public void write(ByteBuffer data, int type, int channel) throws IOException {
-		log.info("File " + path.getName() + " write:" + data.remaining() + " bytes.");
-		if(os == null){
-			os = new FileOutputStream(path);
+		if(this.type == type && this.channel == channel){
+			this.writeQueue.offer(data);
+			synchronized(this.writeQueue){
+				this.writeQueue.notifyAll();
+			}
 		}
-		os.getChannel().write(data);
-		os.flush();
 	}
 	
 	public boolean isClosed(){
-		return false;
+		return os == null;
 	}
 
 	@Override
@@ -48,6 +80,10 @@ public class FileVideoRecorder implements VideoDestination{
 				os.close();
 			}catch(IOException e){				
 			}
+			os = null;
+		}
+		synchronized(this.writeQueue){
+			this.writeQueue.notifyAll();
 		}		
 	}
 

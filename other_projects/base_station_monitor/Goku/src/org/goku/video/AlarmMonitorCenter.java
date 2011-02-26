@@ -3,14 +3,19 @@ package org.goku.video;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.goku.image.ASC100Client;
+import org.goku.core.model.AlarmRecord;
+import org.goku.db.DataStorage;
+import org.goku.video.odip.AbstractMonitorListener;
 import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.MonitorClientEvent;
+import org.goku.video.odip.MonitorClientListener;
 
 /**
  * Alarm管理中心，检测Alarm，自动收集告警录像，自动清理过期录像。
@@ -69,12 +74,14 @@ public class AlarmMonitorCenter implements Runnable{
 	public void addClient(MonitorClient client){
 		if(!clients.contains(client)){
 			clients.add(client);
+			client.addListener(this.alarmListener);
 		}
 	}
 
 	public void removeClient(MonitorClient client){
 		if(clients.contains(client)){
 			clients.remove(client);
+			client.removeListener(this.alarmListener);
 		}
 	}
 	
@@ -98,4 +105,25 @@ public class AlarmMonitorCenter implements Runnable{
 			}
 		}
 	}
+	
+	private MonitorClientListener alarmListener = new AbstractMonitorListener(){
+		@Override
+		public void alarm(MonitorClientEvent event) {
+			//需要检查告警是否被屏蔽，如果告警已屏蔽则不保存告警信息也不录像。
+			AlarmRecord record = new AlarmRecord();
+			record.alarmCode = event.alarmCode;
+			record.baseStation = event.client.info.uuid;
+			record.channelId = event.alarmChannel + "";
+			record.startTime = new Date();
+			record.alarmStatus = "1";
+			record.alarmCategory = "1";
+			
+			DataStorage storage = VideoRouteServer.getInstance().storage;
+			record.generatePK();
+			storage.save(record);
+			
+			//需要判断是否需要启动录像。
+			VideoRouteServer.getInstance().recordManager.startAlarmRecord(event.client, record);
+		}
+	};
 }

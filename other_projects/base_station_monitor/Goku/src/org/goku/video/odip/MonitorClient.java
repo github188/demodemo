@@ -122,16 +122,20 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * @param player 收实时监控视频数据。
 	 */
 	public void realPlay(int channel){
+		this.realPlay(channel, MonitorChannel.MAIN_VIDEO);
+	}
+	
+	public void realPlay(int channel, int mode){
 		if(this.getClientStatus() != null){
 			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
 				log.warn("Not found chanel id:" + channel);
 			}else {
-				this.handler.videoStreamControl(CTRL_VIDEO_START, channel, MonitorChannel.MAIN_VIDEO);
+				this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
 			}
 		}else {
 			log.warn("Can't open real play in disconnected client.");
-		}
+		}		
 	}
 	
 	public void openSound(){

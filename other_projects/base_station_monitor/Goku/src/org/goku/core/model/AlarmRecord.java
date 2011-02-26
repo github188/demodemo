@@ -52,9 +52,11 @@ public class AlarmRecord implements JSONStreamAware{
 	}
 	
 	public void generatePK(){
-		long t = System.currentTimeMillis();
-		t = t % (1000L * 3600 * 24 * 365);
-		uuid = baseStation + String.format("%011d", t);
+		if(this.uuid == null){
+			long t = System.currentTimeMillis();
+			t = t % (1000L * 3600 * 24 * 365);
+			uuid = baseStation + String.format("%011d", t);
+		}
 	}
 	
 	@Override

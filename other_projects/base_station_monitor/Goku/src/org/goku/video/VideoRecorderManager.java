@@ -1,7 +1,9 @@
 package org.goku.video;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmRecord;
+import org.goku.core.model.MonitorChannel;
 import org.goku.db.DataStorage;
 import org.goku.settings.Settings;
 import org.goku.video.odip.MonitorClient;
@@ -30,6 +33,9 @@ public class VideoRecorderManager implements Runnable{
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
 	
+	//单位分钟。
+	private long alarmTimeOut = 5;
+	
 	private Map<String, AlarmRecord> runningRecorder = new HashMap<String, AlarmRecord>();
 	
 	public VideoRecorderManager(Settings settings, DataStorage storage){
@@ -46,14 +52,22 @@ public class VideoRecorderManager implements Runnable{
 	 */
 	public String startAlarmRecord(MonitorClient client, AlarmRecord alarm){
 		Date startTime = new Date();
-		String path = getSavePath(startTime, client.info.uuid, alarm.user, alarm.alarmCode);
+		String path = getSavePath(startTime, client.info.uuid, alarm.user, alarm.alarmCode, alarm.channelId);
 		alarm.videoPath = path;
 		alarm.generatePK();
-			
-		alarm.recorder = new FileVideoRecorder(new File(rootPath, path));
+		
+		int ch = 0;
+		try{
+			ch = Integer.parseInt(alarm.channelId);
+		}catch(Exception e){}
+		
+		alarm.recorder = new FileVideoRecorder(new File(rootPath, path), 
+				MonitorChannel.MAIN_VIDEO,
+				ch);
 		
 		log.info(String.format("Start record, sid:%s, path:%s", alarm.uuid, alarm.videoPath));
-		client.route.addDestination(alarm.recorder);		
+		client.route.addDestination(alarm.recorder);
+		client.realPlay(ch, MonitorChannel.MAIN_VIDEO);
 		storage.save(alarm);
 		
 		runningRecorder.put(alarm.uuid, alarm);
@@ -110,7 +124,18 @@ public class VideoRecorderManager implements Runnable{
 	 * 关闭超时的录像。
 	 */
 	protected void closeTimeOutRecord(){
+		Collection<String> xx = new ArrayList<String>();
+		xx.addAll(runningRecorder.keySet());
 		
+		long startTime = System.currentTimeMillis() - 60 * 1000 * alarmTimeOut;
+		AlarmRecord alarm = null;
+		for(String k: xx){
+			alarm = runningRecorder.get(k);
+			if(alarm != null && alarm.startTime.getTime() < startTime){
+				alarm.alarmStatus = "2";
+				stoptRecord(k);
+			}
+		}
 	}
 	
 	/**
@@ -137,7 +162,7 @@ public class VideoRecorderManager implements Runnable{
 	 * @return
 	 */
 	protected String getSavePath(Date startDate, String clientId, 
-							   String user, String alarmType){
+							   String user, String alarmType, String ch){
 		String path = pattern;
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(startDate.getTime());
@@ -154,6 +179,7 @@ public class VideoRecorderManager implements Runnable{
 		path = path.replaceAll("\\$\\{UUID\\}", clientId);
 		path = path.replaceAll("\\$\\{USER\\}", user);
 		path = path.replaceAll("\\$\\{ALARM_TYPE\\}", alarmType);
+		path = path.replaceAll("\\$\\{CHANNEL\\}", ch);
 		
 		path = path.replaceAll("\\\\/", File.separator);
 		
