@@ -83,7 +83,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	public void checkAlarm(){
-		
+		this.handler.devAlarmQuery(9);
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 发送响应消息，避免被超时断开连接。
 	 */
 	public void ackActive(){
-		
+		this.handler.devAlarmQuery(9);		
 	}
 	
 	/**

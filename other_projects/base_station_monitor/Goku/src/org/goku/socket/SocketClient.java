@@ -53,6 +53,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(100);
 	
 	private long lastBenckmark = 0, writeSize = 0, lastDropPackage = 0;
+	private long startDropTime = 0;
 	private double writeSpeed = 0;
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
@@ -65,6 +66,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 		this.server = server;
 		remoteIP = socket.socket().getRemoteSocketAddress().toString();
 		lastBenckmark = System.currentTimeMillis();
+		//socket.socket().setKeepAlive(true);
 	}
 
 	/**
@@ -85,6 +87,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			this.selectionKey.cancel();
+			this.closeSocket();
 		}
 	}
 	
@@ -153,6 +156,11 @@ public class SocketClient implements SelectionHandler, Runnable {
 
 		if(this.writeBusy()){
 			if(this.socket.socket().isClosed()) throw new IOException("socket is closed.");
+			if(this.startDropTime == 0){
+				this.startDropTime = System.currentTimeMillis();
+			}else if(System.currentTimeMillis() - this.startDropTime > 15000){
+				throw new IOException("socket is timeout.");
+			}
 			//5秒内不重复输出警告消息。
 			if(System.currentTimeMillis() - lastDropPackage > 5000){
 				log.warn("Socket client is too slow, start to drop the write package. client:" + toString());
@@ -162,6 +170,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 				this.selectionKey.selector().wakeup();
 			}
 		}else{
+			this.startDropTime = 0;
 			if(this.writeQueue.offer(src)){
 				//如果当前Socket没有注册写操作.
 				if(this.writeQueue.size() == 1 &&
@@ -227,6 +236,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	
 	public void closeSocket(){
 		log.info("Close socket, " + toString());
+		this.writeQueue.clear();
 		if(this.selectionKey != null){
 			this.selectionKey.cancel();
 		}

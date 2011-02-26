@@ -48,8 +48,10 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 			try {
 				SocketChannel client = serverChannel.accept();
 				log.debug("Accept client:" + client.socket().getRemoteSocketAddress());
+				client.socket().setSoTimeout(30 * 1000);
 				client.configureBlocking(false);
 				client.socket().setTcpNoDelay(true);
+				client.socket().setKeepAlive(true);
 				SocketClient handler = new SocketClient(client, server);
 				
 				manager.register(client, SelectionKey.OP_READ, handler);

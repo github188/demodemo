@@ -2,6 +2,7 @@ package org.goku.socket;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class SocketVideoAdapter {
 		this.recordManager = manager;
 	}
 	
-	protected void doRealPlay(SocketClient client, String uuid, String ch){
+	protected void doRealPlay(SocketClient client, String uuid, String ch) throws SocketException{
 		if(server == null){
 			try {
 				client.write("It's not a route server.".getBytes());
@@ -67,6 +68,7 @@ public class SocketVideoAdapter {
 				try{
 					channel = Integer.parseInt(ch);
 				}catch(Exception e){};
+				client.socket.socket().setSendBufferSize(1024 * 100);
 				mc.route.addDestination(new SocketVideoPlayer(client, channel));
 				
 				//向设备发送视频请求。
@@ -86,6 +88,7 @@ public class SocketVideoAdapter {
 			if(videoPath != null){
 				log.info("Start replay uuid " + uuid + ", path:" + videoPath.getAbsolutePath());
 				client.replay = new FileReplayController(client, videoPath);
+				client.socket.socket().setSendBufferSize(1024 * 100);
 				client.replay.nextFrame();
 				client.connectionMode = SocketClient.MODE_REPLAY;
 			}else {

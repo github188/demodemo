@@ -1,8 +1,6 @@
 package org.goku.video.odip;
 
-import static org.goku.video.odip.ProtocolHeader.ACK_GET_VIDEO;
-import static org.goku.video.odip.ProtocolHeader.ACK_LOGIN;
-import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
+import static org.goku.video.odip.ProtocolHeader.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -127,6 +125,9 @@ public class ODIPHandler {
 			case ACK_GET_VIDEO:
 				this.ackVideoData(header, buffer);
 				break;
+			case ACK_DEV_ALARM:
+				this.ackAlarmQuery(header, buffer);
+				break;
 			default:
 				log.warn(String.format("Not found handler for command:0x%x", header.cmd));
 		}
@@ -199,7 +200,14 @@ public class ODIPHandler {
 		header.version = 0;
 		
 		//header.setByte(this.client.channelId + 7, (byte)1);
-		header.setByte(channelId + 7, (byte)action);
+		//只修改指定通道，其他通道不影响。
+		for(int i = 1; i <= this.client.getClientStatus().channelCount; i++){
+			if(i == channelId){
+				header.setByte(i + 7, (byte)action);
+			}else {
+				header.setByte(i + 7, (byte)2);
+			}
+		}
 		
 		header.mapToBuffer(buffer);
 
@@ -213,31 +221,82 @@ public class ODIPHandler {
 	}
 	
 	/**
-	 *CMD_CONNECT
-	public void requestConnection(byte type){
+	 * 0x68
+	 * @param action 
+	 */	
+	public void devAlarmQuery(int type){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
 		
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = ProtocolHeader.CMD_DEV_ALARM;
+		header.version = 0;
 		
-		for(int i = 1; i < 2; i++){
-			ByteBuffer buffer = ByteBuffer.allocate(64);
-			ProtocolHeader header = new ProtocolHeader();
-			header.cmd = ProtocolHeader.CMD_CONNECT;
-			header.externalLength = 0;
-			header.version = 0;
-			
-			header.setInt(8, this.client.getClientStatus().sessionId);
-			header.setByte(12, type);
-			header.setByte(13, (byte)(this.client.channelId));
-			//header.setByte(13, (byte)i);
-			
-			header.mapToBuffer(buffer);
-			
-			buffer.flip();
-			client.write(buffer);		
+		header.setByte(12, (byte)2);
+		header.setByte(8, (byte)1);
+		
+		header.setByte(28, (byte)0xff);
+		header.setByte(29, (byte)0xff);
+		header.setByte(30, (byte)0xff);
+		header.setByte(31, (byte)0xff);
+		
+		header.mapToBuffer(buffer);
+
+		buffer.position(32);
+		buffer.flip();
+		client.write(buffer);
+	}
+	
+	/**
+	 * 0xa1
+	 * @param action 
+	 */	
+	public void alarmQuery(int type){
+		if(this.client.getClientStatus() == null)
+			throw new UnsupportedOperationException("Can't connection before login.");
+		
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = ProtocolHeader.CMD_GET_ALARM;
+		header.version = 0;
+		
+		header.setByte(8, (byte)9);
+		header.mapToBuffer(buffer);
+
+		buffer.position(32);
+		buffer.flip();
+		client.write(buffer);		
+	}
+	
+	public void ackAlarmQuery(ProtocolHeader header, ByteBuffer buffer){
+		
+		System.out.println("============================");
+		System.out.println(String.format("ext:" + header.externalLength));
+		
+		System.out.println(String.format("08:0x%x", header.getByte(8)));
+		System.out.println(String.format("13:0x%x", header.getByte(13)));
+		System.out.println(String.format("16:0x%x", header.getByte(16)));
+		System.out.println(String.format("17:0x%x", header.getByte(17)));
+		System.out.println(String.format("18:0x%x", header.getByte(18)));
+		System.out.println(String.format("19:0x%x", header.getByte(19)));
+
+		System.out.println(String.format("20:0x%x", header.getByte(20)));
+		System.out.println(String.format("21:0x%x", header.getByte(21)));
+		System.out.println(String.format("22:0x%x", header.getByte(22)));
+		System.out.println(String.format("23:0x%x", header.getByte(23)));
+
+		System.out.println(String.format("24:0x%x", header.getByte(24)));
+		System.out.println(String.format("25:0x%x", header.getByte(25)));
+		System.out.println(String.format("26:0x%x", header.getByte(26)));
+		System.out.println(String.format("27:0x%x", header.getByte(27)));
+		
+		System.out.println(String.format("12:0x%x", header.getByte(12)));
+		System.out.println(String.format("16:0x%x", header.getByte(16)));
+		if(header.getByte(16) == 0){
+			System.out.println("=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!");
 		}
 	}
-	 */
 	
 	/*
 	public void login(String user, String password){
