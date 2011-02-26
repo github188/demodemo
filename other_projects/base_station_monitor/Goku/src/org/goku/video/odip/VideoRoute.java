@@ -63,7 +63,7 @@ public class VideoRoute {
 						st = System.currentTimeMillis();
 						dest.write(buffer.duplicate(), sourceType, channel);
 						et = System.currentTimeMillis() - st;
-						if(et > 100){
+						if(et > 5){
 							log.warn("Destination too slow, dest:" + dest.toString() + ", write time:" + et + "ms.");							
 						}
 					} catch (IOException e) {

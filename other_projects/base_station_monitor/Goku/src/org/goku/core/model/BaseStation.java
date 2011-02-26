@@ -156,7 +156,7 @@ public class BaseStation  implements JSONStreamAware{
 			temp.add(ch);
 		}
 		
-		this.channelList = new MonitorChannel[maxId];
+		this.channelList = new MonitorChannel[maxId + 1];
 		for(MonitorChannel ch1: temp){
 			this.channelList[ch1.id] = ch1;
 		}

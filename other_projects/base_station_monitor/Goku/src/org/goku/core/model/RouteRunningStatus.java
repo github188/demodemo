@@ -37,11 +37,23 @@ public class RouteRunningStatus {
 	 */
 	public long clientRequestCount = 0;
 	
+	private long lastReadTime = System.currentTimeMillis();
+	private long readSize = 0;
+	public double readKbs = 0;
 	
 	
-	public void receiveData(long size){
+	public boolean receiveData(long size){
 		synchronized(lock){
 			this.receiveData += size;
+		}
+		this.readSize += size;
+		if(System.currentTimeMillis() - lastReadTime > 1000){
+			readKbs = readSize * 1.0 / (System.currentTimeMillis() - lastReadTime);
+			readSize = 0;
+			lastReadTime = System.currentTimeMillis();
+			return true;
+		}else {		
+			return false;
 		}
 	}
 	public void sendData(long size){

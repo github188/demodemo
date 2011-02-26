@@ -6,6 +6,8 @@ import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,6 +60,9 @@ public class ODIPHandler {
 	private byte waitAck = 0;
 	private MonitorClient client = null;
 	
+	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
+	private Map<Byte, Long> cmdDebug = new HashMap<Byte, Long>();
+	
 	public ODIPHandler(MonitorClient client){
 		this.client = client;
 		this.log = LogFactory.getLog("node." + client.info.uuid + ".odip");
@@ -75,8 +80,15 @@ public class ODIPHandler {
 			this.buffer.flip();
 			protoHeader.loadBuffer(this.buffer);
 			int extLen = this.protoHeader.externalLength;
-			log.debug(String.format("Got cmd=0x%x, ext len=%s", 
-					protoHeader.cmd, extLen));
+			if(log.isDebugEnabled()){
+				if(!cmdDebug.containsKey(protoHeader.cmd) ||
+				   System.currentTimeMillis() - cmdDebug.get(protoHeader.cmd) > 5000
+				  ){
+					cmdDebug.put(protoHeader.cmd, System.currentTimeMillis());
+					log.debug(String.format("Got cmd=0x%x, ext len=%s", 
+							protoHeader.cmd, extLen));
+				}
+			}
 			
 			if(extLen > 0){
 				this.buffer.clear();
@@ -102,7 +114,7 @@ public class ODIPHandler {
 			//处理完成后，重新开始读协议头。
 			this.resetBuffer();
 		}else {
-			log.debug("waiting data remaining buffer:" + buffer.remaining());
+			//log.debug("waiting data remaining buffer:" + buffer.remaining());
 		}
 	}
 	
@@ -293,11 +305,19 @@ public class ODIPHandler {
 	protected void ackVideoData(ProtocolHeader header, ByteBuffer buffer){
 		
 		int channel = header.getByte(8) + 1;
-		log.debug("Get video data, len:" + header.externalLength);
+		
+		//if(log.isDebugEnabled()){
+		//	log.debug("Get video data, len:" + header.externalLength);
+		//}
 		
 		//5 -- 副码流1
 		//6 -- 副码流2
-		int type = header.getByte(24); 
+		int type = header.getByte(24);
+		long st = System.currentTimeMillis();
 		this.client.route.route(buffer, 0, channel);
+		st = System.currentTimeMillis() - st;
+		if(st > 10){
+			log.warn("Forward one video package spend more than 10 ms!");
+		}
 	}
 }

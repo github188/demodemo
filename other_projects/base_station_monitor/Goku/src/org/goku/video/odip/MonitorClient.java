@@ -79,6 +79,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		this.socketChannel = this.socketManager.connect(address[0],
 				Integer.parseInt(address[1]),
 				this);
+		this.socketChannel.socket().setReceiveBufferSize(1024 * 64);
 	}
 	
 	public void checkAlarm(){
@@ -122,7 +123,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 */
 	public void realPlay(int channel){
 		if(this.getClientStatus() != null){
-			MonitorChannel ch = info.getChannel(channel -1);
+			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
 				log.warn("Not found chanel id:" + channel);
 			}else {
@@ -294,6 +295,8 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	/**
 	 * 读Socket缓冲区并处理, 每次最多只处理一个ODIP协议报文，避免一个线程长时间被占
 	 * 用。其他终端无法处理。
+	 * 
+	 * 每次处理一个报文，线程切换太多，导致性能低下／发送也有这个问题么？
 	 * @param channel
 	 * @throws IOException
 	 */
@@ -303,17 +306,32 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		}
 
 		ByteBuffer buffer = null;
-		buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
-		int readLen = channel.read(buffer);
-		if(readLen > 0){
-			runningStatus.receiveData(readLen);
+		int odipCount = 0;
+		long st = System.currentTimeMillis();
+		while(odipCount < 10){	//最多一次处理10个OIDP协议包就开始切换, 如果服务器没有性能问题，缓冲区应该低于3个ODIP包。
+			odipCount++;
+			buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
+			int readLen = channel.read(buffer);
+			if(readLen > 0){
+				if(runningStatus.receiveData(readLen)){
+					log.debug(String.format("The DVR '%s' read speed %1.3f Kb/s.", info.locationId, runningStatus.readKbs));
+				}
+			}
+			if(readLen == -1){
+				this.closeSocketChannel();
+				break;
+			}else if(!buffer.hasRemaining()){
+				//如果当前缓冲区读满了，开始处理数据。
+				this.handler.processData(this);
+			}else{	//缓冲区没有读满
+				break;
+			}
 		}
-		if(readLen == -1){
-			this.closeSocketChannel();
-		}else if(!buffer.hasRemaining()){
-			//如果当前缓冲区读满了，开始处理数据。
-			this.handler.processData(this);
+		
+		if(odipCount > 9 || System.currentTimeMillis() - st > 5){
+			log.warn(String.format("Route server too slow, have too many buffer waiting process. once process spend %s ms.", System.currentTimeMillis() - st));
 		}
+		//log.info("------------------------Spend time:" + (System.currentTimeMillis() - st) + ", odip pcakge:" + odipCount);
 		
 		/**
 		 * 如果30秒没有任何写操作，发送一个告警查询，避免服务端超时断开。

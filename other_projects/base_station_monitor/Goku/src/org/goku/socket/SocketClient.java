@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 import org.apache.commons.logging.Log;
@@ -48,12 +50,21 @@ public class SocketClient implements SelectionHandler, Runnable {
 	protected ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 	protected StringBuffer curCmd = null;
 	private String remoteIP = null;
-	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(10);
+	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(100);
+	
+	private long lastBenckmark = 0, writeSize = 0, lastDropPackage = 0;
+	private double writeSpeed = 0;
+	
+	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
+	public Map<String, Long> cmdDebug = new HashMap<String, Long>();
+	
+	
 
 	public SocketClient(SocketChannel client, SimpleSocketServer server){
 		this.socket = client;
 		this.server = server;
 		remoteIP = socket.socket().getRemoteSocketAddress().toString();
+		lastBenckmark = System.currentTimeMillis();
 	}
 
 	/**
@@ -81,7 +92,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 		synchronized(this.writeQueue){
 			ByteBuffer buffer = this.writeQueue.peek();
 			while(buffer != null){
-				this.socket.write(buffer);
+				writeSize += this.socket.write(buffer);
 				if(buffer.hasRemaining()){
 					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
 					this.selectionKey.selector().wakeup();
@@ -93,8 +104,16 @@ public class SocketClient implements SelectionHandler, Runnable {
 			}
 			this.writeQueue.notifyAll();
 		}
-		if(this.writeQueue.size() > 0){
-			log.warn(String.format("The client too slow, Write buffer queue size:%s, to:%s", this.writeQueue.size(), toString()));
+		if(System.currentTimeMillis() - this.lastBenckmark > 1000){
+			writeSpeed = this.writeSize * 1.0 / (System.currentTimeMillis() - this.lastBenckmark);
+			this.writeSize = 0;
+			this.lastBenckmark = System.currentTimeMillis();
+			if(log.isDebugEnabled()){
+				log.debug(String.format("The client '%s' write speed %1.3f Kb/s.", this.toString(), this.writeSpeed));
+				if(this.writeQueue.size() > 0){
+					log.warn(String.format("The client too slow, Write buffer queue size:%s, to:%s", this.writeQueue.size(), toString()));
+				}
+			}
 		}
 	}
 	
@@ -110,9 +129,9 @@ public class SocketClient implements SelectionHandler, Runnable {
 				this.closeSocket();
 			}else{
 				readBuffer.flip();
-				if(log.isDebugEnabled()){
-					log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), toString()));
-				}
+				//if(log.isDebugEnabled()){
+				//    log.debug(String.format("Read data size:%s, from:%s", readBuffer.remaining(), toString()));
+				//}
 				this.processBuffer(readBuffer);
 			}
 		}
@@ -126,26 +145,40 @@ public class SocketClient implements SelectionHandler, Runnable {
 	}
 	
 	protected void write(ByteBuffer src, boolean sync) throws IOException{
-		if(log.isDebugEnabled()){
+		if(log.isDebugEnabled() && 
+		   src.remaining() < 4096 //不写视频的日志，避免日志量太大了。
+		  ){ 
 			log.debug(String.format("write buffer size:%s, to:%s", src.remaining(), toString()));
 		}
-		
-		if(!this.writeQueue.offer(src)){
-			log.warn("Write buffer queue full, client:" + this.toString());
-		}
-		
-		//如果当前Socket没有注册写操作.
-		if(this.writeQueue.size() == 1 &&
-		  (this.selectionKey.interestOps() & SelectionKey.OP_WRITE) != SelectionKey.OP_WRITE){
-			this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
-			this.selectionKey.selector().wakeup();
-		}
-		while(sync && src.remaining() > 0){
-			synchronized(writeQueue){
-				try {
-					writeQueue.wait();
-				} catch (InterruptedException e) {
+
+		if(this.writeBusy()){
+			if(this.socket.socket().isClosed()) throw new IOException("socket is closed.");
+			//5秒内不重复输出警告消息。
+			if(System.currentTimeMillis() - lastDropPackage > 5000){
+				log.warn("Socket client is too slow, start to drop the write package. client:" + toString());
+				lastDropPackage = System.currentTimeMillis();
+				//重新注册写操作。
+				this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+				this.selectionKey.selector().wakeup();
+			}
+		}else{
+			if(this.writeQueue.offer(src)){
+				//如果当前Socket没有注册写操作.
+				if(this.writeQueue.size() == 1 &&
+				  (this.selectionKey.interestOps() & SelectionKey.OP_WRITE) != SelectionKey.OP_WRITE){
+					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+					this.selectionKey.selector().wakeup();
 				}
+				while(sync && src.remaining() > 0){
+					synchronized(writeQueue){
+						try {
+							writeQueue.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+			}else {
+				log.warn("Write buffer queue full, client:" + this.toString());				
 			}
 		}
 	}
@@ -155,7 +188,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * @return
 	 */
 	public boolean writeBusy(){
-		return this.writeQueue.size() > 5;
+		return this.writeQueue.size() > 100;
 	}
 	
 	protected void processBuffer(ByteBuffer in){
@@ -166,6 +199,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 			if(data == '\n'){
 				String cmd = this.curCmd.toString().trim();
 				if(cmd.length() > 0){
+					//if(!cmdDebug.containsKey(cmd) )
 					this.server.processClient(cmd, this);
 				}
 				curCmd = new StringBuffer();

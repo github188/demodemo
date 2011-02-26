@@ -68,7 +68,11 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 	 * @param client
 	 */
 	public void processClient(String data, SocketClient client){
-		if(log.isDebugEnabled()){
+		if(log.isDebugEnabled() &&
+		   (!client.cmdDebug.containsKey(data) ||
+		     System.currentTimeMillis() - client.cmdDebug.get(data) > 5000
+		   )){
+			client.cmdDebug.put(data, System.currentTimeMillis());
 			log.debug(String.format("processing comand '%s' read from %s", data, client.toString()));
 		}
 		try{
