@@ -1,14 +1,20 @@
 package org.goku.video.odip;
 
-import static org.goku.video.odip.ProtocolHeader.*;
+import static org.goku.video.odip.ProtocolHeader.ACK_GET_ALARM;
+import static org.goku.video.odip.ProtocolHeader.ACK_GET_VIDEO;
+import static org.goku.video.odip.ProtocolHeader.ACK_LOGIN;
+import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 
 /**
  * 处理视频协议数据，
@@ -42,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
 public class ODIPHandler {
 	public ByteBuffer buffer = ByteBuffer.allocate(1024 * 64);
 	public ProtocolHeader protoHeader = new ProtocolHeader();
-	//public 
 	private Log log = null; //#LogFactory.getLog(");
 	
 	/**
@@ -51,11 +56,6 @@ public class ODIPHandler {
 	private Object lockLogin = new Object();
 	private int loginStatus = -2;
 	
-	/**
-	 * 当前状态，正在等待的Ack消息，如果和期望的Ack不一致将丢弃包不处理。
-	 * 如果waitAck 为0， 所有受到的消息均可以处理。
-	 */
-	private byte waitAck = 0;
 	private MonitorClient client = null;
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
@@ -103,11 +103,13 @@ public class ODIPHandler {
 			if(!protoHeader.supportCommand()){
 				log.warn(String.format("Drop unknown ODIP message, cmd=0x%x", 
 						protoHeader.cmd));
-			//}else if(this.waitAck != 0 && protoHeader.cmd != this.waitAck){
-			//	log.warn(String.format("Drop the ODIP message, waitAck=0x%x, return=0x%x", 
-			//			this.waitAck, protoHeader.cmd));
 			}else {
+				long st = System.currentTimeMillis();
 				this.processODIPMessage(protoHeader, buffer);
+				st = System.currentTimeMillis() - st;
+				if(st > 3){
+					log.warn(String.format("ODIP '0x%x' is processed %s ms.", protoHeader.cmd, st));
+				}
 			}
 			//处理完成后，重新开始读协议头。
 			this.resetBuffer();
@@ -125,8 +127,8 @@ public class ODIPHandler {
 			case ACK_GET_VIDEO:
 				this.ackVideoData(header, buffer);
 				break;
-			case ACK_DEV_ALARM:
-				this.ackAlarmQuery(header, buffer);
+			case ACK_GET_ALARM:
+				this.ackAlarmStatus_B1(header, buffer);
 				break;
 			default:
 				log.warn(String.format("Not found handler for command:0x%x", header.cmd));
@@ -162,10 +164,9 @@ public class ODIPHandler {
 		buffer.put(extra);
 		
 		buffer.flip();
-		client.write(buffer);
+		client.write(buffer, false);
 		
 		log.info("Login to " + client.info.locationId);
-		this.waitAck = ACK_LOGIN;
 		
 		if(sync) {
 			synchronized(this.lockLogin){
@@ -213,7 +214,7 @@ public class ODIPHandler {
 
 		buffer.position(32 + 16);
 		buffer.flip();
-		client.write(buffer);
+		client.write(buffer, false);
 		
 		if(this.client.info.getChannel(channelId) != null){
 			this.client.info.getChannel(channelId).videoStatus(mode, action == Constant.CTRL_VIDEO_START);
@@ -221,80 +222,55 @@ public class ODIPHandler {
 	}
 	
 	/**
-	 * 0x68
-	 * @param action 
-	 */	
-	public void devAlarmQuery(int type){
-		if(this.client.getClientStatus() == null)
-			throw new UnsupportedOperationException("Can't connection before login.");
-		
-		ByteBuffer buffer = ByteBuffer.allocate(64);
-		ProtocolHeader header = new ProtocolHeader();
-		header.cmd = ProtocolHeader.CMD_DEV_ALARM;
-		header.version = 0;
-		
-		header.setByte(12, (byte)2);
-		header.setByte(8, (byte)1);
-		
-		header.setByte(28, (byte)0xff);
-		header.setByte(29, (byte)0xff);
-		header.setByte(30, (byte)0xff);
-		header.setByte(31, (byte)0xff);
-		
-		header.mapToBuffer(buffer);
-
-		buffer.position(32);
-		buffer.flip();
-		client.write(buffer);
-	}
-	
-	/**
 	 * 0xa1
 	 * @param action 
 	 */	
-	public void alarmQuery(int type){
-		if(this.client.getClientStatus() == null)
-			throw new UnsupportedOperationException("Can't connection before login.");
-		
+	public void getAlarmStatus_A1(int type){
 		ByteBuffer buffer = ByteBuffer.allocate(64);
 		ProtocolHeader header = new ProtocolHeader();
 		header.cmd = ProtocolHeader.CMD_GET_ALARM;
 		header.version = 0;
 		
-		header.setByte(8, (byte)9);
 		header.mapToBuffer(buffer);
 
 		buffer.position(32);
 		buffer.flip();
-		client.write(buffer);		
+		client.write(buffer, false);
 	}
 	
-	public void ackAlarmQuery(ProtocolHeader header, ByteBuffer buffer){
-		
-		System.out.println("============================");
-		System.out.println(String.format("ext:" + header.externalLength));
-		
-		System.out.println(String.format("08:0x%x", header.getByte(8)));
-		System.out.println(String.format("13:0x%x", header.getByte(13)));
-		System.out.println(String.format("16:0x%x", header.getByte(16)));
-		System.out.println(String.format("17:0x%x", header.getByte(17)));
-		System.out.println(String.format("18:0x%x", header.getByte(18)));
-		System.out.println(String.format("19:0x%x", header.getByte(19)));
-
-		System.out.println(String.format("20:0x%x", header.getByte(20)));
-		System.out.println(String.format("21:0x%x", header.getByte(21)));
-		System.out.println(String.format("22:0x%x", header.getByte(22)));
-		System.out.println(String.format("23:0x%x", header.getByte(23)));
-
-		System.out.println(String.format("24:0x%x", header.getByte(24)));
-		System.out.println(String.format("25:0x%x", header.getByte(25)));
-		System.out.println(String.format("26:0x%x", header.getByte(26)));
-		System.out.println(String.format("27:0x%x", header.getByte(27)));
-		
-		System.out.println(String.format("12:0x%x", header.getByte(12)));
-		System.out.println(String.format("16:0x%x", header.getByte(16)));
-		if(header.getByte(16) == 0){
-			System.out.println("=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!=*!");
+	public void ackAlarmStatus_B1(ProtocolHeader header, ByteBuffer buffer){
+		if(header.getByte(8) == 0){
+			byte status = header.getByte(13);
+			Collection<AlarmDefine> alarms = new ArrayList<AlarmDefine>();
+			
+			AlarmDefine alarm = null;
+			if((status & 1) == 0){ //外部报警
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_001);
+				alarm.fillAlarmChannels(header.getInt(16));
+				alarms.add(alarm);
+			}
+			if((status & 2) == 0){ //视频丢失
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_002);
+				alarm.fillAlarmChannels(header.getInt(20));
+				alarms.add(alarm);				
+			}
+			if((status & 4) == 0){ //动检报警
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_003);
+				alarm.fillAlarmChannels(header.getInt(24));
+				alarms.add(alarm);				
+			}
+			if((status & 8) == 0){ //第三方报警				
+			}
+			if((status & 16) == 0){ //串口故障报警	
+			}
+			
+			if(alarms.size() > 0){
+				MonitorClientEvent event = new MonitorClientEvent(client);
+				event.alarms = alarms;
+				client.eventProxy.alarm(event);
+			}
+		}else {
+			log.warn(String.format("Not supported alarm ack: 0x%x", header.getByte(8)));
 		}
 	}
 	
@@ -343,7 +319,6 @@ public class ODIPHandler {
 			status.devMode = header.getByte(28);
 			
 			this.client.setClientStatus(status);
-			this.waitAck = 0;
 			
 			log.info(String.format("Login successful, channel count:%s, videoType:%s" +
 					", devType:%s, sessionId:%s, devMode:%s",
@@ -364,19 +339,10 @@ public class ODIPHandler {
 	protected void ackVideoData(ProtocolHeader header, ByteBuffer buffer){
 		
 		int channel = header.getByte(8) + 1;
-		
-		//if(log.isDebugEnabled()){
-		//	log.debug("Get video data, len:" + header.externalLength);
-		//}
-		
+
 		//5 -- 副码流1
 		//6 -- 副码流2
 		int type = header.getByte(24);
-		long st = System.currentTimeMillis();
 		this.client.route.route(buffer, 0, channel);
-		st = System.currentTimeMillis() - st;
-		if(st > 10){
-			log.warn("Forward one video package spend more than 10 ms!");
-		}
 	}
 }

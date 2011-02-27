@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.db.DataStorage;
 import org.goku.video.odip.AbstractMonitorListener;
@@ -39,40 +40,27 @@ public class AlarmMonitorCenter implements Runnable{
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
-				checkAllClient();				
+				try{
+					checkAllClientAlarm();
+				}catch(Throwable e){
+					log.error(e.toString(), e);
+				}
 			}
 		}, 100, 1000 * 5);
 	}
 	
 	
-	public void checkAllClient(){
+	public void checkAllClientAlarm(){
 		synchronized(clients){
 			for(MonitorClient c: clients){
-				executor.execute(new CallBack(c));
+				c.sendAlarmRequest();
 			}
-		}
-	}
-	
-	/**
-	 * 发送终端告警查询请求。
-	 * @param client
-	 */
-	protected void checkMonitorClient(final MonitorClient client){
-		log.debug("Check alarm, client id:" + client.info.uuid);
-		if(client.getClientStatus() == null && client.retryError < 5){
-			client.login();
-		}
-		if(client.getClientStatus() != null){
-			client.checkAlarm();
-			//测试视频传输
-			//client.realPlay();
-		}else {
-			log.warn("The client is disconneted, can't check alarm event. the client uuid is" + client.info.uuid);
 		}
 	}
 	
 	public void addClient(MonitorClient client){
 		if(!clients.contains(client)){
+			client.login();
 			clients.add(client);
 			client.addListener(this.alarmListener);
 		}
@@ -89,41 +77,42 @@ public class AlarmMonitorCenter implements Runnable{
 		this.timer.cancel();
 	}
 	
-	/**
-	 * 线程池调度的转发类。
-	 */
-	class CallBack implements Runnable{
-		private MonitorClient c;
-		CallBack(MonitorClient c){this.c = c;}
-		public void run() {
-			try{
-				checkMonitorClient(this.c);
-			}catch(Throwable e){
-				String msg = String.format("Error at checking alarm, client id:%s, error:%s",
-						c.info.uuid, e.toString());
-				log.warn(msg, e);
-			}
-		}
-	}
-	
 	private MonitorClientListener alarmListener = new AbstractMonitorListener(){
 		@Override
 		public void alarm(MonitorClientEvent event) {
-			//需要检查告警是否被屏蔽，如果告警已屏蔽则不保存告警信息也不录像。
-			AlarmRecord record = new AlarmRecord();
-			record.alarmCode = event.alarmCode;
-			record.baseStation = event.client.info.uuid;
-			record.channelId = event.alarmChannel + "";
-			record.startTime = new Date();
-			record.alarmStatus = "1";
-			record.alarmCategory = "1";
-			
-			DataStorage storage = VideoRouteServer.getInstance().storage;
-			record.generatePK();
-			storage.save(record);
-			
-			//需要判断是否需要启动录像。
-			VideoRouteServer.getInstance().recordManager.startAlarmRecord(event.client, record);
+			executor.execute(new AlarmHandler(event.client, event.alarms));
 		}
 	};
+	
+	class AlarmHandler implements Runnable{
+		private MonitorClient client = null;
+		private Collection<AlarmDefine> alarms = null;
+		public AlarmHandler(MonitorClient client, Collection<AlarmDefine> alarms){
+			this.client = client;
+			this.alarms = alarms;
+		}
+		@Override
+		public void run() {
+			//需要检查告警是否被屏蔽，如果告警已屏蔽则不保存告警信息也不录像。
+			for(AlarmDefine alarm: alarms){
+				log.info(String.format("Process alarm:%s on '%s'.", alarm.toString(), client.info.toString()));
+				for(int ch: alarm.channels){
+					AlarmRecord record = new AlarmRecord();
+					record.baseStation = client.info.uuid;
+					record.channelId = ch + "";
+					record.startTime = new Date();
+					record.alarmCategory = alarm.alarmCategory;
+					record.alarmLevel = alarm.alarmLevel;
+					record.alarmStatus = "1";
+					
+					DataStorage storage = VideoRouteServer.getInstance().storage;
+					record.generatePK();
+					storage.save(record);
+					
+					//需要判断是否需要启动录像。
+					VideoRouteServer.getInstance().recordManager.startAlarmRecord(client, record);
+				}
+			}
+		}
+	}
 }

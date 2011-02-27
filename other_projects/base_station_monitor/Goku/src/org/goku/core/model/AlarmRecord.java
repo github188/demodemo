@@ -59,6 +59,16 @@ public class AlarmRecord implements JSONStreamAware{
 		}
 	}
 	
+	public boolean equals(Object obj){
+		if(obj instanceof AlarmRecord){
+			String u = ((AlarmRecord) obj).uuid; 
+			if(u != null && this.uuid != null && this.uuid.equals(u)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public void writeJSONString(Writer out) throws IOException {
         Map<String, Object> obj = new HashMap<String, Object>();

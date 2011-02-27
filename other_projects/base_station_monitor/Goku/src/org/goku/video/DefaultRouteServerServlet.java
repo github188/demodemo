@@ -10,6 +10,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.RouteRunningStatus;
 import org.goku.http.BaseRouteServlet;
 import org.goku.video.odip.MonitorClient;
@@ -98,8 +101,11 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 			MonitorClient client = server.getMonitorClient(uuid);
 			MonitorClientEvent event = new MonitorClientEvent(client);
 			if(client != null){
-				event.alarmChannel = Integer.parseInt(channel);
-				event.alarmCode = code;
+				AlarmDefine alarm = AlarmDefine.alarm(code);
+				alarm.channels = new int[1];
+				alarm.channels[0] = Integer.parseInt(channel);
+				Collection<AlarmDefine> alarms = new ArrayList<AlarmDefine>();
+				event.alarms = alarms;			
 				client.eventProxy.alarm(event);
 			}
 		}

@@ -115,7 +115,9 @@ public class BaseStation  implements JSONStreamAware{
 	public boolean equals(Object o){
 		if(o instanceof BaseStation){
 			BaseStation bs = (BaseStation)o;
-			return this.uuid.equals(((BaseStation) o).uuid);
+			if(bs.uuid != null && this.uuid != null){
+				return this.uuid.equals(((BaseStation) o).uuid);
+			}
 		}
 		return false;
 	}
@@ -172,5 +174,9 @@ public class BaseStation  implements JSONStreamAware{
         obj.put("status", getStatus());
         
         JSONValue.writeJSONString(obj, out);
+	}
+	
+	public String toString(){
+		return String.format("%s<%s>", this.uuid, this.name); 
 	}
 }

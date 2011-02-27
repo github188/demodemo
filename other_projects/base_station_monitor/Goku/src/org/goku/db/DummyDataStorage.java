@@ -74,8 +74,10 @@ public class DummyDataStorage extends DataStorage {
 		//if(thi)
 		if(obj instanceof AlarmRecord){
 			if(this.load(obj.getClass(), ((AlarmRecord)obj).uuid) == null){
-				Collection<Object> objList = objects.get(obj.getClass());			
-				objList.add(obj);
+				Collection<Object> objList = objects.get(obj.getClass());	
+				if(!objList.contains(obj)){
+					objList.add(obj);
+				}
 			}
 		}
 		return false;

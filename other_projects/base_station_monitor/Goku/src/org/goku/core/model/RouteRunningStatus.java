@@ -37,7 +37,7 @@ public class RouteRunningStatus {
 	 */
 	public long clientRequestCount = 0;
 	
-	private long lastReadTime = System.currentTimeMillis();
+	public long lastReadTime = System.currentTimeMillis();
 	private long readSize = 0;
 	public double readKbs = 0;
 	

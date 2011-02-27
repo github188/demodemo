@@ -9,9 +9,11 @@ import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,11 +50,14 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	protected SocketManager socketManager = null;
 	protected ClientStatus status = null;
 	
-	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
 	 */
 	protected ODIPHandler handler = null;
+	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(5);
+	
+	//设备进入写忙状态。
+	private boolean isWriteBusy = false;
 	
 	public MonitorClient(BaseStation info, VideoRoute route, SocketManager socketManager){
 		this.info = info;
@@ -82,8 +87,8 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		this.socketChannel.socket().setReceiveBufferSize(1024 * 64);
 	}
 	
-	public void checkAlarm(){
-		this.handler.devAlarmQuery(9);
+	public void sendAlarmRequest(){
+		this.handler.getAlarmStatus_A1(0);
 	}
 	
 	/**
@@ -146,7 +151,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 发送响应消息，避免被超时断开连接。
 	 */
 	public void ackActive(){
-		this.handler.devAlarmQuery(9);		
+		this.handler.getAlarmStatus_A1(0);		
 	}
 	
 	/**
@@ -264,8 +269,10 @@ public class MonitorClient implements Runnable, SelectionHandler{
 					//log.info("xxx2:" + new Date());
 					try{
 						socketChannel.finishConnect();
+						this.writeQueue.clear();
+						this.isWriteBusy = false;
 						this.eventProxy.connected(new MonitorClientEvent(this));
-						this.selectionKey.interestOps(SelectionKey.OP_READ);
+						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
 						this.retryError = 0;
 					}catch(NoRouteToHostException conn){
@@ -285,9 +292,12 @@ public class MonitorClient implements Runnable, SelectionHandler{
 				}else if(this.selectionKey.isReadable()){
 					this.read(socketChannel);
 					if(this.selectionKey.isValid()){
-						this.selectionKey.interestOps(SelectionKey.OP_READ);
+						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
 					}
+				}
+				if(this.selectionKey.isValid() && this.selectionKey.isWritable() && this.writeQueue.size() > 0){
+					this.writeBuffer();
 				}
 			} catch (Exception e) {
 				log.error(e.toString(), e);
@@ -332,17 +342,67 @@ public class MonitorClient implements Runnable, SelectionHandler{
 			}
 		}
 		
-		if(odipCount > 9 || System.currentTimeMillis() - st > 5){
-			log.warn(String.format("Route server too slow, have too many buffer waiting process. once process spend %s ms.", System.currentTimeMillis() - st));
-		}
-		//log.info("------------------------Spend time:" + (System.currentTimeMillis() - st) + ", odip pcakge:" + odipCount);
-		
+		if(odipCount > 5 || System.currentTimeMillis() - st > 5){
+			log.warn(String.format("Route server too slow, have too many buffer waiting process. once process spend %s ms, %s odip in buffer.", 
+					System.currentTimeMillis() - st, odipCount));
+		}		
 		/**
 		 * 如果30秒没有任何写操作，发送一个告警查询，避免服务端超时断开。
 		 */
 		if(this.status != null){
 			if(System.currentTimeMillis() - status.lastActionTime > 30 * 1000){
 				this.ackActive();
+			}
+		}
+	}
+	
+	protected void writeBuffer() throws IOException{
+		synchronized(this.writeQueue){
+			//用来计算timeOut.
+			if(this.status != null){
+				this.status.lastActionTime = System.currentTimeMillis();
+			}
+
+			ByteBuffer buffer = this.writeQueue.peek();
+			while(buffer != null){
+				this.socketChannel.write(buffer);
+				if(buffer.hasRemaining()){
+					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+					this.selectionKey.selector().wakeup();
+					break;
+				}else {
+					this.writeQueue.remove();
+					buffer = this.writeQueue.peek();
+				}
+			}
+			this.writeQueue.notifyAll();
+		}
+	}
+	
+	protected void write(ByteBuffer src, boolean sync) {
+		if(this.selectionKey == null || !this.selectionKey.isValid())return;
+		if(this.writeQueue.size() > 50){
+			//如果超过 1分钟 没有读到设备任何数据。设置超时。
+			if(System.currentTimeMillis() - this.runningStatus.lastReadTime > 60 * 1000){
+				this.eventProxy.timeout(new MonitorClientEvent(this));
+			}else if(!this.isWriteBusy){ //第一次发现写忙。
+				log.warn("DVR is too slow or disconnected.");
+			}
+		}else if(this.writeQueue.offer(src)){
+			this.isWriteBusy = false;
+			//如果当前Socket没有注册写操作.
+			if(this.writeQueue.size() == 1 &&
+			  (this.selectionKey.interestOps() & SelectionKey.OP_WRITE) != SelectionKey.OP_WRITE){
+				this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+				this.selectionKey.selector().wakeup();
+			}
+			while(sync && src.remaining() > 0){
+				synchronized(writeQueue){
+					try {
+						writeQueue.wait();
+					} catch (InterruptedException e) {
+					}
+				}
 			}
 		}
 	}
@@ -379,44 +439,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		ByteBuffer buffer = ByteBuffer.allocate(src.length);
 		buffer.put(src);
 		buffer.flip();
-		this.write(buffer);
-		//this.socketChannel.write(buffer);
-		//this.socketManager.w
-		//this.selectionKey.selector().wakeup();
-	}
-	
-	protected void write(ByteBuffer src){
-		//this.runningStatus.sendData(src.remaining());
-		/**
-		 * 需要一个flush操作么？
-		 */
-		try{
-			if(log.isDebugEnabled()){
-				log.debug(String.format("Write data size:%s", src.remaining()));
-			}
-			/**
-			 * 读和写使用了不同的同步对象,避免发送告警查询时出现等待。
-			 */
-			if(this.socketChannel.isConnected()){
-				synchronized(this.socketChannel){
-					while(src.hasRemaining()){ //文档中说不保证所有数据被写完。
-						int len = this.socketChannel.write(src);
-						runningStatus.sendData(len);
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-						}
-					}
-				}
-				if(this.status != null){
-					this.status.lastActionTime = System.currentTimeMillis();
-				}
-			}else {
-				log.warn("Writing data at a disconnected soket, id:" + this.info.uuid);
-			}
-		}catch(IOException e){
-			this.eventProxy.writeIOException(new MonitorClientEvent(this));
-		}
+		this.write(buffer, false);
 	}
 	
 	protected void closeSocketChannel() throws IOException{

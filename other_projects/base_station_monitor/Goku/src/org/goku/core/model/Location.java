@@ -2,10 +2,11 @@ package org.goku.core.model;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.goku.db.DataStorage;
 import org.json.simple.JSONStreamAware;
@@ -21,8 +22,17 @@ public class Location implements JSONStreamAware{
 	public String name = null;
 	public String parent = null;
 	
-	public List<Location> children = new ArrayList<Location>();
-	public List<BaseStation> listBTS = new ArrayList<BaseStation>();
+	public Collection<Location> children = new TreeSet<Location>(compartor);
+	public Collection<BaseStation> listBTS = new TreeSet<BaseStation>(compartor);
+	
+	public static Comparator compartor = new Comparator(){
+		@Override
+		public int compare(Object arg0, Object arg1) {
+			if(arg1.equals(arg1)){ 
+				return 0;
+			}
+			return 1;
+		}};
 	
 	public void load(DataStorage storage, User user){
 		
@@ -45,4 +55,14 @@ public class Location implements JSONStreamAware{
         obj.put("listBTS", listBTS);
         JSONValue.writeJSONString(obj, out);
 	}
+	
+	public boolean equals(Object obj){
+		if(obj instanceof Location){
+			String u = ((Location) obj).uuid; 
+			if(u != null && this.uuid != null && this.uuid.equals(u)){
+				return true;
+			}
+		}
+		return false;
+	}	
 }
