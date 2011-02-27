@@ -60,7 +60,6 @@ public class AlarmMonitorCenter implements Runnable{
 	
 	public void addClient(MonitorClient client){
 		if(!clients.contains(client)){
-			client.login();
 			clients.add(client);
 			client.addListener(this.alarmListener);
 		}

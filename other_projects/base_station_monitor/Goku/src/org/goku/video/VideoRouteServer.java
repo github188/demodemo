@@ -40,7 +40,7 @@ public class VideoRouteServer {
 	public SimpleSocketServer socketServer = null;
 	public DataStorage storage = null;	
 	public HTTPRemoteClient master = null;
-	public AlarmMonitorCenter manager = null;	
+	public AlarmMonitorCenter alarmManager = null;	
 	public VideoRecorderManager recordManager = null;
 	public SocketProxyServer proxyServer = null;
 	
@@ -99,8 +99,8 @@ public class VideoRouteServer {
 		}
 		
 		log.info("Starting alarm manager server...");
-		manager = new AlarmMonitorCenter(threadPool);
-		threadPool.execute(manager);
+		alarmManager = new AlarmMonitorCenter(threadPool);
+		threadPool.execute(alarmManager);
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
@@ -149,11 +149,19 @@ public class VideoRouteServer {
 	public boolean addMonitorClient(String uuid){
 		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
 		if(station != null && station.devType == 1){
-			MonitorClient client = new MonitorClient(station, 
+			final MonitorClient client = new MonitorClient(station, 
 													 new VideoRoute(threadPool),
 													 socketManager);
 			this.clients.put(uuid, client);
-			this.manager.addClient(client);
+			this.alarmManager.addClient(client);
+			
+			//开始连接设备。
+			this.threadPool.execute(new Runnable(){
+				@Override
+				public void run() {
+					client.login();
+				}});
+			
 			return true;
 		}else if(station == null){
 			log.warn("Not found base station by uuid '" + uuid + "'");			
@@ -168,7 +176,7 @@ public class VideoRouteServer {
 	 * @param client
 	 */
 	public void removeMonitorClient(MonitorClient client){
-		this.manager.removeClient(client);
+		this.alarmManager.removeClient(client);
 		this.clients.remove(client.info.uuid);
 		client.close();
 	}
@@ -207,17 +215,6 @@ public class VideoRouteServer {
 		return status;
 	} 
 	
-	//public File getSave
-	
-	//private void connectMonitorClient(){
-	//	selector = new ChannelSelector();		
-	//}
-	
-	/*
-	protected void addMonitor(){
-		
-	}
-	*/
 	public static void main(String[] a) throws Exception{
 		new VideoRouteServer(new Settings("video.conf")).startUp();
 	}

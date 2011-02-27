@@ -131,6 +131,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	public void realPlay(int channel, int mode){
+		this.login();
 		if(this.getClientStatus() != null){
 			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
