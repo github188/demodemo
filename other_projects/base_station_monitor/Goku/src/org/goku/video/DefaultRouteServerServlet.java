@@ -105,6 +105,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 				alarm.channels = new int[1];
 				alarm.channels[0] = Integer.parseInt(channel);
 				Collection<AlarmDefine> alarms = new ArrayList<AlarmDefine>();
+				alarms.add(alarm);
 				event.alarms = alarms;			
 				client.eventProxy.alarm(event);
 			}
