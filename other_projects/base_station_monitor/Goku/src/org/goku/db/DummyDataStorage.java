@@ -71,12 +71,15 @@ public class DummyDataStorage extends DataStorage {
 
 	@Override
 	public boolean save(Object obj) {
+		log.info("Save object:" + obj.toString());
 		//if(thi)
 		if(obj instanceof AlarmRecord){
 			if(this.load(obj.getClass(), ((AlarmRecord)obj).uuid) == null){
 				Collection<Object> objList = objects.get(obj.getClass());	
 				if(!objList.contains(obj)){
 					objList.add(obj);
+				}else {
+					log.info("Failed to save AlarmRecord, uuid:" + ((AlarmRecord)obj).uuid);
 				}
 			}
 		}

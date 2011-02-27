@@ -46,9 +46,11 @@ public abstract class DataStorage {
 	
 	public abstract boolean checkConnect();
 	
+	private static DataStorage dummy = new DummyDataStorage(null);
+	
 	public static DataStorage create(Settings param){
 		if(param.getString(Settings.DB_MASTER_DB, "").equals("dev_dummy")){
-			return new DummyDataStorage(param);
+			return dummy;
 		}else {
 			return new JDBCDataStorage(param);
 		}
