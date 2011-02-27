@@ -63,7 +63,7 @@ void CLoginDlg::OnBnClickedOk()
 		pApp->btsTotalStr.Empty();
 		pApp->alarmStr.Empty();
 		pApp->pgkclient->listbtstree(pApp->btsTotalStr);
-		pApp->pgkclient->getAlarmStr(pApp->alarmStr);
+		//pApp->pgkclient->getAlarmStr(pApp->alarmStr);
 		OnOK();
 	}
 	else
@@ -77,7 +77,7 @@ BOOL CLoginDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	CString server="127.0.0.1";
+	CString server="192.168.1.200";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
 
 

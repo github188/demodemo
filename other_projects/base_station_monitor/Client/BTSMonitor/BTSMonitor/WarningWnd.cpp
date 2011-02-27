@@ -20,6 +20,7 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNAMIC(CWarningWnd, CDockablePane)
 
 CWarningWnd::CWarningWnd()
+: m_nWarnUpdateTimerID(0)
 {
 	m_pRuntimePg   = new CRuntimeWarning();
 	m_pCriticalPg  = new CCriticalWarning();
@@ -32,6 +33,8 @@ CWarningWnd::CWarningWnd()
 
 CWarningWnd::~CWarningWnd()
 {
+	//KillTimer(m_nWarnUpdateTimerID);
+
 	if (m_pRuntimePg)
 		delete m_pRuntimePg;
 	if (m_pCriticalPg )
@@ -45,6 +48,7 @@ CWarningWnd::~CWarningWnd()
 BEGIN_MESSAGE_MAP(CWarningWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 //	ON_WM_CONTEXTMENU()
 //	ON_COMMAND(ID_WARNING_ACK, &CWarningWnd::OnWarningAck)
 //	ON_UPDATE_COMMAND_UI(ID_WARNING_ACK, &CWarningWnd::OnUpdateWarningAck)
@@ -108,39 +112,9 @@ int CWarningWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndTabs.AddTab(m_pCriticalPg, strTabName, (UINT)1);
 	strTabName="一般告警";
 	m_wndTabs.AddTab(m_pGereralPg, strTabName,  (UINT)2);
-	
-	/*
-	if (!m_wndOutputBuild.Create(dwStyle, rectDummy, &m_wndTabs, 2) ||
-		!m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 3) ||
-		!m_wndOutputFind.Create(dwStyle, rectDummy, &m_wndTabs, 4))
-	{
-		TRACE0("未能创建输出窗口\n");
-		return -1;      // 未能创建
-	}
 
-	m_wndOutputBuild.SetFont(&m_Font);
-	m_wndOutputDebug.SetFont(&m_Font);
-	m_wndOutputFind.SetFont(&m_Font);
+	m_nWarnUpdateTimerID = SetTimer(WM_WARNING_TIMER,WARNING_UPDATE_DURING,0);
 
-	CString strTabName;
-	BOOL bNameValid;
-
-	// 将列表窗口附加到选项卡:
-	bNameValid = strTabName.LoadString(IDS_BUILD_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputBuild, strTabName, (UINT)0);
-	bNameValid = strTabName.LoadString(IDS_DEBUG_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputDebug, strTabName, (UINT)1);
-	bNameValid = strTabName.LoadString(IDS_FIND_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputFind, strTabName, (UINT)2);
-
-	// 使用一些虚拟文本填写输出选项卡(无需复杂数据)
-	FillBuildWindow();
-	FillDebugWindow();
-	FillFindWindow();
-	*/
 	return 0;
 }
 
@@ -154,75 +128,23 @@ void CWarningWnd::OnSize(UINT nType, int cx, int cy)
 
 }
 
-//void CWarningWnd::OnContextMenu(CWnd* pWnd, CPoint point)
-//{
-//	// TODO: Add your message handler code here
-//	CMFCTabCtrl* pTab = (CMFCTabCtrl*) &m_wndTabs;
-//	ASSERT_VALID(pTab);
-//
-//	int nVisibleTab = pTab->GetFirstVisibleTabNum();
-//	int nActTab = pTab->GetActiveTab();
-//	CWnd *pActWindow = pTab->GetActiveWindow();
-//	CWnd *pActWnd = pTab->GetActiveWnd();
-//	
-//	CRect rc;
-//	GetClientRect(&rc);
-//	if (pActWnd->m_hWnd == m_pRuntimePg->m_hWnd)
-//	{
-//		if (point != CPoint(-1, -1))
-//		{
-//			CPoint ptList = point;
-//			m_pRuntimePg->ScreenToClient(&ptList);
-//
-//			UINT flags = 0;
-//			int itemClicked = m_pRuntimePg->m_lstRuntimeWarning.HitTest(ptList, &flags);
-//			if (itemClicked > -1)
-//			{
-//				//pTab->SetFocus();
-//				m_pRuntimePg->SetFocus();
-//				//HMENU hMenu = theApp.GetContextMenuManager()->GetMenuById(IDR_MENU_WARNING);
-//				//theApp.GetContextMenuManager()->ShowPopupMenu(IDR_MENU_WARNING,point.x, point.y, this);
-//				theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EXPLORER, point.x, point.y, this, TRUE);	
-//
-//			}
-//		}
-//
-//		
-//	}
-//	else if (pActWnd->m_hWnd == m_pCriticalPg->m_hWnd)
-//		;
-//	else if (pActWnd->m_hWnd == m_pGereralPg->m_hWnd)
-//		;
-//	else
-//	{
-//		CDockablePane::OnContextMenu(pWnd, point);
-//		return;
-//	}
-//
-//}
+void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	
+	if ( pApp->pgkclient->btsmanager.btsmap.IsEmpty() )
+		return; //the BTS Device listview is still not built.
 
-//void CWarningWnd::OnWarningAck()
-//{
-//	// TODO: Add your command handler code here
-//}
 
-//void CWarningWnd::OnUpdateWarningAck(CCmdUI *pCmdUI)
-//{
-//	// TODO: Add your command update UI handler code here
-//	pCmdUI->Enable(TRUE);
-//}
+	pApp->pgkclient->getAlarmStr(pApp->alarmStr);
+	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 
-//void CWarningWnd::OnWarningScroolingOff()
-//{
-//	// TODO: Add your command handler code here
-//}
+	if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
+		m_pRuntimePg->AddListView(ALARM_REFRESH);
 
-//void CWarningWnd::OnWarningScroolingOn()
-//{
-//	// TODO: Add your command handler code here
-//}
-
-//void CWarningWnd::OnDummyCompile()
-//{
-//	// TODO: Add your command handler code here
-//}
+	if (!pApp->pgkclient->alarmmanager.curNewAlarmList.IsEmpty())
+		m_pRuntimePg->AddListView(ALARM_NEW);
+	
+	CDockablePane::OnTimer(nIDEvent);
+}

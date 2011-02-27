@@ -4,6 +4,7 @@
 #define WM_NOTIFY_MESSAGE		WM_USER + 1
 #define WM_PLAYVIEW_SELECTED	WM_USER + 2
 #define WM_RUNTIME_TIMER		WM_USER + 3
+#define WM_WARNING_TIMER		WM_USER + 3
 
 //WM_PLAYVIEW_SELECTED---------------------------------------------
 #define MSG_SELECT_VIDEO		0x1	//Select the target play windows
@@ -24,6 +25,9 @@
 //
 #define ID_USER_CONTROL				2200			
 
+//Warning Timer During...
+#define WARNING_UPDATE_DURING		3000			
+
 //Warning Ack...
 typedef enum tagWARNING_STATUS
 {
@@ -32,5 +36,15 @@ typedef enum tagWARNING_STATUS
 	WARNING_ACK
 }WARNING_STATUS;
 
+typedef enum tagALARM_COMING_TYPE
+{
+	ALARM_NEW,
+	ALARM_REFRESH
+}ALARM_COMING_TYPE;
+
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
+
+int play_video(int  sessionId, char * pBuffer, int  len);
+
+const int cnPOP_VEDIO_INDEX = 25;
 #endif //AFX_CONST_H

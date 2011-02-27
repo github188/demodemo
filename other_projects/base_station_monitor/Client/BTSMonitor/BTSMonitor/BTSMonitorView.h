@@ -46,7 +46,7 @@ typedef struct tagVV_CONTROL
 }VV_CONTROL;
 
 /////////////////////////////////////
-int play_video(int  sessionId, char * pBuffer, int  len);
+//int play_video(int  sessionId, char * pBuffer, int  len);
 
 /////////////////////////////////////
 class CBTSMonitorView : public CView

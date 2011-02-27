@@ -32,6 +32,7 @@ protected:
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 protected:
 	CMFCTabCtrl m_wndTabs;
 	CFont m_Font;
@@ -42,6 +43,8 @@ public:
 //	afx_msg void OnWarningScroolingOff();
 //	afx_msg void OnWarningScroolingOn();
 //	afx_msg void OnDummyCompile();
+private:
+	int m_nWarnUpdateTimerID;
 };
 
 

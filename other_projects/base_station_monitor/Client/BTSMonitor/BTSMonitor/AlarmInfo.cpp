@@ -14,4 +14,5 @@ void AlarmInfo::buildClass(const CString &info)
 	pos = util::split_next(info, endTime, splitch, pos+1);
 	pos = util::split_next(info, category, splitch, pos+1);
 	pos = util::split_next(info, BTSType, splitch, pos+1);
+
 }

@@ -28,4 +28,5 @@ public:
 	CString category;	//1.视频 2.图片, 3.无
 	CString BTSType;	//端局类型，现在还没有和客户确认，直接显示一个编码就行啦。
 	static const char splitch='$';
+
 };

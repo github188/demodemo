@@ -560,8 +560,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 		//GokuClient *client; //("127.0.0.1");
 		//wstring host(L"127.0.0.1:8000");
-		//CString host("192.168.1.200:8000");
-		CString host("127.0.0.1:8000");
+		CString host("192.168.1.200:8000");
+		//CString host("127.0.0.1:8000");
 		CString sUUID, sChannelID;
 		int pos = util::split_next(strBtsInfo,sUUID,'$',0);
 		pos = util::split_next(strBtsInfo,sChannelID,'$',pos+1);

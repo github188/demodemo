@@ -7,6 +7,7 @@
 #include "const.h"
 #include "PopPlayView.h"
 #include "include/iPlay.h"
+#include "RuntimeWarning.h"
 
 // CWarnPopVideo dialog
 
@@ -16,6 +17,11 @@ CWarnPopVideo::CWarnPopVideo(CWnd* pParent /*=NULL*/)
 	: CDialog(CWarnPopVideo::IDD, pParent)
 	, m_nPopIndex(0)
 	, m_bFullScreen(false)
+	, m_sUUID(_T(""))
+	, m_sChannel(_T(""))
+	, m_sStartTime(_T(""))
+	, m_sEndTime(_T(""))
+	, m_bShowing(FALSE)
 {
 	m_pPopView = NULL;
 }
@@ -34,6 +40,7 @@ void CWarnPopVideo::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CWarnPopVideo, CDialog)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDOK, &CWarnPopVideo::OnBnClickedOk)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -56,15 +63,11 @@ BOOL CWarnPopVideo::OnInitDialog()
 	m_pPopView->Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rect, this, ID_POPVIDEO_VIEW+m_nPopIndex);
 
 	m_pPopView->ShowWindow(SW_SHOW);
-	
-	/*
-	CRect rc;
-	GetClientRect(&rc);
-	rc.top+=1;
-	rc.left+=1;
 
-	MoveWindow(&rc);
-	*/
+	m_bShowing = TRUE;
+
+	PlayVideo();
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -104,22 +107,33 @@ int CWarnPopVideo::GetPopVideoIndex(void)
 void CWarnPopVideo::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
-	CString sVVFile;
-	CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
-	CString sVideo[] = {"test01.h264","test02.h264","test03.h264","test04.h264","test05.h264","test06.h264","test07.h264"};
-
-	int nActView = m_nPopIndex;
-	sVVFile = path + sVideo[m_nPopIndex];
-	
-	BOOL bPlayFile = TRUE;
-	if (bPlayFile)
+	BOOL bDebug = FALSE;
+	if (bDebug)
 	{
-		PLAY_OpenFile(nActView, sVVFile.GetBuffer());
-	
-		PLAY_Play(nActView, m_pPopView->m_hWnd);
+		CString sVVFile;
+		CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
+		CString sVideo[] = {"test01.h264","test02.h264","test03.h264","test04.h264","test05.h264","test06.h264","test07.h264"};
+
+		int nActView = m_nPopIndex;
+		sVVFile = path + sVideo[m_nPopIndex];
+		
+		BOOL bPlayFile = TRUE;
+		if (bPlayFile)
+		{
+			PLAY_OpenFile(nActView, sVVFile.GetBuffer());
+		
+			PLAY_Play(nActView, m_pPopView->m_hWnd);
+		}
+
+		return;
 	}
 
-	return;
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*) GetParent();
+	if (pRunTimeWnd)
+		pRunTimeWnd->DecPopVedioCount();
+
+	m_bShowing = FALSE;
+
 
 	OnOK();
 }
@@ -206,4 +220,48 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 
 	}
 
+}
+
+void CWarnPopVideo::SetVideoPara(CString sUUID, CString sChannel,CString sStartTime, CString sEndTime)
+{
+	m_sUUID		 = sUUID;
+	m_sChannel   = sChannel;
+	m_sStartTime = sStartTime;
+	m_sEndTime   = sEndTime;
+}
+
+void CWarnPopVideo::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*) GetParent();
+	if (pRunTimeWnd)
+		pRunTimeWnd->DecPopVedioCount();
+
+	m_bShowing = FALSE;
+
+	CDialog::OnClose();
+}
+
+BOOL CWarnPopVideo::IsShowing(void)
+{
+	return m_bShowing;
+}
+
+void CWarnPopVideo::PlayVideo(void)
+{
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//CString host("192.168.1.200:8000");
+	//CString host("127.0.0.1:8000");	
+	PLAY_SetStreamOpenMode(m_nPopIndex+cnPOP_VEDIO_INDEX, STREAME_REALTIME);
+	BOOL bOpenRet = PLAY_OpenStream(m_nPopIndex+cnPOP_VEDIO_INDEX,0,0,1024*900);
+	if(bOpenRet)
+	{
+		PLAY_Play(m_nPopIndex+cnPOP_VEDIO_INDEX, m_pPopView->m_hWnd);
+
+		//Play Remote Vedio runatime			
+		pApp->pgkclient->real_play(m_sUUID, m_sChannel, play_video, m_nPopIndex+cnPOP_VEDIO_INDEX);
+		
+	}
+		
 }

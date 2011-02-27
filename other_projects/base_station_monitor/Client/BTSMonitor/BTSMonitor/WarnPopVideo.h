@@ -32,4 +32,17 @@ public:
 private:
 	bool m_bFullScreen;
 	WINDOWPLACEMENT m_struOldPlacement;
+public:
+	void SetVideoPara(CString sUUID, CString sChannel, CString sStartTime, CString sEndTime);
+private:
+	CString m_sUUID;
+	CString m_sChannel;
+	CString m_sStartTime;
+	CString m_sEndTime;
+public:
+	afx_msg void OnClose();
+	BOOL IsShowing(void);
+private:
+	BOOL m_bShowing;
+	void PlayVideo(void);
 };

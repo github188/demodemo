@@ -20,6 +20,7 @@ CRuntimeWarning::CRuntimeWarning()
 	: CPropertyPage(CRuntimeWarning::IDD)
 	, m_nCurItem(0)
 	, m_alarmIndex(0)
+	, m_nPopViewCount(0)
 {
 	int i=0;
 	for (;i<cnMAX_POP_WINDOW; i++)
@@ -55,6 +56,8 @@ BEGIN_MESSAGE_MAP(CRuntimeWarning, CPropertyPage)
 	ON_COMMAND(ID_WARNING_ACK, &CRuntimeWarning::OnWarningAck)
 	ON_COMMAND(ID_WARNING_SCROOLING_OFF, &CRuntimeWarning::OnWarningScroolingOff)
 	ON_COMMAND(ID_WARNING_SCROOLING_ON, &CRuntimeWarning::OnWarningScroolingOn)
+//	ON_NOTIFY(HDN_ITEMDBLCLICK, 0, &CRuntimeWarning::OnHdnItemdblclickLstRuntimeWarning)
+	ON_NOTIFY(NM_DBLCLK, IDC_LST_RUNTIME_WARNING, &CRuntimeWarning::OnNMDblclkLstRuntimeWarning)
 END_MESSAGE_MAP()
 
 
@@ -80,19 +83,23 @@ BOOL CRuntimeWarning::OnInitDialog()
 
 	CString strHeader[] = 
 	{
-		"告警状态", //level
-		"UUID",		//UUID
+		"告警级别", //level
 		"位置",		//place
 		"端局类型", //BTSType
 		"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
 		"基站",		//BTSID
 		"开始时间", //start tiem
 		"结束时间", //end   time
-		"处理状态" //status
+		"处理状态", //status
+		""
 	};
+
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
-	for (int i=0; i<nCnt; i++)
-		m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 88);
+	int i=0;
+	for (; i<nCnt-1; i++)
+		m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 120);
+	m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 0);
+	
 
 	m_imagelist.Create(16,16, TRUE|ILC_COLOR24, 3, 1);
 	m_lstRuntimeWarning.SetImageList(&m_imagelist,LVSIL_SMALL);
@@ -112,14 +119,15 @@ BOOL CRuntimeWarning::OnInitDialog()
 
 	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
 
-	int i=0;
+	i=0;
 	for (;i<cnMAX_POP_WINDOW; i++)
 	{
 		VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(this) );
+		m_pPopVideoDlg[i]->SetPopVideoIndex(i);
 	}
 
 	
-	AddListView();
+	//AddListView();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -138,61 +146,93 @@ void CRuntimeWarning::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-void CRuntimeWarning::AddListView(void)
+void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 {
-	/*
-	CString sUUID;
-	CString str("100");
-	for (int i=0; i<10; i++)
-	{
-		sUUID.Format("%s%d", str, i);
-		m_lstRuntimeWarning.InsertItem(0,"",1);
-		m_lstRuntimeWarning.SetItem(0,1,LVIF_TEXT,sUUID,0,0,0,0);
-	}
-	*/
-
 	//fill data
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
-
+	//pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 
 	CString sLocation, sTemp;
 	AlarmInfo* pAlarmInfo = NULL;
-	POSITION pos = pApp->pgkclient->alarmmanager.alarmList.GetHeadPosition();
+	
+	POSITION pos = NULL;
+	if (type == ALARM_NEW)
+		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+	else if (type == ALARM_REFRESH)
+		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+
 	while( pos!=NULL )
 	{
 		pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
 		if (pAlarmInfo)
 		{
-			//"告警状态", //level
-			m_lstRuntimeWarning.InsertItem(m_alarmIndex,"",0);
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+			int lstIdx = 0;
+			if (type == ALARM_NEW)
+			{
+				//"告警状态", //level
+				m_lstRuntimeWarning.InsertItem(m_alarmIndex,"",0);
+				m_lstRuntimeWarning.SetItem(m_alarmIndex,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+			}
+			else if (type == ALARM_REFRESH)
+			{
+				CString sUUID;
+				int nItemCount = m_lstRuntimeWarning.GetItemCount();
+				for (int i=0; i<nItemCount; i++)
+				{
+					sUUID = m_lstRuntimeWarning.GetItemText(i, 8);
+					if (sUUID == pAlarmInfo->uuid)
+					{
+						lstIdx = i;
+						break;
+					}
+				}
+			}
 
 			//"UUID",		//UUID
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
+			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
+			
 			//"位置",		//place
 			sLocation = pApp->pgkclient->btsmanager.GetCameraPlace(pAlarmInfo->uuid);
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,2,LVIF_TEXT,sLocation,0,0,0,0);
-			//"端局类型", //BTSType
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,3,LVIF_TEXT,pAlarmInfo->BTSType,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,sLocation,0,0,0,0);
+
+			//端局类型
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,2,LVIF_TEXT,pAlarmInfo->BTSType,0,0,0,0);
+
 			//"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
-			sTemp = pAlarmInfo->BTSType==1?"实时告警":"历史告警";
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,4,LVIF_TEXT,sTemp,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,3,LVIF_TEXT,pAlarmInfo->alarmCode,0,0,0,0);
+			
 			//"基站",		//BTSID
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,5,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,4,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
 			//"开始时间", //start tiem
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,5,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
 			//"结束时间", //end   time
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
 			//"处理状态" //status
 			sTemp = pAlarmInfo->status==1 ? "未处理":
 				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,sTemp,0,0,0,0);	
-		}
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,sTemp,0,0,0,0);	
+	
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+
+			//.pop the warning vedio windows
+			if (m_nPopViewCount<cnMAX_POP_WINDOW)
+			{
+				for (int i=0; i<cnMAX_POP_WINDOW; i++)
+				{
+					if (m_pPopVideoDlg[m_nPopViewCount]->IsShowing() == FALSE)
+					{
+						m_pPopVideoDlg[i]->SetPopVideoIndex(i);
+						m_pPopVideoDlg[m_nPopViewCount]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
+						m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,this);
+						m_pPopVideoDlg[m_nPopViewCount]->ShowWindow(SW_SHOW);
+
+						break;
+					}
+				}
+			}
+
+		}// ArmList
 	}
-
-
-
 	
 }
 
@@ -328,16 +368,39 @@ void CRuntimeWarning::OnWarningScroolingOn( )
 	//m_lstRuntimeWarning.EnsureVisible(m_nCurItem,FALSE);
 	//m_lstRuntimeWarning.EnsureVisible(0,TRUE);
 	bOnScroll = TRUE;
-	static int gN=0;
 
-	if (m_pPopVideoDlg && gN<cnMAX_POP_WINDOW)
+}
+
+//void CRuntimeWarning::OnHdnItemdblclickLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult)
+//{
+//	LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
+//	// TODO: Add your control notification handler code here
+//	*pResult = 0;
+//}
+
+void CRuntimeWarning::OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	if ( (pNMItemActivate!= NULL) && (pNMItemActivate->iItem > -1) )
 	{
-		m_pPopVideoDlg[gN]->SetPopVideoIndex(gN);
-		VERIFY(m_pPopVideoDlg[gN]->Create(IDD_POP_VIDEO,this));
-		m_pPopVideoDlg[gN]->ShowWindow(SW_SHOW);
-		
+		//LV_ITEM lvitem = {0};
+		//lvitem.iItem = pNMItemActivate->iItem;
+		//lvitem.iSubItem = 1; //UUID
+		//lvitem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM;
+		//m_lstRuntimeWarning.GetItem(&...)
+		CString sUUID = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 1); 
+		CString sStartTime = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 6); 
+		CString sEndTime   = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 7); 
+
+		//通过UUID播放历史视频
+		//ReplayWarningVideo(sUUID, sStartTime,sEndTIme);
 	}
 
-	gN++;
+	*pResult = 0;
+}
 
+void CRuntimeWarning::DecPopVedioCount(void)
+{
+	m_nPopViewCount--;
 }

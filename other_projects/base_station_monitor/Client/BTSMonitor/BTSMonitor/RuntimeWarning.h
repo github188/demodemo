@@ -26,7 +26,8 @@ public:
 	CMFCListCtrl  m_lstRuntimeWarning;
 
 public:
-	void AddListView(void);
+	void AddListView(ALARM_COMING_TYPE type); //
+
 private:
 	CImageList m_imagelist;
 	CWarnPopVideo* m_pPopVideoDlg[cnMAX_POP_WINDOW];
@@ -43,4 +44,11 @@ public:
 private:
 	int m_nCurItem;
 	long m_alarmIndex;
+public:
+//	afx_msg void OnHdnItemdblclickLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
+private:
+	int m_nPopViewCount;
+public:
+	void DecPopVedioCount(void);
 };
