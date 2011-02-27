@@ -20,7 +20,10 @@ import org.goku.settings.Settings;
 import org.goku.socket.SimpleSocketServer;
 import org.goku.socket.SocketManager;
 import org.goku.socket.proxy.SocketProxyServer;
+import org.goku.video.odip.AbstractMonitorListener;
 import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.MonitorClientEvent;
+import org.goku.video.odip.MonitorClientListener;
 import org.goku.video.odip.VideoRoute;
 
 /**
@@ -87,6 +90,7 @@ public class VideoRouteServer {
 		
 		log.info("Start video record manager..");
 		recordManager = new VideoRecorderManager(settings, storage);
+		log.info("Record filename format:" + recordManager.pattern);
 		threadPool.execute(recordManager);
 		
 		String masterUrl = settings.getString(Settings.MASTER_SERVER_URL, "http://127.0.0.1:8080");
@@ -155,6 +159,7 @@ public class VideoRouteServer {
 			this.clients.put(uuid, client);
 			this.alarmManager.addClient(client);
 			
+			client.addListener(this.connectionListener);
 			//开始连接设备。
 			this.threadPool.execute(new Runnable(){
 				@Override
@@ -214,6 +219,33 @@ public class VideoRouteServer {
 		}
 		return status;
 	} 
+	
+	public MonitorClientListener connectionListener = new AbstractMonitorListener(){
+		public void timeout(final MonitorClientEvent event) {	
+			//如果设备之前是处于连接状态。
+			if(event.client.getClientStatus() != null) { 
+				log.info("Try to reconnect timeout DVR:" + event.client.info.toString());
+				threadPool.execute(new Runnable(){
+					@Override
+					public void run() {
+						event.client.close();
+						event.client.login();
+				}});
+			}else {
+				log.info("Timeout to connect DVR:" + event.client.info.toString());
+			}
+		}
+		
+		@Override
+		public void disconnected(final MonitorClientEvent event) {
+			log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
+			threadPool.execute(new Runnable(){
+				@Override
+				public void run() {
+					event.client.login();
+			}});			
+		}
+	};
 	
 	public static void main(String[] a) throws Exception{
 		new VideoRouteServer(new Settings("video.conf")).startUp();

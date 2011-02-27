@@ -23,13 +23,14 @@ import org.goku.video.odip.MonitorClient;
  * @author deon
  */
 public class VideoRecorderManager implements Runnable{
+	public String pattern = null;
+
 	private static final String DEFAULT = "${yyyy}-${mm}/" +
 			"${UUID}-${ALARM_TYPE}-" +
 			"${USER}-${mm}${dd}-" +
 			"${HH}${MM}${SS}.${SSS}.h264";
 	private Log log = LogFactory.getLog("video.recorder");
 	private File rootPath = null;
-	private String pattern = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
 	

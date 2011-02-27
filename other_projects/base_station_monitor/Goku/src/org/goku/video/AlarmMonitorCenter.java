@@ -100,6 +100,7 @@ public class AlarmMonitorCenter implements Runnable{
 					record.baseStation = client.info.uuid;
 					record.channelId = ch + "";
 					record.startTime = new Date();
+					record.alarmCode = alarm.alarmCode;
 					record.alarmCategory = alarm.alarmCategory;
 					record.alarmLevel = alarm.alarmLevel;
 					record.alarmStatus = "1";

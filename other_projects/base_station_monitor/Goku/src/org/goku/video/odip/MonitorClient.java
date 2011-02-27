@@ -301,8 +301,14 @@ public class MonitorClient implements Runnable, SelectionHandler{
 					this.writeBuffer();
 				}
 			} catch (Exception e) {
-				log.error(e.toString(), e);
+				log.error(e.toString(), e);				
 				this.selectionKey.cancel();
+				try {
+					this.closeSocketChannel();
+				} catch (IOException e1) {
+					log.error(e1.toString(), e);
+				}
+				//this.eventProxy.writeIOException(new MonitorClientEvent(this));
 			}
 		}
 	}
@@ -381,12 +387,14 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	protected void write(ByteBuffer src, boolean sync) {
+		log.debug("wirte to DVR:" + src.remaining());
 		if(this.selectionKey == null || !this.selectionKey.isValid())return;
-		if(this.writeQueue.size() > 50){
+		if(this.writeQueue.size() > 10){
 			//如果超过 1分钟 没有读到设备任何数据。设置超时。
 			if(System.currentTimeMillis() - this.runningStatus.lastReadTime > 60 * 1000){
 				this.eventProxy.timeout(new MonitorClientEvent(this));
 			}else if(!this.isWriteBusy){ //第一次发现写忙。
+				this.isWriteBusy = true;
 				log.warn("DVR is too slow or disconnected.");
 			}
 		}else if(this.writeQueue.offer(src)){
@@ -406,6 +414,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 				}
 			}
 		}
+		//log.info("qqq:size:" + this.writeQueue.size());
 	}
 	
 	public void setClientStatus(ClientStatus status){
@@ -444,7 +453,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	protected void closeSocketChannel() throws IOException{
-		log.debug("Close connection by channel read -1.");
+		log.info("Close DVR socket channel.");
 		if(this.selectionKey != null){
 			this.selectionKey.cancel();
 		}
@@ -455,6 +464,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		
 		//重置设备状态，需要重新登录。
 		this.setClientStatus(null);
+		this.writeQueue.clear();
 		this.eventProxy.disconnected(new MonitorClientEvent(this));
 	}
 	
