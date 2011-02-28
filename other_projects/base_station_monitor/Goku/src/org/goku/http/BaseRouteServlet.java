@@ -38,7 +38,9 @@ public abstract class BaseRouteServlet extends HttpServlet{
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
-    	//response.setCharacterEncoding("utf-8");
+    	if(this.getStringParam(request, "en", null) != null){
+    		response.setCharacterEncoding(request.getParameter("en"));
+    	}
 		response.setContentType(TEXT);
     	String action = request.getParameter("q");
 		Method m = handler.get(action);

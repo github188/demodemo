@@ -28,7 +28,7 @@ public class Location implements JSONStreamAware{
 	public static Comparator compartor = new Comparator(){
 		@Override
 		public int compare(Object arg0, Object arg1) {
-			if(arg1.equals(arg1)){ 
+			if(arg0.equals(arg1)){ 
 				return 0;
 			}
 			return 1;
@@ -65,4 +65,8 @@ public class Location implements JSONStreamAware{
 		}
 		return false;
 	}	
+	
+	public String toString(){
+		return String.format("%s<%s>", this.name, this.uuid);
+	}
 }

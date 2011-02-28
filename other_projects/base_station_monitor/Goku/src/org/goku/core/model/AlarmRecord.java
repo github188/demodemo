@@ -34,6 +34,7 @@ public class AlarmRecord implements JSONStreamAware{
 	public String user = "";        //告警确认人
 	public Date startTime = null;
 	public Date endTime = null;
+	public Date lastUpdateTime = new Date();
 	public String videoPath;
 
 	public Date comfirmTime = null; //告警确认时间

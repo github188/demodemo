@@ -75,7 +75,8 @@ public class DummyDataStorage extends DataStorage {
 		//if(thi)
 		if(obj instanceof AlarmRecord){
 			if(this.load(obj.getClass(), ((AlarmRecord)obj).uuid) == null){
-				Collection<Object> objList = objects.get(obj.getClass());	
+				Collection<Object> objList = objects.get(obj.getClass());
+				((AlarmRecord)obj).lastUpdateTime = new Date(System.currentTimeMillis());
 				if(!objList.contains(obj)){
 					objList.add(obj);
 				}else {
@@ -153,7 +154,7 @@ public class DummyDataStorage extends DataStorage {
 		File file = new File("standlone.db");
 		if(file.isFile()){
 			log.info("Loading db file:" + file.getAbsolutePath());
-			log.info("BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>");
+			log.info("BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>$<name>");
 			log.info("RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>");
 			log.info("LO:<uuid>$<name>$<parent>");
 			try {
@@ -180,6 +181,9 @@ public class DummyDataStorage extends DataStorage {
 						if(bsinfo.length > 5){
 							bs.locationUUID = bsinfo[5];
 						}
+						if(bsinfo.length > 6){
+							bs.name = bsinfo[6];
+						}						
 						
 						bsList.add(bs);
 					}else if(line.startsWith("RE:")){
@@ -272,7 +276,7 @@ public class DummyDataStorage extends DataStorage {
 			long curTime = ((Date)val).getTime();
 			for(Iterator i = result.data.iterator(); i.hasNext();){
 				alarm = (AlarmRecord)i.next();
-				if(alarm.startTime.getTime() < curTime){
+				if(alarm.lastUpdateTime.getTime() < curTime){
 					i.remove();
 				}
 			}
