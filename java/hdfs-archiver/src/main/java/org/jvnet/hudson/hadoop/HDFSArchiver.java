@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -122,18 +123,26 @@ public class HDFSArchiver {
 		startHTTPServer();
 	}
 	
-	private void connectHDFS() throws IOException{
+	private void connectHDFS(){
 		List addrs = new ArrayList();
 		for(String x : conns){
 			log.info("MonogoDB addr:" + x);
 			String[] addr = x.split(":");
 			int port = Integer.parseInt(addr[1]);			
-			addrs.add(new ServerAddress(addr[0], port));
+			try {
+				addrs.add(new ServerAddress(addr[0], port));
+			} catch (IOException e) {
+				log.error(e.toString());
+			}
 		}
-		Mongo mongo = new Mongo(addrs);	
-		mongo.slaveOk();
-		DB db = mongo.getDB(this.defaultDB); // new DB(mongo, "archive");
-		defaultFs = new GridFS(db);
+		try{
+			Mongo mongo = new Mongo(addrs);	
+			mongo.slaveOk();
+			DB db = mongo.getDB(this.defaultDB); // new DB(mongo, "archive");
+			defaultFs = new GridFS(db);
+		}catch(Throwable e){
+			log.error(e.toString());
+		}
 	}
 	
 	private void startHTTPServer(){
@@ -141,6 +150,7 @@ public class HDFSArchiver {
         ServletHandler handler = new ServletHandler();
         server.setHandler(handler);
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.UploadFile", this.prefix + "upload");
+        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DistributeLockService", this.prefix + "lock");
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", this.prefix + "*");
         if(this.prefix.length() > 1){
         	handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.WelcomeIndex", "/*");
@@ -193,6 +203,7 @@ public class HDFSArchiver {
 	}
 	
 	public GridFSDBFile getFile(String path){
+		if(!this.isConnected()) return null;
 		if(path.indexOf('$') > 0){
 			String[] t = path.split("\\$", 2);
 			return getGridFS(t[0]).findOne(t[1]);
