@@ -52,6 +52,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 	
 	public void init(ServletConfig config){
 		server = MasterVideoServer.getInstance();
+		cache.set("test", new User(), 60 * 30);
 	}	
 
 	public void replay(HttpServletRequest request,

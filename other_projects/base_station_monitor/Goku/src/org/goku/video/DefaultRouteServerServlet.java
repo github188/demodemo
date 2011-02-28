@@ -70,25 +70,24 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 */
 	public void mock_video(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-		String uuid = this.getStringParam(request, "uuid", null);
-		int channel = this.getIntParam(request, "ch", -1);
-		String alarm = this.getStringParam(request, "alarm", null);
-	    MonitorClient client = null;
-		if(uuid == null || alarm == null || channel == -1){
-			response.getWriter().println("-2:Parameter error");
-		}else {
-		    client = server.getMonitorClient(uuid);
-		    File videoPath = server.recordManager.getAlarmRecordFile(alarm);
-		    if(client == null){
-		    	response.getWriter().println("1:BTS not found");
-		    }else if(videoPath == null){
-		    	response.getWriter().println("2:Not found video file");
-		    }else {
-		    	MockRealVideo mock = new MockRealVideo(videoPath, client, channel);
-		    	mock.start();		    	
-		    	response.getWriter().println("0:Video Mock OK");
-		    }
+		String uuid = this.getStringParam(request, "uuid", "1001");
+		String channel = this.getStringParam(request, "ch", "1");
+		String alarm = this.getStringParam(request, "alarm", "");
+		String path = this.getStringParam(request, "video", "");
+		
+		if(request.getMethod().equals("POST")){
+			MonitorClient client = server.getMonitorClient(uuid);			
+			File videoPath = server.recordManager.getAlarmRecordFile(alarm);
+			if(videoPath == null && new File(path).isFile()){
+				videoPath = new File(path); 
+			}
+			if(client != null && videoPath != null){
+		    	MockRealVideo mock = new MockRealVideo(videoPath, client, Integer.parseInt(channel));
+		    	mock.start();		    					
+			}
 		}
+		
+		static_serve("org/goku/video/mock_alarm.txt", "text/html", response);		
 	}
 	
 	public void mock_alarm(HttpServletRequest request, HttpServletResponse response) 
