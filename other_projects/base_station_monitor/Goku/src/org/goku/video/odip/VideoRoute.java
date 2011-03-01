@@ -52,13 +52,15 @@ public class VideoRoute {
 		buffer.put(source);
 		buffer.flip();
 		long et = 0, st = 0;
+		int acceptCount = 0;
 		synchronized(destList){
 			VideoDestination dest = null;
 			for(Iterator<VideoDestination> iter = destList.iterator(); iter.hasNext();){
 				dest = iter.next();
 				if(dest.isClosed()){
 					iter.remove();
-				}else if(dest.accept(sourceType)){
+				}else if(dest.accept(sourceType, channel)){
+					acceptCount++;
 					try {
 						st = System.currentTimeMillis();
 						dest.write(buffer.duplicate(), sourceType, channel);
@@ -74,8 +76,9 @@ public class VideoRoute {
 				}
 			}
 		}
-		if(this.destList.size() <= 0){
-			this.client.videoDestinationEmpty();
+		//如果没有目地在接收视频数据，关闭在通道的数据。
+		if(acceptCount <= 0){
+			this.client.videoDestinationEmpty(channel, sourceType);
 		}
 	}
 	
@@ -99,9 +102,6 @@ public class VideoRoute {
 		if(this.destList.contains(dest)){
 			this.destList.remove(dest);
 			log.debug("Remove video destination, dest=" + dest.toString());
-		}
-		if(this.destList.size() <= 0){
-			this.client.videoDestinationEmpty();
 		}
 	}
 	

@@ -55,7 +55,7 @@ public class FileVideoRecorder implements VideoDestination{
 	}
 
 	@Override
-	public boolean accept(int sourceType) {
+	public boolean accept(int sourceType, int channel) {
 		return this.type == sourceType;
 	}
 

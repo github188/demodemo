@@ -77,7 +77,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	public void connect() throws IOException{
 		String[] address = this.info.locationId.split(":");
 		if(address.length < 2){
-			throw new IOException("Invalid location Id, <host>:<port>:<channel id>");
+			throw new IOException("Invalid location Id, <host>:<port>");
 		}
 		//this.channelId = Integer.parseInt(address[2]);
 		this.ipAddr = address[0] + ":" + address[1];
@@ -94,7 +94,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	/**
 	 * 登录系统。
 	 */
-	public void login(){
+	public void login(boolean sync){
 		if(this.getClientStatus() == null){
 			if(this.socketChannel == null || !this.socketChannel.isOpen()){
 				try {
@@ -115,7 +115,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 					this.socketChannel != null &&
 					this.socketChannel.isConnected()
 					){
-				this.handler.login("", "", true);
+				this.handler.login("", "", sync);
 			}else if(this.getClientStatus() == null){
 				log.debug("The socket channel isn't OK, can't login to client.");
 			}
@@ -131,7 +131,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	public void realPlay(int channel, int mode){
-		this.login();
+		this.login(true);
 		if(this.getClientStatus() != null){
 			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
@@ -169,10 +169,8 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	/**
 	 * 当视频接受端为空时调用。发送关闭视频流的命令。
 	 */
-	public void videoDestinationEmpty(){
-		for(MonitorChannel ch: info.getChannels()){
-			this.handler.videoStreamControl(CTRL_VIDEO_STOP, ch.id, MonitorChannel.MAIN_VIDEO);
-		}
+	public void videoDestinationEmpty(int mode, int channel){
+		this.handler.videoStreamControl(CTRL_VIDEO_STOP, channel, mode);
 	}
 
 	public void close(){

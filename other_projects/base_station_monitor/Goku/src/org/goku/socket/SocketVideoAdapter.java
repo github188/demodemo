@@ -127,7 +127,7 @@ public class SocketVideoAdapter {
 		}
 
 		@Override
-		public boolean accept(int sourceType) {
+		public boolean accept(int sourceType, int channel) {
 			return true;
 		}
 

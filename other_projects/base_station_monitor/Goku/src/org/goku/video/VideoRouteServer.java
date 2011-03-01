@@ -164,7 +164,7 @@ public class VideoRouteServer {
 			this.threadPool.execute(new Runnable(){
 				@Override
 				public void run() {
-					client.login();
+					client.login(false);
 				}});
 			
 			return true;
@@ -229,7 +229,7 @@ public class VideoRouteServer {
 					@Override
 					public void run() {
 						event.client.close();
-						event.client.login();
+						event.client.login(false);
 				}});
 			}else {
 				log.info("Timeout to connect DVR:" + event.client.info.toString());
@@ -242,7 +242,7 @@ public class VideoRouteServer {
 			threadPool.execute(new Runnable(){
 				@Override
 				public void run() {
-					event.client.login();
+					event.client.login(false);
 			}});			
 		}
 	};
