@@ -2,4 +2,4 @@
 
 from django.http import HttpResponse, HttpResponseRedirect
 def index(r, *args):
-    return HttpResponseRedirect("/admin")
+    return HttpResponseRedirect("admin/")

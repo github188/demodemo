@@ -80,4 +80,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'GokuCtrl.coreapp',
+    'doj'
 )
+
+DATABASE_ENGINE='doj.backends.zxjdbc.mysql'
+
