@@ -310,13 +310,18 @@ public class MasterServerServlet extends BaseRouteServlet{
 			User userObj = (User) server.storage.load(User.class, user);
 			if(userObj != null){
 				if(userObj.password != null && userObj.password.equals(password)){
-					String key = md5(userObj.name + System.currentTimeMillis());
-					cache.set(key, userObj, 60 * 30);
-					request.setAttribute(SESSION_ID, key);
-					request.setAttribute(SESSION_USER, userObj);
-					SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
-					response.getWriter().println("0:login ok$" + key);
-					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
+					if(userObj.status !=null && userObj.status.equals("ok")){
+						String key = md5(userObj.name + System.currentTimeMillis());
+						cache.set(key, userObj, 60 * 30);
+						request.setAttribute(SESSION_ID, key);
+						request.setAttribute(SESSION_USER, userObj);
+						SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
+						response.getWriter().println("0:login ok$" + key);
+						userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
+					}else {
+						SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
+						response.getWriter().println("3:locked or removed.");
+					}
 				}else {
 					SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
 					response.getWriter().println("2:password error");

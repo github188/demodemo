@@ -193,11 +193,13 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	throws IOException {
 	    String uuid = request.getParameter("uuid");
 	    MonitorClient client = null;
+	    int ch = this.getIntParam(request, "ch", 1);
 	    if(uuid != null){
 	    	client = server.getMonitorClient(uuid);
 	    }
 	    
 	    if(client != null){
+	    	client.realPlay(ch);
 			response.setHeader("Transfer-Encoding", "chunked");
 		    response.setContentType("application/octet-stream");
 			//response.setContentType("video/h264");			
@@ -208,6 +210,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    RealPlayRouting callback = new RealPlayRouting(continuation, 
 		    		response.getOutputStream(), 
 		    		request.getRemoteHost());
+		    callback.ch = ch;
 		    client.route.addDestination(callback);
 		    //suspend 365 days
 		    continuation.suspend(1000 * 60 * 60 * 365);
@@ -343,6 +346,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
     	private OutputStream os = null;
     	private Continuation continuation = null;
     	private boolean running = true;
+    	public int ch = 1;
     	
     	private String remoteIp = null;
     	public RealPlayRouting(Continuation continuation, OutputStream os, String ip){
@@ -364,10 +368,12 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		@Override
 		public void write(ByteBuffer data, int type, int channel) throws IOException {
 			if(!this.running) throw new IOException("Destination closed.");
-			byte[] buffer = new byte[data.remaining()];
-			data.get(buffer);
-			this.os.write(buffer);
-			os.flush();
+			if(channel == this.ch){
+				byte[] buffer = new byte[data.remaining()];
+				data.get(buffer);
+				this.os.write(buffer);
+				os.flush();
+			}
 		}
 
 		@Override
