@@ -2,17 +2,17 @@ from django.contrib import admin
 from models import *
 
 class BaseStationAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'connectionStatus', 'groupName', 'locationId', 
-              'devType' ]
-    list_display = ('uuid', 'connectionStatus', 'groupName', 'routeServer', 'locationId', 
-              'alarmStatus', 'devType', 'lastActive')
+    fields = ['uuid', 'name', 'connectionStatus', 'groupName', 'locationId', 
+              'devType', 'btsCategory', 'locationUUID' ]
+    list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
+              'alarmStatus', 'devType', 'btsCategory', 'lastActive')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
     search_fields = ['uuid', 'locationId', ]
     
 class AlarmRecordAdmin(admin.ModelAdmin):
-    fields = ['base_station', 'alarmType', 'startTime', 'videoPath']
-    list_display = ('base_station', 'alarmType', 'startTime', 'videoPath')
-    list_filter = ['alarmType', ]
+    fields = ['base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'videoPath']
+    list_display = ('base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmStatus', 'user', 'videoPath')
+    list_filter = ['alarmCode', ]
 
 class UserAdmin(admin.ModelAdmin):
     fields = ['name', 'display', 'password', ]
@@ -42,14 +42,28 @@ class StationGroupRelationAdmin(admin.ModelAdmin):
     list_display = ('user_group', 'base_station', )
     list_filter = ['user_group', ]
 
+class LocationAdmin(admin.ModelAdmin):
+    fields = ['uuid', 'name', 'parent']
+    list_display = ('uuid', 'name', 'parent')
+    
+class AlarmDefineAdmin(admin.ModelAdmin):
+    fields = ['alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory']
+    list_display = ('alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory')    
+    
+class BTSCategoryAdmin(admin.ModelAdmin):
+    fields = ['uuid', 'name']
+    list_display = ('uuid', 'name')       
 
+admin.site.register(Location, LocationAdmin)
 admin.site.register(BaseStation, BaseStationAdmin)
 admin.site.register(AlarmRecord, AlarmRecordAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserGroup, UserGroupAdmin)
-admin.site.register(SystemLog, SystemLogAdmin)
 admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
 admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
+admin.site.register(SystemLog, SystemLogAdmin)
+admin.site.register(AlarmDefine, AlarmDefineAdmin)
+admin.site.register(BTSCategory, BTSCategoryAdmin)
 
 
 
