@@ -91,6 +91,14 @@ public class MasterVideoServer {
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
 		log.info("Start http server at port " + httpPort);		
 		httpServer = new SimpleHTTPServer("", httpPort);
+		File admin_war = new File(settings.getString("admin_war", "GokuCtrl.war"));
+		if(admin_war.isFile()){
+			log.info("Deploy admin application '/GokuCtrl, war:" + admin_war.getAbsolutePath());
+			httpServer.addWar("/GokuCtrl", admin_war);
+		}else {
+			log.warn("Not found admin application, " + admin_war.getAbsolutePath());
+		}
+		
 		httpServer.setServlet(servelt);
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
