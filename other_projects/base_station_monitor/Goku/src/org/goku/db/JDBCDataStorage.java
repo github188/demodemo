@@ -38,13 +38,15 @@ public class JDBCDataStorage extends DataStorage {
 	
 	public JDBCDataStorage(Settings settings){
 		String[] master = new String[3];		
-		master[0] = String.format("jdbc:mysql://%s", settings.getString(Settings.DB_MASTER_DB, null));
+		master[0] = String.format("jdbc:mysql://%s?useUnicode=true&characterEncoding=utf8", 
+								   settings.getString(Settings.DB_MASTER_DB, null));
 		master[1] = settings.getString(Settings.DB_MASTER_USERNAME, null);
 		master[2] = settings.getString(Settings.DB_MASTER_PASSWORD, null);
 		config[0] = master;
 
 		String[] secondary = new String[3];		
-		secondary[0] = String.format("jdbc:mysql://%s", settings.getString(Settings.DB_SECONDARY_DB, null));
+		secondary[0] = String.format("jdbc:mysql://%s?useUnicode=true&characterEncoding=utf8", 
+									  settings.getString(Settings.DB_SECONDARY_DB, null));
 		secondary[1] = settings.getString(Settings.DB_SECONDARY_USERNAME, null);
 		secondary[2] = settings.getString(Settings.DB_SECONDARY_PASSWORD, null);
 		config[1] = secondary;
@@ -352,6 +354,23 @@ public class JDBCDataStorage extends DataStorage {
 		}
 	}
 	
+	private String toOrderBy(String order){
+		String r = "";		
+		for(String o: order.split(",")){
+			if(r.length() > 0){
+				r += ",";
+			}
+			if(o.startsWith("-")){
+				r += o.substring(1) + " desc";
+			}else if(o.startsWith("+")){
+				r += o.substring(1) + " asc";
+			}else{
+				r += o;
+			}
+		}
+		return r;
+	}
+	
 	private String[] getORMFields(Class cls){
 		try {
 			return (String[])cls.getField("ORM_FIELDS").get(null);
@@ -513,9 +532,37 @@ public class JDBCDataStorage extends DataStorage {
 		this.execute_sql(cleanRoute, new Object[]{route.ipAddress});
 	}	
 	
-	public QueryResult queryData(Class obj, QueryParameter param){
-		return null;
+	public QueryResult queryData(Class obj, QueryParameter param){		
+		String countSQL = "select count(*) as have_row from " + this.getTableName(obj);
+		String filter = "";
+		
+		String field, op;
+		for(String k: param.param.keySet()){
+			if(k.indexOf("__") > 0){
+				field = k.replaceAll("__", " ");
+			}else {
+				field = k + " ="; 
+			}
+			if(filter.length() > 0){
+				filter += " and ";
+			}
+			filter += field + toSQLValue(param.param.get(k));
+		}		
+		countSQL += " where " + filter;
+		
+		if(param.order != null){
+			filter += " order by " + toOrderBy(param.order);
+		}
+		
+		filter += String.format(" LIMIT %s, %s", param.offset, param.limit);
+		
+		QueryResult result = new QueryResult();
+		result.sessionId = "";
+		Collection<Map<String, Object>> xx = query(countSQL, new Object[]{});
+		result.count = (Integer)xx.iterator().next().get("have_row");		
+		result.data = this.list(obj, filter, new Object[]{});
+		
+		return result;
 	}
 
-	//private 
 }

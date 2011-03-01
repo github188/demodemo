@@ -13,11 +13,12 @@ import org.json.simple.JSONValue;
 
 public class BaseStation  implements JSONStreamAware{
 	public static final String ORM_TABLE = "base_station";
-	public static final String[] ORM_FIELDS = new String[]{"uuid", "connectionStatus",
+	public static final String[] ORM_FIELDS = new String[]{"uuid", "name", "connectionStatus",
 		"groupName", "routeServer", "locationId", 
 		"lastUpdate", "lastActive", "createDate",
 		"alarmStatus",
-		"devType"};
+		"devType",
+		"channels", "btsCategory", "locationUUID"};
 	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
 	
 	public static final int TYPE_VIDEO = 1;

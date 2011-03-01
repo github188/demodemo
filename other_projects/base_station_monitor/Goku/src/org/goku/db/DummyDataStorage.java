@@ -270,7 +270,7 @@ public class DummyDataStorage extends DataStorage {
 		if(objects.get(cls) != null){
 			result.data.addAll(objects.get(cls)); // = new Vector();
 		}
-		Object val = param.param.get("startTime__>=");
+		Object val = param.param.get("lastUpdateTime__>=");
 		if(val != null){
 			AlarmRecord alarm = null;
 			long curTime = ((Date)val).getTime();

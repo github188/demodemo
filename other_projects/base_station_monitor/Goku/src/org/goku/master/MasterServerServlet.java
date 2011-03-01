@@ -53,7 +53,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void init(ServletConfig config){
 		server = MasterVideoServer.getInstance();
 		cache.set("test", new User(), 60 * 30);
-	}	
+	}
 
 	public void replay(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -69,8 +69,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}else {
 				response.getWriter().write("Not found file by id " + id);
 			}
-		}
-		
+		}		
 	}
 	
 	private void _play(String file, HttpServletRequest request, 
@@ -210,7 +209,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 				int category = this.getIntParam(request, "c", 2);
 				Map<String, Object> filter = new HashMap<String, Object>();
 				if(category == 1){
-					filter.put("startTime__>=", userObj.lastRealAlarmTime);
+					filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}
 				
@@ -220,6 +219,24 @@ public class MasterServerServlet extends BaseRouteServlet{
 					filter.put("uuid__=", bsId);
 				}
 				
+				//状态过滤
+				String status = this.getStringParam(request, "status", null);
+				if(status != null && !"".equals(status) && !"all".equals(status)){
+					filter.put("status__=", status);
+				}
+
+				//告警级别
+				String level = this.getStringParam(request, "level", null);
+				if(level != null && !"".equals(level) && !"all".equals(level)){
+					filter.put("level__>=", level);
+				}
+				
+				//告警类型
+				String type = this.getStringParam(request, "type", null);
+				if(type != null && !"".equals(type) && !"all".equals(type)){
+					filter.put("alarmCode__=", type);
+				}
+								
 				param.param = filter;
 				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
 				outputAlarmList(alarms, response.getWriter());
