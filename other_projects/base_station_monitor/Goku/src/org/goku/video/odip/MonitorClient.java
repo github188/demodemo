@@ -154,6 +154,13 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	public void ackActive(){
 		this.handler.getAlarmStatus_A1(0);		
 	}
+
+	/**
+	 * 初始化设备状态, 包括时间， 硬盘查询， 通道同步等。
+	 */	
+	public void initMonitorClientStatus(){
+		
+	}
 	
 	/**
 	 * 查询回放记录。

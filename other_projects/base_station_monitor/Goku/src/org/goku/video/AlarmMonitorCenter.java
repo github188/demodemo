@@ -95,24 +95,49 @@ public class AlarmMonitorCenter implements Runnable{
 			//需要检查告警是否被屏蔽，如果告警已屏蔽则不保存告警信息也不录像。
 			for(AlarmDefine alarm: alarms){
 				log.info(String.format("Process alarm:%s on '%s'.", alarm.toString(), client.info.toString()));
-				for(int ch: alarm.channels){
-					AlarmRecord record = new AlarmRecord();
-					record.baseStation = client.info.uuid;
-					record.channelId = ch + "";
-					record.startTime = new Date();
-					record.alarmCode = alarm.alarmCode;
-					record.alarmCategory = alarm.alarmCategory;
-					record.alarmLevel = alarm.alarmLevel;
-					record.alarmStatus = "1";
-					
-					DataStorage storage = VideoRouteServer.getInstance().storage;
-					record.generatePK();
-					storage.save(record);
-					
+				
+				//有些告警是整个设备的告警。
+				if(alarm.channels == null || alarm.channels.length == 0){
+					processAlarm(client, alarm, 0);
+				}else {
+					for(int ch: alarm.channels){
+						processAlarm(client, alarm, ch);
+					}
+				}
+			}
+		}
+		
+		/**
+		 * 检查是否是一个有效的告警，或者是否被屏蔽, 是否是最小时间间隔内的重复告警。 
+		 * @param client
+		 * @param alarm
+		 * @param channel
+		 * @return
+		 */
+		private boolean preCheckAlarm(MonitorClient client, AlarmDefine alarm, AlarmRecord channel){
+			return true;
+		}
+		
+		private void processAlarm(MonitorClient client, AlarmDefine alarm, int channel){
+			AlarmRecord record = new AlarmRecord();
+			record.baseStation = client.info.uuid;
+			
+			record.channelId = channel + "";
+			record.startTime = new Date();
+			record.alarmCode = alarm.alarmCode;
+			record.alarmCategory = alarm.alarmCategory;
+			record.alarmLevel = alarm.alarmLevel;
+			record.alarmStatus = "1";
+			
+			if(preCheckAlarm(client, alarm, record)){				
+				DataStorage storage = VideoRouteServer.getInstance().storage;
+				record.generatePK();
+				storage.save(record);				
+				if(alarm.alarmCategory.equals("1")) {
 					//需要判断是否需要启动录像。
 					VideoRouteServer.getInstance().recordManager.startAlarmRecord(client, record);
 				}
 			}
-		}
+		}		
 	}
 }

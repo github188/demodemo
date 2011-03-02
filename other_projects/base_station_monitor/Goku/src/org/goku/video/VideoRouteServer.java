@@ -1,6 +1,7 @@
 package org.goku.video;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteRunningStatus;
 import org.goku.core.model.SystemLog;
@@ -222,12 +224,26 @@ public class VideoRouteServer {
 	} 
 	
 	public MonitorClientListener connectionListener = new AbstractMonitorListener(){
+		public void loginOK(final MonitorClientEvent event){
+			event.client.initMonitorClientStatus();
+			event.client.info.connectionStatus = "connected";
+			storage.save(event.client.info, new String[]{"connectionStatus"});
+		}
+		public void loginError(final MonitorClientEvent event){
+			event.client.info.connectionStatus = "error";
+			storage.save(event.client.info, new String[]{"connectionStatus"});
+			//触发一个登录错误的告警.
+			event.alarms = new ArrayList<AlarmDefine>();
+			event.alarms.add(AlarmDefine.alarm(AlarmDefine.AL_2002));
+			event.client.eventProxy.alarm(event);
+		}
+		
 		public void connected(final MonitorClientEvent event){
 			event.client.login(false);
 		}
 		public void timeout(final MonitorClientEvent event) {
 			//如果设备之前是处于连接状态。
-			if(event.client.getClientStatus() != null) { 
+			if(event.client.getClientStatus() != null) {
 				log.info("Try to reconnect timeout DVR:" + event.client.info.toString());
 				event.client.close();
 				try{
@@ -237,7 +253,13 @@ public class VideoRouteServer {
 				}
 			}else {
 				log.info("Timeout to connect DVR:" + event.client.info.toString());
+				event.client.info.connectionStatus = "timeout";
+				storage.save(event.client.info, new String[]{"connectionStatus"});	
 				
+				//触发一个超时的告警.
+				event.alarms = new ArrayList<AlarmDefine>();
+				event.alarms.add(AlarmDefine.alarm(AlarmDefine.AL_2001));
+				event.client.eventProxy.alarm(event);
 			}
 		}
 		

@@ -33,6 +33,10 @@ public class BaseStation  implements JSONStreamAware{
 	
 	/**
 	 * 基站的连接状态，
+     choices=(('connected', "连接成功"),
+             ('timeout', "连接超时"),
+             ('error', "登录错误"),
+             ('new', "新增"),
 	 */
 	public String connectionStatus = "01";
 	

@@ -263,9 +263,12 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(alarm == null){
 					response.getWriter().println("2:Not found alarm by uuid");
 				}else {
+					SystemLog.saveLog(SystemLog.ALARM_CONFIRM, userObj.name, alarm.uuid, "");
 					alarm.alarmStatus = this.getStringParam(request, "status", "1");
 					alarm.user = userObj.name;
 					alarm.comfirmTime = new Date(System.currentTimeMillis());
+					alarm.lastUpdateTime = new Date(System.currentTimeMillis());
+					//不用指定更新字段，因为对象是刚从数据库加载。而且记录不会在其他地方被修改。
 					server.storage.save(alarm);
 					response.getWriter().println("0:Alarm confirm$" + alarm.alarmStatus);
 				}

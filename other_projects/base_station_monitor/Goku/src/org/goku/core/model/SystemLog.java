@@ -21,6 +21,8 @@ public class SystemLog {
 	public static final String LOGIN_FAIL = "login_fail";
 	public static final String LOGOUT = "logout";
 	
+	public static final String ALARM_CONFIRM = "alarm_confirm";	
+	
 	public static final String NEW_ALARM = "alarm";
 	public static final String VIDEO_REPLAY = "video_replay";
 	public static final String VIDEO_RECORD_START = "video_record_start";
