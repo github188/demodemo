@@ -10,13 +10,13 @@ class BaseStationAdmin(admin.ModelAdmin):
     search_fields = ['uuid', 'locationId', ]
     
 class AlarmRecordAdmin(admin.ModelAdmin):
-    fields = ['base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'videoPath']
-    list_display = ('base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmStatus', 'user', 'videoPath')
+    fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'videoPath']
+    list_display = ('uuid', 'base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmLevel', 'alarmStatus', 'user', 'videoPath')
     list_filter = ['alarmCode', ]
 
 class UserAdmin(admin.ModelAdmin):
-    fields = ['name', 'display', 'password', ]
-    list_display = ('name', 'display', 'password', )
+    fields = ['name', 'display', 'password', 'status']
+    list_display = ('name', 'display', 'status', )
     search_fields = ['name', 'display', ]
 
 class UserGroupAdmin(admin.ModelAdmin):

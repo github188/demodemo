@@ -24,12 +24,12 @@ def app_root():
 
 
 def app_name(name):
-    names = {'Auth': "系统用户",
-             'Coreapp': "监控设备／告警",
-             'Sites': "网站设置",
-             'Sysparam': "系统参数",
+    names = {'auth': "系统用户",
+             'coreapp': "监控设备／告警",
+             'sites': "网站设置",
+             'sysparam': "系统参数",
              }
-    return names.get(name, name);
+    return names.get(name.lower(), name);
 
 app_root = register.simple_tag(app_root)
 app_name = register.simple_tag(app_name)

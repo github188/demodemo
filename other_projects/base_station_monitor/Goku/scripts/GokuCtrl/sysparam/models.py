@@ -5,6 +5,7 @@ class AlarmDefine(models.Model):
     class Meta:
         db_table = 'alarm_code_list'
         verbose_name_plural = '告警编码列表'
+        verbose_name = '告警编码'
         #app_label = 'sysparam'                 
         
     alarmCode = models.CharField(max_length=32, primary_key=True,
@@ -36,7 +37,7 @@ class BTSCategory(models.Model):
     class Meta:
         db_table = 'bts_category_code'
         verbose_name_plural = '端局类型编码表'
-        #app_label = '系统配置'
+        verbose_name = '端局类型编码'
         
     uuid = models.CharField(max_length=20, primary_key=True, verbose_name="类型编码")
     name = models.CharField(max_length=50, 

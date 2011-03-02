@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load adminmedia admin_list i18n %}
+{% load app_names %}
 
 {% block extrastyle %}
   {{ block.super }}
@@ -27,7 +28,7 @@
       </a>
        &rsaquo; 
        <a href="../">
-         {{ app_label|capfirst }}
+         {% app_name app_label %}
       </a>
       &rsaquo; 
       {{ cl.opts.verbose_name_plural|capfirst }}
