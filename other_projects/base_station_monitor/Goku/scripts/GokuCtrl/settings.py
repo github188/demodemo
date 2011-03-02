@@ -80,6 +80,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'GokuCtrl.coreapp',
+    'GokuCtrl.sysparam',
+    'GokuCtrl.sysuser',
     'doj'
 )
 

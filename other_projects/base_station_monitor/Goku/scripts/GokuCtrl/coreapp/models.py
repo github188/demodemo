@@ -37,21 +37,11 @@ class BaseStation(models.Model):
     createDate = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="创建时间")
     
     locationUUID = models.ForeignKey('Location', db_column='locationUUID', verbose_name="基站位置")
-    btsCategory = models.ForeignKey('BTSCategory', default='', db_column='btsCategory', verbose_name="端局类型")
+    btsCategory = models.ForeignKey('sysparam.BTSCategory', default='', db_column='btsCategory', verbose_name="端局类型")
 
     def __unicode__(self):
         return self.uuid        
 
-class BTSCategory(models.Model):
-    class Meta:
-        db_table = 'bts_category_code'
-        verbose_name_plural = '端局类型编码表'
-    uuid = models.CharField(max_length=20, primary_key=True, verbose_name="类型编码")
-    name = models.CharField(max_length=50, 
-                                verbose_name='类型名称',
-                                default='')
-    def __unicode__(self):
-        return "%s<%s>" % (self.name, self.uuid)
 
 # Create your models here.
 class User(models.Model):
@@ -108,24 +98,6 @@ class StationGroupRelation(models.Model):
 
     base_station = models.ForeignKey(BaseStation)
     user_group = models.ForeignKey(UserGroup)
-    
-class AlarmDefine(models.Model):
-    class Meta:
-        db_table = 'alarm_code_list'
-        verbose_name_plural = '告警编码列表'
-    alarmCode = models.CharField(max_length=32, primary_key=True, verbose_name="告警编码")
-    alarmName = models.CharField(max_length=50, verbose_name="告警名称")
-    alarmLevel = models.CharField(max_length=10, verbose_name="告警级别")
-    alarmCategory = models.CharField(max_length=10,
-                                     choices=(('1', "视频"),
-                                              ('2', "图片"),
-                                              ('3', "无视频/图片"),
-                                     ),                     
-                                     default='',
-                                     verbose_name="告警类型"
-                                     )  
-    def __unicode__(self):
-        return "%s<%s>" % (self.alarmName, self.alarmCode)        
 
 class AlarmRecord(models.Model):
     class Meta:
@@ -136,7 +108,7 @@ class AlarmRecord(models.Model):
 
     base_station = models.ForeignKey(BaseStation, db_column='base_station', verbose_name="基站")
     channelId = models.CharField(max_length=10, default='', verbose_name="告警通道")
-    alarmCode = models.ForeignKey(AlarmDefine, db_column='alarmCode',  verbose_name="告警名称", )
+    alarmCode = models.ForeignKey('sysparam.AlarmDefine', db_column='alarmCode',  verbose_name="告警名称", )
     
     alarmLevel = models.CharField(max_length=10, default='', verbose_name="告警级别")
     

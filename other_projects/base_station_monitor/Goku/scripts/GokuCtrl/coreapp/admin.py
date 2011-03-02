@@ -46,13 +46,9 @@ class LocationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'parent']
     list_display = ('uuid', 'name', 'parent')
     
-class AlarmDefineAdmin(admin.ModelAdmin):
-    fields = ['alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory']
-    list_display = ('alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory')    
-    
-class BTSCategoryAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'name']
-    list_display = ('uuid', 'name')       
+#class AlarmDefineAdmin(admin.ModelAdmin):
+#    fields = ['alarmName', 'alarmLevel', 'alarmCategory', 'reActiveTime']
+#    list_display = ('alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory', 'reActiveTime')    
 
 admin.site.register(Location, LocationAdmin)
 admin.site.register(BaseStation, BaseStationAdmin)
@@ -62,8 +58,7 @@ admin.site.register(UserGroup, UserGroupAdmin)
 admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
 admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
 admin.site.register(SystemLog, SystemLogAdmin)
-admin.site.register(AlarmDefine, AlarmDefineAdmin)
-admin.site.register(BTSCategory, BTSCategoryAdmin)
+#admin.site.register(AlarmDefine, AlarmDefineAdmin)
 
 
 

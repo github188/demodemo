@@ -1,5 +1,6 @@
 {% extends "admin/index.html" %} 
 {% load i18n %} 
+{% load app_names %} 
 
 {% if not is_popup %}
 
@@ -7,7 +8,7 @@
 <div class="breadcrumbs"><a href="../">
 {% trans "Home" %}</a> &rsaquo; 
 {% for app in app_list %}
-{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}
+{% app_name app.name %}
 {% endfor %}</div>{% endblock %}
 
 {% endif %} 
