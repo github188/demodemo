@@ -245,17 +245,17 @@ public class ODIPHandler {
 			
 			AlarmDefine alarm = null;
 			if((status & 1) == 0){ //外部报警
-				alarm = AlarmDefine.alarm(AlarmDefine.AL_001);
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_1001);
 				alarm.fillAlarmChannels(header.getInt(16));
 				alarms.add(alarm);
 			}
 			if((status & 2) == 0){ //视频丢失
-				alarm = AlarmDefine.alarm(AlarmDefine.AL_002);
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_1002);
 				alarm.fillAlarmChannels(header.getInt(20));
 				alarms.add(alarm);				
 			}
 			if((status & 4) == 0){ //动检报警
-				alarm = AlarmDefine.alarm(AlarmDefine.AL_003);
+				alarm = AlarmDefine.alarm(AlarmDefine.AL_1003);
 				alarm.fillAlarmChannels(header.getInt(24));
 				alarms.add(alarm);				
 			}

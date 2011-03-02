@@ -5,15 +5,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.goku.db.DataStorage;
+
 public class AlarmDefine implements Cloneable{
-	public static final String AL_001 = "001"; //外部报警
-	public static final String AL_002 = "002"; //视频丢失
-	public static final String AL_003 = "003"; //动态检测
+	public static final String ORM_TABLE = "alarm_code_list";
+	public static final String[] ORM_FIELDS = new String[]{"alarmCode", "alarmLevel",
+		"alarmName", "reActiveTime", "alarmCategory" };
+	public static final String[] ORM_PK_FIELDS = new String[]{"alarmCode"};
+	
+	//监控告警
+	public static final String AL_1001 = "1001"; //外部报警
+	public static final String AL_1002 = "1002"; //视频丢失
+	public static final String AL_1003 = "1003"; //动态检测
+	public static final String AL_1004 = "1004"; //硬盘错误
+
+	//设备状态
+	public static final String AL_2001 = "2001"; //连接超时
+	public static final String AL_2002 = "2002"; //认证错误	
+	public static final String AL_2003 = "2003"; //时间和服务器不同步	
+
+	//系统状态
+	public static final String AL_3001 = "3001"; //视频服务器超时
+	public static final String AL_3002 = "3002"; //视频服务负载过高
+	public static final String AL_3003 = "3003"; //视频存储错误
+	//public static final String AL_3004 = "3004"; //客户端和服务器时间不同步
+	
+	//系统交互
+	public static final String AL_4001 = "4001"; //刷新基站列表 --修改权限/基站信息/转发服务器等问题。 
 	
 	public String alarmCode = "";
 	public String alarmLevel = "1";
 	public String alarmName = "";	
+	
+	//'1', "视频"  '2', "图片"  '3', "无视频/图片"
 	public String alarmCategory = "1";
+	
+	//最小重新触发时间。单位分钟.
+	public long reActiveTime = 5;
 	
 	public boolean video = false;
 	
@@ -22,29 +50,56 @@ public class AlarmDefine implements Cloneable{
 	
 	public static Map<String, AlarmDefine> alarms = new HashMap<String, AlarmDefine>();
 	static{
-		alarms.put(AL_001, new AlarmDefine(AL_001, "外部报警", true));
-		alarms.put(AL_002, new AlarmDefine(AL_002, "视频丢失", false));
-		alarms.put(AL_003, new AlarmDefine(AL_003, "动态检测", true));
+		alarms.put(AL_1001, new AlarmDefine(AL_1001, "外部报警", "1"));
+		alarms.put(AL_1002, new AlarmDefine(AL_1002, "视频丢失", "3"));
+		alarms.put(AL_1003, new AlarmDefine(AL_1003, "动态检测", "1"));
+		alarms.put(AL_1004, new AlarmDefine(AL_1004, "硬盘丢失", "3", 60 * 24));
+		
+		alarms.put(AL_2001, new AlarmDefine(AL_2001, "连接超时", "3"));
+		alarms.put(AL_2002, new AlarmDefine(AL_2002, "认证错误", "3"));
+		alarms.put(AL_2003, new AlarmDefine(AL_2003, "时间和服务器不同步", "3"));
+		
+		alarms.put(AL_4001, new AlarmDefine(AL_4001, "刷新基站列表", "3"));
 	}
 	public static AlarmDefine alarm(String code){
 		AlarmDefine alarm = alarms.get(code);		
 		if(alarm == null){
-			alarm = new AlarmDefine(code, code, false);
+			alarm = new AlarmDefine(code, code, "3");
 		}else {
 			try {
 				alarm = (AlarmDefine) alarm.clone();
 			} catch (CloneNotSupportedException e) {
-				alarm = new AlarmDefine(code, code, false);
+				alarm = new AlarmDefine(code, code, "3");
 			}
 		}
 		return alarm;
 	}
 	
-	private AlarmDefine(String code, String name, boolean video){
+	/**
+	 * 从数据库中，加载告警定义，参数。如果数据库中不存在，把默认参数保存到系统。
+	 */
+	public static synchronized void initAlarmDefine(DataStorage storage){
+		AlarmDefine alarm = null;
+		for(String key: alarms.keySet()){
+			alarm = (AlarmDefine) storage.load(AlarmDefine.class, key);
+			if(alarm != null){
+				alarms.put(key, alarm);
+			}else {
+				storage.save(alarms.get(key));
+			}
+		}
+	}
+	
+	private AlarmDefine(String code, String name, String category){
 		this.alarmCode = code;
 		this.alarmName = name;
-		this.video = video;
+		this.alarmCategory = category;
 	}
+	
+	private AlarmDefine(String code, String name, String category, long reActive){
+		this(code, name, category);
+		this.reActiveTime = reActive;
+	}	
 	
 	public void fillAlarmChannels(int mask){
 		List<Integer> channels = new ArrayList<Integer>();

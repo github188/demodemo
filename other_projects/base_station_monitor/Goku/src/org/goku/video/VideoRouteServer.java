@@ -1,5 +1,6 @@
 package org.goku.video;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -221,29 +222,33 @@ public class VideoRouteServer {
 	} 
 	
 	public MonitorClientListener connectionListener = new AbstractMonitorListener(){
-		public void timeout(final MonitorClientEvent event) {	
+		public void connected(final MonitorClientEvent event){
+			event.client.login(false);
+		}
+		public void timeout(final MonitorClientEvent event) {
 			//如果设备之前是处于连接状态。
 			if(event.client.getClientStatus() != null) { 
 				log.info("Try to reconnect timeout DVR:" + event.client.info.toString());
-				threadPool.execute(new Runnable(){
-					@Override
-					public void run() {
-						event.client.close();
-						event.client.login(false);
-				}});
+				event.client.close();
+				try{
+					event.client.connect();
+				}catch(IOException e){
+					log.equals(e.toString());
+				}
 			}else {
 				log.info("Timeout to connect DVR:" + event.client.info.toString());
+				
 			}
 		}
 		
 		@Override
 		public void disconnected(final MonitorClientEvent event) {
 			log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
-			threadPool.execute(new Runnable(){
-				@Override
-				public void run() {
-					event.client.login(false);
-			}});			
+			try{
+				event.client.connect();
+			}catch(IOException e){
+				log.equals(e.toString());
+			}
 		}
 	};
 	
