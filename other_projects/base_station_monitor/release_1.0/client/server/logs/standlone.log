@@ -1,0 +1,145 @@
+2011-03-03 17:01:14.781 main [INFO] Starting master server...
+2011-03-03 17:01:14.781 main [INFO] init DB connection...
+2011-03-03 17:01:14.796 dummy [WARN] Loading DummayDataStorage, It's only used for development.
+2011-03-03 17:01:14.796 dummy [INFO] Loading db file:F:\Projects\Video\BTSMonitor\Install_File\OS32_SYSTEM\server\standlone.db
+2011-03-03 17:01:14.796 dummy [INFO] BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>
+2011-03-03 17:01:14.796 dummy [INFO] RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>
+2011-03-03 17:01:14.796 dummy [INFO] LO:<uuid>$<name>$<parent>
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:BS:1001$1$group1$192.168.1.67:9001:4
+2011-03-03 17:01:14.812 dummy [DEBUG] Bsinfo:1001
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:BS:1002$1$group1$192.168.1.68:9001:4
+2011-03-03 17:01:14.812 dummy [DEBUG] Bsinfo:1002
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:RE:10010001$0009.h264
+2011-03-03 17:01:14.812 dummy [DEBUG] Alarm:10010001
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:RE:10010002$0001.h264
+2011-03-03 17:01:14.812 dummy [DEBUG] Alarm:10010002
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:RE:10010003$0002.h264
+2011-03-03 17:01:14.812 dummy [DEBUG] Alarm:10010003
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:RE:10010004$0003.h264
+2011-03-03 17:01:14.812 dummy [DEBUG] Alarm:10010004
+2011-03-03 17:01:14.812 dummy [DEBUG] Read line:RE:10010005$0005.h264
+2011-03-03 17:01:14.812 dummy [DEBUG] Alarm:10010005
+2011-03-03 17:01:14.828 dummy [DEBUG] Read line:RE:10010006$0006.h264
+2011-03-03 17:01:14.828 dummy [DEBUG] Alarm:10010006
+2011-03-03 17:01:14.828 dummy [DEBUG] Read line:RE:10010007$0007.h264
+2011-03-03 17:01:14.828 dummy [DEBUG] Alarm:10010007
+2011-03-03 17:01:14.828 dummy [DEBUG] Read line:RE:10010008$0008.h264
+2011-03-03 17:01:14.843 dummy [DEBUG] Alarm:10010008
+2011-03-03 17:01:14.843 dummy [DEBUG] Read line:RE:10010009$0004.h264
+2011-03-03 17:01:14.843 dummy [DEBUG] Alarm:10010009
+2011-03-03 17:01:14.843 dummy [DEBUG] Read line:RE:10010000$0004.h264
+2011-03-03 17:01:14.859 dummy [DEBUG] Alarm:10010000
+2011-03-03 17:01:14.859 dummy [WARN] =================================================
+2011-03-03 17:01:14.859 dummy [WARN] --------User----------
+2011-03-03 17:01:14.875 dummy [INFO] name:test1, password:pass
+2011-03-03 17:01:14.875 dummy [WARN] --------BaseStation----------
+2011-03-03 17:01:14.875 dummy [INFO] name:1001, location:192.168.1.67:9001:4
+2011-03-03 17:01:14.875 dummy [INFO] name:1002, location:192.168.1.68:9001:4
+2011-03-03 17:01:14.875 dummy [WARN] --------Location----------
+2011-03-03 17:01:14.890 dummy [WARN] --------Alarm Record----------
+2011-03-03 17:01:14.890 dummy [INFO] uuid:10010001, videoPath:0009.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.890 dummy [INFO] uuid:10010002, videoPath:0001.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.906 dummy [INFO] uuid:10010003, videoPath:0002.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.906 dummy [INFO] uuid:10010004, videoPath:0003.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.921 dummy [INFO] uuid:10010005, videoPath:0005.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.921 dummy [INFO] uuid:10010006, videoPath:0006.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.937 dummy [INFO] uuid:10010007, videoPath:0007.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.937 dummy [INFO] uuid:10010008, videoPath:0008.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.953 dummy [INFO] uuid:10010009, videoPath:0004.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.953 dummy [INFO] uuid:10010000, videoPath:0004.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:14.968 dummy [WARN] =================================================
+2011-03-03 17:01:14.968 main [INFO] init thread pool, core thread count 5
+2011-03-03 17:01:15.281 route.manager [WARN] init route statistics path:F:\Projects\Video\BTSMonitor\Install_File\OS32_SYSTEM\server\logs\statistics
+2011-03-03 17:01:15.296 main [INFO] Start route server manager...
+2011-03-03 17:01:15.296 main [INFO] Start video record manager..
+2011-03-03 17:01:15.328 video.recorder [INFO] Video root path:F:\Projects\Video\BTSMonitor\Install_File\OS32_SYSTEM\server\data_path
+2011-03-03 17:01:15.687 main [INFO] Start http server at port 8080
+2011-03-03 17:01:15.703 main [INFO] The ChannelSelector is started..
+2011-03-03 17:01:15.828 main [INFO] Binding port 8000 for SimpleSocketServer
+2011-03-03 17:01:15.828 org.mortbay.log [INFO] Logging to org.slf4j.impl.Log4jLoggerAdapter(org.mortbay.log) via org.mortbay.log.Slf4jLog
+2011-03-03 17:01:15.906 http [INFO] Start http server at 8080
+2011-03-03 17:01:15.906 org.mortbay.log [INFO] jetty-6.1.x
+2011-03-03 17:01:15.968 org.mortbay.log [INFO] Started SocketConnector @ 0.0.0.0:8080
+2011-03-03 17:01:15.984 main [INFO] started http...
+2011-03-03 17:01:16.453 main [INFO] Starting video routing server...
+2011-03-03 17:01:16.453 main [INFO] Routing group name:group1
+2011-03-03 17:01:16.468 main [INFO] init DB connection...
+2011-03-03 17:01:16.468 dummy [WARN] Loading DummayDataStorage, It's only used for development.
+2011-03-03 17:01:16.468 dummy [INFO] Loading db file:F:\Projects\Video\BTSMonitor\Install_File\OS32_SYSTEM\server\standlone.db
+2011-03-03 17:01:16.484 dummy [INFO] BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>
+2011-03-03 17:01:16.484 dummy [INFO] RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>
+2011-03-03 17:01:16.500 dummy [INFO] LO:<uuid>$<name>$<parent>
+2011-03-03 17:01:16.500 dummy [DEBUG] Read line:BS:1001$1$group1$192.168.1.67:9001:4
+2011-03-03 17:01:16.500 dummy [DEBUG] Bsinfo:1001
+2011-03-03 17:01:16.515 dummy [DEBUG] Read line:BS:1002$1$group1$192.168.1.68:9001:4
+2011-03-03 17:01:16.515 dummy [DEBUG] Bsinfo:1002
+2011-03-03 17:01:16.515 dummy [DEBUG] Read line:RE:10010001$0009.h264
+2011-03-03 17:01:16.531 dummy [DEBUG] Alarm:10010001
+2011-03-03 17:01:16.531 dummy [DEBUG] Read line:RE:10010002$0001.h264
+2011-03-03 17:01:16.531 dummy [DEBUG] Alarm:10010002
+2011-03-03 17:01:16.531 dummy [DEBUG] Read line:RE:10010003$0002.h264
+2011-03-03 17:01:16.546 dummy [DEBUG] Alarm:10010003
+2011-03-03 17:01:16.546 dummy [DEBUG] Read line:RE:10010004$0003.h264
+2011-03-03 17:01:16.546 dummy [DEBUG] Alarm:10010004
+2011-03-03 17:01:16.546 dummy [DEBUG] Read line:RE:10010005$0005.h264
+2011-03-03 17:01:16.546 dummy [DEBUG] Alarm:10010005
+2011-03-03 17:01:16.562 dummy [DEBUG] Read line:RE:10010006$0006.h264
+2011-03-03 17:01:16.562 dummy [DEBUG] Alarm:10010006
+2011-03-03 17:01:16.562 dummy [DEBUG] Read line:RE:10010007$0007.h264
+2011-03-03 17:01:16.562 dummy [DEBUG] Alarm:10010007
+2011-03-03 17:01:16.578 dummy [DEBUG] Read line:RE:10010008$0008.h264
+2011-03-03 17:01:16.578 dummy [DEBUG] Alarm:10010008
+2011-03-03 17:01:16.578 dummy [DEBUG] Read line:RE:10010009$0004.h264
+2011-03-03 17:01:16.578 dummy [DEBUG] Alarm:10010009
+2011-03-03 17:01:16.593 dummy [DEBUG] Read line:RE:10010000$0004.h264
+2011-03-03 17:01:16.593 dummy [DEBUG] Alarm:10010000
+2011-03-03 17:01:16.593 dummy [WARN] =================================================
+2011-03-03 17:01:16.593 dummy [WARN] --------User----------
+2011-03-03 17:01:16.609 dummy [INFO] name:test1, password:pass
+2011-03-03 17:01:16.609 dummy [WARN] --------BaseStation----------
+2011-03-03 17:01:16.609 dummy [INFO] name:1001, location:192.168.1.67:9001:4
+2011-03-03 17:01:16.609 dummy [INFO] name:1002, location:192.168.1.68:9001:4
+2011-03-03 17:01:16.625 dummy [WARN] --------Location----------
+2011-03-03 17:01:16.625 dummy [WARN] --------Alarm Record----------
+2011-03-03 17:01:16.625 dummy [INFO] uuid:10010001, videoPath:0009.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.640 dummy [INFO] uuid:10010002, videoPath:0001.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.640 dummy [INFO] uuid:10010003, videoPath:0002.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.656 dummy [INFO] uuid:10010004, videoPath:0003.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.656 dummy [INFO] uuid:10010005, videoPath:0005.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.671 dummy [INFO] uuid:10010006, videoPath:0006.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.671 dummy [INFO] uuid:10010007, videoPath:0007.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.687 dummy [INFO] uuid:10010008, videoPath:0008.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.687 dummy [INFO] uuid:10010009, videoPath:0004.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.687 dummy [INFO] uuid:10010000, videoPath:0004.h264, alarm code:, BTS id:, level:1
+2011-03-03 17:01:16.703 dummy [WARN] =================================================
+2011-03-03 17:01:16.703 main [INFO] init thread pool, core thread count 10
+2011-03-03 17:01:16.718 main [INFO] Start video record manager..
+2011-03-03 17:01:16.718 main [INFO] The ChannelSelector is started..
+2011-03-03 17:01:16.718 video.recorder [INFO] Video root path:F:\Projects\Video\BTSMonitor\Install_File\OS32_SYSTEM\server\data_path
+2011-03-03 17:01:16.734 main [INFO] Record filename format:${yyyy}-${mm}/${UUID}-${ALARM_TYPE}-${USER}-${mm}${dd}-${HH}${MM}${SS}.${SSS}.h264
+2011-03-03 17:01:16.734 main [INFO] Check master server in running, url:http://127.0.0.1:8080/
+2011-03-03 17:01:16.750 SimpleHttpClient [DEBUG] Connect to http:127.0.0.1, port:8080
+2011-03-03 17:01:16.968 http [DEBUG] New http action:ping
+2011-03-03 17:01:16.968 main [INFO] Connected master server.
+2011-03-03 17:01:16.968 main [INFO] Starting alarm manager server...
+2011-03-03 17:01:16.984 main [INFO] Binding port 8001 for SimpleSocketServer
+2011-03-03 17:01:17.000 main [INFO] Start video proxy server, 9000->9100, timeout:300s.
+2011-03-03 17:01:17.000 main [INFO] Start http server at port 8081
+2011-03-03 17:01:17.000 http [INFO] Start http server at 8081
+2011-03-03 17:01:17.015 org.mortbay.log [INFO] jetty-6.1.x
+2011-03-03 17:01:17.015 org.mortbay.log [INFO] Started SocketConnector @ 0.0.0.0:8081
+2011-03-03 17:01:17.031 http [DEBUG] New http action:add_route
+2011-03-03 17:01:17.031 SimpleHttpClient [DEBUG] Connect to http:127.0.0.1, port:8081
+2011-03-03 17:01:17.046 http [DEBUG] New http action:ping
+2011-03-03 17:01:17.046 http [INFO] add route:127.0.0.1:8081, group:group1, socket:8001
+2011-03-03 17:01:17.046 route.manager [INFO] balance route group, name:group1
+2011-03-03 17:01:17.046 master.client [ERROR] Successfully register to master.
+2011-03-03 17:01:17.062 main [INFO] started http...
+2011-03-03 17:01:17.062 route.manager [INFO] active base station count:0
+2011-03-03 17:01:17.062 route.manager [WARN] dead station count:2
+2011-03-03 17:01:17.062 route.manager [INFO] balance route server, station count:2, route count:1, average:3
+2011-03-03 17:01:17.078 SimpleHttpClient [DEBUG] Connect to http:127.0.0.1, port:8081
+2011-03-03 17:01:17.078 http [DEBUG] New http action:add_bs
+2011-03-03 17:01:17.109 http [DEBUG] New http action:add_bs
+2011-03-03 17:01:17.109 main [INFO] connecting to 192.168.1.68:9001
+2011-03-03 17:01:17.125 main [INFO] connecting to 192.168.1.67:9001
