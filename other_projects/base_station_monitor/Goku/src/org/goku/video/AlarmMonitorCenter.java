@@ -129,11 +129,15 @@ public class AlarmMonitorCenter implements Runnable{
 			record.alarmLevel = alarm.alarmLevel;
 			record.alarmStatus = "1";
 			
-			if(preCheckAlarm(client, alarm, record)){				
+			/*
+			if(log.isDebugEnabled()){
+				log.debug("process alarm:" + alarm.toString() + ", client:" + client.toString() + ", channel:" + channel);
+			}*/
+			if(preCheckAlarm(client, alarm, record)){
 				DataStorage storage = VideoRouteServer.getInstance().storage;
 				record.generatePK();
 				storage.save(record);				
-				if(alarm.alarmCategory.equals("1")) {
+				if(alarm.alarmCategory.trim().equals("1")) {
 					//需要判断是否需要启动录像。
 					VideoRouteServer.getInstance().recordManager.startAlarmRecord(client, record);
 				}

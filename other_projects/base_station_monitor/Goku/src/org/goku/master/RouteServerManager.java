@@ -198,7 +198,9 @@ public class RouteServerManager implements Runnable {
 		for(Map<String, Object> info: xx){
 			RouteServer route = new RouteServer((String)info.get("routeServer"),
 												(String)info.get("groupName"));
-			servers.put(route.groupName, route);
+			if(route.ipAddress != null && !"".equals(route.ipAddress.trim())){
+				servers.put(route.groupName, route);
+			}
 		}
 	}
 }

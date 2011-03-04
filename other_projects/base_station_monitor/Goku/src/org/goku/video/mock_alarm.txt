@@ -6,10 +6,10 @@
 		基站编号：<input type="text" name="uuid" value="1001" /><br/>
 		通道号：<input type="text" name="ch" value="1" /><br/>
 		告警类型：<select name="code">
-					<option value="001">01外部</option>
-					<option value="002">02动态检测</option>
-					<option value="003">03视频丢失</option>
-					<option value="007">07硬盘坏</option>
+					<!-- <option value="001">01外部</option> -->
+					<option value="1002">1002视频丢失</option>
+					<option value="1003">1003动态检测</option>
+					<option value="1004">1004硬盘坏</option>
 				</select>
 				<br/>
 				<input type="submit" name="submit" value="submit" />

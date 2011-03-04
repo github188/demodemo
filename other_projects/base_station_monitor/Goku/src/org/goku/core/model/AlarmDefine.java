@@ -90,6 +90,9 @@ public class AlarmDefine implements Cloneable{
 		}
 	}
 	
+	public AlarmDefine(){		
+	}
+	
 	private AlarmDefine(String code, String name, String category){
 		this.alarmCode = code;
 		this.alarmName = name;

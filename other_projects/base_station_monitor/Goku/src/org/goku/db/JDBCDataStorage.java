@@ -273,7 +273,7 @@ public class JDBCDataStorage extends DataStorage {
 			fields = this.getORMFields(obj.getClass());
 		}
 		String sql = "update " + this.getTableName(obj.getClass()) +		
-		"set ";
+		" set ";
 		
 		for(int i = 0; i < fields.length -1; i++){
 			sql +=  fields[i] + "=" + this.getSQLValue(obj, fields[i]) + ",";
