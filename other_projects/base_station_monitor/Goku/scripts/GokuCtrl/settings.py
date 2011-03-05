@@ -1,5 +1,6 @@
 # Django settings for GokuCtrl project.
 
+import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -10,11 +11,11 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'goku'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'root'             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_NAME = os.environ.get("db_master_db", 'goku')      # Or path to database file if using sqlite3.
+DATABASE_USER = os.environ.get("db_master_username", 'root')             # Not used with sqlite3.
+DATABASE_PASSWORD = os.environ.get("db_master_password", '')          # Not used with sqlite3.
+DATABASE_HOST = os.environ.get("db_master_host", '')             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = os.environ.get("db_master_port", '')             # Set to empty string for default. Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

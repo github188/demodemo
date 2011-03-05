@@ -77,7 +77,7 @@ public class Main {
 				}
 			}
 		}.start();	
-		Thread.sleep(1000 * 2);
+		Thread.sleep(1000 * 4);
 		new Thread(){
 			public void run(){
 				try{

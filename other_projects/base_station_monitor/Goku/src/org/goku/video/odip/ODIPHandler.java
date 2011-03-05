@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
+import org.goku.socket.NIOSocketChannel;
 
 /**
  * 处理视频协议数据，
@@ -24,9 +25,9 @@ import org.goku.core.model.AlarmDefine;
  * 2.     <--- 0xB0     应答登录
  * 
  * 实时监控
- * 1. 0xf1 --->          请求实时视频
+ * 1. 0xf1 --->          请求实时视频  //建立认证关系。
  *         <--- 0xF1     ????协议中要求返回，抓包分析发现未返回。
- *    0x11 --->          请求媒体数据 ???什么场景使用 
+ *    0x11 --->          请求媒体数据 ???什么场景使用 //登录后使用
  * 4.      <--- 0xBC     视频数据
  * 
  * 设备信息查询：
@@ -36,7 +37,7 @@ import org.goku.core.model.AlarmDefine;
  *    0xA8 --->          ??? 什么应用场景
  *         <--- 0xB8
  * --- 配置参数
- *    0xA3 ---> 
+ *    0xA3 --->          
  *         
  * 告警查询：
  * 1. 0xA1 --->
@@ -57,41 +58,44 @@ public class ODIPHandler {
 	private int loginStatus = -2;
 	
 	private MonitorClient client = null;
+	private NIOSocketChannel socket = null;
+	//private SelectionHandler
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
 	private Map<Byte, Long> cmdDebug = new HashMap<Byte, Long>();
 	
-	public ODIPHandler(MonitorClient client){
+	public ODIPHandler(MonitorClient client, NIOSocketChannel socket){
 		this.client = client;
 		this.log = LogFactory.getLog("node." + client.info.uuid + ".odip");
 		this.resetBuffer();
+		this.socket = socket;
 	}
 	
 	public ByteBuffer getDataBuffer(){
 		return buffer;
 	}
 	
-	public void processData(MonitorClient client) throws IOException{
+	public void processData() throws IOException{
 		//this.buffer.flip();
 		
 		if(protoHeader.cmd == 0){
 			this.buffer.flip();
 			protoHeader.loadBuffer(this.buffer);
-			int extLen = this.protoHeader.externalLength;
+			int extLen = this.protoHeader.externalLength;			
 			if(log.isDebugEnabled()){
 				if(!cmdDebug.containsKey(protoHeader.cmd) ||
 				   System.currentTimeMillis() - cmdDebug.get(protoHeader.cmd) > 5000
 				  ){
 					cmdDebug.put(protoHeader.cmd, System.currentTimeMillis());
-					log.debug(String.format("Got cmd=0x%x, ext len=%s", 
-							protoHeader.cmd, extLen));
+					log.debug(String.format("Got cmd=0x%x, ext len=%s, Socket='%s'", 
+							protoHeader.cmd, extLen, this.socket.toString()));
 				}
 			}
 			
 			if(extLen > 0){
 				this.buffer.clear();
 				this.buffer.limit(extLen);
-				client.read(buffer);
+				socket.read(buffer);
 			}else {
 				buffer.limit(0);
 			}
@@ -164,7 +168,7 @@ public class ODIPHandler {
 		buffer.put(extra);
 		
 		buffer.flip();
-		client.write(buffer, false);
+		socket.write(buffer, false);
 		
 		log.info("Login to " + client.info.locationId);
 		
@@ -185,7 +189,31 @@ public class ODIPHandler {
 		}
 		
 	}
-	
+
+	/**
+	 * 0xf1
+	 * @param action 1--开始监控， 0--关闭监控。
+	 */
+	public void videoStreamAuth(int channelId){
+		if(this.client.getClientStatus() != null &&
+		   this.client.info.getChannel(channelId) != null){
+			//this.client.getClientStatus().sessionId
+			ByteBuffer buffer = ByteBuffer.allocate(64);
+			ProtocolHeader header = new ProtocolHeader();
+			header.cmd = ProtocolHeader.CMD_CONNECT;
+			header.externalLength = 0;
+			header.version = 0;
+			header.setInt(8, this.client.getClientStatus().sessionId);
+			header.setInt(12, 1);
+			header.setByte(13, (byte)channelId);
+			
+			header.mapToBuffer(buffer);			
+			buffer.position(32);
+			buffer.flip();
+			socket.write(buffer, false);
+			log.info("Connect to video:" + channelId + ", sid:" + this.client.getClientStatus().sessionId);
+		}
+	}
 	/**
 	 * 0x11
 	 * @param action 1--开始监控， 0--关闭监控。
@@ -193,7 +221,9 @@ public class ODIPHandler {
 	public void videoStreamControl(int action, int channelId, int mode){
 		if(this.client.getClientStatus() == null)
 			throw new UnsupportedOperationException("Can't connection before login.");
+		//this.videoStreamAuth(channelId);
 		
+		log.info("videoStreamControl:" + action + ", channel:" + channelId);
 		ByteBuffer buffer = ByteBuffer.allocate(64);
 		ProtocolHeader header = new ProtocolHeader();
 		header.cmd = ProtocolHeader.CMD_GET_VIDEO;
@@ -214,7 +244,7 @@ public class ODIPHandler {
 
 		buffer.position(32 + 16);
 		buffer.flip();
-		client.write(buffer, false);
+		socket.write(buffer, false);
 		
 		if(this.client.info.getChannel(channelId) != null){
 			this.client.info.getChannel(channelId).videoStatus(mode, action == Constant.CTRL_VIDEO_START);
@@ -235,7 +265,7 @@ public class ODIPHandler {
 
 		buffer.position(32);
 		buffer.flip();
-		client.write(buffer, false);
+		socket.write(buffer, false);
 	}
 	
 	public void ackAlarmStatus_B1(ProtocolHeader header, ByteBuffer buffer){

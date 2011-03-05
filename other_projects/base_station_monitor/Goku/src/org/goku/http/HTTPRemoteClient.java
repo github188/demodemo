@@ -42,7 +42,7 @@ public class HTTPRemoteClient {
 				return false;
 			}
 		} catch (IOException e) {
-			log.error("Failed to master server, ", e);
+			log.error("Failed to check master server, ", e);
 			return false;
 		}
 	}
@@ -83,9 +83,10 @@ public class HTTPRemoteClient {
 	 * @param host 转发服务器的名称。
 	 * @param port 转发服务器的HTTP接口端口。
 	 */
-	public void registerRoute(String host, int port, String group, String socketPort){
+	public boolean registerRoute(String host, int port, String group, String socketPort){
 		HttpResponse resp = null;
 		Map<String, String> para = new HashMap<String, String>();
+		boolean result = false;
 		try {
 			para.put("q", "add_route");
 			para.put("port", port + "");
@@ -98,9 +99,11 @@ public class HTTPRemoteClient {
 			}else {
 				log.error("Successfully register to master.");
 			}
+			result = true;
 		}catch(IOException e) {
 			log.error("Failed to register route, error:" + e.toString(), e);
 		}
+		return result;
 	}
 
 	/**

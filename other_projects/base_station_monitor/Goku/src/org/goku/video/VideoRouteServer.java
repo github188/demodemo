@@ -132,7 +132,17 @@ public class VideoRouteServer {
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
-				master.registerRoute("", httpPort, groupName, socketServer.listenPort + "");
+				for(int i = 0; i < 5; i++){
+					if(master.registerRoute("", httpPort, groupName, socketServer.listenPort + "")){
+						break;
+					}else {
+						log.info("Failed to connect master, try again 5 seconds later.");
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e1) {
+						}
+					}
+				}
 				log.info("started http...");	
 			}
 		});
@@ -167,7 +177,11 @@ public class VideoRouteServer {
 			this.threadPool.execute(new Runnable(){
 				@Override
 				public void run() {
-					client.login(false);
+					try {
+						client.connect();
+					} catch (IOException e) {
+						log.error(e.toString(), e);
+					}
 				}});
 			
 			return true;
@@ -266,11 +280,11 @@ public class VideoRouteServer {
 		@Override
 		public void disconnected(final MonitorClientEvent event) {
 			log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
-			try{
-				event.client.connect();
-			}catch(IOException e){
-				log.equals(e.toString());
-			}
+//			try{
+//				event.client.connect();
+//			}catch(IOException e){
+//				log.equals(e.toString());
+//			}
 		}
 	};
 	

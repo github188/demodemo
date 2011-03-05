@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
@@ -20,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.MonitorChannel;
 import org.goku.core.model.RouteRunningStatus;
+import org.goku.socket.ChannelHandler;
+import org.goku.socket.NIOSocketChannel;
 import org.goku.socket.SelectionHandler;
 import org.goku.socket.SocketManager;
 
@@ -27,7 +30,7 @@ import org.goku.socket.SocketManager;
  * 监控客户端，处理于摄像头的交互。
  * @author deon
  */
-public class MonitorClient implements Runnable, SelectionHandler{
+public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler, NIOSocketChannel{
 	public BaseStation info = null;
 	public Collection<MonitorClientListener> ls = Collections.synchronizedCollection(new ArrayList<MonitorClientListener>());
 	
@@ -49,6 +52,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	protected SocketChannel socketChannel = null;
 	protected SocketManager socketManager = null;
 	protected ClientStatus status = null;
+	protected VideoChannel videoChannel = null;
 	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
@@ -68,7 +72,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		this.route.start(this);
 
 		this.socketManager = socketManager;
-		this.handler = new ODIPHandler(this);		
+		this.handler = new ODIPHandler(this, this);		
 	}
 	
 	/** 
@@ -131,17 +135,41 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	}
 	
 	public void realPlay(int channel, int mode){
+		//log.info("realPlay..." + channel);
 		this.login(true);
 		if(this.getClientStatus() != null){
+			if(videoChannel == null){
+				connectVideoChannel();
+				//等待视频通道初始化成功。
+				synchronized(this.videoChannel){
+					try {
+						this.videoChannel.wait(5*1000);
+					} catch (InterruptedException e) {
+						log.warn("Time out to create video channel.");
+					}
+				}
+			}
 			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
 				log.warn("Not found chanel id:" + channel);
 			}else {
 				this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
-			}
+			}	
 		}else {
 			log.warn("Can't open real play in disconnected client.");
 		}		
+	}
+	
+	/**
+	 * 创建一个视频传输通道。
+	 */
+	public void connectVideoChannel(){
+		log.debug("Create video channel for " + this.toString());
+		videoChannel = new VideoChannel(this);		
+		String[] address = this.ipAddr.split(":");
+		videoChannel.socketChannel = this.socketManager.connect(address[0],
+								Integer.parseInt(address[1]),
+								videoChannel);
 	}
 	
 	public void openSound(){
@@ -159,7 +187,10 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	 * 初始化设备状态, 包括时间， 硬盘查询， 通道同步等。
 	 */	
 	public void initMonitorClientStatus(){
-		
+		/*
+		for(int i = 1; i < 5; i++){
+			this.handler.videoStreamAuth(i);
+		}*/		
 	}
 	
 	/**
@@ -176,7 +207,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	/**
 	 * 当视频接受端为空时调用。发送关闭视频流的命令。
 	 */
-	public void videoDestinationEmpty(int mode, int channel){
+	public void videoDestinationEmpty(int channel, int mode){
 		this.handler.videoStreamControl(CTRL_VIDEO_STOP, channel, mode);
 	}
 
@@ -259,6 +290,10 @@ public class MonitorClient implements Runnable, SelectionHandler{
 	public void setSelectionKey(SelectionKey key){
 		this.selectionKey = key;
 	}
+	
+	public void setSocketChannel(SelectableChannel channel){
+		this.socketChannel = (SocketChannel)channel;
+	} 
 	
 	/**
 	 * 有需要处理的事件时，Selector使用一个后台线程调用run方法，处理当前的事件。
@@ -348,7 +383,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 				break;
 			}else if(!buffer.hasRemaining()){
 				//如果当前缓冲区读满了，开始处理数据。
-				this.handler.processData(this);
+				this.handler.processData();
 			}else{	//缓冲区没有读满
 				break;
 			}
@@ -391,9 +426,9 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		}
 	}
 	
-	protected void write(ByteBuffer src, boolean sync) {
-		//log.debug("wirte to DVR:" + src.remaining());
+	public void write(ByteBuffer src, boolean sync) {
 		if(this.selectionKey == null || !this.selectionKey.isValid())return;
+		log.debug("wirte to DVR:" + src.remaining());
 		if(this.writeQueue.size() > 10){
 			//如果超过 1分钟 没有读到设备任何数据。设置超时。
 			if(System.currentTimeMillis() - this.runningStatus.lastReadTime > 60 * 1000){
@@ -473,6 +508,7 @@ public class MonitorClient implements Runnable, SelectionHandler{
 		this.eventProxy.disconnected(new MonitorClientEvent(this));
 	}
 	
-	//private InetSocketAddress get
-	//new InetSocketAddress("127.0.0.1", 8080)
+	public String toString(){
+		return "DVR " + this.info.uuid;
+	};
 }

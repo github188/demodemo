@@ -153,7 +153,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 		this.write(buffer, true);
 	}
 	
-	protected void write(ByteBuffer src, boolean sync) throws IOException{
+	public void write(ByteBuffer src, boolean sync) throws IOException{
 		if(log.isDebugEnabled() && 
 		   src.remaining() < 4096 //不写视频的日志，避免日志量太大了。
 		  ){ 

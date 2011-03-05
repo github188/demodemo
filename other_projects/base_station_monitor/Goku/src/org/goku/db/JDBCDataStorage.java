@@ -1,5 +1,7 @@
 package org.goku.db;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,7 +13,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
-import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
 import org.goku.settings.Settings;
@@ -68,7 +68,15 @@ public class JDBCDataStorage extends DataStorage {
 			DriverManager.getConnection(config[0][0], 
 					config[0][1],
 					config[0][2]).close();
+			URI host = new URI(config[0][0]);
+
+			System.setProperty("db_master_db", host.getPath());		
+			System.setProperty("db_master_host", host.getHost());
+			System.setProperty("db_master_port", host.getPort() + "");
+			System.setProperty("db_master_username", config[0][1]);
+			System.setProperty("db_master_password", config[0][2]);
 			isOk = true;
+		}catch (URISyntaxException e){
 		}catch (SQLException e) {
 			log.warn("Failed to connect master db, Error:" + e.toString());
 		}
