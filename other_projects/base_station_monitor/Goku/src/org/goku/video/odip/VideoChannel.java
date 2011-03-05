@@ -48,6 +48,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 						this.writeQueue.clear();
 						this.initVideoAuth();
 					}catch(IOException conn){
+						log.warn("Failed to create video channel:" + conn.toString());
 						this.socketChannel.close();
 						this.selectionKey.cancel();
 						this.client.videoChannel = null;

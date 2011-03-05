@@ -68,9 +68,9 @@ public class JDBCDataStorage extends DataStorage {
 			DriverManager.getConnection(config[0][0], 
 					config[0][1],
 					config[0][2]).close();
-			URI host = new URI(config[0][0]);
-
-			System.setProperty("db_master_db", host.getPath());		
+			URI host = new URI(config[0][0].split(":", 3)[2]);
+			System.setProperty("db_master_db", host.getPath().substring(1));	
+			log.info("Set db_master_db:" + System.getProperty("db_master_db"));
 			System.setProperty("db_master_host", host.getHost());
 			System.setProperty("db_master_port", host.getPort() + "");
 			System.setProperty("db_master_username", config[0][1]);
