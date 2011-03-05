@@ -135,7 +135,9 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	}
 	
 	public void realPlay(int channel, int mode){
-		//log.info("realPlay..." + channel);
+		if(log.isDebugEnabled()){
+			log.debug("realPlay:" + channel + ", mode:" + mode);
+		}
 		this.login(true);
 		if(this.getClientStatus() != null){
 			if(videoChannel == null){
