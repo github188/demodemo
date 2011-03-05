@@ -48,12 +48,16 @@ public class SimpleHTTPServer implements Runnable{
 
 	@Override
 	public void run() {
-		server = new Server();
+		server = new Server(httpPort);
+		/*
         SelectChannelConnector connector = new SelectChannelConnector();
         connector.setPort(httpPort);
         connector.setStatsOn(false);
         connector.setAcceptors(1);
-        server.addConnector(connector);
+        connector.set
+        */
+        
+        //server.addConnector(connector);
                 
         Collection<Handler> handlers = new ArrayList<Handler>();
         
