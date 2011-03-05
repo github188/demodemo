@@ -54,11 +54,11 @@ public class SimpleHTTPServer implements Runnable{
         connector.setPort(httpPort);
         connector.setStatsOn(false);
         connector.setAcceptors(1);
-        connector.set
-        */
+        //connector.setSoLingerTime(soLingerTime)
         
         //server.addConnector(connector);
-                
+         */
+		
         Collection<Handler> handlers = new ArrayList<Handler>();
         
         for(War app: webApps){
@@ -76,7 +76,7 @@ public class SimpleHTTPServer implements Runnable{
                 
         ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-        Context root = new Context(contexts,"/",Context.SESSIONS);
+        Context root = new Context(contexts,"/", Context.NO_SECURITY|Context.NO_SESSIONS);
         ServletHolder holder = new ServletHolder();
         try {
 			holder.setHeldClass(Class.forName(servlet));
