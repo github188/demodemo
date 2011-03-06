@@ -2,7 +2,7 @@ from django.contrib import admin
 from models import *
 
 class BaseStationAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'name', 'connectionStatus', 'groupName', 'locationId', 
+    fields = ['uuid', 'name', 'groupName', 'locationId', 'channels', 
               'devType', 'btsCategory', 'locationUUID' ]
     list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
               'alarmStatus', 'devType', 'btsCategory', 'lastActive')
@@ -46,6 +46,16 @@ class LocationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'parent']
     list_display = ('uuid', 'name', 'parent')
     
+class VideoTaskAdmin(admin.ModelAdmin):
+    fields = ["taskID", "userName", "windowID", "name", "uuid", "channel", 
+              "weekDays", "startTime", "endTime",
+              "minShowTime", "status", "showOrder", ]
+    list_display = ("taskID", "userName", "windowID", "name", "uuid", "channel", 
+                    "weekDays", "startTime", "endTime",
+                    "minShowTime", "status", "showOrder",)
+    order_by = ("userName", "windowID", "showOrder")
+    list_filter = ['userName', ]
+    
 #class AlarmDefineAdmin(admin.ModelAdmin):
 #    fields = ['alarmName', 'alarmLevel', 'alarmCategory', 'reActiveTime']
 #    list_display = ('alarmCode', 'alarmName', 'alarmLevel', 'alarmCategory', 'reActiveTime')    
@@ -58,6 +68,7 @@ admin.site.register(UserGroup, UserGroupAdmin)
 admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
 admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
 admin.site.register(SystemLog, SystemLogAdmin)
+admin.site.register(VideoTask, VideoTaskAdmin)
 #admin.site.register(AlarmDefine, AlarmDefineAdmin)
 
 

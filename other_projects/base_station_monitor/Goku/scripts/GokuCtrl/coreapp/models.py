@@ -31,7 +31,9 @@ class BaseStation(models.Model):
     locationId = models.CharField(max_length=50, default='', verbose_name="IP地址",
                                   help_text='例如：192.168.1.1:9001')
     alarmStatus = models.CharField(max_length=50, null=True, verbose_name="告警状态")
-    channels = models.CharField(max_length=150, null=True, verbose_name="通道列表")
+    channels = models.CharField(max_length=150, null=True, verbose_name="通道列表",
+                                help_text='可用的通道列表和名称，例如： 1:通道1,2:通道2'
+                                )
     
     devType = models.IntegerField(default=1,
                                   choices=((1, "视频"),
@@ -185,4 +187,46 @@ class Location(models.Model):
     parent = models.ForeignKey('Location', db_column='parent', blank=True, null=True, verbose_name="上级地名")
 
     def __unicode__(self):
-        return "%s<%s>" % (self.name, self.uuid)    
+        return "%s<%s>" % (self.name, self.uuid)
+    
+class VideoTask(models.Model):
+    class Meta:
+        db_table = 'video_task'
+        verbose_name_plural = '监控计划任务'
+        verbose_name = '计划任务'
+        
+    taskID = models.IntegerField(max_length=32, primary_key=True, verbose_name="计划ID")
+    name = models.CharField(max_length=50, default='', verbose_name="计划名称")
+    userName = models.CharField(max_length=50, default='', verbose_name="用户名")
+    status = models.CharField(max_length=4, default='', verbose_name="计划状态",
+                               choices=(('1', "运行状态"),
+                                        ('2', "暂停运行"),
+                                        ('9', "删除"),
+                                   ),
+                              )
+    startDate = models.CharField(max_length=16, default='', verbose_name="开始日期",
+                                 help_text='计划生效开始日期, 2010-10-11'
+                                 )
+    endDate = models.CharField(max_length=16, default='', verbose_name="结束日期",
+                               help_text='结束日期, 2010-10-11'
+                               )
+    weekDays = models.CharField(max_length=20, default='', verbose_name="星期",
+                                help_text='每周的星期几生效。例如：1,2,3,4'
+                                )
+    startTime = models.CharField(max_length=10, default='', verbose_name="开始时间",
+                                 help_text='任务开始执行时间,精确到分， 格式：08:30'
+                                 )
+    endTime = models.CharField(max_length=10, default='', verbose_name="结束时间",
+                                 help_text='任务结束的时间， 格式：09:30'
+                               )
+    uuid = models.CharField(max_length=12, default='', verbose_name="基站ID")
+    channel = models.CharField(max_length=5, default='', verbose_name="视频通道")
+    windowID = models.IntegerField(default=0, verbose_name="显示窗口")
+    minShowTime = models.CharField(max_length=8, default='10', verbose_name="最短时间",
+                                   help_text='当多个视频同时在一个窗口显示时，当前任务最少需要显示多长时间。单位：秒')
+    showOrder = models.IntegerField(default=0, verbose_name="显示排序")
+    
+
+    def __unicode__(self):
+        return "%s<%s>" % (self.name, self.uuid)
+        
