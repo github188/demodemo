@@ -1,13 +1,32 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from models import *
 
+from GokuCtrl.sysparam.models import AlarmDefine 
+
+from django import forms
+class BaseStationForm(forms.ModelForm):
+    class Meta:
+        model = BaseStation
+    supportAlarms = forms.ModelMultipleChoiceField(label='告警列表', required=False,
+                                                  queryset= AlarmDefine.objects.all(), 
+                                                  widget=forms.CheckboxSelectMultiple)
+    #forms.ModelForm.
+    
+
 class BaseStationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'groupName', 'locationId', 'channels', 
-              'devType', 'btsCategory', 'locationUUID' ]
+              'devType', 'btsCategory', 'locationUUID', 'supportAlarms' ]
     list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
               'alarmStatus', 'devType', 'btsCategory', 'lastActive')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
     search_fields = ['uuid', 'locationId', ]
+    form = BaseStationForm
+    
+    def save_model(self, request, obj, form, change):
+        obj.supportAlarm = ",".join(form.data.getlist('supportAlarms'));
+        super(BaseStationAdmin, self).save_model(request, obj, form, change)  
+        
     
 class AlarmRecordAdmin(admin.ModelAdmin):
     fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'videoPath']
