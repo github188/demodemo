@@ -11,9 +11,11 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -36,6 +38,7 @@ import org.goku.core.model.RouteServer;
 import org.goku.core.model.SimpleCache;
 import org.goku.core.model.SystemLog;
 import org.goku.core.model.User;
+import org.goku.core.model.VideoTask;
 import org.goku.db.QueryParameter;
 import org.goku.db.QueryResult;
 import org.goku.http.BaseRouteServlet;
@@ -52,7 +55,9 @@ public class MasterServerServlet extends BaseRouteServlet{
 	
 	public void init(ServletConfig config){
 		server = MasterVideoServer.getInstance();
-		cache.set("test", new User(), 60 * 30);
+		User u = new User();
+		u.name = "test";
+		cache.set("test", u, 60 * 30);
 	}
 
 	public void replay(HttpServletRequest request,
@@ -137,7 +142,139 @@ public class MasterServerServlet extends BaseRouteServlet{
 	public void help_doc(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		static_serve("org/goku/master/statics/help_doc.txt", TEXT, response);
+	}
+	
+	public void new_password(HttpServletRequest request,
+			HttpServletResponse response)throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);		
+		String oldPassword = this.getStringParam(request, "old", null);
+		String newPassword = this.getStringParam(request, "new", null);
+		
+		if(sid == null || oldPassword == null || newPassword == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else if(!userObj.password.equals(oldPassword)) {
+				response.getWriter().println("2:Old password error");
+			}else {
+				userObj.password = newPassword;
+				server.storage.save(userObj, new String[]{"password"});
+				response.getWriter().println("0:ok");
+			}
+		}		
 	}	
+	
+	public void list_task(HttpServletRequest request,
+			HttpServletResponse response)throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		
+		if(sid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				Collection<VideoTask> list = server.storage.listTask(userObj);
+				response.getWriter().println("0:Video task list$" + list.size());
+				outputVideoTask(list, response.getWriter());
+				response.getWriter().println("");
+			}
+		}		
+	}
+	
+	private void outputVideoTask(Collection<VideoTask> list, PrintWriter writer){
+		VideoTask task = null;
+		String data = null;
+		//"<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>"
+		String[] attrs = new String[]{
+				"taskID", "name", "uuid", "channel", "windowID", "startDate", "endDate", "weekDays", "startTime",  
+				"endTime",  "minShowTime", "showOrder", "status"};
+
+		for(Iterator<VideoTask> iter = list.iterator(); iter.hasNext();){
+			task = iter.next();
+			Object val = null;
+			data = "";
+			for(String attr: attrs){
+				val = null;
+				try{
+					val = VideoTask.class.getField(attr).get(task);
+				}catch(Exception e){
+				}
+				val = val == null || val.toString().trim().equals("") ? "0": val;
+				if(data.length() > 0){data += "$";};
+				data += val.toString();				
+			}
+			writer.println(data);
+		}
+		writer.println();		
+		
+	}
+	
+	public void save_task(HttpServletRequest request,
+			HttpServletResponse response)throws ServletException, IOException {
+		//"<taskID>$<name>$<uuid>:<channel>$<windowID>$<startDate>$<endDate>$<startTime>$<weekDays>$<endTime>$<minShowTime>$<showOrder>$<status>"
+		String sid = this.getStringParam(request, "sid", null);
+		
+		if(sid == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				saveOrCreateTask(request, userObj.name);
+				response.getWriter().println("0:Save OK");
+				response.getWriter().println("");
+			}
+		}
+	}
+	
+	private void saveOrCreateTask(HttpServletRequest request, String userName){
+		int taskId = this.getIntParam(request, "taskID", 0);
+		VideoTask task = null;
+		Collection<String> updated = new ArrayList<String>();
+		if(taskId != 0){
+			task = (VideoTask)server.storage.load(VideoTask.class, taskId + "");
+		}
+		if(task == null){
+			task = VideoTask.newDefault(server.storage, userName);
+		}else if(this.getIntParam(request, "status", 0) == 9) {
+			try {
+				server.storage.execute_sql("delete from video_task where taskID=${0}", 
+						new Integer[]{taskId});
+			} catch (SQLException e) {
+				log.error(e.toString(), e);
+			}
+			return;
+		}
+		if(!task.userName.equals(userName)) {
+			log.warn("Task id:" + task.taskID + ", username:" + task.userName);
+			return;
+		}
+		String[] attrs = new String[]{
+				"name", "uuid", "channel", "windowID", "startDate", "endDate", "weekDays", "startTime",  
+				"endTime",  "minShowTime", "showOrder", "status"};
+		String val = null;
+		for(String attr: attrs){
+			val = this.getStringParam(request, attr, null);
+			if(val == null)continue;
+			try{
+				if(attr.equals("showOrder") || attr.equals("windowID")){
+					task.getClass().getField(attr).set(task, new Integer(val));
+				}else {
+					task.getClass().getField(attr).set(task, val);
+				}
+			}catch(Exception e){
+				log.warn(String.format("Set Attribute error, taskId: %s, %s->%s",
+						task.taskID, 
+						attr, val));
+			}
+		}
+		server.storage.save(task, updated.toArray(new String[]{}));		
+	}
 	
 	/**
 	 * 返回基站列表 

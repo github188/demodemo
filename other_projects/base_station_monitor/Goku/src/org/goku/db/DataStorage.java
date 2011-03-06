@@ -10,6 +10,7 @@ import org.goku.core.model.BaseStation;
 import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
+import org.goku.core.model.VideoTask;
 import org.goku.settings.Settings;
 
 /**
@@ -63,7 +64,15 @@ public abstract class DataStorage {
 	 * @param user
 	 * @return
 	 */
-	public abstract Collection<BaseStation> listStation(User user);	
+	public abstract Collection<BaseStation> listStation(User user);
+
+	/**
+	 * 根据用户取到用户相关的计划任务。
+	 * @param user
+	 * @return
+	 */
+	public abstract Collection<VideoTask> listTask(User user);	
+	
 	
 	/**
 	 * 取到RouteServer下面的基站列表。

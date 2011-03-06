@@ -22,10 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
+import org.goku.core.model.VideoTask;
 import org.goku.settings.Settings;
 
 /**
  * 数据库操作的封装。有点饶，低估了实现ORM的复杂性。
+ * ***已实现一个简单的连接池****
  * @author deon
  */
 public class JDBCDataStorage extends DataStorage {
@@ -573,4 +575,11 @@ public class JDBCDataStorage extends DataStorage {
 		return result;
 	}
 
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Collection<VideoTask> listTask(User user) {
+		Collection result = this.list(VideoTask.class, "userName=${0} order by windowID, showOrder",
+				new String[]{user.name});
+		return result;
+	}
 }

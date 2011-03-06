@@ -14,3 +14,8 @@ LO:1001$滨江区$100
 LO:1002$萧山区$100
 LO:10010$信诚路口$1001
 LO:10020$萧山机场$1002
+
+#TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>
+TS:1$test1$1001$1$1$0$0$0$08:30$08:32$10$1$1
+TS:2$test2$1002$1$1$0$0$0$08:31$08:31$10$1$2
+TS:3$test3$1001$2$2$0$0$1,2,3,4$08:32$11:23$3$1$1

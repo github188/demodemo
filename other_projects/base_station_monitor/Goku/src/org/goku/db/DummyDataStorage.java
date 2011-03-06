@@ -20,6 +20,7 @@ import org.goku.core.model.BaseStation;
 import org.goku.core.model.Location;
 import org.goku.core.model.RouteServer;
 import org.goku.core.model.User;
+import org.goku.core.model.VideoTask;
 import org.goku.settings.Settings;
 
 /**
@@ -64,6 +65,11 @@ public class DummyDataStorage extends DataStorage {
 				Location uu = (Location)o;
 				if(uu.uuid.equals(pk)) return uu;
 			}
+		}else if(cls.equals(VideoTask.class)){
+			for(Object o: objList){
+				VideoTask uu = (VideoTask)o;
+				if(uu.taskID == Integer.parseInt(pk)) return uu;
+			}
 		}
 		
 		return null;
@@ -82,6 +88,11 @@ public class DummyDataStorage extends DataStorage {
 				}else {
 					log.info("Failed to save AlarmRecord, uuid:" + ((AlarmRecord)obj).uuid);
 				}
+			}
+		}else{
+			Collection<Object> objList = objects.get(obj.getClass());
+			if(objList != null && !objList.contains(obj)){
+				objList.add(obj);
 			}
 		}
 		return false;
@@ -138,6 +149,14 @@ public class DummyDataStorage extends DataStorage {
 					", level:" + uu.getLevel());
 		}
 		
+		log.warn("--------Task Record----------");
+		objList = objects.get(VideoTask.class);
+		for(Object o: objList){
+			VideoTask uu = (VideoTask)o;
+			log.info("uuid:" + uu.taskID + ", win:" + uu.windowID + ", uuid:" + uu.uuid + 
+					", channel:" + uu.channel);
+		}
+		
 		log.warn("=================================================");
 		return true;
 	}
@@ -146,10 +165,12 @@ public class DummyDataStorage extends DataStorage {
 		Collection<Object> bsList = new Vector<Object>();
 		Collection<Object> alarmList = new Vector<Object>();
 		Collection<Object> localList = new Vector<Object>();
+		Collection<Object> taskList = new Vector<Object>();
 		
 		objects.put(BaseStation.class, bsList);
 		objects.put(AlarmRecord.class, alarmList);
 		objects.put(Location.class, localList);
+		objects.put(VideoTask.class, taskList);
 		
 		File file = new File("standlone.db");
 		if(file.isFile()){
@@ -157,6 +178,7 @@ public class DummyDataStorage extends DataStorage {
 			log.info("BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>$<name>");
 			log.info("RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>");
 			log.info("LO:<uuid>$<name>$<parent>");
+			log.info("TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>");
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				
@@ -219,6 +241,24 @@ public class DummyDataStorage extends DataStorage {
 							local.parent = bsinfo[2];
 						}
 						localList.add(local);						
+					}else if(line.startsWith("TS:")){
+						line = line.split(":", 2)[1];
+						VideoTask task = new VideoTask();
+						task.userName = "test";
+						String[] attrs = new String[]{
+								"taskID", "name", "uuid", "channel", "windowID", "startDate", "endDate", "weekDays", "startTime",  
+								"endTime",  "minShowTime", "showOrder", "status"};
+						String[] val = line.split("\\$");
+						for(int i = 0; i < Math.max(attrs.length, val.length); i++){
+							if(attrs[i].equals("taskID") || 
+							   attrs[i].equals("showOrder") || 
+							   attrs[i].equals("windowID")){
+								VideoTask.class.getField(attrs[i]).set(task, new Integer(val[i]));
+							}else {
+								VideoTask.class.getField(attrs[i]).set(task, val[i]);
+							}
+						}
+						taskList.add(task);
 					}
 				}
 			} catch (Exception e) {
@@ -286,6 +326,13 @@ public class DummyDataStorage extends DataStorage {
 		result.count = result.data.size();
 		
 		return result;
+	}
+
+	@Override
+	public Collection<VideoTask> listTask(User user) {
+		// TODO Auto-generated method stub
+		Collection list = objects.get(VideoTask.class);
+		return list;
 	}
 
 	/*
