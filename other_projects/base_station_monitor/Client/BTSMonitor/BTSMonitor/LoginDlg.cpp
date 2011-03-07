@@ -64,6 +64,16 @@ void CLoginDlg::OnBnClickedOk()
 		pApp->alarmStr.Empty();
 		pApp->pgkclient->listbtstree(pApp->btsTotalStr);
 		//pApp->pgkclient->getAlarmStr(pApp->alarmStr);
+		//CString category="1";
+		//CString uuid="10011";
+		//CString startDate="";
+		//CString startTime="";
+		//CString type="";
+		//CString level="";
+		//CString limit="";
+		//CString offset="";
+		//pApp->pgkclient->queryAlarmInfo(category, uuid, startDate, startTime, type,
+		//				level, limit, offset, pApp->alarmStr);
 		OnOK();
 	}
 	else

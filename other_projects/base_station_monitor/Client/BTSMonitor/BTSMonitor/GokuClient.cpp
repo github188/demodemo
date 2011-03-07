@@ -93,6 +93,47 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 	}
 }
 
+void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDate, CString startTime,
+				CString type, CString level, CString limit, CString offset, CString &qalarmStr)
+{
+	qalarmStr.Empty();
+	buffer.Empty();
+	buffer.Append("cmd>list_al?");
+	buffer.Append("c=");
+	buffer.Append(category);
+	buffer.Append("&uuid=");
+	buffer.Append(uuid);
+	buffer.Append("&startTime=");
+	buffer.Append(startDate);
+	if(startDate!="")
+	{
+		buffer.Append(" ");
+		buffer.Append(startTime);
+	}
+	buffer.Append("&type=");
+	buffer.Append(type);
+	buffer.Append("&level=");
+	buffer.Append(level);
+	buffer.Append("&limit=");
+	buffer.Append(limit);
+	buffer.Append("&offset=");
+	buffer.Append(offset);
+	buffer.Append("\n");
+	socket->write_wstring(buffer);
+
+	socket->readline(cmd_msg);
+	CString temp;
+	int pos=util::split_next(cmd_msg, temp, '$', 0);
+	util::split_next(cmd_msg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	for(int i=0;i<linenum;i++)
+	{
+		socket->readline(cmd_msg);
+		qalarmStr.Append(cmd_msg);
+		qalarmStr.Append("\n");
+	}
+}
+
 void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 {
 	alarmStr.Empty();

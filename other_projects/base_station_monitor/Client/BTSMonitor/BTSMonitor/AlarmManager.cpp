@@ -7,7 +7,6 @@ CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr)
 	int ileft=0, iright=0;
 	CString alarmline;
 
-
 	//clear old data
 	AlarmInfo* pAlarmTemp=NULL;
 	POSITION pos = curNewAlarmList.GetHeadPosition();

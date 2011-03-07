@@ -22,7 +22,7 @@ int util::split_next(const CString &src, CString &des, char ch, int start)
 }
 
 int util::str2int(const CString src){
-	int ret=atoi(src);
+	int ret=_tstoi(src);
 	return ret;
 }
 

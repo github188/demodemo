@@ -33,6 +33,8 @@ public:
 
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
+	void queryAlarmInfo(CString category, CString uuid, CString startDate, CString startTime,
+				CString type, CString level, CString limit, CString offset, CString &qalarmStr);
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
 	
