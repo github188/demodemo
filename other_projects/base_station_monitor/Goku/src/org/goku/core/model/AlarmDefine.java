@@ -10,7 +10,7 @@ import org.goku.db.DataStorage;
 public class AlarmDefine implements Cloneable{
 	public static final String ORM_TABLE = "alarm_code_list";
 	public static final String[] ORM_FIELDS = new String[]{"alarmCode", "alarmLevel",
-		"alarmName", "reActiveTime", "alarmCategory" };
+		"alarmName", "reActiveTime", "alarmCategory", "alarmStatus", "alarmDesc" };
 	public static final String[] ORM_PK_FIELDS = new String[]{"alarmCode"};
 	
 	//监控告警
@@ -42,6 +42,14 @@ public class AlarmDefine implements Cloneable{
 	
 	//最小重新触发时间。单位分钟.
 	public long reActiveTime = 5;
+
+	//'1', "全局告警", '2', "策略告警", '3', "禁用告警"
+	public String alarmStatus = "1";
+
+	//最小重新触发时间。单位分钟.
+	public String alarmDesc = "";
+	
+	//alarmStatus
 	
 	public boolean video = false;
 	
@@ -50,16 +58,16 @@ public class AlarmDefine implements Cloneable{
 	
 	public static Map<String, AlarmDefine> alarms = new HashMap<String, AlarmDefine>();
 	static{
-		alarms.put(AL_1001, new AlarmDefine(AL_1001, "外部报警", "1"));
-		alarms.put(AL_1002, new AlarmDefine(AL_1002, "视频丢失", "3"));
-		alarms.put(AL_1003, new AlarmDefine(AL_1003, "动态检测", "1"));
-		alarms.put(AL_1004, new AlarmDefine(AL_1004, "硬盘丢失", "3", 60 * 24));
+		add(new AlarmDefine(AL_1001, "外部报警", "1", 5, "2", ""));
+		add(new AlarmDefine(AL_1002, "视频丢失", "3",  5, "2", ""));
+		add(new AlarmDefine(AL_1003, "动态检测", "1", 5, "2", ""));
+		add(new AlarmDefine(AL_1004, "硬盘丢失", "3", 60 * 24, "1", ""));
 		
-		alarms.put(AL_2001, new AlarmDefine(AL_2001, "连接超时", "3"));
-		alarms.put(AL_2002, new AlarmDefine(AL_2002, "认证错误", "3"));
-		alarms.put(AL_2003, new AlarmDefine(AL_2003, "时间和服务器不同步", "3"));
+		add(new AlarmDefine(AL_2001, "连接超时", "3", 5, "1", ""));
+		add(new AlarmDefine(AL_2002, "认证错误", "3", 5, "1", ""));
+		add(new AlarmDefine(AL_2003, "时间和服务器不同步","3", 5, "1", ""));
 		
-		alarms.put(AL_4001, new AlarmDefine(AL_4001, "刷新基站列表", "3"));
+		add(new AlarmDefine(AL_4001, "刷新基站列表", "3", 5, "1", ""));
 	}
 	public static AlarmDefine alarm(String code){
 		AlarmDefine alarm = alarms.get(code);		
@@ -90,6 +98,10 @@ public class AlarmDefine implements Cloneable{
 		}
 	}
 	
+	public static void add(AlarmDefine alarm){
+		alarms.put(alarm.alarmCode, alarm);
+	}
+	
 	public AlarmDefine(){		
 	}
 	
@@ -99,9 +111,11 @@ public class AlarmDefine implements Cloneable{
 		this.alarmCategory = category;
 	}
 	
-	private AlarmDefine(String code, String name, String category, long reActive){
+	private AlarmDefine(String code, String name, String category, long reActive, String status, String desc){
 		this(code, name, category);
 		this.reActiveTime = reActive;
+		this.alarmStatus = status;
+		this.alarmDesc = desc;
 	}	
 	
 	public void fillAlarmChannels(int mask){
