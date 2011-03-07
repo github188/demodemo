@@ -48,9 +48,10 @@ class BaseStation(models.Model):
     
     locationUUID = models.ForeignKey('Location', db_column='locationUUID', verbose_name="基站位置")
     btsCategory = models.ForeignKey('sysparam.BTSCategory', default='', db_column='btsCategory', verbose_name="端局类型")
-    supportAlarm = models.CharField(max_length=50, default='', verbose_name="告警策略",
+    supportAlarm = models.CharField(max_length=150, default='', verbose_name="告警策略",
                                     help_text='基站实现的告警。'
                                     )
+    #supportAlarm = models.ManyToManyField('sysparam.AlarmDefine', verbose_name="告警策略")
     
     def _get_supportAlarms(self,):
         from GokuCtrl.sysparam.models import AlarmDefine

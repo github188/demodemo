@@ -5,27 +5,74 @@ from models import *
 from GokuCtrl.sysparam.models import AlarmDefine 
 
 from django import forms
+
+class MultipleAlarmCodeField(forms.ModelMultipleChoiceField):
+    def clean(self, value):
+        if self.required and not value:
+            raise ValidationError(self.error_messages['required'])
+        elif not self.required and not value:
+            return []
+        if not isinstance(value, (list, tuple)):
+            raise ValidationError(self.error_messages['list'])
+        return ",".join(value)
+    
+class SingleCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    def render(self, name, value, attrs=None, choices=()):
+        from itertools import chain
+        from django.utils.encoding import force_unicode
+        from django.utils.safestring import mark_safe
+        from django.utils.html import escape, conditional_escape
+        if value is None: 
+            value = []
+        else:            
+            value = value.split(",") 
+            
+        has_id = attrs and 'id' in attrs
+        final_attrs = self.build_attrs(attrs, name=name)
+        output = [u'<div style="display:block;">']
+        # Normalize to strings
+        str_values = set([force_unicode(v) for v in value])
+        for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
+            i = i+1
+            # If an ID attribute was given, add a numeric index as a suffix,
+            # so that the checkboxes don't all have the same ID attribute.
+            if has_id:
+                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                label_for = u' for="%s"' % final_attrs['id']
+            else:
+                label_for = ''
+
+            cb = forms.CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            option_value = force_unicode(option_value)
+            rendered_cb = cb.render(name, option_value)
+            option_label = conditional_escape(force_unicode(option_label))
+            output.append(u'<label%s>%s %s</label>&nbsp;&nbsp;' % (label_for, rendered_cb, option_label))
+        output.append(u'</div>')
+        return mark_safe(u'\n'.join(output))            
+        #return super(SingleCheckboxSelectMultiple, self).render(name, value, attrs, choices)
+
 class BaseStationForm(forms.ModelForm):
     class Meta:
         model = BaseStation
-    supportAlarms = forms.ModelMultipleChoiceField(label='告警列表', required=False,
-                                                  queryset= AlarmDefine.objects.all(), 
-                                                  widget=forms.CheckboxSelectMultiple)
+        #forms.m
+    supportAlarm = MultipleAlarmCodeField(label='告警列表', required=False,
+                                          queryset= AlarmDefine.objects.filter(alarmStatus='2'), 
+                                          widget=SingleCheckboxSelectMultiple)
     #forms.ModelForm.
     
 
 class BaseStationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'groupName', 'locationId', 'channels', 
-              'devType', 'btsCategory', 'locationUUID', 'supportAlarms' ]
+              'devType', 'btsCategory', 'locationUUID', 'supportAlarm' ]
     list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
-              'alarmStatus', 'devType', 'btsCategory', 'lastActive')
+                    'alarmStatus', 'devType', 'btsCategory', 'lastActive')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
     search_fields = ['uuid', 'locationId', ]
     form = BaseStationForm
     
-    def save_model(self, request, obj, form, change):
-        obj.supportAlarm = ",".join(form.data.getlist('supportAlarms'));
-        super(BaseStationAdmin, self).save_model(request, obj, form, change)  
+#    def save_model(self, request, obj, form, change):
+#        obj.supportAlarm = ",".join(form.data.getlist('supportAlarms'));
+#        super(BaseStationAdmin, self).save_model(request, obj, form, change)  
         
     
 class AlarmRecordAdmin(admin.ModelAdmin):

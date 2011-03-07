@@ -9,7 +9,7 @@ class AlarmDefine(models.Model):
         #app_label = 'sysparam'                 
         
     alarmCode = models.CharField(max_length=32, primary_key=True,
-                                 editable=False, 
+                                 #editable=False, 
                                  verbose_name="告警编码",
                                  help_text='告警编码，由系统定义不能修改。'
                                  )
@@ -19,7 +19,7 @@ class AlarmDefine(models.Model):
     alarmLevel = models.CharField(max_length=10, verbose_name="告警级别",
                                   help_text='1-5, 数值越大，告警越严重。',
                                   )
-    alarmCategory = models.CharField(max_length=10,
+    alarmCategory = models.CharField(max_length=4,
                                      choices=(('1', "视频"),
                                               ('2', "图片"),
                                               ('3', "无视频/图片"),
@@ -27,11 +27,24 @@ class AlarmDefine(models.Model):
                                      default='',
                                      verbose_name="告警类型"
                                      )
+    alarmStatus = models.CharField(max_length=4,
+                                     choices=(('1', "全局告警"),
+                                              ('2', "策略告警"),
+                                              ('3', "禁用告警"),
+                                     ),
+                                     default='2',
+                                     verbose_name="告警类型",
+                                     help_text='全局告警-所有设备都启用; 策略告警-需要设备定义后生效; 禁用告警-在所有设备中禁用.'
+                                     )    
     reActiveTime = models.IntegerField(default=5, verbose_name="间隔时间",
                                        help_text='告警重复激活的最短时间，单位：分钟. 间隔内的告警将忽略。')
     
+    alarmDesc = models.TextField(verbose_name="告警描述", blank=True)
+    
+    
     def __unicode__(self):
-        return "%s<%s>" % (self.alarmName, self.alarmCode)
+        #return "%s<%s>" % (self.alarmName, self.alarmCode)
+        return "%s" % (self.alarmName, )
 
 class BTSCategory(models.Model):
     class Meta:
