@@ -41,7 +41,7 @@ public class UploadFile extends BaseServlet{
     		String user = request.getParameter("user");
     		String dir = request.getParameter("dir");
     		String path = request.getParameter("path"); 
-    		    		
+    		String client = request.getRemoteAddr().replace('.', '_');
     		try {
 				FileItemIterator iter = upload.getItemIterator(request);
 				while (iter.hasNext()) {
@@ -56,12 +56,14 @@ public class UploadFile extends BaseServlet{
 				    		path = Streams.asString(stream);
 				    	}
 				    	stream.close();
-				    } else {
-				        processUploadedFile(item, getArchivePath(user, dir, path));
+				    } else if(!item.getName().equals("")) {
+				        processUploadedFile(item, getArchivePath(user, dir, path), client);
+				        //request.setAttribute("message", "Update ok!");
 				        response.setHeader("upload_status", "ok");
 				    }
 				}
-			} catch (FileUploadException e) {
+			} catch (Exception e) {
+				//request.setAttribute("message", "Failed to uploading file, error:" + e.toString());
 				response.setHeader("upload_status", e.toString());
 				log.error(e.toString(), e);
 			}
@@ -71,7 +73,7 @@ public class UploadFile extends BaseServlet{
     	doGet(request, response);
     }
     
-    protected void processUploadedFile(FileItemStream item, String path) throws IOException{
+    protected void processUploadedFile(FileItemStream item, String path, String client) throws IOException{
     	path += "/" + item.getName();
     	int size = 0;
     	try{
@@ -84,7 +86,7 @@ public class UploadFile extends BaseServlet{
     	//Content-Length
     	InputStream ins = item.openStream();
     	HDFSArchiver.getArchiver().archiveFile(path, 
-    			ins, size);
+    			ins, size, client);
     	ins.close();
     }
     

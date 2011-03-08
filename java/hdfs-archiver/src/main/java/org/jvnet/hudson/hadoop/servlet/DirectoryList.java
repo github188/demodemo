@@ -54,6 +54,9 @@ public class DirectoryList extends BaseServlet{
     		this.viewZipFile(path, request, response);
     	}else if(isQuery(request, path)){
     		showDirectoryList(path, request, response);
+    	}else if(request.getParameter("remove") != null){
+    		HDFSArchiver.getArchiver().removeFile(path);
+    		response.sendRedirect(HDFSArchiver.getArchiver().prefix);
     	}else {
     		serveFile(path, request, response);
     	}
@@ -118,7 +121,12 @@ public class DirectoryList extends BaseServlet{
     	
     	GridFSDBFile file = HDFSArchiver.getArchiver().getFile(path);
     	if(file != null){
-    		String content = file.getContentType();
+    		String content = null;
+    		if(request.getParameter("download") == null){
+    			content = file.getContentType();
+    		}else {
+    			content = "application/octet-stream";
+    		}
     		if(content == null){
     			content = getContentType(path);
     		}

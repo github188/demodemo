@@ -43,6 +43,8 @@ public class DistributeLockService extends BaseServlet {
 		if(request.getParameter("ajax") != null || request.getHeader("ajax") != null){
 			response.getWriter().write(lock != null && lock.isLocked? "ok": "failed");
 		}else {
+	    	response.setContentType("text/html");
+	    	response.setCharacterEncoding("utf8");			
 			Map<String, Object> context = new HashMap<String, Object>();
 			context.put("locks", this.activeLockList());
 			context.put("lock", lock);

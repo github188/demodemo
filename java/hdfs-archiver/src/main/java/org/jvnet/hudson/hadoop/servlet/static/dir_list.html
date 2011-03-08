@@ -10,6 +10,7 @@
 			<th>File Name</th>
 			<th style="width:100px;">Size</th>
 			<th style="width:200px;">Upload Date</th>
+			<th style="width:200px;">Action</th>
 		</tr>
 		<c:for var="item" items="${fileList}">
 			<tr>
@@ -23,10 +24,13 @@
 				</td>
 				<td>${item.length}</td>
 				<td>${item.uploadDate}</td>
+				<td><a href="${prefix}${item.filename}?remove=Y">Remove</a>  
+				<a href="${prefix}${item.filename}?download=Y">Download</a>
+				</td>
 			</tr>
 		</c:for>
 		<c:else>
-			<tr><td colspan="3">Not found file '${path}'</td>			
+			<tr><td colspan="4">Not found file '${path}'</td>			
 			</tr>
 		</c:else>
 	</table>
