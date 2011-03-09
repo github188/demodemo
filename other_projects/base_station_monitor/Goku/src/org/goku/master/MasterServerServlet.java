@@ -735,13 +735,15 @@ public class MasterServerServlet extends BaseRouteServlet{
 		out.println(String.format("0:alarm list$%s$%s$%s", result.count, result.data.size(), result.sessionId));
 		AlarmRecord alarm = null;
 		String data = null;
-		String endTime = "";
+		String endTime = "", startTime = "";
 		for(Iterator iter = result.data.iterator(); iter.hasNext();){
 			alarm = (AlarmRecord)iter.next();
 			endTime = alarm.endTime != null ? format.format(alarm.endTime) : "0";
+			startTime = alarm.startTime != null ? format.format(alarm.startTime) : "0";
 			data = String.format("%s$%s$%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarm.alarmCode, alarm.getChannelId(),
 					alarm.alarmStatus, alarm.getLevel(),
-					format.format(alarm.startTime),
+					//format.format(alarm.startTime),
+					startTime,
 					endTime,
 					alarm.alarmCategory, 
 					"001"
