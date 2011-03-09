@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.goku.db.DataStorage;
 import org.goku.http.HTTPRemoteClient;
+import org.mortbay.log.Log;
 
 /**
  * 转发服务器。
@@ -66,6 +67,7 @@ public class RouteServer {
 	 * @param pool
 	 */
 	public void balanceBaseStation(int max, Collection<BaseStation> pool, DataStorage storage){
+		//Log.info("xxx...........");
 		if(this.clients.size() > max){
 			Iterator<BaseStation> iter = this.clients.iterator();
 			for(int i = this.clients.size() - max; i > 0 && iter.hasNext(); i--){
@@ -83,6 +85,7 @@ public class RouteServer {
 			Iterator<BaseStation> iter = pool.iterator();
 			for(int i = max - this.clients.size(); i > 0 && iter.hasNext(); i--){
 				BaseStation bs = iter.next();
+				//Log.info("xxx..........." + bs.toString());
 				if(this.http.addBaseStaion(bs)){
 					bs.routeServer = this.ipAddress;
 					this.clients.add(bs);
@@ -142,5 +145,9 @@ public class RouteServer {
 			}
 		}
 		return "";
-	}	
+	}
+	
+	public String toString(){
+		return this.ipAddress;
+	}
 }

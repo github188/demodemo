@@ -167,24 +167,27 @@ public class VideoRouteServer {
 	public boolean addMonitorClient(String uuid){
 		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
 		if(station != null && station.devType == 1){
-			final MonitorClient client = new MonitorClient(station, 
-													 new VideoRoute(threadPool),
-													 socketManager);
-			this.clients.put(uuid, client);
-			this.alarmManager.addClient(client);
-			
-			client.addListener(this.connectionListener);
-			//开始连接设备。
-			this.threadPool.execute(new Runnable(){
-				@Override
-				public void run() {
-					try {
-						client.connect();
-					} catch (IOException e) {
-						log.error(e.toString(), e);
-					}
-				}});
-			
+			if(!this.clients.containsKey(uuid)){
+				final MonitorClient client = new MonitorClient(station, 
+														 new VideoRoute(threadPool),
+														 socketManager);
+				this.clients.put(uuid, client);
+				this.alarmManager.addClient(client);
+				
+				client.addListener(this.connectionListener);
+				//开始连接设备。
+				this.threadPool.execute(new Runnable(){
+					@Override
+					public void run() {
+						try {
+							client.connect();
+						} catch (IOException e) {
+							log.error(e.toString(), e);
+						}
+					}});
+			}else {
+				log.info("The Client aready in current route, uuid:" + uuid);
+			}			
 			return true;
 		}else if(station == null){
 			log.warn("Not found base station by uuid '" + uuid + "'");			
@@ -199,9 +202,13 @@ public class VideoRouteServer {
 	 * @param client
 	 */
 	public void removeMonitorClient(MonitorClient client){
-		this.alarmManager.removeClient(client);
-		this.clients.remove(client.info.uuid);
-		client.close();
+		if(this.clients.containsKey(client.info.uuid)){
+			this.alarmManager.removeClient(client);
+			this.clients.remove(client.info.uuid);
+			client.close();
+		}else {
+			log.warn("Not found client in current route, uuid:" + client.info.uuid);
+		}
 	}
 	
 	

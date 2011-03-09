@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -12,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -59,6 +59,7 @@ public class RouteServerManager implements Runnable {
 		}, 100, expiredTime);
 		
 		this.restoreRoute();
+		checkAllRouteServer();
 	}
 	
 	public RouteServer getRouteReserver(String ipaddr){
@@ -66,18 +67,19 @@ public class RouteServerManager implements Runnable {
 	}
 	
 	public RouteServer addRouteServer(final String ipaddr, final String group){
-		RouteServer route = null;
-		route = servers.get(ipaddr);
-		if(route == null){
-			route = new RouteServer(ipaddr, group);
-			servers.put(ipaddr, route);
-			executor.execute(new Runnable(){
-				@Override
-				public void run() {
-					balanceGroup(group);
-			}});
-		}
-		route.groupName = group;
+		final RouteServer route = new RouteServer(ipaddr, group);
+		servers.put(ipaddr.trim(), route);
+		
+		route.setBaseStationList(new ArrayList<BaseStation>());
+		executor.execute(new Runnable(){
+			@Override
+			public void run() {
+				log.info("Recovering route:" + route.toString());
+				route.balanceBaseStation(Integer.MAX_VALUE, 
+						storage.listStation(route), 
+						storage);
+				balanceGroup(group);
+		}});
 		
 		return route;
 	}
@@ -114,17 +116,20 @@ public class RouteServerManager implements Runnable {
 	 * @param groupName
 	 */
 	protected synchronized void balanceGroup(String groupName){
-		TreeSet<RouteServer> routeList = new TreeSet<RouteServer>();
+		Collection<RouteServer> routeList = new ArrayList<RouteServer>();
 		
-		log.info("balance route group, name:" + groupName);		
+		log.info("balance route group, name:" + groupName);
 		int count = 0;
 		
 		//更新组内所有服务的状态。
-		for(RouteServer s: servers.values()){
-			if(s.groupName.equals(groupName)){
-				s.setBaseStationList(storage.listStation(s));
-				count += s.listBaseStation().size();
-				routeList.add(s);
+		RouteServer route = null;
+		for(String key: servers.keySet()){
+			route = servers.get(key);
+			if(route != null && route.groupName.equals(groupName)){
+				log.info("Route:" + route.toString() + ", key:" + key);
+				route.setBaseStationList(storage.listStation(route));
+				count += route.listBaseStation().size();
+				routeList.add(route);
 			}
 		}
 		
@@ -143,8 +148,8 @@ public class RouteServerManager implements Runnable {
 			}
 			/**
 			 * 如果最后还存在没有被监控的终端，全部放到最后一个路由。
-			 */
-			routeList.last().balanceBaseStation(Integer.MAX_VALUE, bsPool, storage);
+			 */			
+			routeList.iterator().next().balanceBaseStation(Integer.MAX_VALUE, bsPool, storage);
 		}else {
 			log.info("Not found any route server for group " + groupName);
 		}
@@ -153,6 +158,7 @@ public class RouteServerManager implements Runnable {
 	protected void checkAllRouteServer(){
 		//log.info("check All RouteServer...");
 		for(RouteServer s: servers.values()){
+			//log.info("xxx.......");
 			if(s.ping()){
 				s.lastActive = System.currentTimeMillis();
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status OK!");
@@ -197,7 +203,7 @@ public class RouteServerManager implements Runnable {
 	}
 	
 	/**
-	 * 恢复数据库中，存在的路由服务器，让后做一次调度。
+	 * 恢复数据库中，存在的路由服务器。
 	 */
 	protected void restoreRoute(){
 		String routeList = "select routeServer, groupName from base_station " +
@@ -208,7 +214,7 @@ public class RouteServerManager implements Runnable {
 			RouteServer route = new RouteServer((String)info.get("routeServer"),
 												(String)info.get("groupName"));
 			if(route.ipAddress != null && !"".equals(route.ipAddress.trim())){
-				servers.put(route.groupName, route);
+				servers.put(route.ipAddress.trim(), route);
 			}
 		}
 	}

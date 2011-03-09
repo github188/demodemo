@@ -430,6 +430,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	
 	public void write(ByteBuffer src, boolean sync) {
 		if(this.selectionKey == null || !this.selectionKey.isValid())return;
+		if(!this.socketChannel.isConnected()) return;
 		log.debug("wirte to DVR:" + src.remaining());
 		if(this.writeQueue.size() > 10){
 			//如果超过 1分钟 没有读到设备任何数据。设置超时。

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -114,8 +115,35 @@ public class AlarmMonitorCenter implements Runnable{
 		 * @param channel
 		 * @return
 		 */
-		private boolean preCheckAlarm(MonitorClient client, AlarmDefine alarm, AlarmRecord channel){
-			return true;
+		private boolean preCheckAlarm(MonitorClient client, AlarmDefine alarm, AlarmRecord record){
+			boolean active = false;
+			if(alarm.isGlobal() ||
+			   (alarm.isCustomize() && client.info.isSupport(alarm.alarmCode))
+			  ){
+				DataStorage storage = VideoRouteServer.getInstance().storage;
+				//检查最短触发时间。
+				Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
+				//
+				String sql = "select count(*) as have_row from alarm_record where " +
+								"startTime > ${0} and baseStation = ${1} and channelId= ${2} " +
+								"and alarmCode = ${3}";
+				
+				Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
+						record.baseStation,
+						record.channelId,
+						record.alarmCode});
+				int rowCount = (Integer)xx.iterator().next().get("have_row");
+				
+				//如果没有找到告警，当前告警有效。
+				active = rowCount == 0;
+				if(!active){
+					log.debug("Duplicated alarm:"+ alarm.toString() + ", client:" + client.toString() + ", channel:" + record.channelId);
+				}
+			}else if(alarm.isCustomize()){
+				log.debug("Not support alarm:"+ alarm.toString() + ", client:" + client.toString());
+			}
+			
+			return active;
 		}
 		
 		private void processAlarm(MonitorClient client, AlarmDefine alarm, int channel){
@@ -142,6 +170,6 @@ public class AlarmMonitorCenter implements Runnable{
 					VideoRouteServer.getInstance().recordManager.startAlarmRecord(client, record);
 				}
 			}
-		}		
+		}
 	}
 }

@@ -171,7 +171,7 @@ class AlarmRecord(models.Model):
         
     uuid = models.CharField(max_length=32, primary_key=True, verbose_name="告警ID")
 
-    base_station = models.ForeignKey(BaseStation, db_column='base_station', verbose_name="基站")
+    base_station = models.ForeignKey(BaseStation, db_column='baseStation', verbose_name="基站")
     channelId = models.CharField(max_length=10, default='', verbose_name="告警通道")
     alarmCode = models.ForeignKey('sysparam.AlarmDefine', db_column='alarmCode',  verbose_name="告警名称", )
     
@@ -195,8 +195,8 @@ class AlarmRecord(models.Model):
                                        ),                                   
                                    default='1',
                                    verbose_name="告警状态")    
-    user = models.CharField(max_length=20, default='', verbose_name="确认人员")
-    videoPath = models.CharField(max_length=1024, default='', blank=True, verbose_name="保存路径")
+    user = models.CharField(max_length=20, default='', null=True, verbose_name="确认人员")
+    videoPath = models.CharField(max_length=1024, default='', blank=True, null=True, verbose_name="保存路径")
     startTime = models.DateTimeField(verbose_name='开始时间', null=True)
     endTime = models.DateTimeField(verbose_name='结束时间', null=True)
     lastUpdateTime = models.DateTimeField(verbose_name='最后更新时间', auto_now=True, editable=False, null=True)

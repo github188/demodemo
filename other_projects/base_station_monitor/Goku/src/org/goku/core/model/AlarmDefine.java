@@ -118,6 +118,14 @@ public class AlarmDefine implements Cloneable{
 		this.alarmDesc = desc;
 	}	
 	
+	public boolean isGlobal(){
+		return this.alarmStatus != null && this.alarmStatus.trim().equals("1");
+	}	
+	
+	public boolean isCustomize(){
+		return this.alarmStatus != null && this.alarmStatus.trim().equals("2");
+	}
+	
 	public void fillAlarmChannels(int mask){
 		List<Integer> channels = new ArrayList<Integer>();
 		for(int i = 0; i < 32; i++){

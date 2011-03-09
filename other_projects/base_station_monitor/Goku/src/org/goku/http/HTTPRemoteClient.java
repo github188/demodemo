@@ -42,7 +42,7 @@ public class HTTPRemoteClient {
 				return false;
 			}
 		} catch (IOException e) {
-			log.error("Failed to check master server, ", e);
+			//log.error("Failed to check master server, ", e);
 			return false;
 		}
 	}
@@ -97,7 +97,7 @@ public class HTTPRemoteClient {
 			if(!text.startsWith("0:")){
 				log.error("Failed to register route, return:" + text);
 			}else {
-				log.error("Successfully register to master.");
+				log.info("Successfully register to master.");
 			}
 			result = true;
 		}catch(IOException e) {

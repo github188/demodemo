@@ -3,6 +3,7 @@ package org.goku.core.model;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ public class BaseStation  implements JSONStreamAware{
 		"lastUpdate", "lastActive", "createDate",
 		"alarmStatus",
 		"devType",
-		"channels", "btsCategory", "locationUUID"};
+		"channels", "btsCategory", "locationUUID", "supportAlarm"};
 	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
 	
 	public static final int TYPE_VIDEO = 1;
@@ -100,7 +101,13 @@ public class BaseStation  implements JSONStreamAware{
 	 */	
 	public String locationUUID;
 	
+	/**
+	 * 支持的告警列表。
+	 */
+	public String supportAlarm;
+	
 	private MonitorChannel[] channelList = null;
+	private Collection<String> supportAlarmList = null;
 	
 	//public 
 	
@@ -145,6 +152,22 @@ public class BaseStation  implements JSONStreamAware{
 			}
 		}
 		return temp.toArray(new MonitorChannel[]{});
+	}
+	
+	public boolean isSupport(String code){
+		if (supportAlarmList == null){
+			supportAlarmList = new ArrayList<String>();
+			if(this.supportAlarm != null){
+				for(String s : supportAlarm.split(",")){
+					if(s.trim().length() > 0){
+						this.supportAlarmList.add(s.trim());
+					}
+				}
+			}
+		}
+		if(code == null || !"".equals(code.trim()))return false;
+		
+		return supportAlarmList.contains(code.trim());
 	}
 	
 	private void initChannelList(){
