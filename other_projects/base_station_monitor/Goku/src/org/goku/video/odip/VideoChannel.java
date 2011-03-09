@@ -54,9 +54,6 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 						this.selectionKey.cancel();
 						this.client.videoChannel = null;
 					}
-					synchronized(socketChannel){
-						this.socketChannel.notifyAll();
-					}
 				}else if(this.selectionKey.isReadable()){
 					this.read(socketChannel);
 					if(this.selectionKey.isValid()){
@@ -140,6 +137,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 
 			ByteBuffer buffer = this.writeQueue.peek();
 			while(buffer != null){
+				log.debug("wirte to DVR Video channel:" + buffer.remaining());
 				this.socketChannel.write(buffer);
 				if(buffer.hasRemaining()){
 					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
@@ -152,11 +150,15 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 			}
 			this.writeQueue.notifyAll();
 		}
+		//让MonitorClient 开始发11指令时，视频连接肯定已创建成功。
+		synchronized(socketChannel){
+			this.socketChannel.notifyAll();
+		}		
 	}	
 	
 	public void write(ByteBuffer src, boolean sync) {
 		if(this.selectionKey == null || !this.selectionKey.isValid())return;
-		log.debug("wirte to DVR Video channel:" + src.remaining());
+		//log.debug("wirte to DVR Video channel:" + src.remaining());
 		if(this.writeQueue.size() > 10){
 			try {
 				this.closeSocketChannel();

@@ -132,7 +132,10 @@ public class AlarmMonitorCenter implements Runnable{
 						record.baseStation,
 						record.channelId,
 						record.alarmCode});
-				int rowCount = (Integer)xx.iterator().next().get("have_row");
+				int rowCount = 0;
+				if(xx.size() > 0){
+					rowCount = (Integer)xx.iterator().next().get("have_row");
+				}
 				
 				//如果没有找到告警，当前告警有效。
 				active = rowCount == 0;

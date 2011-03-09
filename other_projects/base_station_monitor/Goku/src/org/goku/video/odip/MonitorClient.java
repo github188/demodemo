@@ -169,7 +169,8 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 		log.debug("Create video channel for " + this.toString());
 		videoChannel = new VideoChannel(this);		
 		String[] address = this.ipAddr.split(":");
-		videoChannel.socketChannel = this.socketManager.connect(address[0],
+		//videoChannel.socketChannel = 
+		this.socketManager.connect(address[0],
 								Integer.parseInt(address[1]),
 								videoChannel);
 	}
@@ -414,6 +415,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 
 			ByteBuffer buffer = this.writeQueue.peek();
 			while(buffer != null){
+				log.debug("wirte to DVR:" + buffer.remaining());
 				this.socketChannel.write(buffer);
 				if(buffer.hasRemaining()){
 					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
@@ -431,7 +433,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	public void write(ByteBuffer src, boolean sync) {
 		if(this.selectionKey == null || !this.selectionKey.isValid())return;
 		if(!this.socketChannel.isConnected()) return;
-		log.debug("wirte to DVR:" + src.remaining());
+		//log.debug("wirte to DVR:" + src.remaining());
 		if(this.writeQueue.size() > 10){
 			//如果超过 1分钟 没有读到设备任何数据。设置超时。
 			if(System.currentTimeMillis() - this.runningStatus.lastReadTime > 60 * 1000){

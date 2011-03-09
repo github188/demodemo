@@ -6,6 +6,7 @@ RE:10013$test02.h264$13$1001$1$2
 
 # BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>
 BS:1001$1$group1$192.168.1.156:9001$1:通道1,2:通道2$10010$诺西大楼
+#BS:1001$1$group1$hzluming.3322.org:9001$1:通道1,2:通道2$10010$诺西大楼
 BS:1002$1$group1$192.168.1.67:9001$1:通道1,2:通道2$10020$国內出发
 
 # LO:<uuid>$<name>$<parent>

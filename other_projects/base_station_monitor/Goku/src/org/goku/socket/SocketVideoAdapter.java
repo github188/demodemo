@@ -68,12 +68,16 @@ public class SocketVideoAdapter {
 				try{
 					channel = Integer.parseInt(ch);
 				}catch(Exception e){};
-				client.socket.socket().setSendBufferSize(1024 * 100);
-				mc.route.addDestination(new SocketVideoPlayer(client, channel));
-				
-				//向设备发送视频请求。
-				mc.realPlay(channel);
-				client.connectionMode = SocketClient.MODE_REALLPLY;
+				if(channel > 0 && channel <= 4){
+					client.socket.socket().setSendBufferSize(1024 * 100);
+					mc.route.addDestination(new SocketVideoPlayer(client, channel));
+					
+					//向设备发送视频请求。
+					mc.realPlay(channel);
+					client.connectionMode = SocketClient.MODE_REALLPLY;
+				}else {
+					client.closeSocket();
+				}
 			}else {
 				client.closeSocket();
 			}
