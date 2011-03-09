@@ -544,7 +544,7 @@ public class JDBCDataStorage extends DataStorage {
 	
 	public QueryResult queryData(Class obj, QueryParameter param){		
 		String countSQL = "select count(*) as have_row from " + this.getTableName(obj);
-		String filter = "";
+		String filter = "1=1";
 		
 		String field, op;
 		for(String k: param.param.keySet()){
