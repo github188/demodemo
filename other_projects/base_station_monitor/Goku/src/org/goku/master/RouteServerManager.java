@@ -47,6 +47,8 @@ public class RouteServerManager implements Runnable {
 	
 	@Override
 	public void run() {
+		this.restoreRoute();
+
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -56,10 +58,7 @@ public class RouteServerManager implements Runnable {
 					log.error(e);
 				}
 			}
-		}, 100, expiredTime);
-		
-		this.restoreRoute();
-		checkAllRouteServer();
+		}, 100, expiredTime);		
 	}
 	
 	public RouteServer getRouteReserver(String ipaddr){
