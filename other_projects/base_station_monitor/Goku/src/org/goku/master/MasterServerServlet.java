@@ -706,6 +706,13 @@ public class MasterServerServlet extends BaseRouteServlet{
 		routeAddr = routeAddr == null || "".equals(routeAddr.trim()) 
 					? "0": routeAddr;
 		
+		/**
+		 * 用于在外网测试的时候，做地址转换。比如在外网通过NAT访问，在服务器上注册的地址
+		 * 是192.168.1.2.需要得到对应的外网地址。
+		 */
+		routeAddr = server.settings.getString(routeAddr.replace('.', '_').replace(':', '_'),
+											  routeAddr);
+		
 		data = info.uuid + "$" + info.devType + "$" +routeAddr + "$" + info.getStatus();
 		if(root != null){
 			data += "$" + root.uuid;

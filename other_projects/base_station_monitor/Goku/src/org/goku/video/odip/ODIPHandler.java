@@ -59,6 +59,7 @@ public class ODIPHandler {
 	
 	private MonitorClient client = null;
 	private NIOSocketChannel socket = null;
+	public boolean isVideoChannel = false;
 	//private SelectionHandler
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
@@ -129,7 +130,8 @@ public class ODIPHandler {
 				this.ackLogin(header, buffer);
 				break;
 			case ACK_GET_VIDEO:
-				this.ackVideoData(header, buffer);
+				//如果不是视通流通道，不处理视频。
+				if (isVideoChannel)this.ackVideoData(header, buffer);
 				break;
 			case ACK_GET_ALARM:
 				this.ackAlarmStatus_B1(header, buffer);

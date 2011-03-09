@@ -496,7 +496,7 @@ public class JDBCDataStorage extends DataStorage {
 	@SuppressWarnings("rawtypes")
 	public Collection<BaseStation> listStation(User user){
 		String sql_is_admin = "select g.name from user_group g " +
-							  "join relation_user_group rg on(g.name=rg.user_group_id)" +
+							  "join relation_user_group rg on(g.name=rg.user_group_id) " +
 							  "where rg.user_id=${0} and g.isAdmin=1";
 		
 		String sql_station = null;
@@ -505,9 +505,9 @@ public class JDBCDataStorage extends DataStorage {
 		if(xx.size() > 0){
 			sql_station = "select b.* from base_station b";
 		}else {
-			sql_station = "select b.* from base_station b" +
-						  "join relation_station_group rsg on(b.uuid=rsg.base_station_id)" +
-						  "join relation_user_group rg on(rsg.user_group_id=rg.user_group_id)" +
+			sql_station = "select b.* from base_station b " +
+						  "join relation_station_group rsg on(b.uuid=rsg.base_station_id) " +
+						  "join relation_user_group rg on(rsg.user_group_id=rg.user_group_id) " +
 						  "where rg.user_id=${0} order by b.uuid asc";
 		}
 		

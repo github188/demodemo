@@ -35,6 +35,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		this.client = client;
 		this.log = LogFactory.getLog("node." + client.info.uuid + ".video");
 		this.handler = new ODIPHandler(client, this);
+		this.handler.isVideoChannel = true;
 	}
 
 	@Override
