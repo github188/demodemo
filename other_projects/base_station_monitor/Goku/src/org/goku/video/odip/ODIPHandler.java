@@ -64,6 +64,7 @@ public class ODIPHandler {
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.
 	private Map<Byte, Long> cmdDebug = new HashMap<Byte, Long>();
+	private long lastAlarmTime = 0;
 	
 	public ODIPHandler(MonitorClient client, NIOSocketChannel socket){
 		this.client = client;
@@ -296,7 +297,14 @@ public class ODIPHandler {
 			if((status & 16) == 0){ //串口故障报警	
 			}
 			
-			if(alarms.size() > 0){
+			/**
+			 * 超过3分钟没有任何告警，也需要触发一个空的告警。用来更新中心服务起状态，
+			 * 避免管理服务器，认为设备超时。
+			 */
+			if(alarms.size() > 0 || 
+			   System.currentTimeMillis() - lastAlarmTime > 60 * 1000 * 3
+			  ){
+				lastAlarmTime = System.currentTimeMillis();
 				MonitorClientEvent event = new MonitorClientEvent(client);
 				event.alarms = alarms;
 				client.eventProxy.alarm(event);

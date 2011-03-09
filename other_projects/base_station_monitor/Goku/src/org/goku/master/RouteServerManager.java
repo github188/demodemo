@@ -35,7 +35,7 @@ public class RouteServerManager implements Runnable {
 	private ThreadPoolExecutor executor = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
-	private long expiredTime = 1000 * 30;
+	private long expiredTime = 1000 * 60;
 	
 	private File statisticsDir = null;
 	//private boolean supportStatisticsRunningStatus = false;
@@ -118,7 +118,8 @@ public class RouteServerManager implements Runnable {
 		
 		log.info("balance route group, name:" + groupName);		
 		int count = 0;
-
+		
+		//更新组内所有服务的状态。
 		for(RouteServer s: servers.values()){
 			if(s.groupName.equals(groupName)){
 				s.setBaseStationList(storage.listStation(s));
@@ -126,6 +127,7 @@ public class RouteServerManager implements Runnable {
 				routeList.add(s);
 			}
 		}
+		
 		if(routeList.size() > 0){
 			log.info("active base station count:" + count);
 			Collection<BaseStation> bsPool = new Vector<BaseStation>();		
@@ -157,6 +159,13 @@ public class RouteServerManager implements Runnable {
 				s.updating();
 				if(statisticsDir != null){
 					this.updateRouteServerStatistics(s);
+				}
+				
+				/**
+				 * 如果出现超时或有没有分配的基站，做一次调度操作。
+				 */
+				if(storage.listDeadStation(s.groupName).size() > 0){
+					balanceGroup(s.groupName);
 				}
 			}else {
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status ERR!");

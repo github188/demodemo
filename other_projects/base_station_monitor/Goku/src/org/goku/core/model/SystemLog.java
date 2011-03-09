@@ -12,7 +12,7 @@ import org.goku.video.FileVideoRecorder;
 
 public class SystemLog {
 	public static final String ORM_TABLE = "goku_system_log";
-	public static final String[] ORM_FIELDS = new String[]{"actionOwner", "actionObject",
+	public static final String[] ORM_FIELDS = new String[]{"uuid", "actionOwner", "actionObject",
 		"actionType", "createDate", "description", 
 		};
 	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};

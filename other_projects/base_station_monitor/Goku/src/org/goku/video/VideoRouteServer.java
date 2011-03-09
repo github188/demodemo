@@ -3,6 +3,7 @@ package org.goku.video;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -254,6 +255,7 @@ public class VideoRouteServer {
 		
 		public void connected(final MonitorClientEvent event){
 			event.client.login(false);
+			this.updateLastActive(event.client.info);
 		}
 		public void timeout(final MonitorClientEvent event) {
 			//如果设备之前是处于连接状态。
@@ -266,9 +268,14 @@ public class VideoRouteServer {
 					log.equals(e.toString());
 				}
 			}else {
+				/*
+				 * 属于连接超时.连接超时的设备，会在5分钟后，有中心管理服务器。重新调度连接。
+				 */
 				log.info("Timeout to connect DVR:" + event.client.info.toString());
 				event.client.info.connectionStatus = "timeout";
-				storage.save(event.client.info, new String[]{"connectionStatus"});	
+				event.client.info.lastActive = new Date(System.currentTimeMillis());
+				storage.save(event.client.info, new String[]{"connectionStatus", 
+														     "lastActive"});	
 				
 				//触发一个超时的告警.
 				event.alarms = new ArrayList<AlarmDefine>();
@@ -277,14 +284,34 @@ public class VideoRouteServer {
 			}
 		}
 		
+		/**
+		 * 在ODIPHandler中会周期性的触发alarm事件。避免设备在中心服务器上，状态
+		 * 被设置为超时。
+		 */
+		@Override
+		public void alarm(MonitorClientEvent event) {
+			this.updateLastActive(event.client.info);
+		}			
+	
+		
 		@Override
 		public void disconnected(final MonitorClientEvent event) {
 			log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
-//			try{
-//				event.client.connect();
-//			}catch(IOException e){
-//				log.equals(e.toString());
-//			}
+			try{
+				event.client.connect();
+			}catch(IOException e){
+				log.equals(e.toString());
+			}
+		}
+		
+		private void updateLastActive(final BaseStation info){
+			threadPool.execute(new Runnable(){
+				@Override
+				public void run() {
+					info.lastActive = new Date(System.currentTimeMillis());
+					storage.save(info, new String[]{"lastActive"});
+				}
+			});
 		}
 	};
 	
