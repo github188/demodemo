@@ -277,7 +277,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	 */
     public void status(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
-    	DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    	DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	//response.getWriter().write("Welcome routing_status!");
     	String reset = this.getStringParam(request, "reset", "");
     	RouteRunningStatus status = server.getStatus(runningStatus, reset.equals("Y"));

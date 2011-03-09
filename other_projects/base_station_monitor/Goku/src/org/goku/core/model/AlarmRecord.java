@@ -13,7 +13,7 @@ import org.json.simple.JSONStreamAware;
 import org.json.simple.JSONValue;
 
 public class AlarmRecord implements JSONStreamAware{
-	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final String ORM_TABLE = "alarm_record";
 	public static final String[] ORM_FIELDS = new String[]{"uuid", "baseStation", 
 		"channelId", "alarmCode", "alarmStatus", "user",  "alarmLevel", "alarmCategory",

@@ -48,7 +48,7 @@ import org.goku.http.SimpleHttpClient;
 import org.json.simple.JSONValue;
 
 public class MasterServerServlet extends BaseRouteServlet{
-	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleCache cache = new SimpleCache();
 	private MasterVideoServer server = null;
 	private Log log = LogFactory.getLog("http");

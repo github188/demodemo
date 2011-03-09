@@ -31,7 +31,7 @@ import org.goku.settings.Settings;
  * @author deon
  */
 public class JDBCDataStorage extends DataStorage {
-	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private Log log = LogFactory.getLog("db");
 	private int wokingDB = 0;
 	private String[][] config = new String[2][3];
