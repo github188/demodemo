@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+class StationGroupFields(models.ManyToManyField):
+    def save_form_data(self, instance, groups):
+        user_groups = StationGroupRelation.objects.filter(base_station=instance)
+        user_group_names = [ e.user_group.name for e in user_groups]    
+        for g in groups:
+            if g.name not in user_group_names:
+                StationGroupRelation(base_station=instance, user_group=g).save()
+                
+        new_groups_names = [ e.name for e in groups ]
+        for g in user_groups:
+            if g.user_group.name not in new_groups_names:
+                g.delete()
+
 # Create your models here.
 class BaseStation(models.Model):
     class Meta:
@@ -51,6 +64,8 @@ class BaseStation(models.Model):
     supportAlarm = models.CharField(max_length=150, default='', verbose_name="告警策略",
                                     help_text='基站实现的告警。'
                                     )
+    
+    user_groups = StationGroupFields("UserGroup", through='StationGroupRelation')
     #supportAlarm = models.ManyToManyField('sysparam.AlarmDefine', verbose_name="告警策略")
     
     def _get_supportAlarms(self,):
@@ -64,7 +79,19 @@ class BaseStation(models.Model):
     def __unicode__(self):
         return self.uuid        
 
-
+class UserGroupFields(models.ManyToManyField):
+    def save_form_data(self, instance, groups):
+        user_groups = UserGroupRelation.objects.filter(user=instance)
+        user_group_names = [ e.user_group.name for e in user_groups]    
+        for g in groups:
+            if g.name not in user_group_names:
+                UserGroupRelation(user=instance, user_group=g).save()
+                
+        new_groups_names = [ e.name for e in groups ]
+        for g in user_groups:
+            if g.user_group.name not in new_groups_names:
+                g.delete()
+            
 # Create your models here.
 class User(models.Model):
     class Meta:
@@ -75,7 +102,7 @@ class User(models.Model):
     name = models.CharField(max_length=20, primary_key=True, verbose_name="登录名")
     password = models.CharField(max_length=50, 
                                 default='', verbose_name="密码")
-    display = models.CharField(max_length=50, default='', verbose_name="用户别名")
+    display = models.CharField(max_length=50, default='', verbose_name="用户别名", blank=True)
     lastActive = models.DateTimeField('last active', null=True)
     
     status = models.CharField(max_length=10, 
@@ -84,7 +111,13 @@ class User(models.Model):
                                        ('locked', "锁定"),
                                        ),
                              default='ok',
-                             verbose_name="用户状态")    
+                             verbose_name="用户状态")
+    
+    user_groups = UserGroupFields("UserGroup", through='UserGroupRelation')
+    
+    def user_group_names(self):
+        user_groups = UserGroupRelation.objects.filter(user=self)
+        return ",".join([e.user_group.name for e in user_groups ])
 
     def __unicode__(self):
         return self.name        
@@ -105,7 +138,10 @@ class UserGroup(models.Model):
                                   help_text='管理员分组，始终可以查看所有的基站。'
                                   )
     def __unicode__(self):
-        return self.name        
+        if self.isAdmin == 1:
+            return self.name + "<*>"
+        else:
+            return self.name
     
 class UserGroupRelation(models.Model):
     class Meta:

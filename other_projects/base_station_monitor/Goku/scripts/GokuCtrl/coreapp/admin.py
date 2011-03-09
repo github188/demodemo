@@ -24,7 +24,7 @@ class SingleCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         from django.utils.html import escape, conditional_escape
         if value is None: 
             value = []
-        else:            
+        elif isinstance(value, basestring):     
             value = value.split(",") 
             
         has_id = attrs and 'id' in attrs
@@ -58,32 +58,43 @@ class BaseStationForm(forms.ModelForm):
     supportAlarm = MultipleAlarmCodeField(label='告警列表', required=False,
                                           queryset= AlarmDefine.objects.filter(alarmStatus='2'), 
                                           widget=SingleCheckboxSelectMultiple)
+    
+    user_groups = forms.ModelMultipleChoiceField(label='监控用户组', required=False,
+                                                 #基站只能和一般用户组关联。管理组只是用户属性。
+                                                 queryset= UserGroup.objects.filter(isAdmin=0),
+                                                 widget=forms.CheckboxSelectMultiple
+                                                 )
     #forms.ModelForm.
     
 
 class BaseStationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'groupName', 'locationId', 'channels', 
-              'devType', 'btsCategory', 'locationUUID', 'supportAlarm' ]
+              'devType', 'btsCategory', 'locationUUID', 'supportAlarm', 'user_groups']
     list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
                     'alarmStatus', 'devType', 'btsCategory', 'lastActive')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
     search_fields = ['uuid', 'locationId', ]
     form = BaseStationForm
-    
-#    def save_model(self, request, obj, form, change):
-#        obj.supportAlarm = ",".join(form.data.getlist('supportAlarms'));
-#        super(BaseStationAdmin, self).save_model(request, obj, form, change)  
         
     
 class AlarmRecordAdmin(admin.ModelAdmin):
     fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'videoPath']
     list_display = ('uuid', 'base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmLevel', 'alarmStatus', 'user', 'videoPath')
     list_filter = ['alarmCode', ]
-
+    
+class UserAdminForm(forms.ModelForm):
+    class Meta:
+        model = User
+        #forms.m
+    user_groups = forms.ModelMultipleChoiceField(label='用户组', required=False,
+                                                 queryset= UserGroup.objects.all(),
+                                                 widget=forms.CheckboxSelectMultiple
+                                                 )
 class UserAdmin(admin.ModelAdmin):
-    fields = ['name', 'display', 'password', 'status']
-    list_display = ('name', 'display', 'status', )
+    fields = ['name', 'display', 'password', 'status', 'user_groups']
+    list_display = ('name', 'display', 'user_group_names', 'status', )
     search_fields = ['name', 'display', ]
+    form = UserAdminForm
 
 class UserGroupAdmin(admin.ModelAdmin):
     fields = ['name', 'isAdmin', ]
@@ -131,8 +142,8 @@ admin.site.register(BaseStation, BaseStationAdmin)
 admin.site.register(AlarmRecord, AlarmRecordAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserGroup, UserGroupAdmin)
-admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
-admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
+#admin.site.register(UserGroupRelation, UserGroupRelationAdmin)
+#admin.site.register(StationGroupRelation, StationGroupRelationAdmin)
 admin.site.register(SystemLog, SystemLogAdmin)
 admin.site.register(VideoTask, VideoTaskAdmin)
 #admin.site.register(AlarmDefine, AlarmDefineAdmin)
