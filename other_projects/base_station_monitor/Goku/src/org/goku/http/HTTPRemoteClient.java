@@ -32,9 +32,11 @@ public class HTTPRemoteClient {
 	 * 检查中心服务器的，是否在运行。
 	 */	
 	public boolean checkConnection(){
-		HttpResponse resp = null;		
+		HttpResponse resp = null;
+		//log.info("checkConnection........");
 		try {
 			resp = http.get("/?q=ping", new HashMap<String, String>());
+			//log.info("checkConnection...." + resp.toString());
 			if(resp.getResponseMessage().trim().equals("OK")){
 				return true;
 			}else {

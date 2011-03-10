@@ -457,8 +457,9 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 			while(sync && src.remaining() > 0){
 				synchronized(writeQueue){
 					try {
-						writeQueue.wait();
+						writeQueue.wait(1000 * 30);
 					} catch (InterruptedException e) {
+						break;
 					}
 				}
 			}

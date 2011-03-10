@@ -109,11 +109,13 @@ public class SocketManager implements Runnable{
 					}
 					this.paddings.clear();
 				}
+				//log.info("process selected....");
 					
 				this.selector.select();
 				Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
 				while (selectedKeys.hasNext()) {
 					SelectionKey key = selectedKeys.next();
+					//log.info("process key:" + key.toString());
 					selectedKeys.remove();
 					if(!key.isValid()){
 						continue;

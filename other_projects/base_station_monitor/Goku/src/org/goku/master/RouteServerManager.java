@@ -35,7 +35,7 @@ public class RouteServerManager implements Runnable {
 	private ThreadPoolExecutor executor = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
-	private long expiredTime = 1000 * 60;
+	private long expiredTime = 1000 * 20;
 	
 	private File statisticsDir = null;
 	//private boolean supportStatisticsRunningStatus = false;
@@ -48,7 +48,7 @@ public class RouteServerManager implements Runnable {
 	@Override
 	public void run() {
 		this.restoreRoute();
-
+		
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -58,7 +58,17 @@ public class RouteServerManager implements Runnable {
 					log.error(e);
 				}
 			}
-		}, 100, expiredTime);		
+		}, 100, expiredTime);
+		
+		/*
+		while(true){
+			checkAllRouteServer();
+			try {
+				Thread.sleep(expiredTime);
+			} catch (InterruptedException e) {
+				log.error(e.toString());
+			}
+		}*/
 	}
 	
 	public RouteServer getRouteReserver(String ipaddr){
@@ -166,9 +176,6 @@ public class RouteServerManager implements Runnable {
 					this.updateRouteServerStatistics(s);
 				}
 				
-				/**
-				 * 如果出现超时或有没有分配的基站，做一次调度操作。
-				 */
 				if(storage.listDeadStation(s.groupName).size() > 0){
 					balanceGroup(s.groupName);
 				}
@@ -177,6 +184,7 @@ public class RouteServerManager implements Runnable {
 				this.removeRouteServer(s.ipAddress);
 			}
 		}
+		//log.info("check all done.");
 	}
 	
 	protected void updateRouteServerStatistics(RouteServer s){
