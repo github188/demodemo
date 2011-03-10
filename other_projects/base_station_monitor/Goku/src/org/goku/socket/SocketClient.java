@@ -198,7 +198,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * @return
 	 */
 	public boolean writeBusy(){
-		return this.writeQueue.size() > 100;
+		return this.writeQueue.size() > 50;
 	}
 	
 	protected void processBuffer(ByteBuffer in){

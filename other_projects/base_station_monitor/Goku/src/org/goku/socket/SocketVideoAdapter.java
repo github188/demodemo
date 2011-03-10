@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.User;
 import org.goku.video.VideoRecorderManager;
 import org.goku.video.VideoRouteServer;
 import org.goku.video.odip.MonitorClient;
@@ -69,6 +70,8 @@ public class SocketVideoAdapter {
 					channel = Integer.parseInt(ch);
 				}catch(Exception e){};
 				if(channel > 0 && channel <= 4){
+					client.loginUser = new User();
+					client.loginUser.name = "ch<" + channel + ">";
 					client.socket.socket().setSendBufferSize(1024 * 100);
 					mc.route.addDestination(new SocketVideoPlayer(client, channel));
 					
@@ -91,6 +94,8 @@ public class SocketVideoAdapter {
 			File videoPath = recordManager.getAlarmRecordFile(uuid);
 			if(videoPath != null){
 				log.info("Start replay uuid " + uuid + ", path:" + videoPath.getAbsolutePath());
+				client.loginUser = new User();
+				client.loginUser.name = "re<" + uuid + ">";				
 				client.replay = new FileReplayController(client, videoPath);
 				client.socket.socket().setSendBufferSize(1024 * 100);
 				client.replay.nextFrame();

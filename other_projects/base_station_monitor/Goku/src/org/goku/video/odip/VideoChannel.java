@@ -208,6 +208,6 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	}
 
 	public String toString(){
-		return String.format("Video channel %s<%s>.", this.client.info.uuid, this.channel.id);
+		return String.format("Video channel %s<%s>", this.client.info.uuid, this.channel.id);
 	};	
 }
