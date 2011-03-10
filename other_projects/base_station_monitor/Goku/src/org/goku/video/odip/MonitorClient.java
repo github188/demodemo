@@ -52,7 +52,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	protected SocketChannel socketChannel = null;
 	protected SocketManager socketManager = null;
 	protected ClientStatus status = null;
-	protected VideoChannel videoChannel = null;
+	//protected VideoChannel videoChannel = null;
 	
 	/**
 	 * 当前处理Client事件的对象，类似一个状态机。某一个时刻，只能有一个状态。
@@ -134,45 +134,36 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 		this.realPlay(channel, MonitorChannel.MAIN_VIDEO);
 	}
 	
-	public void realPlay(int channel, int mode){
+	public void realPlay(final int channel, final int mode){
 		if(log.isDebugEnabled()){
 			log.debug("realPlay:" + channel + ", mode:" + mode);
 		}
 		this.login(true);
 		if(this.getClientStatus() != null){
-			if(videoChannel == null){
-				connectVideoChannel();
-				//等待视频通道初始化成功。
-				synchronized(this.videoChannel){
-					try {
-						this.videoChannel.wait(5*1000);
-					} catch (InterruptedException e) {
-						log.warn("Time out to create video channel.");
-					}
-				}
-			}
 			MonitorChannel ch = info.getChannel(channel);
 			if(ch == null){
 				log.warn("Not found chanel id:" + channel);
 			}else {
-				this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
-			}	
+				if(ch.videoChannel == null){
+					log.debug("Create video channel for " + this.toString() + ", ch:" + channel);
+					ch.videoChannel = new VideoChannel(this, ch,
+							//连接成功后的回调方法。
+							new Runnable(){
+								public void run() {
+									handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
+								}
+							});
+					String[] address = this.ipAddr.split(":"); 
+					this.socketManager.connect(address[0],
+											Integer.parseInt(address[1]),
+											ch.videoChannel);
+				}else {
+					this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
+				}
+			}
 		}else {
 			log.warn("Can't open real play in disconnected client.");
 		}		
-	}
-	
-	/**
-	 * 创建一个视频传输通道。
-	 */
-	public void connectVideoChannel(){
-		log.debug("Create video channel for " + this.toString());
-		videoChannel = new VideoChannel(this);		
-		String[] address = this.ipAddr.split(":");
-		//videoChannel.socketChannel = 
-		this.socketManager.connect(address[0],
-								Integer.parseInt(address[1]),
-								videoChannel);
 	}
 	
 	public void openSound(){
@@ -212,6 +203,19 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	 */
 	public void videoDestinationEmpty(int channel, int mode){
 		this.handler.videoStreamControl(CTRL_VIDEO_STOP, channel, mode);
+		
+		/**
+		 * 关闭视频数据通道。
+		 */
+		MonitorChannel ch = info.getChannel(channel);
+		if(ch != null && ch.videoChannel != null){
+			try {
+				ch.videoChannel.closeSocketChannel();
+			} catch (IOException e) {
+				log.error(e.toString(), e);
+			}
+			ch.videoChannel = null;
+		}
 	}
 
 	public void close(){

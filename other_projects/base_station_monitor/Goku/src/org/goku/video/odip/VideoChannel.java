@@ -10,18 +10,19 @@ import java.util.Queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.MonitorChannel;
 import org.goku.socket.ChannelHandler;
 import org.goku.socket.NIOSocketChannel;
 import org.goku.socket.SelectionHandler;
 
-public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChannel, ChannelHandler{
+public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChannel{
 	
 	private Log log = null;
 	/**
 	 * 网络连接的操作对象，可以得到SocketChannel.
 	 */
 	protected SelectionKey selectionKey = null;
-	protected SocketChannel socketChannel = null;	
+	//protected SocketChannel socketChannel = null;	
 	public MonitorClient client = null;
 	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(5);	
 	protected ODIPHandler handler = null;	
@@ -31,11 +32,17 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	private double videoSpeed = 0;
 	private long lastActiveTime = 0;
 	
-	public VideoChannel(MonitorClient client){
+	//摄像头通道号.
+	public MonitorChannel channel = null;
+	private Runnable startUp = null;
+	
+	public VideoChannel(MonitorClient client, MonitorChannel channel, Runnable startUp){
 		this.client = client;
-		this.log = LogFactory.getLog("node." + client.info.uuid + ".video");
+		this.log = LogFactory.getLog("node." + client.info.uuid + ".ch" + channel.id);
+		this.channel = channel;
 		this.handler = new ODIPHandler(client, this);
 		this.handler.isVideoChannel = true;
+		this.startUp = startUp;
 	}
 
 	@Override
@@ -44,25 +51,25 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 			try {
 				if(this.selectionKey.isConnectable()){
 					try{
-						socketChannel.finishConnect();
+						((SocketChannel)selectionKey.channel()).finishConnect();
 						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.writeQueue.clear();
 						this.initVideoAuth();
+						this.startUp.run();
 					}catch(IOException conn){
 						log.warn("Failed to create video channel:" + conn.toString());
-						this.socketChannel.close();
+						selectionKey.channel().close();
 						this.selectionKey.cancel();
-						this.client.videoChannel = null;
 					}
 				}else if(this.selectionKey.isReadable()){
-					this.read(socketChannel);
+					this.read((SocketChannel)selectionKey.channel());
 					if(this.selectionKey.isValid()){
 						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
 					}
 				}
 				if(this.selectionKey.isValid() && this.selectionKey.isWritable() && this.writeQueue.size() > 0){
-					this.writeBuffer();
+					this.writeBuffer((SocketChannel)selectionKey.channel());
 				}
 			} catch (Exception e) {
 				log.error(e.toString(), e);				
@@ -72,9 +79,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	}
 	
 	private synchronized void initVideoAuth(){
-		for(int i = 1; i <= this.client.status.channelCount; i++){
-			this.handler.videoStreamAuth(i);
-		}
+		this.handler.videoStreamAuth(this.channel.id);
 		this.notifyAll();
 	}
 	
@@ -130,7 +135,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		
 	}
 	
-	protected void writeBuffer() throws IOException{
+	protected void writeBuffer(SocketChannel channel) throws IOException{
 		synchronized(this.writeQueue){
 			//用来计算timeOut.
 			this.lastActiveTime = System.currentTimeMillis();
@@ -138,7 +143,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 			ByteBuffer buffer = this.writeQueue.peek();
 			while(buffer != null){
 				log.debug("wirte to DVR Video channel:" + buffer.remaining());
-				this.socketChannel.write(buffer);
+				channel.write(buffer);
 				if(buffer.hasRemaining()){
 					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
 					this.selectionKey.selector().wakeup();
@@ -150,10 +155,10 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 			}
 			this.writeQueue.notifyAll();
 		}
-		//让MonitorClient 开始发11指令时，视频连接肯定已创建成功。
-		synchronized(socketChannel){
-			this.socketChannel.notifyAll();
-		}		
+		//
+		synchronized(channel){
+			channel.notifyAll();
+		}
 	}	
 	
 	public void write(ByteBuffer src, boolean sync) {
@@ -179,33 +184,30 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		this.selectionKey = key;
 	}
 	
-	public void setSocketChannel(SelectableChannel channel){
-		this.socketChannel = (SocketChannel)channel;
-	} 	
-	
 	public void closeSocketChannel() throws IOException{
-		log.info("Close video channel.");
+		log.info("Close " + this.toString());
 		if(this.selectionKey != null){
+			this.selectionKey.channel().close();
 			this.selectionKey.cancel();
 		}
-		if(this.socketChannel != null){
-			this.socketChannel.close();
+		if(this.channel != null){
+			this.channel.videoChannel = null;
 		}
-		this.socketChannel = null;
-		this.client.videoChannel = null;		
 	}
 
 	@Override
 	public void read(ByteBuffer buffer) throws IOException {
 		if(this.selectionKey.isReadable()){
-			int readLen = this.socketChannel.read(buffer);
+			int readLen = ((SocketChannel)this.selectionKey.channel()).read(buffer);
 			if(readLen == -1){
 				this.closeSocketChannel();
+			}else {
+				this.readSize += readLen;
 			}
 		}
 	}
 
 	public String toString(){
-		return "Video " + this.client.info.uuid;
+		return String.format("Video channel %s<%s>.", this.client.info.uuid, this.channel.id);
 	};	
 }
