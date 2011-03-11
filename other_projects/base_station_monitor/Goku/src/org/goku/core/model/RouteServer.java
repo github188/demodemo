@@ -41,7 +41,7 @@ public class RouteServer {
 	public long lastActive;	
 	
 	public int alarmCount;
-	private HTTPRemoteClient http = null;
+	public HTTPRemoteClient remote = null;
 	
 	public Collection<BaseStation> clients = null;	
 	
@@ -49,7 +49,7 @@ public class RouteServer {
 	public RouteServer(String ipaddr, String groupName){
 		this.ipAddress = ipaddr;
 		this.groupName = groupName;
-		http = new HTTPRemoteClient("http://" + ipaddr);
+		remote = new HTTPRemoteClient("http://" + ipaddr);
 	}
 	
 	public Collection<BaseStation> listBaseStation(){
@@ -72,7 +72,7 @@ public class RouteServer {
 			Iterator<BaseStation> iter = this.clients.iterator();
 			for(int i = this.clients.size() - max; i > 0 && iter.hasNext(); i--){
 				BaseStation bs = iter.next();
-				if(this.http.removeBaseStaion(bs)){
+				if(this.remote.removeBaseStaion(bs)){
 					bs.routeServer = null;
 					pool.add(bs);
 					storage.save(bs, new String[]{"routeServer"});
@@ -86,7 +86,7 @@ public class RouteServer {
 			for(int i = max - this.clients.size(); i > 0 && iter.hasNext(); i--){
 				BaseStation bs = iter.next();
 				//Log.info("xxx..........." + bs.toString());
-				if(this.http.addBaseStaion(bs)){
+				if(this.remote.addBaseStaion(bs)){
 					bs.routeServer = this.ipAddress;
 					this.clients.add(bs);
 					storage.save(bs, new String[]{"routeServer"});
@@ -99,7 +99,7 @@ public class RouteServer {
 	}
 	
 	public boolean ping(){
-		return http.checkConnection();
+		return remote.checkConnection();
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class RouteServer {
 	 * @return
 	 */
 	public boolean updating(){
-		String info = http.updatingInfo();
+		String info = remote.updatingInfo();
 		String[] aInfo = info.split("\\$", 2);
 		if(aInfo.length == 2){
 			this.groupName = aInfo[0].trim();
@@ -119,7 +119,7 @@ public class RouteServer {
 	}
 	
 	public String statisticsStatus(){
-		return http.statisticsStatus();
+		return remote.statisticsStatus();
 	}
 	
 	public boolean equals(Object o){

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,7 +36,7 @@ public class RouteServerManager implements Runnable {
 	private ThreadPoolExecutor executor = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
-	private long expiredTime = 1000 * 20;
+	private long expiredTime = 1000 * 120;
 	
 	private File statisticsDir = null;
 	//private boolean supportStatisticsRunningStatus = false;
@@ -144,9 +145,20 @@ public class RouteServerManager implements Runnable {
 		
 		if(routeList.size() > 0){
 			log.info("active base station count:" + count);
-			Collection<BaseStation> bsPool = new Vector<BaseStation>();		
+			Collection<BaseStation> bsPool = new Vector<BaseStation>();
 			bsPool.addAll(storage.listDeadStation(groupName));
 			log.warn("dead station count:" + bsPool.size());
+			
+			//如果预先分配的转发服务器，还在线，先分配给老旧的服务器。
+			BaseStation bs = null;
+			for(Iterator<BaseStation> iter = bsPool.iterator(); iter.hasNext();){
+				bs = iter.next();
+				route = servers.get(bs.routeServer);
+				if(route != null){
+					route.remote.addBaseStaion(bs);
+					iter.remove();
+				}
+			}
 			
 			count += bsPool.size();
 			int average = count / routeList.size() + 1;			
@@ -167,7 +179,7 @@ public class RouteServerManager implements Runnable {
 	protected void checkAllRouteServer(){
 		//log.info("check All RouteServer...");
 		for(RouteServer s: servers.values()){
-			//log.info("xxx.......");
+			//boolean b = s.ping();
 			if(s.ping()){
 				s.lastActive = System.currentTimeMillis();
 				log.info("Route group:" + s.groupName + ", ipaddr:" + s.ipAddress + ", Status OK!");

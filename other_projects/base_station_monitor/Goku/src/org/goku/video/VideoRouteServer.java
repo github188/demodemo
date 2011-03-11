@@ -166,27 +166,32 @@ public class VideoRouteServer {
 	
 	public boolean addMonitorClient(String uuid){
 		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
+		MonitorClient client = null;
 		if(station != null && station.devType == 1){
 			if(!this.clients.containsKey(uuid)){
-				final MonitorClient client = new MonitorClient(station, 
-														 new VideoRoute(threadPool),
-														 socketManager);
+				client = new MonitorClient(station, new VideoRoute(threadPool),
+										   socketManager);
 				this.clients.put(uuid, client);
 				this.alarmManager.addClient(client);
 				
 				client.addListener(this.connectionListener);
-				//开始连接设备。
-				this.threadPool.execute(new Runnable(){
-					@Override
-					public void run() {
-						try {
-							client.connect();
-						} catch (IOException e) {
-							log.error(e.toString(), e);
-						}
-					}});
+				//开始连接设备, 非阻塞连接，很快就可以返回。
+				try {
+					client.connect();
+				} catch (IOException e) {
+					log.warn(e.toString());
+				}
 			}else {
-				log.info("The Client aready in current route, uuid:" + uuid);
+				log.debug("The Client aready in current route, uuid:" + uuid);
+				client = clients.get(uuid);
+				//设备可能需要重新连接。
+				if(!client.isConnected()){
+					try {
+						client.connect();
+					} catch (IOException e) {
+						log.warn(e.toString());
+					}
+				}
 			}			
 			return true;
 		}else if(station == null){
@@ -303,11 +308,14 @@ public class VideoRouteServer {
 		
 		@Override
 		public void disconnected(final MonitorClientEvent event) {
-			log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
-			try{
-				event.client.connect();
-			}catch(IOException e){
-				log.equals(e.toString());
+			//有可能设备是从服务器，删除后在断开。
+			if(clients.get(event.client.info.uuid) != null){
+				log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
+				try{
+					event.client.connect();
+				}catch(IOException e){
+					log.equals(e.toString());
+				}
 			}
 		}
 		

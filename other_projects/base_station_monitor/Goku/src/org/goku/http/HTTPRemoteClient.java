@@ -33,10 +33,8 @@ public class HTTPRemoteClient {
 	 */	
 	public boolean checkConnection(){
 		HttpResponse resp = null;
-		//log.info("checkConnection........");
 		try {
 			resp = http.get("/?q=ping", new HashMap<String, String>());
-			//log.info("checkConnection...." + resp.toString());
 			if(resp.getResponseMessage().trim().equals("OK")){
 				return true;
 			}else {
@@ -44,7 +42,7 @@ public class HTTPRemoteClient {
 				return false;
 			}
 		} catch (IOException e) {
-			//log.error("Failed to check master server, ", e);
+			log.error("Failed to check server, ", e);
 			return false;
 		}
 	}

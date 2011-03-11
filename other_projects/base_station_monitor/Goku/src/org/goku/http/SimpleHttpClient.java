@@ -55,7 +55,7 @@ public class SimpleHttpClient {
 			this.processResponse();
 			log.trace("-----end get--------");
 		}
-		//this.close();
+		this.close();
 		return this.response;
 	}
 	
@@ -75,7 +75,7 @@ public class SimpleHttpClient {
 			this.processResponse();
 			log.trace("-----end port--------");
 		}
-		//this.close();
+		this.close();
 		return this.response;
 	}	
 	
@@ -91,7 +91,7 @@ public class SimpleHttpClient {
 			this.processResponse();
 			log.trace("-----end port--------");
 		}
-		//this.close();
+		this.close();
 		return this.response;
 	}
 	
@@ -99,10 +99,14 @@ public class SimpleHttpClient {
 		response = new HttpResponse();
 		response.connection = this;
 		String status = readLine();
-		for(; status.indexOf("HTTP") != 0;status = readLine()){
+		for(int i = 0; i < 10 && status.indexOf("HTTP") != 0;status = readLine(),i++){
 			log.trace("Head:" + status);
 		}
 		log.trace(status);
+		if(status.indexOf("HTTP") != 0){
+			this.close();
+			throw new IOException("Not found HTTP Head, Connection is closed.");
+		}
 		
 		int headerLength = 0, contentLength = 0;
 		byte[] content = null;
@@ -120,7 +124,7 @@ public class SimpleHttpClient {
 				}else if(line.startsWith("Transfer-Encoding: chunked")){
 					chunkedContent = true;
 				}
-				log.trace("Head:" + line);
+				log.trace(String.format("Head:%s, len:%s", line, line.length()));
 			}
 			if(chunkedContent){
 				contentLength = 1;
@@ -305,6 +309,5 @@ public class SimpleHttpClient {
 			}
 		}
 		return ret;
-	}
-	
+	}	
 }

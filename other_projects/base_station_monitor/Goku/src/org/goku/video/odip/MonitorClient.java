@@ -91,6 +91,10 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 		this.socketChannel.socket().setReceiveBufferSize(1024 * 64);
 	}
 	
+	public boolean isConnected(){
+		return this.socketChannel != null && this.socketChannel.isOpen();
+	}
+	
 	public void sendAlarmRequest(){
 		this.handler.getAlarmStatus_A1(0);
 	}
@@ -100,7 +104,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	 */
 	public void login(boolean sync){
 		if(this.getClientStatus() == null){
-			if(this.socketChannel == null || !this.socketChannel.isOpen()){
+			if(!isConnected()){
 				try {
 					this.connect();
 					synchronized(this.socketChannel){
