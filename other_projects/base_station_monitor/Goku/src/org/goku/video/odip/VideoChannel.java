@@ -17,7 +17,7 @@ import org.goku.socket.SelectionHandler;
 
 public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChannel{
 	
-	private Log log = null;
+	protected Log log = null;
 	/**
 	 * 网络连接的操作对象，可以得到SocketChannel.
 	 */
@@ -38,7 +38,9 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	
 	public VideoChannel(MonitorClient client, MonitorChannel channel, Runnable startUp){
 		this.client = client;
-		this.log = LogFactory.getLog("node." + client.info.uuid + ".ch" + channel.id);
+		if(channel != null){
+			this.log = LogFactory.getLog("node." + client.info.uuid + ".ch" + channel.id);
+		}
 		this.channel = channel;
 		this.handler = new ODIPHandler(client, this);
 		this.handler.isVideoChannel = true;
@@ -78,7 +80,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		}
 	}
 	
-	private synchronized void initVideoAuth(){
+	protected synchronized void initVideoAuth(){
 		this.handler.videoStreamAuth(this.channel.id);
 		this.notifyAll();
 	}
@@ -95,6 +97,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		while(odipCount < 10){	//最多一次处理10个OIDP协议包就开始切换, 如果服务器没有性能问题，缓冲区应该低于3个ODIP包。
 			odipCount++;
 			buffer = handler.getDataBuffer(); //ByteBuffer.allocate(1024 * 64);
+			if(!channel.isOpen())break;
 			int readLen = channel.read(buffer);
 			if(readLen > 0){
 				this.readSize += readLen;

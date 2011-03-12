@@ -4,11 +4,15 @@ import static org.goku.video.odip.ProtocolHeader.ACK_GET_ALARM;
 import static org.goku.video.odip.ProtocolHeader.ACK_GET_VIDEO;
 import static org.goku.video.odip.ProtocolHeader.ACK_LOGIN;
 import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
+import static org.goku.video.odip.ProtocolHeader.ACK_DIR_FILE;
+import static org.goku.video.odip.ProtocolHeader.ACK_DOWNLOAD_VIDEO;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +47,9 @@ import org.goku.socket.NIOSocketChannel;
  * 1. 0xA1 --->
  *         <--- 0xB1     告警状态
  *         
- * 
+ * 文件查询下载：
+ * 1. 0xA5H --->         查询文件信息        
+ *          <--- 0xB6H   返回文件信息
  * @author deon
  */
 public class ODIPHandler {
@@ -55,6 +61,16 @@ public class ODIPHandler {
 	 * 阻塞Login方法，等待应答消息.
 	 */
 	private Object lockLogin = new Object();
+	
+	/**
+	 * 查询文件返回结果。
+	 */
+	private Collection<RecordFileInfo> recordFile = null;
+	/**
+	 * 当前查询通道，和recordFile 使用相同的临界区域。
+	 */
+	private int currentDirFileChannel = 0;
+	
 	private int loginStatus = -2;
 	
 	private MonitorClient client = null;
@@ -137,6 +153,12 @@ public class ODIPHandler {
 			case ACK_GET_ALARM:
 				this.ackAlarmStatus_B1(header, buffer);
 				break;
+			case ACK_DIR_FILE:
+				this.ackFileList(header, buffer);
+				break;
+			case ACK_DOWNLOAD_VIDEO:
+				this.ackDownVideo(header, buffer);
+				break;
 			default:
 				log.warn(String.format("Not found handler for command:0x%x", header.cmd));
 		}
@@ -192,12 +214,15 @@ public class ODIPHandler {
 		}
 		
 	}
-
+	
+	public void videoStreamAuth(int channelId){
+		videoStreamAuth(channelId, 1);
+	}
 	/**
 	 * 0xf1
 	 * @param action 1--开始监控， 0--关闭监控。
 	 */
-	public void videoStreamAuth(int channelId){
+	public void videoStreamAuth(int channelId, int type){
 		if(this.client.getClientStatus() != null &&
 		   this.client.info.getChannel(channelId) != null){
 			//this.client.getClientStatus().sessionId
@@ -207,7 +232,7 @@ public class ODIPHandler {
 			header.externalLength = 0;
 			header.version = 0;
 			header.setInt(8, this.client.getClientStatus().sessionId);
-			header.setInt(12, 1);
+			header.setInt(12, type);
 			header.setByte(13, (byte)channelId);
 			
 			header.mapToBuffer(buffer);			
@@ -269,6 +294,144 @@ public class ODIPHandler {
 		buffer.position(32);
 		buffer.flip();
 		socket.write(buffer, false);
+	}
+	
+	/**
+	 * 停止某个通道的视频传输。
+	 * @param header
+	 * @param buffer
+	 */	
+	public void stopPlayVideo(int channel){
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = (byte)0xc9;
+		header.version = 0;
+		header.setByte(8, (byte)channel);		
+		header.mapToBuffer(buffer);
+
+		buffer.position(32);
+		buffer.flip();
+		socket.write(buffer, false);
+		
+	}
+	
+	public void downLoadFile(RecordFileInfo file){
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = (byte)0xcb;
+		header.version = 0;
+		header.setByte(8, (byte)file.channel);
+		
+		Calendar time = Calendar.getInstance();
+		time.setTimeInMillis(file.startTime.getTime());
+		
+		int d =  time.get(Calendar.YEAR);	
+		header.setByte(9, (byte)(d & 0xff));
+		header.setByte(10, (byte)(d >> 8 & 0xff));
+		
+		header.setByte(11, (byte)(time.get(Calendar.MONTH) + 1));
+		header.setByte(12, (byte)(time.get(Calendar.DAY_OF_MONTH)));
+		header.setByte(13, (byte)time.get(Calendar.HOUR_OF_DAY));
+		header.setByte(14, (byte)time.get(Calendar.MINUTE));
+		header.setByte(15, (byte)time.get(Calendar.SECOND));		
+		header.setByte(16, (byte)file.dirveNo);
+		header.setLong(17, file.startCluster);
+		
+		header.mapToBuffer(buffer);
+		buffer.position(32);
+		buffer.flip();
+		socket.write(buffer, false);
+	}	
+	
+	/**
+	 * 查询硬盘文件列表, 只能单线程调用。因为需要等待返回结果。
+	 * @param header
+	 * @param buffer
+	 */	
+	public Collection<RecordFileInfo> listRecordFile(int channel, int type, Date start){
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = ProtocolHeader.CMD_DIR_FILE;
+		header.version = 0;
+		header.setByte(8, (byte)channel);
+			
+		Calendar time = Calendar.getInstance();
+		time.setTimeInMillis(start.getTime());
+		
+		int d =  time.get(Calendar.YEAR);		
+		header.setByte(9, (byte)(d & 0xff));
+		header.setByte(10, (byte)(d >> 8 & 0xff));
+		
+		header.setByte(11, (byte)(time.get(Calendar.MONTH) + 1));
+		header.setByte(12, (byte)(time.get(Calendar.DAY_OF_MONTH)));
+		header.setByte(13, (byte)time.get(Calendar.HOUR_OF_DAY));
+		header.setByte(14, (byte)time.get(Calendar.MINUTE));
+		header.setByte(15, (byte)time.get(Calendar.SECOND));
+
+		//header.setByte(13, (byte)0);
+		//header.setByte(14, (byte)0);
+		//header.setByte(15, (byte)0);
+		
+		
+		header.setByte(16, (byte)type);
+		
+		header.mapToBuffer(buffer);
+
+		buffer.position(32);
+		buffer.flip();
+		socket.write(buffer, false);
+		
+		Collection<RecordFileInfo> recordFile = null;
+		//避免多个线程在用一个连接上调用查询接口。
+		synchronized(lockLogin){
+			this.recordFile = new ArrayList<RecordFileInfo>(16);
+			this.currentDirFileChannel = channel;
+			synchronized(this.recordFile){
+				try {
+					this.recordFile.wait(1000 * 5);
+				} catch (InterruptedException e) {
+				}
+			}
+			recordFile = this.recordFile; 
+		}
+		return recordFile;
+	}
+	
+	public void ackDownVideo(ProtocolHeader header, ByteBuffer buffer){
+		//int channel = header.getByte(8) + 1;
+		//5 -- 副码流1
+		//6 -- 副码流2
+		//int type = header.getByte(24);
+		//this.client.route.route(buffer, 20, channel);
+		if(socket instanceof DownloadChannel){
+			((DownloadChannel)socket).writeDown(buffer);
+			if(header.externalLength == 0){
+				try {
+					((DownloadChannel)socket).closeSocketChannel();
+				} catch (IOException e) {
+					log.error(e.toString(), e);
+				}
+			}			
+		}
+	}
+	
+	public void ackFileList(ProtocolHeader header, ByteBuffer buffer){
+		RecordFileInfo file = null;
+		if(recordFile != null){
+			//每个文件记录大小为24字节。
+			while(buffer.remaining() >= 24){
+				file = new RecordFileInfo();
+				file.decode(buffer);
+				if(log.isDebugEnabled()){
+					log.debug("decode file:" + file.toString());
+				}
+				recordFile.add(file);
+				file.channel = this.currentDirFileChannel;
+			}
+			synchronized(recordFile){
+				recordFile.notifyAll();
+			}				
+		}
 	}
 	
 	public void ackAlarmStatus_B1(ProtocolHeader header, ByteBuffer buffer){

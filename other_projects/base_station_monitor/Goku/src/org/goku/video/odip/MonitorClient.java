@@ -4,6 +4,7 @@ import static org.goku.video.odip.Constant.CTRL_VIDEO_START;
 import static org.goku.video.odip.Constant.CTRL_VIDEO_STOP;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
@@ -14,6 +15,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Queue;
 
 import org.apache.commons.logging.Log;
@@ -194,12 +196,42 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	/**
 	 * 查询回放记录。
 	 */
-	public void queryRecordFile(){
-		
+	public Collection<RecordFileInfo> queryRecordFile(int channel, int type, Date start){
+		log.debug(String.format("list record file, channel:%s, type:%s, start:%s", channel, type, start.toString()));
+		return this.handler.listRecordFile(channel, type, start);
 	}
 	
-	public void downloadByRecordFile(){
+	public void downloadByRecordFile(final RecordFileInfo file, OutputStream os, boolean sync){
+		this.login(true);
 		
+		log.debug("Create downloading channel for " + this.toString() + ", record:" + file.toString());
+		Runnable callBack = new Runnable(){
+			public void run() {
+				handler.downLoadFile(file);
+			}
+		};
+		
+		MonitorChannel ch = info.getChannel(file.channel);
+		if(ch != null){
+			DownloadChannel channel = new DownloadChannel(this, file, callBack, os);		
+			String[] address = this.ipAddr.split(":"); 
+			this.socketManager.connect(address[0],
+									   	Integer.parseInt(address[1]),
+										channel);
+			
+			this.handler.stopPlayVideo(file.channel);
+		}else {
+			log.debug("Not found download channel:" + file.channel);
+		}
+		if(sync){
+			synchronized(os){
+				try {
+					os.wait(1000 * 60 * 30);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+		//this.handler.downLoadFile(file);		
 	}
 	
 	/**
