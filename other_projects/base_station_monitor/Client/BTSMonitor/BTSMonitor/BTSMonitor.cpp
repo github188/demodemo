@@ -212,7 +212,11 @@ void CBTSMonitorApp::PreLoadState()
 	bNameValid = strName.LoadString(IDS_WARNING);
 	ASSERT(bNameValid);
 	GetContextMenuManager()->AddMenu(strName, IDR_MENU_WARNING);
+	
+	//WarningMgr
+	GetContextMenuManager()->AddMenu("WarningMgr", IDR_POPMENU_WARNMGR);
 
+	
 }
 
 void CBTSMonitorApp::LoadCustomState()
