@@ -1,6 +1,56 @@
 #include "stdafx.h"
 #include "AlarmManager.h"
+////////////////////////////////////////////////////////////////////////////
+AlarmManager::AlarmManager()
+{
+	alarmList.RemoveAll();
+	curNewAlarmList.RemoveAll();
+	curRefreshAlarmList.RemoveAll();
+}
+AlarmManager::~AlarmManager()
+{
+	BOOL bRet = FALSE;
+	AlarmInfo*  pAlarmInfo = NULL;
+	POSITION pos = alarmList.GetHeadPosition();
+	int nAlarmCount = alarmList.GetCount();
+	for (int i=0; i<nAlarmCount; i++)
+	{
+		pAlarmInfo = alarmList.GetNext(pos);
+		if ( pAlarmInfo )
+		{
+			delete pAlarmInfo;
+			pAlarmInfo = NULL;
+		}
+	}
 
+	pos = curNewAlarmList.GetHeadPosition();
+	nAlarmCount = curNewAlarmList.GetCount();
+	for (int i=0; i<nAlarmCount; i++)
+	{
+		pAlarmInfo = curNewAlarmList.GetNext(pos);
+		if ( pAlarmInfo )
+		{
+			delete pAlarmInfo;
+			pAlarmInfo = NULL;
+		}
+	}
+
+
+	pos = curRefreshAlarmList.GetHeadPosition();
+	nAlarmCount = curRefreshAlarmList.GetCount();
+	for (int i=0; i<nAlarmCount; i++)
+	{
+		pAlarmInfo = curRefreshAlarmList.GetNext(pos);
+		if ( pAlarmInfo )
+		{
+			delete pAlarmInfo;
+			pAlarmInfo = NULL;
+		}
+	}
+
+}
+
+////////////////////////////////////////////////////////////////////////////
 CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr)
 {
 	int ipos=0;
@@ -63,7 +113,6 @@ CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr)
 				AlarmInfo* newAlarm=new AlarmInfo(alarmline);
 				curNewAlarmList.AddTail(newAlarm);
 			}
-
 		}
 		else
 		{
