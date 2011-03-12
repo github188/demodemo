@@ -28,8 +28,8 @@ public:
 	 */
 	int login(const TCHAR *username, const TCHAR *password);
 	int login(CString &user, CString &password);
-
 	int logout();
+	bool GetUserInfo(CString& sUserName, CString& sPassword, int& nSid);
 
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
@@ -43,4 +43,7 @@ public:
 
 protected:
 	int execute_command(CString &cmd);
+	CString m_sUserName;
+	CString m_sPassword;
+	int		m_nSid;
 };

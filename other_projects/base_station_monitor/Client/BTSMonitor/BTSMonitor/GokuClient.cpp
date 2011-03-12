@@ -33,6 +33,13 @@ int GokuClient::login(CString &user, CString &password)
 	buffer.Append("&password=");
 	buffer.Append(password);
 	int ret = execute_command(buffer);
+	
+	if (ret == 0)
+	{
+		m_sUserName = user;
+		m_sPassword = password;
+	}
+
 	return ret;
 }
 
@@ -41,6 +48,17 @@ int GokuClient::logout()
 	buffer = L"cmd>logout";
 	int ret = execute_command(buffer);
 	return ret;
+}
+
+bool GokuClient::GetUserInfo(CString& sUserName, CString& sPassword, int& nSid)
+{
+	if (m_sUserName.IsEmpty() && m_sPassword.IsEmpty())
+		return false;
+
+	sUserName = m_sUserName;
+	sPassword = m_sPassword;
+	nSid	  = m_nSid;
+	return true;
 }
 
 void GokuClient::listbtstree(CString &str)
