@@ -22,8 +22,10 @@ CWarnPopVideo::CWarnPopVideo(CWnd* pParent /*=NULL*/)
 	, m_sStartTime(_T(""))
 	, m_sEndTime(_T(""))
 	, m_bShowing(FALSE)
+	, m_btsName(_T(""))
 {
 	m_pPopView = NULL;
+	m_pParent = pParent;
 }
 
 CWarnPopVideo::~CWarnPopVideo()
@@ -41,6 +43,7 @@ BEGIN_MESSAGE_MAP(CWarnPopVideo, CDialog)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDOK, &CWarnPopVideo::OnBnClickedOk)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_SAVE_PASSED_VIDEO, &CWarnPopVideo::OnBnClickedSavePassedVideo)
 END_MESSAGE_MAP()
 
 
@@ -63,10 +66,6 @@ BOOL CWarnPopVideo::OnInitDialog()
 	m_pPopView->Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rect, this, ID_POPVIDEO_VIEW+m_nPopIndex);
 
 	m_pPopView->ShowWindow(SW_SHOW);
-
-	m_bShowing = TRUE;
-
-	PlayVideo();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -104,7 +103,7 @@ int CWarnPopVideo::GetPopVideoIndex(void)
 	return m_nPopIndex;
 }
 
-void CWarnPopVideo::OnBnClickedOk()
+void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 {
 	// TODO: Add your control notification handler code here
 	BOOL bDebug = FALSE;
@@ -128,11 +127,7 @@ void CWarnPopVideo::OnBnClickedOk()
 		return;
 	}
 
-	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*) GetParent();
-	if (pRunTimeWnd)
-		pRunTimeWnd->DecPopVedioCount();
-
-	m_bShowing = FALSE;
+	//Acked this warning video.
 
 
 	OnOK();
@@ -222,9 +217,10 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 
 }
 
-void CWarnPopVideo::SetVideoPara(CString sUUID, CString sChannel,CString sStartTime, CString sEndTime)
+void CWarnPopVideo::SetVideoPara(CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime)
 {
 	m_sUUID		 = sUUID;
+	m_btsName    = sBtsName;
 	m_sChannel   = sChannel;
 	m_sStartTime = sStartTime;
 	m_sEndTime   = sEndTime;
@@ -232,14 +228,19 @@ void CWarnPopVideo::SetVideoPara(CString sUUID, CString sChannel,CString sStartT
 
 void CWarnPopVideo::OnClose()
 {
-	// TODO: Add your message handler code here and/or call default
-	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*) GetParent();
+	// TODO: Add your message handler code here and/or call default	
+	//if ( IsShowing() ) 
+	//	ShowWindow(SW_HIDE);
+	
+	ShowWindow(SW_HIDE);
+	
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pParent;
 	if (pRunTimeWnd)
 		pRunTimeWnd->DecPopVedioCount();
 
 	m_bShowing = FALSE;
 
-	CDialog::OnClose();
+	//CDialog::OnClose();
 }
 
 BOOL CWarnPopVideo::IsShowing(void)
@@ -249,6 +250,16 @@ BOOL CWarnPopVideo::IsShowing(void)
 
 void CWarnPopVideo::PlayVideo(void)
 {
+	m_bShowing = TRUE;
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*) GetParent();
+	if (pRunTimeWnd)
+		pRunTimeWnd->IncPopVedioCount();
+
+	//set the warning pop title
+	CString sTitle;
+	sTitle = m_btsName + " 开始时间:" + m_sStartTime;
+	SetWindowText( sTitle );
+
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
 	//CString host("192.168.1.200:8000");
@@ -264,4 +275,9 @@ void CWarnPopVideo::PlayVideo(void)
 		
 	}
 		
+}
+
+void CWarnPopVideo::OnBnClickedSavePassedVideo()
+{
+	// TODO: Add your control notification handler code here
 }

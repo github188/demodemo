@@ -24,9 +24,10 @@ CWarningWnd::CWarningWnd()
 {
 	m_pRuntimePg   = new CRuntimeWarning();
 	m_pCriticalPg  = new CCriticalWarning();
-	m_pGereralPg   = new CGeneralWarning();
+//	m_pGereralPg   = new CGeneralWarning();
 
-	if ( !(m_pRuntimePg && m_pCriticalPg && m_pGereralPg) )
+//	if ( !(m_pRuntimePg && m_pCriticalPg && m_pGereralPg) )
+	if ( !(m_pRuntimePg && m_pCriticalPg) )
 		AfxMessageBox("创建视图对象失败!");
 
 }
@@ -39,8 +40,8 @@ CWarningWnd::~CWarningWnd()
 		delete m_pRuntimePg;
 	if (m_pCriticalPg )
 		delete m_pCriticalPg ;
-	if (m_pGereralPg )
-		delete m_pGereralPg;
+//	if (m_pGereralPg )
+//		delete m_pGereralPg;
 
 }
 
@@ -96,13 +97,13 @@ int CWarningWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_pCriticalPg->UpdateWindow();
 	}
 
-	if (m_pGereralPg )
-	{
-		m_pGereralPg->Create(IDD_CRITICAL_WARNING,  &m_wndTabs);
-		m_pGereralPg->SetFont(&m_Font);
-		m_pGereralPg->ShowWindow(SW_SHOW);
-		m_pGereralPg->UpdateWindow();
-	}
+//	if (m_pGereralPg )
+//	{
+//		m_pGereralPg->Create(IDD_CRITICAL_WARNING,  &m_wndTabs);
+//		m_pGereralPg->SetFont(&m_Font);
+//		m_pGereralPg->ShowWindow(SW_SHOW);
+//		m_pGereralPg->UpdateWindow();
+//	}
 
 	
 	// 将列表窗口附加到选项卡:
@@ -110,8 +111,8 @@ int CWarningWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndTabs.AddTab(m_pRuntimePg, strTabName,  (UINT)0);
 	strTabName="严重告警";
 	m_wndTabs.AddTab(m_pCriticalPg, strTabName, (UINT)1);
-	strTabName="一般告警";
-	m_wndTabs.AddTab(m_pGereralPg, strTabName,  (UINT)2);
+//	strTabName="一般告警";
+//	m_wndTabs.AddTab(m_pGereralPg, strTabName,  (UINT)2);
 
 	m_nWarnUpdateTimerID = SetTimer(WM_WARNING_TIMER,WARNING_UPDATE_DURING,0);
 

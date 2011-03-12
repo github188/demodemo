@@ -5,7 +5,7 @@
 // CWarningWnd
 class CRuntimeWarning;
 class CCriticalWarning;
-class CGeneralWarning;
+//class CGeneralWarning;
 
 class CWarningWnd : public CDockablePane
 {
@@ -24,7 +24,7 @@ public:
 
 	CRuntimeWarning  *m_pRuntimePg;
 	CCriticalWarning *m_pCriticalPg;
-	CGeneralWarning  *m_pGereralPg;;
+//	CGeneralWarning  *m_pGereralPg;;
 
 
 protected:

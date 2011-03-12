@@ -29,11 +29,12 @@ private:
 public:
 	afx_msg void OnBnClickedOk();
 	void FullScreenPopVideo(void);
+	void PlayVideo(void);
 private:
 	bool m_bFullScreen;
 	WINDOWPLACEMENT m_struOldPlacement;
 public:
-	void SetVideoPara(CString sUUID, CString sChannel, CString sStartTime, CString sEndTime);
+	void SetVideoPara(CString sUUID,CString sBtsName, CString sChannel, CString sStartTime, CString sEndTime);
 private:
 	CString m_sUUID;
 	CString m_sChannel;
@@ -44,5 +45,8 @@ public:
 	BOOL IsShowing(void);
 private:
 	BOOL m_bShowing;
-	void PlayVideo(void);
+	CWnd* m_pParent;
+	CString m_btsName;
+public:
+	afx_msg void OnBnClickedSavePassedVideo();
 };
