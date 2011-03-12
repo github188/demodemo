@@ -22,4 +22,6 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
+private:
+	CString m_strPort;
 };

@@ -22,7 +22,7 @@
 #include "WarningConfig.h"
 #include "WarningMgr.h"
 #include "TaskMgr.h"
-
+#include "UserMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -138,6 +138,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 		return FALSE;
 	// TODO: 在此处通过修改
 	//  CREATESTRUCT cs 来修改窗口类或样式
+
 
 	return TRUE;
 }
@@ -268,7 +269,7 @@ void CMainFrame::InitializeRibbon()
 
 	//lstQATCmds.AddTail(ID_FIND_CAMERA);
 
-	//m_wndRibbonBar.SetQuickAccessCommands(lstQATCmds);
+	m_wndRibbonBar.SetQuickAccessCommands(lstQATCmds);
 
 	m_wndRibbonBar.AddToTabs(new CMFCRibbonButton(ID_APP_ABOUT, _T("\na"), m_PanelImages.ExtractIcon (0)));
 }
@@ -539,4 +540,6 @@ void CMainFrame::OnWarningMgr()
 void CMainFrame::OnUserMgr()
 {
 	// TODO: Add your command handler code here
+	CUserMgr UserMgr;
+	UserMgr.DoModal();
 }

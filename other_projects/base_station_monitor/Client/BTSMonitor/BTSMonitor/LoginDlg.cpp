@@ -17,6 +17,7 @@ IMPLEMENT_DYNAMIC(CLoginDlg, CDialog)
 
 CLoginDlg::CLoginDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CLoginDlg::IDD, pParent)
+	, m_strPort(_T(""))
 {
 
 }
@@ -28,6 +29,7 @@ CLoginDlg::~CLoginDlg()
 void CLoginDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDT_PORT, m_strPort);
 }
 
 
@@ -46,18 +48,16 @@ void CLoginDlg::OnBnClickedOk()
 	this->GetDlgItemText(IDC_EDIT_USER, username);
 	((CEdit *)this->GetDlgItem(IDC_EDIT_PWD))->GetWindowText(password);
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	CString host;
-	this->GetDlgItemText(IDC_EDIT_SERVER, host);
-	host.Append(":8000");
+	CString host, port;
+	GetDlgItemText(IDC_EDIT_SERVER, host);
+	GetDlgItemText(IDC_EDT_PORT, port);
+	//host.Append(":8000");
+	host.Append(":");
+	host.Append(port);
 
 	if (pApp->pgkclient == NULL)
 		pApp->pgkclient =new GokuClient(host, host);
 	
-#ifdef _DEBUG
-	username = "test1";
-	password = "pass";
-#endif
-
 	if(pApp->pgkclient->login(username, password)==0)
 	{
 		pApp->btsTotalStr.Empty();
@@ -72,8 +72,8 @@ void CLoginDlg::OnBnClickedOk()
 		//CString level="";
 		//CString limit="";
 		//CString offset="";
-		//pApp->pgkclient->queryAlarmInfo(category, uuid, startDate, startTime, type,
-		//				level, limit, offset, pApp->alarmStr);
+		//pApp->pgkclient->queryAlarmInfo(category, uuid, startDate, startTime, type,level, limit, offset, pApp->alarmStr);
+
 		OnOK();
 	}
 	else
@@ -87,7 +87,8 @@ BOOL CLoginDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	CString server="192.168.1.200";
+	//CString server="192.168.1.200";
+	CString server="60.177.179.182";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
 
 
