@@ -132,10 +132,11 @@
 #define IDB_BITMAP1                     339
 #define IDB_DGM_LOGO                    339
 #define IDI_LEVEL_2                     341
-#define IDI_ICON3                       342
 #define IDI_LEVEL_1                     342
 #define IDI_LEVEL_3                     343
+#define IDD_USER_MGR                    343
 #define IDI_LEVEL_4                     344
+#define IDR_POPMENU_WARNMGR             344
 #define IDI_LEVEL_5                     345
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
@@ -159,8 +160,11 @@
 #define IDC_BTN_WARN_MGR_DEVICE_FIND    1015
 #define IDC_TREE_WARN_MGR_DEVICE        1016
 #define IDC_COMBO2                      1017
+#define IDC_CBO_WARN_TYPE               1017
 #define IDC_DATETIMEPICKER1             1018
+#define IDC_DATE_BEGIN                  1018
 #define IDC_DATETIMEPICKER2             1019
+#define IDC_DATE_END                    1019
 #define IDC_CBO_START_HOUR              1020
 #define IDC_CBO_END_HOUR                1021
 #define IDC_CBO_START_MINUTE            1022
@@ -168,11 +172,13 @@
 #define IDC_CBO_END_MINUTE              1024
 #define IDC_CBO_END_SECOND              1025
 #define IDC_LIST1                       1026
+#define IDC_LST_TARGET_WARNING          1026
 #define IDC_BTN_PAUSE                   1027
 #define IDC_BTN_STOP                    1028
 #define IDC_BTN_PLAY                    1029
 #define IDC_BTN_FAST_FORWARD            1030
 #define IDC_BTN_RECORD                  1031
+#define IDC_CBO_WARN_ACK_TYPE           1031
 #define IDC_BTN_SNAP                    1032
 #define IDC_BTN_GOTO_BEGIN              1033
 #define IDC_BTN_GOTO_END                1034
@@ -188,6 +194,15 @@
 #define IDC_EDIT_DEVICEID               1044
 #define IDC_OGON_PIC                    1045
 #define IDC_DGM_LOGO                    1046
+#define IDC_EDT_USER                    1048
+#define IDC_EDT_PASSWORD                1049
+#define IDC_EDT_NEW_PW2                 1050
+#define IDC_EDT_NEW_PW                  1051
+#define IDC_BTN_MOD                     1053
+#define IDC_SAVE_PASSED_VIDEO           1055
+#define IDC_FIND_TARGET_WARNING         1060
+#define IDC_WINDOW_VEDIO                1061
+#define IDC_EDT_PORT                    1062
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -208,14 +223,18 @@
 #define ID_WARNING_MGR                  32798
 #define ID_TASK_MGR                     32799
 #define ID_USER_MGR                     32800
+#define ID_WARNINGMGR_32801             32801
+#define ID_WARNINGMGR_32802             32802
+#define ID_WARNINGMGR_EXPORT            32803
+#define ID_WARNINGMGR_SAVEAS            32804
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        343
-#define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1047
+#define _APS_NEXT_RESOURCE_VALUE        345
+#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_CONTROL_VALUE         1063
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

@@ -51,4 +51,6 @@ private:
 	int m_nPopViewCount;
 public:
 	void DecPopVedioCount(void);
+	void IncPopVedioCount(void);
+	bool AckedWarning(CString sBtsID);
 };

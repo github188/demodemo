@@ -91,7 +91,7 @@ BOOL CRuntimeWarning::OnInitDialog()
 		"开始时间", //start tiem
 		"结束时间", //end   time
 		"处理状态", //status
-		""
+		""			//UUID
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
@@ -120,10 +120,13 @@ BOOL CRuntimeWarning::OnInitDialog()
 	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
 
 	i=0;
-	for (;i<cnMAX_POP_WINDOW; i++)
+	for (; i<cnMAX_POP_WINDOW; i++)
 	{
 		VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(this) );
 		m_pPopVideoDlg[i]->SetPopVideoIndex(i);
+		m_pPopVideoDlg[i]->Create(IDD_POP_VIDEO);//(IDD_POP_VIDEO,this); //AfxGetApp()->m_pMainWnd);
+		m_pPopVideoDlg[i]->ShowWindow(SW_HIDE);
+
 	}
 
 	
@@ -214,18 +217,23 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 	
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
 
+			//if no BTSID, then continue;
+			if ( pAlarmInfo->BTSID.IsEmpty() )
+				continue;
+
 			//.pop the warning vedio windows
 			if (m_nPopViewCount<cnMAX_POP_WINDOW)
 			{
 				for (int i=0; i<cnMAX_POP_WINDOW; i++)
 				{
-					if (m_pPopVideoDlg[m_nPopViewCount]->IsShowing() == FALSE)
+					if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 					{
-						m_pPopVideoDlg[i]->SetPopVideoIndex(i);
-						m_pPopVideoDlg[m_nPopViewCount]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
-						m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,this);
-						m_pPopVideoDlg[m_nPopViewCount]->ShowWindow(SW_SHOW);
-
+						//m_pPopVideoDlg[i]->SetPopVideoIndex(i);
+						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
+						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,this);
+						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,AfxGetApp()->m_pMainWnd);
+						m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
+						m_pPopVideoDlg[i]->PlayVideo();
 						break;
 					}
 				}
@@ -233,6 +241,19 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 
 		}// ArmList
 	}
+	/*
+	static bool bShow = FALSE;
+	if (!bShow)
+	{
+		for (int i=0; i<cnMAX_POP_WINDOW; i++)
+		{
+			m_pPopVideoDlg[i]->Create(IDD_POP_VIDEO, AfxGetApp()->m_pMainWnd);
+			m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
+		}
+
+		bShow = TRUE;
+	}
+	*/
 	
 }
 
@@ -327,16 +348,24 @@ void CRuntimeWarning::OnContextMenu(CWnd* pWnd, CPoint point)
 void CRuntimeWarning::OnWarningAck()
 {
 	// TODO: Add your command handler code here
-	if (m_nCurItem>-1)
-	{
-		DWORD dwImage = m_lstRuntimeWarning.GetItemData(m_nCurItem);
-		if (dwImage == WARNING_UNKNOWN || dwImage == WARNING_UNACK)
-		{
-			m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
-			m_lstRuntimeWarning.GetItemData(WARNING_ACK);
-		}
+	if (m_nCurItem<0)
+		return;
 
-	}
+
+	DWORD dwImage = m_lstRuntimeWarning.GetItemData(m_nCurItem);
+	if (dwImage == WARNING_UNKNOWN || dwImage == WARNING_ACK)
+		return;
+
+	//WARNING_UNACK
+	CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
+
+	CString sBtsID = m_lstRuntimeWarning.GetItemText(m_nCurItem,5);
+	if ( pApp->pgkclient->confirmAlarm(sBtsID) )
+		m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
+		//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
+	else
+		AfxMessageBox("告警确认失败!");
+
 
 	/*
 	UINT nSelCnt = m_lstRuntimeWarning.GetSelectedCount();
@@ -403,4 +432,37 @@ void CRuntimeWarning::OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResul
 void CRuntimeWarning::DecPopVedioCount(void)
 {
 	m_nPopViewCount--;
+}
+void CRuntimeWarning::IncPopVedioCount(void)
+{
+	m_nPopViewCount++;
+}
+
+bool CRuntimeWarning::AckedWarning(CString sBtsID)
+{
+	bool bAcked = false;
+	int nCnt = m_lstRuntimeWarning.GetItemCount();
+	for (int i=0; i<nCnt; i++)
+	{
+		if (m_lstRuntimeWarning.GetItemText(i,5) == sBtsID)
+		{
+
+			CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
+			if ( pApp->pgkclient->confirmAlarm(sBtsID) )
+			{
+				m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
+				//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
+				bAcked = true;
+			}
+			else
+			{
+				AfxMessageBox("告警确认失败!");
+				bAcked = false;
+			}
+
+			break;
+		}
+	}
+
+	return bAcked;
 }
