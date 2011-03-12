@@ -458,12 +458,12 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 				this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
 				this.selectionKey.selector().wakeup();
 			}
-			while(sync && src.remaining() > 0){
+			//不使用while进行循环的等待，避免线程的长时间阻塞。
+			if(sync && src.remaining() > 0){
 				synchronized(writeQueue){
 					try {
 						writeQueue.wait(1000 * 30);
 					} catch (InterruptedException e) {
-						break;
 					}
 				}
 			}
