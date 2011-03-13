@@ -30,6 +30,9 @@ public class Settings {
 	
 	public final static String MASTER_SERVER_URL = "master_server_url";
 	
+	public final static String ALARM_CHECK_PERIOD = "alarm_check_period";
+	public final static String AUTO_CONFIRM_TIME = "auto_confirm_time";
+	
 	/**
 	 * 主数据库配置。
 	 */

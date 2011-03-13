@@ -107,7 +107,7 @@ public class VideoRouteServer {
 		}
 		
 		log.info("Starting alarm manager server...");
-		alarmManager = new AlarmMonitorCenter(threadPool);
+		alarmManager = new AlarmMonitorCenter(threadPool, settings);
 		threadPool.execute(alarmManager);
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);

@@ -357,7 +357,7 @@ public class JDBCDataStorage extends DataStorage {
 			return String.format("'%s'", val);
 		}else if(val instanceof Date){
 			String x = String.format("STR_TO_DATE('%s',", format.format((Date)val));
-			x += "'%Y-%m-%d %h:%i:%s')";
+			x += "'%Y-%m-%d %H:%i:%s')";
 			return x;
 		}else {
 			return String.format("%s", val);

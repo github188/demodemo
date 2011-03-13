@@ -59,13 +59,15 @@ public class RecordFileInfo {
 	} 
 
 	private long decodeUnsignedInt(ByteBuffer buffer){
-		//long d = 0;
 		byte d1 = buffer.get();
 		byte d2 = buffer.get();
 		byte d3 = buffer.get();
 		byte d4 = buffer.get();
-		//d = 
-		return ((d4 << 24)| 0xffffff) & ((d3 << 16)| 0xffff) & ((d2 << 8)| 0xff) & d1;	
+		long d = ((d4 << 24) | 0xffffff) & 
+				 ((d3 << 16) | 0xff00ffff) & 
+				 ((d2 << 8)  | 0xffff00ff) & 
+				 (d1         | 0xffffff00);
+		return d;	
 	}
 	
 	public String toString(){

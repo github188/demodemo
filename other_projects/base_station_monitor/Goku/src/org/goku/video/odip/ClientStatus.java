@@ -29,7 +29,7 @@ public class ClientStatus {
 	/**
 	 * 设备类型 ack_login W16-W19
 	 */	
-	public int sessionId = 0;
+	public long sessionId = 0;
 
 	/**
 	 * 最后一次有读操作时间。用于TimeOut管理。

@@ -34,7 +34,7 @@ public class VideoRecorderManager implements Runnable{
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
 	
-	//单位分钟。
+	//单位秒。
 	private long alarmTimeOut = 5;
 	
 	private Map<String, AlarmRecord> runningRecorder = new HashMap<String, AlarmRecord>();
@@ -42,7 +42,9 @@ public class VideoRecorderManager implements Runnable{
 	public VideoRecorderManager(Settings settings, DataStorage storage){
 		this.storage = storage;
 		initRootPath(settings.getString(Settings.FILE_ROOT_PATH, "data"));	
-		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);		
+		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);
+		
+		alarmTimeOut = settings.getInt(Settings.AUTO_CONFIRM_TIME, 5);
 	}
 	
 	/**

@@ -99,7 +99,9 @@ public class ODIPHandler {
 		if(protoHeader.cmd == 0){
 			this.buffer.flip();
 			protoHeader.loadBuffer(this.buffer);
-			int extLen = this.protoHeader.externalLength;			
+			//可能是协议乱序或其他原因，读到了错误的协议头。
+			if(!protoHeader.supportCommand()) throw new IOException(String.format("unknown ODIP message, cmd=0x%x", protoHeader.cmd));
+			int extLen = this.protoHeader.externalLength;
 			if(log.isDebugEnabled()){
 				if(!cmdDebug.containsKey(protoHeader.cmd) ||
 				   System.currentTimeMillis() - cmdDebug.get(protoHeader.cmd) > 5000
@@ -122,16 +124,11 @@ public class ODIPHandler {
 		//ODIP协议头和扩展数据都读完成，开始处理协议信息。
 		if(protoHeader.cmd != 0 && !buffer.hasRemaining()){
 			buffer.flip();
-			if(!protoHeader.supportCommand()){
-				log.warn(String.format("drop unknown ODIP message, cmd=0x%x", 
-						protoHeader.cmd));
-			}else {
-				long st = System.currentTimeMillis();
-				this.processODIPMessage(protoHeader, buffer);
-				st = System.currentTimeMillis() - st;
-				if(st > 3){
-					log.warn(String.format("ODIP '0x%x' is processed %s ms.", protoHeader.cmd, st));
-				}
+			long st = System.currentTimeMillis();
+			this.processODIPMessage(protoHeader, buffer);
+			st = System.currentTimeMillis() - st;
+			if(st > 3){
+				log.warn(String.format("ODIP '0x%x' is processed %s ms.", protoHeader.cmd, st));
 			}
 			//处理完成后，重新开始读协议头。
 			this.resetBuffer();
@@ -231,7 +228,8 @@ public class ODIPHandler {
 			header.cmd = ProtocolHeader.CMD_CONNECT;
 			header.externalLength = 0;
 			header.version = 0;
-			header.setInt(8, this.client.getClientStatus().sessionId);
+			//header.setInt(8, this.client.getClientStatus().sessionId);
+			header.setLong(8, this.client.getClientStatus().sessionId);
 			header.setInt(12, type);
 			header.setByte(13, (byte)channelId);
 			
@@ -518,7 +516,7 @@ public class ODIPHandler {
 			status.channelCount = header.getByte(10);
 			status.videoType = header.getByte(11);
 			status.devType = header.getByte(12);
-			status.sessionId = header.getInt(16);
+			status.sessionId = header.getUnsignedInt(16);
 			status.devMode = header.getByte(28);
 			
 			this.client.setClientStatus(status);

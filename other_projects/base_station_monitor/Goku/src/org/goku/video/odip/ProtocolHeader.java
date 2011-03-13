@@ -146,5 +146,20 @@ public class ProtocolHeader {
 		this.data[index - 7] = (byte)(data >> 8 & 0xff);
 		this.data[index - 6] = (byte)(data >> 16 & 0xff);
 		this.data[index - 5] = (byte)(data >> 24 & 0xff);
+	}
+	
+	public long getUnsignedInt(int index){
+		if(index < 8 || index + 4 > 31) return -1;
+		
+		byte d1 = data[index - 8];
+		byte d2 = data[index - 7];
+		byte d3 = data[index - 6];
+		byte d4 = data[index - 5];
+		long d = ((d4 << 24) | 0xffffff) & 
+				 ((d3 << 16) | 0xff00ffff) & 
+				 ((d2 << 8)  | 0xffff00ff) & 
+				 (d1         | 0xffffff00);		
+		
+		return d;
 	}		
 }

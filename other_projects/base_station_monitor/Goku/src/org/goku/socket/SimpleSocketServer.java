@@ -79,7 +79,11 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 		}
 		try{
 			if(data.startsWith("cmd>")){
-				this.httpAdapter.runCommand(data, client);
+				if(client.connectionMode == SocketClient.MODE_HTTP){
+					this.httpAdapter.runCommand(data, client);
+				}else {
+					log.debug("can't execute control command on video channel.");
+				}
 			}else if(data.startsWith("video>")){
 				this.videoAdapter.runCommand(data, client);
 			}else {

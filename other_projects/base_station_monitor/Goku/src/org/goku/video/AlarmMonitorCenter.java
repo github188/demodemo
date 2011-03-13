@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.db.DataStorage;
+import org.goku.settings.Settings;
 import org.goku.video.odip.AbstractMonitorListener;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.MonitorClientEvent;
@@ -31,9 +32,14 @@ public class AlarmMonitorCenter implements Runnable{
 	private Collection<MonitorClient> clients = Collections.synchronizedCollection(new ArrayList<MonitorClient>());
 	private ThreadPoolExecutor executor = null;
 	private Timer timer = new Timer();
+	private long alarmCheckPeriod = 3; //秒。
+	private long autoConfirmTime = 5; //分钟。
+	private long lastAutoConfirmTime = 0;
 	
-	public AlarmMonitorCenter(ThreadPoolExecutor executor){
+	public AlarmMonitorCenter(ThreadPoolExecutor executor, Settings s){
 		this.executor = executor;
+		this.alarmCheckPeriod = s.getInt(Settings.ALARM_CHECK_PERIOD, 3);
+		this.autoConfirmTime = s.getInt(Settings.AUTO_CONFIRM_TIME, 5);
 	}
 	
 	@Override
@@ -41,13 +47,22 @@ public class AlarmMonitorCenter implements Runnable{
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
+				long st = System.currentTimeMillis(), et = 0;
 				try{
 					checkAllClientAlarm();
+					autoComfirmAlarm();
+					et = System.currentTimeMillis() - st;
+					//如果每次轮询告警的时间超过2秒。服务器太慢，可能需要降低视频终端的数量。
+					if(et > 2000){
+						log.warn(String.format("Alarm check process too slow, %s ms in one times.", et));
+					}
 				}catch(Throwable e){
 					log.error(e.toString(), e);
 				}
 			}
-		}, 100, 1000 * 5);
+		}, 100, 1000 * alarmCheckPeriod);
+		log.info(String.format("start alarm monitor, check period:%s sec, auto confirm time:%s min",
+				 this.alarmCheckPeriod, this.autoConfirmTime));
 	}
 	
 	
@@ -57,6 +72,31 @@ public class AlarmMonitorCenter implements Runnable{
 				c.sendAlarmRequest();
 			}
 		}
+	}
+	
+	public void autoComfirmAlarm(){
+		//每10秒钟自动确认一次。
+		if(System.currentTimeMillis() - lastAutoConfirmTime < 1000 * 30) return;
+		//
+		final String sql = "update alarm_record set alarmStatus='2', comfirmTime=${0}, lastUpdateTime=${0}, endTime=${0} " +
+					 "where alarmStatus='1' and startTime < ${1}";
+		
+		final Date now = new Date(System.currentTimeMillis());		
+		final Date startConfirm = new Date(System.currentTimeMillis() - 60 * 1000 * this.autoConfirmTime);
+		//放到线程里面运行，是避免数据库操作阻塞，导致告警检查的延迟。
+		this.executor.execute(new Runnable(){
+			@Override
+			public void run() {
+				DataStorage storage = VideoRouteServer.getInstance().storage;
+				try {
+					int count = storage.execute_sql(sql, new Object[]{now, startConfirm});
+					lastAutoConfirmTime = System.currentTimeMillis();
+					log.debug(String.format("Auto confirm alarms, count:%s, starting before:%s", count, startConfirm));
+				} catch (Throwable e) {
+					log.warn(e.toString(), e);
+				}
+			}});
+		
 	}
 	
 	public void addClient(MonitorClient client){
