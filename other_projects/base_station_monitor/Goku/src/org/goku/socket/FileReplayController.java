@@ -2,6 +2,7 @@ package org.goku.socket;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -12,13 +13,23 @@ public class FileReplayController {
 	private FileChannel channel = null;
 	private MappedByteBuffer buffer = null;
 	private int fileSize = 0;
-	private int frameSize = 1024 * 40;
+	private int frameSize = 1024 * 100;
+	private File path = null;
 	
-	public FileReplayController(SocketClient client, File path) throws IOException{
+	public FileReplayController(SocketClient client, File path){
 		this.client = client;
 		fileSize = (int)path.length();
-		channel = new FileInputStream(path).getChannel();
-		buffer = channel.map(MapMode.READ_ONLY, 0, fileSize);
+		this.path = path;
+	}
+	
+	public boolean openFile() throws IOException{
+		if(path.isFile()){
+			channel = new FileInputStream(path).getChannel();
+			buffer = channel.map(MapMode.READ_ONLY, 0, fileSize);
+			return true;
+		}else {
+			return false;
+		}
 	}
 	
 	public void nextFrame() throws IOException{
@@ -39,6 +50,20 @@ public class FileReplayController {
 	}
 	
 	public void close() throws IOException{
+		//等1分钟写队列，
+		for(int i = 0; i < 60; i++){
+			if(client.writeQueue.size() > 0){
+				synchronized(client.writeQueue){
+					try {
+						client.writeQueue.wait(1000);
+					} catch (InterruptedException e) {
+					}
+				}
+			}else {
+				break;
+			}
+		}
+		
 		if(channel != null){
 			channel.close();
 		}

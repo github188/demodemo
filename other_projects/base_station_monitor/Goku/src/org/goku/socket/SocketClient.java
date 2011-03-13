@@ -50,7 +50,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	protected ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 	protected StringBuffer curCmd = null;
 	private String remoteIP = null;
-	private Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(100);
+	public Queue<ByteBuffer> writeQueue = new ArrayDeque<ByteBuffer>(100);
 	
 	private long lastBenckmark = 0, writeSize = 0, lastDropPackage = 0;
 	//private long startDropTime = 0;

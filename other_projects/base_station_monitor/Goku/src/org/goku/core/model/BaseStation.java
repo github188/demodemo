@@ -170,6 +170,13 @@ public class BaseStation  implements JSONStreamAware{
 		return supportAlarmList.contains(code.trim());
 	}
 	
+	public String getBTSCategoryName(){
+		if(this.btsCategory == null || "".equals(this.btsCategory)){
+			return "0";
+		}
+		return this.btsCategory;
+	}
+	
 	private void initChannelList(){
 		List<MonitorChannel> temp = new ArrayList<MonitorChannel>();
 		MonitorChannel ch = null;

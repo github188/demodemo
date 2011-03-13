@@ -92,15 +92,17 @@ public class SocketVideoAdapter {
 	protected void doRePlay(SocketClient client, String uuid) throws IOException{
 		if(client.connectionMode == SocketClient.MODE_HTTP){
 			File videoPath = recordManager.getAlarmRecordFile(uuid);
-			if(videoPath != null){
-				log.info("Start replay uuid " + uuid + ", path:" + videoPath.getAbsolutePath());
+			if(videoPath != null && videoPath.isFile()){
+				log.debug("start replay uuid " + uuid + ", path:" + videoPath.getAbsolutePath() + ", size:" + videoPath.length());
 				client.loginUser = new User();
 				client.loginUser.name = "re<" + uuid + ">";				
 				client.replay = new FileReplayController(client, videoPath);
+				client.replay.openFile();
 				client.socket.socket().setSendBufferSize(1024 * 100);
 				client.replay.nextFrame();
 				client.connectionMode = SocketClient.MODE_REPLAY;
 			}else {
+				log.warn("not found video file, " + videoPath.getAbsolutePath());
 				client.closeSocket();
 			}
 		}else {
