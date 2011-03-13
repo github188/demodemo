@@ -56,29 +56,23 @@ void CLoginDlg::OnBnClickedOk()
 
 	if (pApp->pgkclient == NULL)
 		pApp->pgkclient =new GokuClient(host, host);
-	
-	if(pApp->pgkclient->login(username, password)==0)
-	{
-		pApp->btsTotalStr.Empty();
-		pApp->alarmStr.Empty();
-		pApp->pgkclient->listbtstree(pApp->btsTotalStr);
-		//pApp->pgkclient->getAlarmStr(pApp->alarmStr);
-		//CString category="1";
-		//CString uuid="10011";
-		//CString startDate="";
-		//CString startTime="";
-		//CString type="";
-		//CString level="";
-		//CString limit="";
-		//CString offset="";
-		//pApp->pgkclient->queryAlarmInfo(category, uuid, startDate, startTime, type,level, limit, offset, pApp->alarmStr);
 
-		OnOK();
-	}
-	else
+	if ( pApp->pgkclient->IsConnected() )
 	{
-		this->MessageBox("登录错误，请检查用户名密码是否正确");
+		if(pApp->pgkclient->login(username, password)==0)
+		{
+			pApp->btsTotalStr.Empty();
+			pApp->alarmStr.Empty();
+			pApp->pgkclient->listbtstree(pApp->btsTotalStr);
+
+			OnOK();
+		}
+		else
+			AfxMessageBox("登录错误，请检查用户名密码是否正确");
 	}
+	
+	//Socket connect failed.
+
 }
 
 BOOL CLoginDlg::OnInitDialog()
