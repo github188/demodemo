@@ -169,7 +169,7 @@ public class VideoRecorderManager implements Runnable{
 		now.setTimeInMillis(startDate.getTime());
 		
 		path = path.replaceAll("\\$\\{yyyy\\}", String.format("%04d", now.get(Calendar.YEAR)));
-		path = path.replaceAll("\\$\\{mm\\}", String.format("%02d", now.get(Calendar.MONTH)));
+		path = path.replaceAll("\\$\\{mm\\}", String.format("%02d", now.get(Calendar.MONTH) + 1));
 		path = path.replaceAll("\\$\\{dd\\}", String.format("%02d", now.get(Calendar.DAY_OF_MONTH)));
 		
 		path = path.replaceAll("\\$\\{HH\\}", String.format("%02d", now.get(Calendar.HOUR_OF_DAY)));

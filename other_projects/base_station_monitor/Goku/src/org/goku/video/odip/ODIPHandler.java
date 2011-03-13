@@ -105,7 +105,7 @@ public class ODIPHandler {
 				   System.currentTimeMillis() - cmdDebug.get(protoHeader.cmd) > 5000
 				  ){
 					cmdDebug.put(protoHeader.cmd, System.currentTimeMillis());
-					log.debug(String.format("Got cmd=0x%x, ext len=%s, Socket='%s'", 
+					log.debug(String.format("cmd=0x%x, ext len=%s, source='%s'", 
 							protoHeader.cmd, extLen, this.socket.toString()));
 				}
 			}
@@ -123,7 +123,7 @@ public class ODIPHandler {
 		if(protoHeader.cmd != 0 && !buffer.hasRemaining()){
 			buffer.flip();
 			if(!protoHeader.supportCommand()){
-				log.warn(String.format("Drop unknown ODIP message, cmd=0x%x", 
+				log.warn(String.format("drop unknown ODIP message, cmd=0x%x", 
 						protoHeader.cmd));
 			}else {
 				long st = System.currentTimeMillis();

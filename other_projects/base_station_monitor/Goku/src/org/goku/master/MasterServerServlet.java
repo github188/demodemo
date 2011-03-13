@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.Location;
@@ -735,12 +736,13 @@ public class MasterServerServlet extends BaseRouteServlet{
 		out.println(String.format("0:alarm list$%s$%s$%s", result.count, result.data.size(), result.sessionId));
 		AlarmRecord alarm = null;
 		String data = null;
-		String endTime = "", startTime = "";
+		String endTime = "", startTime = "", alarmName="";
 		for(Iterator iter = result.data.iterator(); iter.hasNext();){
 			alarm = (AlarmRecord)iter.next();
 			endTime = alarm.endTime != null ? format.format(alarm.endTime) : "0";
 			startTime = alarm.startTime != null ? format.format(alarm.startTime) : "0";
-			data = String.format("%s$%s$%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarm.alarmCode, alarm.getChannelId(),
+			alarmName = AlarmDefine.alarm(alarm.alarmCode).alarmName;
+			data = String.format("%s$%s$%s$%s$%s$%s$%s$%s$%s", alarm.uuid, alarmName, alarm.getChannelId(),
 					alarm.alarmStatus, alarm.getLevel(),
 					//format.format(alarm.startTime),
 					startTime,
