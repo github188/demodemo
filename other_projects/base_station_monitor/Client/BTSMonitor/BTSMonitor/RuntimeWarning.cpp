@@ -211,8 +211,9 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 			//"结束时间", //end   time
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
 			//"处理状态" //status
-			sTemp = pAlarmInfo->status==1 ? "未处理":
-				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
+			sTemp = 	pAlarmInfo->status==2 ? "超时自动处理":
+						pAlarmInfo->status==3 ? "手动确认":"未处理";
+				;
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,sTemp,0,0,0,0);	
 	
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
@@ -222,14 +223,14 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 				continue;
 
 			//.pop the warning vedio windows
-			if (m_nPopViewCount<cnMAX_POP_WINDOW)
+			if (m_nPopViewCount<cnMAX_POP_WINDOW && pAlarmInfo->category == "1")
 			{
 				for (int i=0; i<cnMAX_POP_WINDOW; i++)
 				{
 					if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 					{
 						//m_pPopVideoDlg[i]->SetPopVideoIndex(i);
-						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
+						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->uuid, sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
 						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,this);
 						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,AfxGetApp()->m_pMainWnd);
 						m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
@@ -352,17 +353,21 @@ void CRuntimeWarning::OnWarningAck()
 		return;
 
 
-	DWORD dwImage = m_lstRuntimeWarning.GetItemData(m_nCurItem);
-	if (dwImage == WARNING_UNKNOWN || dwImage == WARNING_ACK)
-		return;
+	//DWORD dwImage = m_lstRuntimeWarning.GetItemData(m_nCurItem);
+	//if (dwImage == WARNING_UNKNOWN || dwImage == WARNING_ACK)
+	//	return;
 
 	//WARNING_UNACK
 	CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
 
-	CString sBtsID = m_lstRuntimeWarning.GetItemText(m_nCurItem,5);
-	if ( pApp->pgkclient->confirmAlarm(sBtsID) )
+	CString sUUID = m_lstRuntimeWarning.GetItemText(m_nCurItem,8);
+	if ( pApp->pgkclient->confirmAlarm(sUUID) )
+	{
 		m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
 		//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
+		m_lstRuntimeWarning.DeleteItem(m_nCurItem);
+		m_nCurItem = -1;
+	}
 	else
 		AfxMessageBox("告警确认失败!");
 
@@ -438,20 +443,21 @@ void CRuntimeWarning::IncPopVedioCount(void)
 	m_nPopViewCount++;
 }
 
-bool CRuntimeWarning::AckedWarning(CString sBtsID)
+bool CRuntimeWarning::AckedWarning(CString sUUID)
 {
 	bool bAcked = false;
 	int nCnt = m_lstRuntimeWarning.GetItemCount();
 	for (int i=0; i<nCnt; i++)
 	{
-		if (m_lstRuntimeWarning.GetItemText(i,5) == sBtsID)
+		if (m_lstRuntimeWarning.GetItemText(i,8) == sUUID)
 		{
 
 			CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
-			if ( pApp->pgkclient->confirmAlarm(sBtsID) )
+			if ( pApp->pgkclient->confirmAlarm(sUUID) )
 			{
-				m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
+				//m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
 				//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
+				m_lstRuntimeWarning.DeleteItem(i);
 				bAcked = true;
 			}
 			else

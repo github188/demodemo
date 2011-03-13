@@ -51,7 +51,6 @@ void CLoginDlg::OnBnClickedOk()
 	CString host, port;
 	GetDlgItemText(IDC_EDIT_SERVER, host);
 	GetDlgItemText(IDC_EDT_PORT, port);
-	//host.Append(":8000");
 	host.Append(":");
 	host.Append(port);
 
@@ -90,6 +89,8 @@ BOOL CLoginDlg::OnInitDialog()
 	//CString server="192.168.1.200";
 	CString server="60.177.179.182";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
+
+	this->SetDlgItemText(IDC_EDT_PORT, "8000");
 
 
 	//LogOn ICON

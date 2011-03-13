@@ -52,5 +52,5 @@ private:
 public:
 	void DecPopVedioCount(void);
 	void IncPopVedioCount(void);
-	bool AckedWarning(CString sBtsID);
+	bool AckedWarning(CString sUUID);
 };
