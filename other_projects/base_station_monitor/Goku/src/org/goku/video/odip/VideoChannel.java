@@ -62,6 +62,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 						log.warn("Failed to create video channel:" + conn.toString());
 						selectionKey.channel().close();
 						this.selectionKey.cancel();
+						this.channel.videoChannel = null;
 					}
 				}else if(this.selectionKey.isReadable()){
 					this.read((SocketChannel)selectionKey.channel());
@@ -76,6 +77,11 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 			} catch (Exception e) {
 				log.error(e.toString(), e);				
 				this.selectionKey.cancel();
+				try {
+					selectionKey.channel().close();
+				} catch (IOException e1) {
+				}
+				this.channel.videoChannel = null;
 			}
 		}
 	}
@@ -181,7 +187,11 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 				this.selectionKey.selector().wakeup();
 			}
 		}
-	}	
+	}
+	
+	public boolean isReadTimeOut(int sec){
+		return (System.currentTimeMillis() - lastBenckTime) > sec * 1000; 
+	}
 
 	@Override
 	public void setSelectionKey(SelectionKey key) {

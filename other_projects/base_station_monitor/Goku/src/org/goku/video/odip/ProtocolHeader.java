@@ -32,6 +32,7 @@ public class ProtocolHeader {
 	public static final byte CMD_DIR_FILE = (byte) 0xA5;
 	public static final byte ACK_DIR_FILE = (byte) 0xB6;
 	
+	public static final byte ACK_DEV_INFO = (byte) 0xB4;
 	
 	/**
 	 * 媒体数据响应
@@ -52,7 +53,7 @@ public class ProtocolHeader {
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //80-8F
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //90-9F
 	 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //A0-AF
-	 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, //B0-BF
+	 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, //B0-BF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //C0-CF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //D0-DF
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //E0-EF

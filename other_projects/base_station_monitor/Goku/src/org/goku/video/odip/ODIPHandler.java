@@ -6,6 +6,7 @@ import static org.goku.video.odip.ProtocolHeader.ACK_LOGIN;
 import static org.goku.video.odip.ProtocolHeader.CMD_LOGIN;
 import static org.goku.video.odip.ProtocolHeader.ACK_DIR_FILE;
 import static org.goku.video.odip.ProtocolHeader.ACK_DOWNLOAD_VIDEO;
+import static org.goku.video.odip.ProtocolHeader.ACK_DEV_INFO;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -156,6 +157,9 @@ public class ODIPHandler {
 			case ACK_DOWNLOAD_VIDEO:
 				this.ackDownVideo(header, buffer);
 				break;
+			case ACK_DEV_INFO:
+				this.ackDevInfo(header, buffer);
+				break;
 			default:
 				log.warn(String.format("Not found handler for command:0x%x", header.cmd));
 		}
@@ -292,6 +296,24 @@ public class ODIPHandler {
 		buffer.position(32);
 		buffer.flip();
 		socket.write(buffer, false);
+	}
+	
+	/**
+	 * 0xa4
+	 * @param action 
+	 */	
+	public void getDevStatus(int type){
+		ByteBuffer buffer = ByteBuffer.allocate(64);
+		ProtocolHeader header = new ProtocolHeader();
+		header.cmd = (byte)0xA4; //ProtocolHeader.CMD_GET_ALARM;
+		header.version = 0;
+		header.setByte(8, (byte)type);
+		
+		header.mapToBuffer(buffer);
+
+		buffer.position(32);
+		buffer.flip();
+		socket.write(buffer, false);		
 	}
 	
 	/**
@@ -474,6 +496,27 @@ public class ODIPHandler {
 			log.warn(String.format("Not supported alarm ack: 0x%x", header.getByte(8)));
 		}
 	}
+	
+	protected void ackDevInfo(ProtocolHeader header, ByteBuffer buffer){
+		//主要用来检查硬盘数量。
+		byte type = header.getByte(8);
+		if(type == 0){
+			//没有找到工作的硬盘。
+			byte drive_num = buffer.get();
+			if(drive_num == 0){
+				Collection<AlarmDefine> alarms = new ArrayList<AlarmDefine>();
+				alarms.add(AlarmDefine.alarm(AlarmDefine.AL_1004));
+				MonitorClientEvent event = new MonitorClientEvent(client);
+				event.alarms = alarms;
+				client.eventProxy.alarm(event);	
+			}else {
+				log.debug("working driver number:" + drive_num);
+			}
+		}else {
+			log.debug(String.format("Ingore unknown dev info: 0x%x", type));
+		}		
+	}
+	//ACK_DEV_INFO
 	
 	/*
 	public void login(String user, String password){

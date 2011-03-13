@@ -150,21 +150,32 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 			if(ch == null){
 				log.warn("Not found chanel id:" + channel);
 			}else {
-				if(ch.videoChannel == null){
-					log.debug("Create video channel for " + this.toString() + ", ch:" + channel);
-					ch.videoChannel = new VideoChannel(this, ch,
-							//连接成功后的回调方法。
-							new Runnable(){
-								public void run() {
-									handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
-								}
-							});
-					String[] address = this.ipAddr.split(":"); 
-					this.socketManager.connect(address[0],
-											Integer.parseInt(address[1]),
-											ch.videoChannel);
-				}else {
-					this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
+				synchronized(ch){
+					if(ch.videoChannel == null || ch.videoChannel.isReadTimeOut(3)){
+						//关闭超时的视频通道。
+						if(ch.videoChannel != null){
+							log.debug("Close timeouted video channel.");
+							try {
+								ch.videoChannel.closeSocketChannel();
+							} catch (IOException e) {
+								log.debug(e.toString(), e);
+							}
+						}
+						log.debug("Create video channel for " + this.toString() + ", ch:" + channel);
+						ch.videoChannel = new VideoChannel(this, ch,
+								//连接成功后的回调方法。
+								new Runnable(){
+									public void run() {
+										handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
+									}
+								});
+						String[] address = this.ipAddr.split(":"); 
+						this.socketManager.connect(address[0],
+												Integer.parseInt(address[1]),
+												ch.videoChannel);
+					}else {
+						this.handler.videoStreamControl(CTRL_VIDEO_START, channel, mode);
+					}
 				}
 			}
 		}else {
@@ -187,6 +198,8 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	 * 初始化设备状态, 包括时间， 硬盘查询， 通道同步等。
 	 */	
 	public void initMonitorClientStatus(){
+		//查询工作的硬盘状态。
+		this.handler.getDevStatus(0);
 		/*
 		for(int i = 1; i < 5; i++){
 			this.handler.videoStreamAuth(i);
