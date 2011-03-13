@@ -34,8 +34,9 @@ private:
 	bool m_bFullScreen;
 	WINDOWPLACEMENT m_struOldPlacement;
 public:
-	void SetVideoPara(CString sUUID,CString sBtsName, CString sChannel, CString sStartTime, CString sEndTime);
+	void SetVideoPara(CString sBtsID,CString sUUID,CString sBtsName, CString sChannel, CString sStartTime, CString sEndTime);
 private:
+	CString m_sBtsID;
 	CString m_sUUID;
 	CString m_sChannel;
 	CString m_sStartTime;

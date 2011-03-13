@@ -128,6 +128,9 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 	}
 
 	//Acked this warning video.
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pParent;
+	if (pRunTimeWnd)
+		pRunTimeWnd->AckedWarning(m_sUUID);
 
 
 	OnOK();
@@ -217,8 +220,9 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 
 }
 
-void CWarnPopVideo::SetVideoPara(CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime)
+void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime)
 {
+	m_sBtsID	 = sBtsID;
 	m_sUUID		 = sUUID;
 	m_btsName    = sBtsName;
 	m_sChannel   = sChannel;
@@ -271,7 +275,7 @@ void CWarnPopVideo::PlayVideo(void)
 		PLAY_Play(m_nPopIndex+cnPOP_VEDIO_INDEX, m_pPopView->m_hWnd);
 
 		//Play Remote Vedio runatime			
-		pApp->pgkclient->real_play(m_sUUID, m_sChannel, play_video, m_nPopIndex+cnPOP_VEDIO_INDEX);
+		pApp->pgkclient->real_play(m_sBtsID, m_sChannel, play_video, m_nPopIndex+cnPOP_VEDIO_INDEX);
 		
 	}
 		

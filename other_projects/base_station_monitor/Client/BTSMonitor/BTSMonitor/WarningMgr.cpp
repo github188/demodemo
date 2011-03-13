@@ -119,22 +119,19 @@ BOOL CWarningMgr::OnInitDialog()
 	//Init Warning Type
 	m_cboWarnType.ResetContent();
 	m_cboWarnType.AddString("");
-	//m_cboWarnType.AddString("一级告警");
-	//m_cboWarnType.AddString("二级告警");
-	//m_cboWarnType.AddString("三级告警");
-	//m_cboWarnType.AddString("四级告警");
-	//m_cboWarnType.AddString("五级告警");
-	//m_cboWarnType.AddString("一般告警");
-	//m_cboWarnType.AddString("严重告警");
-	m_cboWarnType.AddString("视频");
-	m_cboWarnType.AddString("图片");
-	m_cboWarnType.AddString("无");
+	m_cboWarnType.AddString("所有告警"); //all
+	m_cboWarnType.AddString("视频遮掩"); //1000　未定义
+	m_cboWarnType.AddString("红外");     //1001 未定义
+	m_cboWarnType.AddString("视频丢失"); //1002
+	m_cboWarnType.AddString("动态侦测"); //1003
+	m_cboWarnType.AddString("连接超时"); //2001
 
 	//Init Ack type
 	m_cboWarnAckType.ResetContent();
-	m_cboWarnAckType.AddString("未确认");
-	m_cboWarnAckType.AddString("告警超时自动确认");
-	m_cboWarnAckType.AddString("手动确认");
+	m_cboWarnAckType.AddString("所有类型"); //all
+	m_cboWarnAckType.AddString("未确认");  //1
+	m_cboWarnAckType.AddString("告警超时自动确认"); //2
+	m_cboWarnAckType.AddString("手动确认"); //3
 
 	//Init Time
 	m_cboStartHour.ResetContent();
@@ -221,11 +218,21 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	// TODO: Add your control notification handler code here
 	//Clear old find Result
 	m_lstFindWarnResult.DeleteAllItems();
-	
+
 	//int nWarnLevel = m_cboWarnType.GetCurSel();
 	int nCategory = m_cboWarnType.GetCurSel();
-	int nAckType   = m_cboWarnAckType.GetCurSel();
+	CString sCategory = (nCategory == 0) ? "all" :
+						(nCategory == 1) ? "1000":
+						(nCategory == 2) ? "1001":
+						(nCategory == 3) ? "1002":
+						(nCategory == 4) ? "1003":
+						(nCategory == 5) ? "2001": "all";
 
+
+	int nAckType   = m_cboWarnAckType.GetCurSel();
+	CString sAckType =  (nAckType == 0) ? "all" :
+						(nAckType == 1) ? "1":
+					    (nAckType == 2) ? "2":"3";
 	// get as a CTime
 	CTime timeStartDate,timeEndDate ;
 	CString strStartDate,strEndDate;
@@ -259,9 +266,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	strEndTime.Format("%02d:%02d:%02d",nEndHour,nEndMin,nEndSec);
 
 	//Get Current Selected Item UUID	
-	CString sCategory, sType, sLevel, sLimit, sOffset, sQAlarmStr;
-	sCategory.Format("%s",nCategory);
-	sType.Format("%d",nAckType);
+	CString sLevel, sLimit, sOffset, sQAlarmStr;
 	sLimit.Empty();
 	sOffset.Empty();
 	sQAlarmStr.Empty();
@@ -271,7 +276,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	m_btsMgr.buildbtsTree(pApp->btsTotalStr, &m_treeWarnMgr);
 	CString sNameItem = m_treeWarnMgr.GetItemText(m_hItemCurFind);
 	CString sUUID = m_btsMgr.GetCameraUUID(sNameItem); 
-	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID,strStartDate,strStartTime,sType,sLevel,sLimit,sOffset,sQAlarmStr);
+	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID,strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);
 	if (sQAlarmStr.IsEmpty())
 	{
 		AfxMessageBox("没有相关告警!");
@@ -328,7 +333,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 
 void CWarningMgr::InitVedioDeviceTree(void)
 {
-	bool bTest = true;
+	bool bTest = false;
 	if (bTest)
 	{
 		enum {euHZ, euYH};
@@ -603,13 +608,13 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 	}
 
-	CString sUUID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 1); 
+	CString sUUID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8); 
 	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 6); 
 	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
 
 
 	int nActView = 0; 
-	BOOL bDebug = TRUE;
+	BOOL bDebug = FALSE;
 	if (bDebug)
 	{
 		PLAY_CloseFile(nActView);
