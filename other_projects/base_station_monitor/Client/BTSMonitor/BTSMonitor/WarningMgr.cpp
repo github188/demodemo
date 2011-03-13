@@ -160,7 +160,7 @@ BOOL CWarningMgr::OnInitDialog()
 		m_cboEndSec.AddString(strTime);
 	}
 
-	bool bDebug=true;
+	bool bDebug=false;
 	int nCount = 0;
 	if (bDebug)
 	{
