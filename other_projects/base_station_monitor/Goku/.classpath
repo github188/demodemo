@@ -3,15 +3,14 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="libs/jetty-6.1.3.jar" sourcepath="/home/deon/Downloads/java/jetty-6.1.3-src.zip"/>
-	<classpathentry kind="lib" path="libs/jetty-util-6.1.3.jar" sourcepath="/home/deon/Downloads/java/jetty-6.1.3-src.zip"/>
+	<classpathentry kind="lib" path="libs/jetty-6.1.3.jar"/>
+	<classpathentry kind="lib" path="libs/jetty-util-6.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/json_simple-1.1.jar"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-3.1.14-bin.jar"/>
+	<classpathentry kind="lib" path="libs/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="libs/servlet-api-2.5-6.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.6.1.jar"/>
-	<classpathentry kind="lib" path="libs/log4j-1.2.16.jar" sourcepath="/home/deon/Downloads/java/apache-log4j-1.2.16.zip"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

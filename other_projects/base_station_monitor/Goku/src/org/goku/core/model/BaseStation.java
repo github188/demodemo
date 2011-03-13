@@ -165,7 +165,7 @@ public class BaseStation  implements JSONStreamAware{
 				}
 			}
 		}
-		if(code == null || !"".equals(code.trim()))return false;
+		if(code == null || "".equals(code.trim()))return false;
 		
 		return supportAlarmList.contains(code.trim());
 	}

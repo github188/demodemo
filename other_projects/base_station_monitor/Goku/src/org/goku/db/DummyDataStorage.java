@@ -205,7 +205,10 @@ public class DummyDataStorage extends DataStorage {
 						}
 						if(bsinfo.length > 6){
 							bs.name = bsinfo[6];
-						}						
+						}
+						if(bsinfo.length > 7){
+							bs.supportAlarm = bsinfo[7];
+						}
 						
 						bsList.add(bs);
 					}else if(line.startsWith("RE:")){

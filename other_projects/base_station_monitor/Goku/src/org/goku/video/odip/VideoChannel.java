@@ -107,7 +107,8 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 					this.lastBenckTime = System.currentTimeMillis();
 					
 					if(log.isDebugEnabled()){
-						log.debug(String.format("The video channel '%s' read speed %1.3f Kb/s.", this.toString(), this.videoSpeed));
+						log.debug(String.format("video read speed %1.3f Kb/s.", this.videoSpeed));
+						//log.debug(String.format("The video channel '%s' read speed %1.3f Kb/s.", this.toString(), this.videoSpeed));
 					}
 				}
 			}else if(readLen == -1){
@@ -211,6 +212,6 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	}
 
 	public String toString(){
-		return String.format("Video channel %s<%s>", this.client.info.uuid, this.channel.id);
+		return String.format("video %s<%s>", this.client.info.uuid, this.channel.id);
 	};	
 }

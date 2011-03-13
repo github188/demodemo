@@ -140,10 +140,10 @@ public class AlarmMonitorCenter implements Runnable{
 				//如果没有找到告警，当前告警有效。
 				active = rowCount == 0;
 				if(!active){
-					log.debug("Duplicated alarm:"+ alarm.toString() + ", client:" + client.toString() + ", channel:" + record.channelId);
+					log.debug("Duplicated alarm:"+ alarm.toString() + ", client:" + client.info.toString() + ", channel:" + record.channelId);
 				}
 			}else if(alarm.isCustomize()){
-				log.debug("Not support alarm:"+ alarm.toString() + ", client:" + client.toString());
+				log.debug("Not support alarm:"+ alarm.toString() + ", client:" + client.info.toString());
 			}
 			
 			return active;

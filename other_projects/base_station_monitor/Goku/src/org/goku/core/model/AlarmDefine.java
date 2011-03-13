@@ -144,6 +144,6 @@ public class AlarmDefine implements Cloneable{
 		if(this.channels != null){
 			for(int x : channels){xx += x+ ",";}
 		}
-		return String.format("<%s>%s channel:%s", this.alarmCode, this.alarmName, xx);
+		return String.format("<%s>%s ch:%s", this.alarmCode, this.alarmName, xx);
 	}
 }

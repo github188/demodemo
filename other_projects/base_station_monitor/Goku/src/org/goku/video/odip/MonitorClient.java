@@ -418,7 +418,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 			int readLen = channel.read(buffer);
 			if(readLen > 0){
 				if(runningStatus.receiveData(readLen)){
-					log.debug(String.format("The DVR '%s' read speed %1.3f Kb/s.", info.locationId, runningStatus.readKbs));
+					log.debug(String.format("'%s' read speed %1.3f Kb/s.", info.toString(), runningStatus.readKbs));
 				}
 			}
 			if(readLen == -1){
@@ -455,7 +455,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 
 			ByteBuffer buffer = this.writeQueue.peek();
 			while(buffer != null){
-				log.debug("wirte to DVR:" + buffer.remaining());
+				//log.debug("wirte to DVR:" + buffer.remaining());
 				this.socketChannel.write(buffer);
 				if(buffer.hasRemaining()){
 					this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
@@ -555,6 +555,6 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	}
 	
 	public String toString(){
-		return "DVR " + this.info.uuid;
+		return "ctrl " + this.info.uuid;
 	};
 }
