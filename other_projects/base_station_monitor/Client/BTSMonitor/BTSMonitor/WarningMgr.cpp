@@ -273,7 +273,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	//pApp->pgkclient->queryAlarmInfo(category,uuid,startDate,starttime,type,level,limit,offset,qalarmStr);
-	m_btsMgr.buildbtsTree(pApp->btsTotalStr, &m_treeWarnMgr);
+	//m_btsMgr.buildbtsTree(pApp->btsTotalStr, &m_treeWarnMgr);
 	CString sNameItem = m_treeWarnMgr.GetItemText(m_hItemCurFind);
 	CString sUUID = m_btsMgr.GetCameraUUID(sNameItem); 
 	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID,strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);

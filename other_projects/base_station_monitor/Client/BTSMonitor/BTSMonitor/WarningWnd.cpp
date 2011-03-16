@@ -137,7 +137,7 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 	if ( pApp->pgkclient->btsmanager.btsmap.IsEmpty() )
 		return; //the BTS Device listview is still not built.
 
-
+//#ifdef _RELEASE
 	pApp->pgkclient->getAlarmStr(pApp->alarmStr);
 	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 
@@ -146,6 +146,6 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 
 	if (!pApp->pgkclient->alarmmanager.curNewAlarmList.IsEmpty())
 		m_pRuntimePg->AddListView(ALARM_NEW);
-	
+//#endif
 	CDockablePane::OnTimer(nIDEvent);
 }
