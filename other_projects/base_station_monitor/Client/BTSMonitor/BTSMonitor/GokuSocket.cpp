@@ -11,9 +11,17 @@ static char THIS_FILE[] = __FILE__;
 
 int GokuSocket::read_buffer(char *buffer, int size)
 {
+
 	CString xx;
+
+	//cs.SetTimeOut(10000);
+	CWaitCursor wait;	
+
+	::EnterCriticalSection( &m_Lock );
 	int len = cs.Receive(buffer, size);
-	
+    ::LeaveCriticalSection( &m_Lock );
+
+	//cs.KillTimeOut();
 	if (len<0)		return 0; //if socket failed to logon, here will be returned -1, add this to viod crash.
 
 	WCHAR *ubuffer=new WCHAR[len];
@@ -25,6 +33,8 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		buffer[len] = 0;
 		CLogFile::WriteLog((const char *)buffer);
 	}
+
+	wait.Restore();         
 
 	delete []ubuffer;
 	return len;
@@ -38,11 +48,16 @@ int GokuSocket::write_data(const char *buff, int len)
 int GokuSocket::connect_server()
 {
 	initServerAddr();
-	if(cs.Create() == 0){
-		MessageBox(NULL,_T("Error create"), _T("Error create"),MB_OK);
-		DWORD errorcode=GetLastError();
-		return -1;
+	
+	if (cs.m_hSocket == INVALID_SOCKET) //如果是从新连接，不需要再Create()
+	{
+		if(cs.Create() == 0){
+			MessageBox(NULL,_T("Error create"), _T("Error create"),MB_OK);
+			DWORD errorcode=GetLastError();
+			return -1;
+		}
 	}
+
 	CString host=ipaddr;
 	if(cs.Connect(host, port)==FALSE)
 	{

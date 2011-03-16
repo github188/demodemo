@@ -436,7 +436,8 @@ void CRuntimeWarning::OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResul
 
 void CRuntimeWarning::DecPopVedioCount(void)
 {
-	m_nPopViewCount--;
+	if (m_nPopViewCount>0)
+		m_nPopViewCount--;
 }
 void CRuntimeWarning::IncPopVedioCount(void)
 {

@@ -26,7 +26,7 @@
 #define ID_USER_CONTROL				2200			
 
 //Warning Timer During...
-#define WARNING_UPDATE_DURING		3000			
+#define WARNING_UPDATE_DURING		10000			
 
 //Warning Ack...
 typedef enum tagWARNING_STATUS

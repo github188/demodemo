@@ -2,6 +2,7 @@
 
 #include "logfile.h"
 #include "util.h"
+#include "TimeOutSocket.h"
 
 #define BUFSIZE		4 * 1024
 
@@ -50,6 +51,12 @@ public:
 
 	int readline(CString &des, long timeout=3);
 	int write_wstring(CString &data);
+	void InitSocketParameter(CString spServer, CString ssServer,int primary=0)
+	{
+		primary_server = spServer;
+		secondary_server = ssServer;
+		primary = primary;	
+	}
 };
 
 //Add this for 

@@ -54,8 +54,16 @@ void CLoginDlg::OnBnClickedOk()
 	host.Append(":");
 	host.Append(port);
 
+	CWaitCursor wait;
 	if (pApp->pgkclient == NULL)
+	{
 		pApp->pgkclient =new GokuClient(host, host);
+	}
+	else 
+	{
+		pApp->pgkclient->socket->InitSocketParameter(host,host);
+		pApp->pgkclient->ReConnectServer();
+	}
 
 	if ( pApp->pgkclient->IsConnected() )
 	{
@@ -71,6 +79,7 @@ void CLoginDlg::OnBnClickedOk()
 			AfxMessageBox("登录错误，请检查用户名密码是否正确");
 	}
 	
+	wait.Restore();
 	//Socket connect failed.
 
 }

@@ -6,22 +6,26 @@
 #include "VideoPlayControl.h"
 
 class GokuClient{
-	GokuSocket *socket;
 	CString buffer;
 	CString cmd_msg; //last command status.
 
 public:
+	GokuSocket *socket;
 	BTSManager btsmanager;
 	AlarmManager alarmmanager;
 
 public:
 	GokuClient(CString &primary_server, CString &secondary_server)
 	{
+
 		socket = new GokuSocket(primary_server, secondary_server);
 		m_nConnectCode = socket->connect_server();
 	}
 
-	~GokuClient(){delete socket;}
+	~GokuClient()
+	{
+		delete socket;
+	}
 
 	/**
 	 * login to master server;
@@ -41,10 +45,14 @@ public:
 	VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
+	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
+
 protected:
 	int execute_command(CString &cmd);
 	CString m_sUserName;
 	CString m_sPassword;
 	int		m_nSid;
 	int		m_nConnectCode;
+
+
 };
