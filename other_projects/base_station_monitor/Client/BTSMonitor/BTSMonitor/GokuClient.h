@@ -55,6 +55,6 @@ protected:
 	CString m_sPassword;
 	int		m_nSid;
 	int		m_nConnectCode;
-
-
 };
+
+UINT alarm_getRealAlarm_thread(LPVOID param);

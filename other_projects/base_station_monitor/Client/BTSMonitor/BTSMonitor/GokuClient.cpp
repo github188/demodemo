@@ -225,3 +225,12 @@ VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, in
 
 	return control;
 }
+
+UINT alarm_getRealAlarm_thread(LPVOID param)
+{
+	//get the socket from parameter
+	//use the socket to get the alarm
+	//the alarm should be get from the UI.
+
+	return 0;
+}
