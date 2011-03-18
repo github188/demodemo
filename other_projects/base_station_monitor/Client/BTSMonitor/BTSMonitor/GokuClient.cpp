@@ -150,6 +150,7 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 		qalarmStr.Append(cmd_msg);
 		qalarmStr.Append("\n");
 	}
+	CLogFile::WriteLog("queryAlarmInfo");
 }
 
 void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
@@ -171,6 +172,9 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 		alarmStr.Append(cmd_msg);
 		alarmStr.Append("\n");
 	}
+	CString logstr="getRealTimeAlarmStr: ";
+	logstr.Append(alarmStr);
+	CLogFile::WriteLog(logstr);
 }
 
 bool GokuClient::confirmAlarm(CString uuid)
@@ -217,7 +221,7 @@ VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, in
 
 	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
 	control->replay(videoId);
-	CWinThread *playThread=AfxBeginThread(video_read_thread, control);
+	playThread=AfxBeginThread(video_read_thread, control);
 
 	return control;
 }

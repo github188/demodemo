@@ -13,6 +13,8 @@ public:
 	GokuSocket *socket;
 	BTSManager btsmanager;
 	AlarmManager alarmmanager;
+	CWinThread *playThread;
+	CWinThread *alarmThread;
 
 public:
 	GokuClient(CString &primary_server, CString &secondary_server)
