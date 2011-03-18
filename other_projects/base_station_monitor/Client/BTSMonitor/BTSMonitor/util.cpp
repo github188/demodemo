@@ -51,10 +51,11 @@ void util::widechar2str(WCHAR *src, CString &des)
 	des=psText;
 }
 
-void util::widechar2str(WCHAR *src, char **des)
+DWORD util::widechar2str(WCHAR *src, char **des)
 {
 	DWORD dwNum=::WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0, NULL, FALSE);
 	WideCharToMultiByte (CP_OEMCP,NULL,src,-1,*des,dwNum,NULL,FALSE);
+	return dwNum;
 }
 
 void util::nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen)

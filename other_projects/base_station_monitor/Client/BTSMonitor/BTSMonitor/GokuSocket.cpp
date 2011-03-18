@@ -26,7 +26,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 
 	WCHAR *ubuffer=new WCHAR[len];
 	util::nettolocal(ubuffer, buffer, len);
-	util::widechar2str(ubuffer, &buffer);
+	len=util::widechar2str(ubuffer, &buffer);
 	util::int2str(xx, len);
 	CLogFile::WriteLog("read buffer:" + xx);
 	if(len > 0 && len < 1024){
