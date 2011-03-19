@@ -101,7 +101,8 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 	socket->readline(cmd_msg);
 	CString temp;
 	int pos=util::split_next(cmd_msg, temp, '$', 0);
-	util::split_next(cmd_msg, temp, '$', pos+1);
+	pos=util::split_next(cmd_msg, temp, '$', pos+1);
+	pos=util::split_next(cmd_msg, temp, '$', pos+1);
 	int linenum=util::str2int(temp);
 	for(int i=0;i<linenum;i++)
 	{
@@ -141,8 +142,10 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 
 	socket->readline(cmd_msg);
 	CString temp;
+
 	int pos=util::split_next(cmd_msg, temp, '$', 0);
-	util::split_next(cmd_msg, temp, '$', pos+1);
+ 	pos=util::split_next(cmd_msg, temp, '$', pos+1);
+	pos=util::split_next(cmd_msg, temp, '$', pos+1);
 	int linenum=util::str2int(temp);
 	for(int i=0;i<linenum;i++)
 	{
@@ -164,7 +167,8 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 	socket->readline(cmd_msg);
 	CString temp;
 	int pos=util::split_next(cmd_msg, temp, '$', 0);
-	util::split_next(cmd_msg, temp, '$', pos+1);
+ 	pos=util::split_next(cmd_msg, temp, '$', pos+1);
+	pos=util::split_next(cmd_msg, temp, '$', pos+1);
 	int linenum=util::str2int(temp);
 	for(int i=0;i<linenum;i++)
 	{
