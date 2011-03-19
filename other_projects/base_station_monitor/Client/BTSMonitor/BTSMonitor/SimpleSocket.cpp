@@ -39,12 +39,14 @@ int CSimpleSocket::readline(CString &des, long timeout)
 {
 	des.Empty();
 	char ch = 0;
+	//memset(m_sBuffer, 0, sizeof(m_sBuffer));
 	if(bufferPos >= bufferLimit){
-		bufferLimit = read_buffer(buffer, sizeof(buffer));
+		//bufferLimit = read_buffer(m_sBuffer, sizeof(buffer));
+		bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
 		bufferPos = 0;
 	}
 	for(;bufferPos < bufferLimit && timeout > 0;){
-		ch = buffer[bufferPos++];
+		ch = m_sBuffer[bufferPos++];
 		if(ch == '\n'){
 			break;
 		}else{
@@ -55,7 +57,8 @@ int CSimpleSocket::readline(CString &des, long timeout)
 		}
 		if(bufferPos >= bufferLimit){
 			//sleep(1);
-			bufferLimit = read_buffer(buffer, sizeof(buffer));
+			//bufferLimit = read_buffer(buffer, sizeof(buffer));
+			bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
 			bufferPos = 0;
 			timeout--;
 		}

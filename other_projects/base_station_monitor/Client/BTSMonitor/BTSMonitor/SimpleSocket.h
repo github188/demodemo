@@ -12,7 +12,7 @@ protected:
 	CString secondary_server;
 	int primary;
 
-	char buffer[BUFSIZE];
+	char m_sBuffer[BUFSIZE];
 	int bufferPos;
 	int bufferLimit;
 
@@ -32,7 +32,7 @@ public:
 		secondary_server = sserver;
 		bufferLimit=BUFSIZE;
 		bufferPos=0;
-		memset(buffer, 0, sizeof(buffer));
+		memset(m_sBuffer, 0, sizeof(m_sBuffer));
 		//strcpy(buffer, "this is only a test...\n do you know it?\n");
 	}
 	~CSimpleSocket(){}
