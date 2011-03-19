@@ -20,8 +20,8 @@ protected:
 	virtual int write_data(const char *buff, int len);
 
 private:
-	//CSocket cs;
-	CTimeOutSocket	cs;
+	CSocket cs;
+	//CTimeOutSocket	cs;
 	//
     CRITICAL_SECTION m_Lock;
 

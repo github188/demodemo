@@ -14,20 +14,22 @@ int GokuSocket::read_buffer(char *buffer, int size)
 
 	CString xx;
 
-	//cs.SetTimeOut(10000);
 	CWaitCursor wait;	
 
-	::EnterCriticalSection( &m_Lock );
+	//::EnterCriticalSection( &m_Lock );
+	memset(buffer,0,size);
 	int len = cs.Receive(buffer, size);
-    ::LeaveCriticalSection( &m_Lock );
+    //::LeaveCriticalSection( &m_Lock );
 
-	//cs.KillTimeOut();
 	if (len<0)		return 0; //if socket failed to logon, here will be returned -1, add this to viod crash.
 
 	WCHAR *ubuffer=new WCHAR[len];
 	util::nettolocal(ubuffer, buffer, len);
-	len=util::widechar2str(ubuffer, &buffer);
-	util::int2str(xx, len);
+	int nNum = util::widechar2str(ubuffer, &buffer);
+
+	//write to Log File.
+	//util::int2str(xx, len);
+	util::int2str(xx,nNum);
 	CLogFile::WriteLog("read buffer:" + xx);
 	if(len > 0 && len < 1024){
 		buffer[len] = 0;
@@ -37,7 +39,8 @@ int GokuSocket::read_buffer(char *buffer, int size)
 	wait.Restore();         
 
 	delete []ubuffer;
-	return len;
+	//return len;
+	return nNum;
 }
 
 int GokuSocket::write_data(const char *buff, int len)
