@@ -34,6 +34,13 @@ BOOL CTimeOutSocket::OnMessagePending()
 			return FALSE;  // No need for idle time processing.
 		};
 	};
+	//if (GetLastError() == WSAEWOULDBLOCK)
+	//{
+	//	::PeekMessage(&msg, NULL, WM_TIMER, WM_TIMER, PM_REMOVE);
+	//	CancelBlockingCall();
+	//	return FALSE;  // No need for idle time processing.
+	//}
+
 	return CSocket::OnMessagePending();
 }
 
@@ -60,13 +67,13 @@ int CTimeOutSocket::Send(const void* lpBuf, int nBufLen, int nFlags)
 
 BOOL CTimeOutSocket::KillTimeOut(void)
 {
-	m_nTimerID = SetTimer(NULL,0,m_nTimeOut,NULL);
-	return m_nTimerID;
+	return KillTimer(NULL,m_nTimerID);
 	//return false;
 }
 
 BOOL CTimeOutSocket::SetTimeOut(int nTimeOut)
 {
-	return KillTimer(NULL,m_nTimerID);
+	m_nTimerID = SetTimer(NULL,0,m_nTimeOut,NULL);
+	return m_nTimerID;
 	//return false;
 }

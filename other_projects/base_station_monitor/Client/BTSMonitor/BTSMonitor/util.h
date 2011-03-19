@@ -9,7 +9,11 @@ public:
 	static void int2str(CString &buffer, int i);
 	static void str2widechar(CString &src, WCHAR **des);
 	static void widechar2str(WCHAR *src, CString &des);
+//<<<<<<< .mine
+//	static int  widechar2str(WCHAR *src, char **des);
+//=======
 	static DWORD widechar2str(WCHAR *src, char **des);
+//>>>>>>> .r647
 	static void nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen);
 };
 

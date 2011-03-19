@@ -51,11 +51,25 @@ void util::widechar2str(WCHAR *src, CString &des)
 	des=psText;
 }
 
+//<<<<<<< .mine
+//int util::widechar2str(WCHAR *src, char **des)
+//=======
 DWORD util::widechar2str(WCHAR *src, char **des)
+//>>>>>>> .r647
 {
-	DWORD dwNum=::WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0, NULL, FALSE);
-	WideCharToMultiByte (CP_OEMCP,NULL,src,-1,*des,dwNum,NULL,FALSE);
-	return dwNum;
+	memset(*des, 0, 4*1024);
+	DWORD dwNum= WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0,    NULL, FALSE);
+	int nBytes = WideCharToMultiByte(CP_OEMCP, NULL, src, -1, *des, dwNum,NULL, FALSE);
+
+	DWORD dwError = GetLastError();
+	if ( dwError == ERROR_INSUFFICIENT_BUFFER || dwError==ERROR_INVALID_FLAGS || dwError==ERROR_INVALID_PARAMETER)
+	{
+		AfxMessageBox("数据转换出错!");
+		return 0;
+	}
+
+	return nBytes;
+//	return dwNum;
 }
 
 void util::nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen)
