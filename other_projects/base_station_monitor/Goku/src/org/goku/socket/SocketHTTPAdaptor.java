@@ -46,6 +46,7 @@ public class SocketHTTPAdaptor {
 		DummyHttpResponse resp = new DummyHttpResponse(client);
 		try {
 			httpServelt.service(req, resp);
+			resp.getWriter().println();
 			resp.flushBuffer();
 		} catch (ServletException e) {
 			log.error(e.toString(), e);
