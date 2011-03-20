@@ -39,8 +39,8 @@ int CSimpleSocket::readline(CString &des, long timeout)
 {
 	des.Empty();
 	char ch = 0;
-	//memset(m_sBuffer, 0, sizeof(m_sBuffer));
 	if(bufferPos >= bufferLimit){
+		ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 		//bufferLimit = read_buffer(m_sBuffer, sizeof(buffer));
 		bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
 		bufferPos = 0;
@@ -57,6 +57,7 @@ int CSimpleSocket::readline(CString &des, long timeout)
 		}
 		if(bufferPos >= bufferLimit){
 			//sleep(1);
+			ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 			//bufferLimit = read_buffer(buffer, sizeof(buffer));
 			bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
 			bufferPos = 0;

@@ -4,7 +4,7 @@
 #include "util.h"
 #include "TimeOutSocket.h"
 
-#define BUFSIZE		4 * 1024
+#define BUFSIZE		400 * 1024
 
 class CSimpleSocket{
 protected:
