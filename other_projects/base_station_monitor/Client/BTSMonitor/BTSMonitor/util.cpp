@@ -51,15 +51,10 @@ void util::widechar2str(WCHAR *src, CString &des)
 	des=psText;
 }
 
-//<<<<<<< .mine
-//int util::widechar2str(WCHAR *src, char **des)
-//=======
 DWORD util::widechar2str(WCHAR *src, char **des)
-//>>>>>>> .r647
 {
-	memset(*des, 0, 4*1024);
-	DWORD dwNum= WideCharToMultiByte(CP_OEMCP, NULL, src, -1, NULL, 0,    NULL, FALSE);
-	int nBytes = WideCharToMultiByte(CP_OEMCP, NULL, src, -1, *des, dwNum,NULL, FALSE);
+	DWORD dwNum= WideCharToMultiByte(/*CP_ACP*/CP_OEMCP, NULL, src, -1, NULL, 0,    NULL, FALSE);
+	int nBytes = WideCharToMultiByte(/*CP_ACP*/CP_OEMCP, NULL, src, -1, *des, dwNum,NULL, FALSE);
 
 	DWORD dwError = GetLastError();
 	if ( dwError == ERROR_INSUFFICIENT_BUFFER || dwError==ERROR_INVALID_FLAGS || dwError==ERROR_INVALID_PARAMETER)
