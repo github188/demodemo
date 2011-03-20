@@ -90,7 +90,7 @@ BOOL CLoginDlg::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 	//CString server="192.168.1.200";
-	CString server="60.177.179.182";
+	CString server="hzluming.3322.org";
 	this->SetDlgItemText(IDC_EDIT_SERVER, server);
 
 	this->SetDlgItemText(IDC_EDT_PORT, "8000");
