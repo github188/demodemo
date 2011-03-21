@@ -57,10 +57,11 @@ int CSimpleSocket::readline(CString &des, long timeout)
 		}
 		if(bufferPos >= bufferLimit){
 			//sleep(1);
-			ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
+			
+			//ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 			//bufferLimit = read_buffer(buffer, sizeof(buffer));
-			bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
-			bufferPos = 0;
+			//bufferPos = 0;
+
 			timeout--;
 		}
 	}
