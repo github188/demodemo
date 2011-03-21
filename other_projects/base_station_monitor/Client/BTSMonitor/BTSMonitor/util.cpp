@@ -53,8 +53,8 @@ void util::widechar2str(WCHAR *src, CString &des)
 
 DWORD util::widechar2str(WCHAR *src, char **des)
 {
-	DWORD dwNum= WideCharToMultiByte(/*CP_ACP*/CP_OEMCP, NULL, src, -1, NULL, 0,    NULL, FALSE);
-	int nBytes = WideCharToMultiByte(/*CP_ACP*/CP_OEMCP, NULL, src, -1, *des, dwNum,NULL, FALSE);
+	DWORD dwNum= WideCharToMultiByte(CP_ACP/*CP_OEMCP*/, NULL, src, -1, NULL, 0,    NULL, FALSE);
+	int nBytes = WideCharToMultiByte(CP_ACP/*CP_OEMCP*/, NULL, src, -1, *des, dwNum,NULL, FALSE);
 
 	DWORD dwError = GetLastError();
 	if ( dwError == ERROR_INSUFFICIENT_BUFFER || dwError==ERROR_INVALID_FLAGS || dwError==ERROR_INVALID_PARAMETER)
@@ -69,9 +69,19 @@ DWORD util::widechar2str(WCHAR *src, char **des)
 
 void util::nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen)
 {
-	u_short *ps=(u_short *)&netbuffer[2];
+	//u_short *ps=(u_short *)&netbuffer[2];
+	int nLen = netlen/2;
+	u_short *ps=(u_short *)&netbuffer[0];
+	u_short uHeader = ntohs(*ps);
+	if ( (uHeader) == 0xFEFF)
+	{
+		ps=(u_short *)&netbuffer[2];
+		nLen = nLen-1;
+	}
+
 	u_short pconvs;
-	for(int i=0;i<netlen/2;i++)
+	//for(int i=0;i<netlen/2;i++)
+	for(int i=0;i<nLen;i++)
 	{
 		pconvs=ntohs(*ps);
 		ps++;
