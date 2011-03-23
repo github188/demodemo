@@ -11,18 +11,16 @@ static char THIS_FILE[] = __FILE__;
 
 int GokuSocket::read_buffer(char *buffer, int size)
 {
-
 	//char szBuffer[BUFSIZE];   
 	//ZeroMemory(szBuffer,sizeof(szBuffer)); 
 	
 	CString xx;
 	CWaitCursor wait;	
 
-	//::EnterCriticalSection( &m_Lock );
+
 	//memset(buffer,0,size);
 	//int len = cs.Receive(buffer, size);
 	//int len = cs.Receive(szBuffer,BUFSIZE);
-    //::LeaveCriticalSection( &m_Lock );
 
 	///Receive all data ---------------------------------
 	int nTotalRead=0;
@@ -34,6 +32,15 @@ int GokuSocket::read_buffer(char *buffer, int size)
 	{
 		nSpace = BUFSIZE-nTotalRead;
 		nRead = cs.Receive(buffer+nTotalRead, nSpace);
+		if (nRead==0 || SOCKET_ERROR == nRead)
+		{
+			CString sError;
+			sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError);
+			AfxMessageBox(sError);
+			bRead = FALSE;
+			return 0;
+		}
+
 		nTotalRead+=nRead;
 		if (nRead>0 && nTotalRead>4)
 		{
@@ -47,7 +54,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		}
 		else
 		{
-			AfxMessageBox("Socket数据读取有问题,放弃读取操作!");
+			//AfxMessageBox("Socket数据读取有问题,放弃读取操作!");
 			continue;
 			//bRead = FALSE;
 			//break;

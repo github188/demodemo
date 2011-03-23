@@ -12,9 +12,19 @@ int GokuClient::execute_command(CString &cmd)
 {
 	CString code;
 	cmd.Append("\n");
+
+	/*//----------------------------------------------
 	socket->write_wstring(cmd);
 	socket->readline(cmd_msg);
 	util::split_next(cmd_msg, code, ':', 0);
+	*///------------Modify above code----------------
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(cmd,sMsg);
+	if (sMsg.IsEmpty())
+		return -1; //?????
+	util::split_next(sMsg, code, ':', 0);
+	///----by-liang----------------------------------
+	
 	return util::str2int(code);
 }
 
@@ -63,16 +73,11 @@ bool GokuClient::GetUserInfo(CString& sUserName, CString& sPassword, int& nSid)
 
 void GokuClient::listbtstree(CString &str)
 {
+	/*//----------------------------------------------
 	buffer.Empty();
 	buffer.Append("cmd>list_bs_tree");
 	buffer.Append("\n");
 	socket->write_wstring(buffer);
-	//do{
-	//	socket->readline(cmd_msg);
-	//	cmd_msg.Append("\n");
-	//	printf(cmd_msg);
-	//}while(cmd_msg!="\n" && cmd_msg!="\r");
-
 	socket->readline(cmd_msg);
 	CString temp;
 	int pos=util::split_next(cmd_msg, temp, '$', 0);
@@ -82,22 +87,44 @@ void GokuClient::listbtstree(CString &str)
 	{
 		socket->readline(cmd_msg);
 		str.Append(cmd_msg);
-		//if(i<line-1)
-		//{
-		//	str.Append("\n");
-		//}
 		str.Append("\n");
 	}
+	*///------------------------------------------------
+	CString sCmd;
+	sCmd.Empty();
+	sCmd.Append("cmd>list_bs_tree");
+	sCmd.Append("\n");
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if (sMsg.IsEmpty())
+		return;
+
+	CString temp;
+	int pos=util::split_next(sMsg, temp, '$',   0);
+	pos = util::split_next(sMsg, temp, '\n', pos+1);
+	int line=util::str2int(temp);
+	//pos++;
+	for(int i=0;i<line;i++)
+	{
+		pos=util::split_next(sMsg, temp, '\n', pos+1);
+		if (temp.IsEmpty())
+			break;
+
+		str.Append(temp);
+		str.Append("\n");
+	}
+
 }
 
 void GokuClient::getAlarmStr(CString &alarmStr)
 {
 	alarmStr.Empty();
+
+	/*//----------------------------------------------
 	buffer.Empty();
 	buffer.Append("cmd>list_al");
 	buffer.Append("\n");
 	socket->write_wstring(buffer);
-
 	socket->readline(cmd_msg);
 	CString temp;
 	int pos=util::split_next(cmd_msg, temp, '$', 0);
@@ -110,11 +137,41 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 		alarmStr.Append(cmd_msg);
 		alarmStr.Append("\n");
 	}
+	*///------------------------------------------------
+	
+	CString sCmd;
+	sCmd.Append("cmd>list_al");
+	sCmd.Append("\n");
+
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if (sMsg.IsEmpty())
+		return;
+	CString temp;
+	int pos=util::split_next(sMsg, temp, '$', 0);
+	pos=util::split_next(sMsg, temp, '$', pos+1);
+	pos=util::split_next(sMsg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	pos++; //emit \n
+	for(int i=0;i<linenum;i++)
+	{
+		pos=util::split_next(sMsg, temp, '\n', pos+1);
+		if (temp.IsEmpty())
+			break;
+
+		alarmStr.Append(temp);
+		alarmStr.Append("\n");
+	}
+
+	//alarmStr = sMsg.Mid(pos+2,sMsg.GetLength()-pos-2-4); //emit \n
+
+	///------------------------------------------------
 }
 
 void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDate, CString startTime,
 				CString type, CString level, CString limit, CString offset, CString &qalarmStr)
 {
+	/*//----------------------------------------------
 	qalarmStr.Empty();
 	buffer.Empty();
 	buffer.Append("cmd>list_al?");
@@ -153,12 +210,61 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 		qalarmStr.Append(cmd_msg);
 		qalarmStr.Append("\n");
 	}
+	*///------------------------------------------------
+	qalarmStr.Empty();
+	CString sCmd;
+	sCmd.Append("cmd>list_al?");
+	sCmd.Append("c=");
+	sCmd.Append(category);
+	sCmd.Append("&uuid=");
+	sCmd.Append(uuid);
+	sCmd.Append("&startTime=");
+	sCmd.Append(startDate);
+	if(startDate!="")
+	{
+		sCmd.Append(" ");
+		sCmd.Append(startTime);
+	}
+	sCmd.Append("&type=");
+	sCmd.Append(type);
+	sCmd.Append("&level=");
+	sCmd.Append(level);
+	sCmd.Append("&limit=");
+	sCmd.Append(limit);
+	sCmd.Append("&offset=");
+	sCmd.Append(offset);
+	sCmd.Append("\n");
+
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if (sMsg.IsEmpty())
+		return;
+
+	CString temp;
+	int pos=util::split_next(sMsg, temp, '$', 0);
+ 	pos=util::split_next(sMsg, temp, '$', pos+1);
+	pos=util::split_next(sMsg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	pos++; //emit \n
+	for(int i=0;i<linenum;i++)
+	{
+
+		pos=util::split_next(sMsg, temp, '\n', pos+1);
+		if (temp.IsEmpty())
+			break;
+
+		qalarmStr.Append(temp);
+		qalarmStr.Append("\n");
+	}
+	/// Modify by liang...----------------------------------
+
 	CLogFile::WriteLog("queryAlarmInfo");
 }
 
 void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 {
 	alarmStr.Empty();
+	/*//----------------------------------------------
 	buffer.Empty();
 	buffer.Append("cmd>list_al?c=1");
 	buffer.Append("\n");
@@ -176,6 +282,33 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 		alarmStr.Append(cmd_msg);
 		alarmStr.Append("\n");
 	}
+	*///------------------------------------------------
+	CString sCmd;
+	sCmd.Empty();
+	sCmd.Append("cmd>list_al?c=1");
+	sCmd.Append("\n");
+
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if (sMsg.IsEmpty())
+		return;
+
+	CString temp;
+	int pos=util::split_next(sMsg, temp, '$', 0);
+ 	pos=util::split_next(sMsg, temp, '$', pos+1);
+	pos=util::split_next(sMsg, temp, '$', pos+1);
+	int linenum=util::str2int(temp);
+	pos++; //emit \n
+	for(int i=0;i<linenum;i++)
+	{
+		pos=util::split_next(sMsg, temp, '\n', pos+1);
+		if (temp.IsEmpty())
+			break;
+
+		alarmStr.Append(temp);
+		alarmStr.Append("\n");
+	}
+	/// Modify by liang...----------------------------------
 	CString logstr="getRealTimeAlarmStr: ";
 	logstr.Append(alarmStr);
 	CLogFile::WriteLog(logstr);
@@ -183,6 +316,7 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 
 bool GokuClient::confirmAlarm(CString uuid)
 {
+	/*//----------------------------------------------
 	buffer.Empty();
 	buffer.Append("cmd>alarm_action?uuid=");
 	buffer.Append(uuid);
@@ -194,6 +328,22 @@ bool GokuClient::confirmAlarm(CString uuid)
 	CString temp;
 	util::split_next(cmd_msg, temp, '$', 0);
 	int retval=util::str2int(temp);
+	*///------------------------------------------------
+	CString sCmd;
+	sCmd.Append("cmd>alarm_action?uuid=");
+	sCmd.Append(uuid);
+	sCmd.Append("&status=3");
+	sCmd.Append("\n");
+
+	CString sMsg;
+	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if (sMsg.IsEmpty())
+		return false;
+
+	CString temp;
+	util::split_next(sMsg, temp, '$', 0);
+	int retval=util::str2int(temp);
+	///------by-liang--------------------------------------
 	if(retval==0)
 		return true;
 	else

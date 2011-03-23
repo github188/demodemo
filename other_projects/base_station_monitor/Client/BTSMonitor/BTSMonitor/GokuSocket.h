@@ -5,14 +5,8 @@
 class GokuSocket: public CSimpleSocket{
 
 public:
-	GokuSocket(CString &ps, CString &ss): CSimpleSocket(ps, ss) 
-	{
-        ::InitializeCriticalSection( &m_Lock );
-	}
-	~GokuSocket()
-	{
-        ::DeleteCriticalSection( &m_Lock );
-	}
+	GokuSocket(CString &ps, CString &ss): CSimpleSocket(ps, ss) {}
+	~GokuSocket(){}
 	int connect_server();
 	int read_buffer(char *buffer, int size);
 
@@ -22,7 +16,5 @@ protected:
 private:
 	CSocket cs;
 	//CTimeOutSocket	cs;
-	//
-    CRITICAL_SECTION m_Lock;
 
 };
