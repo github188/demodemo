@@ -13,8 +13,11 @@ protected:
 	int primary;
 
 	char m_sBuffer[BUFSIZE];
-	int bufferPos;
-	int bufferLimit;
+	int  m_bufferPos;
+	int  m_bufferLimit;
+	
+	//
+    CRITICAL_SECTION m_Lock;
 
 	virtual int write_data(const char *buffer, int size){
 		CLogFile::WriteLog("write_data in SimpleSocket...");
@@ -30,12 +33,18 @@ public:
 		primary = 0;
 		primary_server = pserver;
 		secondary_server = sserver;
-		bufferLimit=BUFSIZE;
-		bufferPos=0;
+		m_bufferLimit=BUFSIZE;
+		m_bufferPos=0;
 		memset(m_sBuffer, 0, sizeof(m_sBuffer));
 		//strcpy(buffer, "this is only a test...\n do you know it?\n");
+
+		::InitializeCriticalSection( &m_Lock );
+
 	}
-	~CSimpleSocket(){}
+	~CSimpleSocket()
+	{
+        ::DeleteCriticalSection( &m_Lock );
+	}
 
 	virtual int connect_server() {return 0;}
 	virtual void close() {}
@@ -51,12 +60,16 @@ public:
 
 	int readline(CString &des, long timeout=3);
 	int write_wstring(CString &data);
+
 	void InitSocketParameter(CString spServer, CString ssServer,int primary=0)
 	{
 		primary_server = spServer;
 		secondary_server = ssServer;
 		primary = primary;	
 	}
+
+	//Send & Receive Data
+	void SendCmdAndRecvMsg(CString& sCmd, CString& sMsg);
 };
 
 //Add this for 

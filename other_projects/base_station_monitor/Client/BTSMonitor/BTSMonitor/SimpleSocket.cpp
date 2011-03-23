@@ -37,16 +37,18 @@ void CSimpleSocket::initServerAddr()
 
 int CSimpleSocket::readline(CString &des, long timeout)
 {
+	::EnterCriticalSection( &m_Lock );
+
 	des.Empty();
 	char ch = 0;
-	if(bufferPos >= bufferLimit){
+	if(m_bufferPos >= m_bufferLimit){
 		ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 		//bufferLimit = read_buffer(m_sBuffer, sizeof(buffer));
-		bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
-		bufferPos = 0;
+		m_bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
+		m_bufferPos = 0;
 	}
-	for(;bufferPos < bufferLimit && timeout > 0;){
-		ch = m_sBuffer[bufferPos++];
+	for(;m_bufferPos < m_bufferLimit && timeout > 0;){
+		ch = m_sBuffer[m_bufferPos++];
 		if(ch == '\n'){
 			break;
 		}else{
@@ -55,7 +57,7 @@ int CSimpleSocket::readline(CString &des, long timeout)
 			charray[1]='\0';
 			des.Append(charray);
 		}
-		if(bufferPos >= bufferLimit){
+		if(m_bufferPos >= m_bufferLimit){
 			//sleep(1);
 			
 			//ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
@@ -66,16 +68,52 @@ int CSimpleSocket::readline(CString &des, long timeout)
 		}
 	}
 	CLogFile::WriteLog("readline:" + des);
+
+	::LeaveCriticalSection( &m_Lock );
+
 	return des.GetLength();
 }
 
 int CSimpleSocket::write_wstring(CString &data)
 {	
+	::EnterCriticalSection( &m_Lock );
 
 	CString sLog;
 	//CLogFile::WriteLog("write_wstring:" + data);
 	int writeLen = data.GetLength();
 	int len = write_data(data, writeLen);
-	bufferLimit = bufferPos = 0;
+	m_bufferLimit = m_bufferPos = 0;
+
+	::LeaveCriticalSection( &m_Lock );
+
 	return len;
+}
+
+void CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
+{
+	::EnterCriticalSection( &m_Lock );
+	
+	//Send Cmd
+	int writeLen = sCmd.GetLength( );
+	int dwSend = write_data(sCmd,writeLen);
+	
+	if (dwSend == SOCKET_ERROR || dwSend == 0)
+	{
+		CString sError;
+		sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError);
+		AfxMessageBox(sError);
+
+		return;
+
+		//Need to close socket, and ReOpen(),  Close();??
+	}
+	m_bufferLimit = m_bufferPos = 0;
+
+	//Receive Data
+	ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
+	m_bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
+
+	sMsg = m_sBuffer;
+
+	::LeaveCriticalSection( &m_Lock );
 }
