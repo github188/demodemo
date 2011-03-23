@@ -72,7 +72,8 @@ void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		strText = GetItemText(hParentItem);
 		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-		sUUID = pApp->pgkclient->btsmanager.GetCameraUUID(strText);
+		sUUID = strText.Mid(0,strText.Find('_'));
+		//sUUID = pApp->pgkclient->btsmanager.GetCameraUUID(strText);
 		sChannelID = GetItemText(htItem);
 		sChannelID = sChannelID.Left(sChannelID.Find(':'));
 
