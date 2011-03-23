@@ -51,6 +51,7 @@ public class SocketHTTPAdaptor {
 		} catch (ServletException e) {
 			log.error(e.toString(), e);
 			client.write("505:System error".getBytes());
+			client.write("\n\n\n\n\n\n\n\n".getBytes());			
 		}
 	}
 	
