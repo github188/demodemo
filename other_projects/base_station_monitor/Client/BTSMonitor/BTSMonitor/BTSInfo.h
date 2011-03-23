@@ -64,7 +64,15 @@ public:
 		{
 			nImage=2;
 		}
-		posInTree=tree->InsertItem(name, nImage, nImage, parentItem);
+		
+		BOOL bIsBTS = (!channelInfo.IsEmpty());
+		CString sBtsName;
+		if (bIsBTS)
+			sBtsName = uuid + "_" + name;
+		else
+			sBtsName = name;
+
+		posInTree=tree->InsertItem(/*name*/sBtsName, nImage, nImage, parentItem);
 
 		//liang add for channel
 		if ( !channelInfo.IsEmpty() )
