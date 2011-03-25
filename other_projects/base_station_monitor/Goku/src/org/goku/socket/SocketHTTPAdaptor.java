@@ -46,12 +46,12 @@ public class SocketHTTPAdaptor {
 		DummyHttpResponse resp = new DummyHttpResponse(client);
 		try {
 			httpServelt.service(req, resp);
-			resp.getWriter().println();
-			resp.flushBuffer();
 		} catch (ServletException e) {
 			log.error(e.toString(), e);
-			client.write("505:System error".getBytes());
-			client.write("\n\n\n\n\n\n\n\n".getBytes());			
+			resp.getWriter().println("505:System error");			
+		}finally{
+			resp.getWriter().println();
+			resp.flushBuffer();
 		}
 	}
 	

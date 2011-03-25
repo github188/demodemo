@@ -99,9 +99,13 @@ public class VideoRecorderManager implements Runnable{
 		AlarmRecord record = (AlarmRecord)storage.load(AlarmRecord.class, uuid);
 		File path = null;
 		if(record != null){
-			path = new File(this.rootPath, record.videoPath);
-			if(!path.isFile()){
-				log.warn("Not found video file:" + path + ", by id:" + uuid);
+			if(record.videoPath != null){
+				path = new File(this.rootPath, record.videoPath);
+				if(!path.isFile()){
+					log.warn("Not found video file:" + path + ", by id:" + uuid);
+				}
+			}else {
+				log.debug("It's not a video alarm, uuid:" + record.alarmCode);
 			}
 		}else {
 			log.warn("Not found video record by id:" + uuid);

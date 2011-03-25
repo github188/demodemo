@@ -102,7 +102,11 @@ public class SocketVideoAdapter {
 				client.replay.nextFrame();
 				client.connectionMode = SocketClient.MODE_REPLAY;
 			}else {
-				log.warn("not found video file, " + videoPath.getAbsolutePath());
+				if(videoPath != null){
+					log.debug("not found video file, " + videoPath.getAbsolutePath());
+				}else {
+					log.debug("not found video file by uuid:, " + uuid);
+				}
 				client.closeSocket();
 			}
 		}else {
