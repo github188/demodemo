@@ -17,6 +17,8 @@
 #define MSG_VV_16				0x8
 #define MSG_VV_25				0x9
 #define MSG_SELECT_CAMERA_DEVICE	0xa
+#define MSG_UNSELECT_CAMERA_DEVICE	0xb
+#define MSG_RESTORE_VIEW		0xc
 
 
 #define ID_PLAYVIDEO_VIEW			2000			
@@ -42,6 +44,7 @@ typedef enum tagALARM_COMING_TYPE
 	ALARM_REFRESH
 }ALARM_COMING_TYPE;
 
+const int cnMAX_VV = 25;
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
 
 int play_video(int  sessionId, char * pBuffer, int  len);
