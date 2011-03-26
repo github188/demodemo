@@ -547,8 +547,11 @@ public class JDBCDataStorage extends DataStorage {
 		String filter = "1=1";
 		
 		String field, op;
+		String extra_where = "";
 		for(String k: param.param.keySet()){
-			if(k.indexOf("__") > 0){
+			if(k.startsWith("extra_where_")){
+				extra_where += param.param.get(k);
+			} if(k.indexOf("__") > 0){
 				field = k.replaceAll("__", " ");
 			}else {
 				field = k + " ="; 
@@ -557,7 +560,10 @@ public class JDBCDataStorage extends DataStorage {
 				filter += " and ";
 			}
 			filter += field + toSQLValue(param.param.get(k));
-		}		
+		}
+		if (extra_where.trim().length() > 0){
+			filter = "(" + filter + ")" + extra_where;
+		}
 		countSQL += " where " + filter;
 		
 		if(param.order != null){

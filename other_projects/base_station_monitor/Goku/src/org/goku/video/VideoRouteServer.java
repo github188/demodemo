@@ -78,6 +78,7 @@ public class VideoRouteServer {
 		this.storage = DataStorage.create(settings);
 		this.storage.checkConnect();
 		SystemLog.dataStorage = storage;
+		AlarmDefine.initAlarmDefine(storage);
 		
 		int core_thread_count = settings.getInt(Settings.CORE_ROUTE_THREAD_COUNT, 50);
 		

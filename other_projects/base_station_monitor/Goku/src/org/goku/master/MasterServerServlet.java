@@ -347,7 +347,12 @@ public class MasterServerServlet extends BaseRouteServlet{
 				int category = this.getIntParam(request, "c", 2);
 				Map<String, Object> filter = new HashMap<String, Object>();
 				if(category == 1){
-					filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
+					//如果不是第一次查询，安时间查询。否则查询所有未确认告警。
+					if(userObj.lastRealAlarmTime != null){
+						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
+					}else {
+						filter.put("extra_where_1", " or (status == 1)");
+					}
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}
 				
@@ -374,7 +379,14 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(type != null && !"".equals(type) && !"all".equals(type)){
 					filter.put("alarmCode__=", type);
 				}
-								
+
+				//开始时间
+				String startTime = this.getStringParam(request, "startTime", null);
+				if(type != null && !"".equals(type) && !"all".equals(type)){
+					log.info("Start time:" + startTime);
+					//filter.put("startTime__>=", type);
+				}				
+				
 				param.param = filter;
 				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
 				outputAlarmList(alarms, response.getWriter());
@@ -458,7 +470,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 						request.setAttribute(SESSION_USER, userObj);
 						SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
 						response.getWriter().println("0:login ok$" + key);
-						userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
+						//userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 					}else {
 						SystemLog.saveLog(SystemLog.LOGIN_FAIL, user, "master", remoteAddr);
 						response.getWriter().println("3:locked or removed.");
