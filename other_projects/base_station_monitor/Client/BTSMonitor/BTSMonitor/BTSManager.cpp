@@ -58,7 +58,7 @@ CString BTSManager::GetCameraPlace(CString sBtsID)
 	{
 		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
 		if (pBTSInfo && pBTSInfo->uuid == sBtsID)
-			return pBTSInfo->name;
+			return pBTSInfo->sPlace;
 	}
 	return CString("");
 }

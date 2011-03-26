@@ -17,6 +17,7 @@ public:
 	int idevType;
 	static const char splitch='$';
 	CStringArray ch_list;
+	CString sPlace;
 
 	HTREEITEM posInTree;
 
@@ -73,6 +74,13 @@ public:
 			sBtsName = name;
 
 		posInTree=tree->InsertItem(/*name*/sBtsName, nImage, nImage, parentItem);
+
+		sPlace = name;
+		HTREEITEM hTempItem = posInTree;
+		while (hTempItem = tree->GetParentItem(hTempItem))
+		{
+			sPlace = tree->GetItemText(hTempItem) + sPlace;
+		}
 
 		//liang add for channel
 		if ( !channelInfo.IsEmpty() )
