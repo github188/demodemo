@@ -60,10 +60,13 @@ CBTSMonitorView::CBTSMonitorView()
 		m_vvControl.vvInfo[i].rc.top = 0;
 		m_vvControl.vvInfo[i].rc.right = 0;
 		m_vvControl.vvInfo[i].rc.bottom = 0;
+
+		m_vvControl.vvInfo[i].bMonitoring = FALSE;
+
 	}
 
 	m_vvControl.vvStatus.activeid = 0; //fist one
-	m_vvControl.vvStatus.fullwindow = FALSE;
+	m_vvControl.vvStatus.bFullwindow = FALSE;
 	m_vvControl.vvStatus.vvcount = VV_6;
 }
 
@@ -117,8 +120,8 @@ BOOL CBTSMonitorView::OnPreparePrinting(CPrintInfo* pInfo)
 
 void CBTSMonitorView::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	ClientToScreen(&point);
-	OnContextMenu(this, point);
+	//ClientToScreen(&point);
+	//OnContextMenu(this, point);
 }
 
 void CBTSMonitorView::OnContextMenu(CWnd* pWnd, CPoint point)
@@ -395,8 +398,7 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case	MSG_FULL_WINDOW:
-		{
-			AfxMessageBox("FULL Window is still under developing!");
+		{	
 			/*
 			if (m_vvControl.vvStatus.fullwindow)
 			{
@@ -441,7 +443,7 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 				m_vvControl.vvStatus.fullwindow = TRUE;
 
 			}
-			*/
+			*/			
 		}
 		break;
 	case	MSG_VV_1:
@@ -486,13 +488,46 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 			m_vvControl.vvStatus.vvcount = VV_25;
 		}
 		break;
-	case	MSG_SELECT_CAMERA_DEVICE:
+	case	MSG_SELECT_CAMERA_DEVICE: //Monitor the BTS
 		{
+			int nActView = m_vvControl.vvStatus.activeid;
+
+			if (m_vvControl.vvInfo[nActView].bMonitoring == TRUE)
+			{
+				//AfxMessageBox("当前窗口中已有监控视频,请关闭后,在执行当前操作!");
+				if (MB_OK == ::MessageBox(this->m_hWnd,"当前窗口中的视频连接将被关闭！","提示",MB_ICONINFORMATION|MB_OKCANCEL))
+				{
+					//Close Current Video
+					StopMonitorBTS(nActView);
+				}
+				else //cancel ... continue current video...
+					break;
+			}
+			
+			//start monitor current channel...
 			char* p = (char*)lParam;
 			CString strCamera(p);
 			StartMonitorBTS(strCamera);
 		}
+		break;
+	case	MSG_UNSELECT_CAMERA_DEVICE: //Stop Playing
+		{
+			int nActView = m_vvControl.vvStatus.activeid;
 
+			if (m_vvControl.vvInfo[nActView].bMonitoring == FALSE)
+				break;
+
+			//char* p = (char*)lParam;
+			//CString strCamera(p);
+			StopMonitorBTS(nActView);
+		}
+		break;
+	case MSG_RESTORE_VIEW:
+		{
+			CRect rect;
+			GetClientRect(&rect);
+			OnSize(0,rect.right,rect.bottom);
+		}
 		break;
 	default:;
 		//ASSERT(FALSE);
@@ -510,8 +545,7 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 }
 
 void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
-{
-	
+{	
 	CString sVVFile;
 	/*
 	CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
@@ -560,7 +594,7 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 		//GokuClient *client; //("127.0.0.1");
 		//wstring host(L"127.0.0.1:8000");
-		CString host("192.168.1.200:8000");
+		//CString host("192.168.1.200:8000");
 		//CString host("127.0.0.1:8000");
 		CString sUUID, sChannelID;
 		int pos = util::split_next(strBtsInfo,sUUID,'$',0);
@@ -584,11 +618,15 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 				//client->replay(host, play_video, nActView); //Play Local Vedio
 
 				//Play Remote Vedio runatime			
-				pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
+				bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
 				
 				//pApp->pgkclient->replay(host, play_video, nActView);
 				//start a thread to receive the video information.
 				//mythread = AfxBeginThread(recvThread, tmp);
+				if (bRet)
+					m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+				else
+					m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
 			}
 		//}
 		
@@ -612,4 +650,28 @@ int play_video(int  sessionId, char * pBuffer, int  len)
 		::Sleep(45);
 	}
 	return 1;
+}
+
+void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
+{
+	if (nViewIndex<0 || nViewIndex > cnMAX_VV-1)
+	{
+		CString sErrInfo;
+		sErrInfo.Format("超出视窗显示数量范围:%d", nViewIndex);
+		AfxMessageBox(sErrInfo);
+		return ;
+	}
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	
+	BOOL bOpenRet = PLAY_CloseStream(nViewIndex);
+	
+	if(bOpenRet)
+	{
+		//PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+		pApp->pgkclient->Stop_Play(nViewIndex);		
+
+		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
+	}
 }

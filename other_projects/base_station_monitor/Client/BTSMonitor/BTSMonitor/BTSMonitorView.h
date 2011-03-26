@@ -12,15 +12,16 @@
 // BTSMonitorView.h : CBTSMonitorView 类的接口
 //
 
+#include "const.h"
 
 #pragma once
 
-const int cnMAX_VV = 25;
 
 typedef struct tagVV_INFO
 {
 	CView* vv;
 	CRect  rc;
+	BOOL   bMonitoring;
 }VV_INFO;
 typedef enum tagVV_COUNT
 {
@@ -35,9 +36,8 @@ typedef enum tagVV_COUNT
 typedef struct tagVV_STATUS
 {
 	int  activeid;  //acitve vv id
-	BOOL fullwindow;
+	BOOL bFullwindow;
 	VV_COUNT vvcount;  
-	WINDOWPLACEMENT oldplacement;
 }VV_STATUS;
 typedef struct tagVV_CONTROL
 {
@@ -101,6 +101,7 @@ public:
 	void SelectVideoView(int nVideoViewID);
 //	afx_msg void OnVv1();
 	void StartMonitorBTS(CString strBtsInfo);
+	void StopMonitorBTS(int nViewIndex);
 };
 
 #ifndef _DEBUG  // BTSMonitorView.cpp 中的调试版本
