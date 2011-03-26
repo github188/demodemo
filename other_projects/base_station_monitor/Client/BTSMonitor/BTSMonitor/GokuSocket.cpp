@@ -117,7 +117,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 
 	wait.Restore();         
 
-	//delete []ubuffer;
+	delete []ubuffer;
 	//return len;
 	return nNum;
 }
