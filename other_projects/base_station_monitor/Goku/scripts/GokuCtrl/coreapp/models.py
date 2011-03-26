@@ -277,4 +277,17 @@ class VideoTask(models.Model):
 
     def __unicode__(self):
         return "%s<%s>" % (self.name, self.uuid)
-        
+
+def update_system_reload_trigger(*args, **kw):
+    syslog, c = SystemLog.objects.get_or_create(uuid='param_updated')
+    syslog.actionOwner = 'system'
+    syslog.actionObject = 'system'
+    syslog.actionType = 'update'
+    from datetime import datetime 
+    syslog.createDate = datetime.now()
+    syslog.save()
+
+from django.db.models.signals import post_save
+post_save.connect(update_system_reload_trigger, sender=BaseStation)
+from GokuCtrl.sysparam.models import AlarmDefine
+post_save.connect(update_system_reload_trigger, sender=AlarmDefine)
