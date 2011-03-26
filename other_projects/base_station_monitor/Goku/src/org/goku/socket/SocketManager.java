@@ -102,6 +102,7 @@ public class SocketManager implements Runnable{
 			try{
 				synchronized(paddings){
 					for(ChangeRequest req: this.paddings){
+						if(!req.channel.isOpen())continue;
 						SelectionKey key = req.channel.register(this.selector, req.ops, req.att);
 						if(req.att instanceof SelectionHandler){
 							((SelectionHandler)req.att).setSelectionKey(key);

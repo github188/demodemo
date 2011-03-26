@@ -2,8 +2,10 @@ package org.goku.core.model;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Vector;
 
 import org.goku.db.DataStorage;
+import org.goku.master.MasterVideoServer;
 import org.goku.video.VideoRouteServer;
 
 public class SystemReload {
@@ -19,9 +21,6 @@ public class SystemReload {
 		Object obj = storage.load(SystemLog.class, "param_updated");		
 		if(obj == null)return;
 		status = (SystemLog)obj;
-		if(status.createDate == null){
-			System.out.println("................");
-		}
 		if(status.createDate.getTime() > lastCheck.getTime()){
 			//如果配置更新时间超过当前时间1分钟。说明系统时间被修改。需要同步配置更新时间，
 			//不然配置总是需要被Reload
@@ -31,14 +30,25 @@ public class SystemReload {
 			}
 			AlarmDefine.initAlarmDefine(storage);
 			Collection<BaseStation> updated = null;
+			updated = storage.list(BaseStation.class, "lastUpdate > ${0}", 
+					new Object[]{this.lastCheck});
 			VideoRouteServer server = VideoRouteServer.getInstance();
 			if(server != null){
-				updated = storage.list(BaseStation.class, "lastUpdate > ${0}", 
-						new Object[]{this.lastCheck});
 				for(BaseStation bs : updated){
 					server.reloadMonitorClient(bs);
 				}
-			}			
+			}
+			//重新计算修改过的基站。
+			MasterVideoServer master = MasterVideoServer.getInstance(); 
+			if(master != null){
+				Collection<String> groups = new Vector<String>();
+				for(BaseStation bs :updated){
+					if(!groups.contains(bs.groupName)){
+						master.routeManager.balanceGroup(bs.groupName);
+						groups.add(bs.groupName);
+					}
+				}
+			}
 		}
 		lastCheck = new Date(System.currentTimeMillis());
 	}

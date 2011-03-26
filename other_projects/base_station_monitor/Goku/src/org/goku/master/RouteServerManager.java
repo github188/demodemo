@@ -139,7 +139,7 @@ public class RouteServerManager implements Runnable {
 	 * 重新调度组内Route的服务器负载。
 	 * @param groupName
 	 */
-	protected synchronized void balanceGroup(String groupName){
+	public synchronized void balanceGroup(String groupName){
 		Collection<RouteServer> routeList = new ArrayList<RouteServer>();
 		
 		log.info("balance route group, name:" + groupName);

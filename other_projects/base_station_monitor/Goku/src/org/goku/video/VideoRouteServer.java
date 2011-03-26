@@ -226,25 +226,30 @@ public class VideoRouteServer {
 		MonitorClient client = clients.get(info.uuid); 
 		BaseStation old = null;
 		if(client != null){
-			log.info("Reload client configuration from DataBase");
+			log.info("Reload client configuration from database, client:" + info.toString());
 			old = client.info;
-			client.info = info;			
-			client.close();
-			//关闭所有过期的视频通道。
-			for(MonitorChannel ch : old.getChannels()){
-				if(ch.videoChannel != null){
-					try {
-						ch.videoChannel.closeSocketChannel();
-					} catch (IOException e) {
-						log.error(e);
+			client.info = info;
+			//修改配置后，不在同一个组内。
+			if(info.groupName == null || !info.groupName.trim().equals(this.groupName)){
+				this.removeMonitorClient(client);
+			}else {
+				client.close();
+				//关闭所有过期的视频通道。
+				for(MonitorChannel ch : old.getChannels()){
+					if(ch.videoChannel != null){
+						try {
+							ch.videoChannel.closeSocketChannel();
+						} catch (IOException e) {
+							log.error(e);
+						}
 					}
 				}
+				try {
+					client.connect();
+				} catch (IOException e) {
+					log.error(e.toString());
+				}		
 			}
-			try {
-				client.connect();
-			} catch (IOException e) {
-				log.error(e.toString());
-			}			
 		}
 		//if(station.uuid)
 		//BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);

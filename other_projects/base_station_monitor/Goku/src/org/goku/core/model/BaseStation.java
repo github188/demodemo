@@ -145,6 +145,9 @@ public class BaseStation  implements JSONStreamAware{
 	}
 	
 	public MonitorChannel[] getChannels(){
+		if(this.channelList == null){
+			this.initChannelList();
+		}		
 		List<MonitorChannel> temp = new ArrayList<MonitorChannel>();
 		for(int i = 0; i < this.channelList.length; i++){
 			if(this.channelList[i] != null){
