@@ -61,11 +61,14 @@ void CLoginDlg::OnBnClickedOk()
 	}
 	else 
 	{
-		pApp->pgkclient->socket->InitSocketParameter(host,host);
-		pApp->pgkclient->ReConnectServer();
+		if (!pApp->pgkclient->IsConnected())
+		{
+			pApp->pgkclient->socket->InitSocketParameter(host,host);
+			pApp->pgkclient->ReConnectServer();
+		}
 	}
 
-	if ( pApp->pgkclient->IsConnected() )
+	//if ( pApp->pgkclient->IsConnected() )
 	{
 		if(pApp->pgkclient->login(username, password)==0)
 		{
@@ -76,7 +79,7 @@ void CLoginDlg::OnBnClickedOk()
 			OnOK();
 		}
 		else
-			AfxMessageBox("登录错误，请检查用户名密码是否正确");
+			AfxMessageBox("登录错误，请检查用户名密码是否正确!");
 	}
 	
 	wait.Restore();
