@@ -216,6 +216,8 @@ void CBTSMonitorApp::PreLoadState()
 	//WarningMgr
 	GetContextMenuManager()->AddMenu("WarningMgr", IDR_POPMENU_WARNMGR);
 
+	//PlayView Menu
+	GetContextMenuManager()->AddMenu("PlayView", IDR_POPUP_PLAYVIEW);
 	
 }
 

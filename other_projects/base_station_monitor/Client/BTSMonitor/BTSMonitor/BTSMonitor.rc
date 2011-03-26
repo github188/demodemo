@@ -304,6 +304,15 @@ BEGIN
     END
 END
 
+IDR_POPUP_PLAYVIEW MENU 
+BEGIN
+    POPUP "PlAYVIEW"
+    BEGIN
+        MENUITEM "¹Ø±ÕÊÓÆµ",                        ID_PLAYVIEW_CLOSE
+        MENUITEM "È«ÆÁÇÐ»»",                        ID_PLAYVIEW_FULLSCREEN
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
