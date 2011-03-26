@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
+import org.goku.core.model.SystemReload;
 import org.goku.db.DataStorage;
 
 /**
@@ -38,6 +39,7 @@ public class RouteServerManager implements Runnable {
 	private Timer timer = new Timer();
 	private long expiredTime = 1000 * 120;
 	
+	private SystemReload reload = null;
 	private File statisticsDir = null;
 	//private boolean supportStatisticsRunningStatus = false;
 	
@@ -60,6 +62,18 @@ public class RouteServerManager implements Runnable {
 				}
 			}
 		}, 100, expiredTime);
+
+		reload = new SystemReload();		
+		timer.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run() {
+				try{
+					reload.check(storage);
+				}catch(Throwable e){
+					log.error(e, e);
+				}
+			}
+		}, 100, 5 * 1000);
 		
 		/*
 		while(true){

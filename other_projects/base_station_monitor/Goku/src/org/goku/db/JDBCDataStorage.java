@@ -113,6 +113,7 @@ public class JDBCDataStorage extends DataStorage {
 				Object obj = cls.newInstance();
 				for(String f: row.keySet()){
 					try {
+						//log.info("xxxx:" + f + ",,,row:" + row.get(f));
 						cls.getField(f).set(obj, row.get(f));
 					}catch (Exception ex){
 						log.warn(String.format("Failed to set filed '%s' to class '%s'", f, cls.getName()));
@@ -161,6 +162,12 @@ public class JDBCDataStorage extends DataStorage {
 	    		for(int i = 1; i <= count; i++){
 	    			Object value = null;
 	    			switch(types[i - 1]){
+	    				case Types.TIMESTAMP:
+	    					value = rs.getTimestamp(i);
+	    					break;	    					
+	    				case Types.TIME:
+	    					value = rs.getTime(i);
+	    					break;	    					
 	    				case Types.DATE:
 	    					value = rs.getDate(i);
 	    					break;

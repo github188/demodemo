@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
+import org.goku.core.model.SystemReload;
 import org.goku.db.DataStorage;
 import org.goku.settings.Settings;
 import org.goku.video.odip.AbstractMonitorListener;
@@ -35,6 +36,7 @@ public class AlarmMonitorCenter implements Runnable{
 	private long alarmCheckPeriod = 3; //秒。
 	private long autoConfirmTime = 5; //分钟。
 	private long lastAutoConfirmTime = 0;
+	private SystemReload reload = null;
 	
 	public AlarmMonitorCenter(ThreadPoolExecutor executor, Settings s){
 		this.executor = executor;
@@ -44,6 +46,7 @@ public class AlarmMonitorCenter implements Runnable{
 	
 	@Override
 	public void run() {
+		reload = new SystemReload();
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -51,6 +54,7 @@ public class AlarmMonitorCenter implements Runnable{
 				try{
 					checkAllClientAlarm();
 					autoComfirmAlarm();
+					checkReload();
 					et = System.currentTimeMillis() - st;
 					//如果每次轮询告警的时间超过2秒。服务器太慢，可能需要降低视频终端的数量。
 					if(et > 2000){
@@ -65,6 +69,14 @@ public class AlarmMonitorCenter implements Runnable{
 				 this.alarmCheckPeriod, this.autoConfirmTime));
 	}
 	
+	public void checkReload(){
+		this.executor.execute(new Runnable(){
+			@Override
+			public void run() {
+				DataStorage storage = VideoRouteServer.getInstance().storage;
+				reload.check(storage);
+			}});
+	}
 	
 	public void checkAllClientAlarm(){
 		synchronized(clients){

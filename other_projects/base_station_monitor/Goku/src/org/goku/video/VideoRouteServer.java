@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.BaseStation;
+import org.goku.core.model.MonitorChannel;
 import org.goku.core.model.RouteRunningStatus;
 import org.goku.core.model.SystemLog;
 import org.goku.db.DataStorage;
@@ -217,6 +218,38 @@ public class VideoRouteServer {
 		}
 	}
 	
+	/**
+	 * 重新加载基站信息，可能被后台管理接口修改了配置。
+	 * @param station
+	 */
+	public void reloadMonitorClient(BaseStation info){
+		MonitorClient client = clients.get(info.uuid); 
+		BaseStation old = null;
+		if(client != null){
+			log.info("Reload client configuration from DataBase");
+			old = client.info;
+			client.info = info;			
+			client.close();
+			//关闭所有过期的视频通道。
+			for(MonitorChannel ch : old.getChannels()){
+				if(ch.videoChannel != null){
+					try {
+						ch.videoChannel.closeSocketChannel();
+					} catch (IOException e) {
+						log.error(e);
+					}
+				}
+			}
+			try {
+				client.connect();
+			} catch (IOException e) {
+				log.error(e.toString());
+			}			
+		}
+		//if(station.uuid)
+		//BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
+	}
+	
 	
 	/**
 	 * 根据UUID取得监控客户端对象。
@@ -288,12 +321,14 @@ public class VideoRouteServer {
 				event.client.info.connectionStatus = "timeout";
 				event.client.info.lastActive = new Date(System.currentTimeMillis());
 				storage.save(event.client.info, new String[]{"connectionStatus", 
-														     "lastActive"});	
+														     "lastActive"});
 				
+				//以前讨论的业务超时，可以用超时时间间隔来实现。
 				//触发一个超时的告警.
 				event.alarms = new ArrayList<AlarmDefine>();
 				event.alarms.add(AlarmDefine.alarm(AlarmDefine.AL_2001));
 				event.client.eventProxy.alarm(event);
+				
 			}
 		}
 		
