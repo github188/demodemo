@@ -495,10 +495,12 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 			if (m_vvControl.vvInfo[nActView].bMonitoring == TRUE)
 			{
 				//AfxMessageBox("当前窗口中已有监控视频,请关闭后,在执行当前操作!");
-				if (MB_OK == ::MessageBox(this->m_hWnd,"当前窗口中的视频连接将被关闭！","提示",MB_ICONINFORMATION|MB_OKCANCEL))
+				if (IDOK == ::MessageBox(this->m_hWnd,"当前窗口中的视频连接将被关闭！","提示",MB_ICONINFORMATION|MB_OKCANCEL))
 				{
 					//Close Current Video
 					StopMonitorBTS(nActView);
+					//break;
+					::Sleep(1000);
 				}
 				else //cancel ... continue current video...
 					break;
@@ -664,14 +666,15 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	
-	BOOL bOpenRet = PLAY_CloseStream(nViewIndex);
-	
-	if(bOpenRet)
+	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
+	//if(bOpenRet)
 	{
-		//PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
-
 		pApp->pgkclient->Stop_Play(nViewIndex);		
 
+		BOOL bPlay = PLAY_Stop(nViewIndex);
+		
+		BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
+		
 		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
 	}
 }
