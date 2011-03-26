@@ -419,13 +419,12 @@ UINT alarm_getRealAlarm_thread(LPVOID param)
 }
 bool GokuClient::Stop_Play(int nVideoID)
 {
-	bool bRet = false;
 	if (nVideoID<0 || nVideoID>cnMAX_VV-1)
 	{
 		CString sErrInfo;
 		sErrInfo.Format("监控视窗不在范围内:%d", nVideoID);
 		AfxMessageBox(sErrInfo);
-		return bRet;
+		return false;
 	}
 
 	if (m_pArrVideoCtrl[nVideoID]==NULL) //Unknown , needn't do futher operation...
@@ -439,9 +438,9 @@ bool GokuClient::Stop_Play(int nVideoID)
 		return true;
 	}
 
-	 m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
-	int nRetry = 3; //1.5second
-
+	m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
+	/*	
+	int nRetry = 3; 
 	int i=0;
 	for (;i<nRetry; i++)
 	{
@@ -453,17 +452,31 @@ bool GokuClient::Stop_Play(int nVideoID)
 			bRet = true;
 			break;
 		}
-
 	}
+	*/
 
-	//if the thread is not exit, kill it abnormally...
-	TerminateThread(m_pPlayThread[nVideoID]->m_hThread, 0);  
-	if (!bRet)
+	bool bRet = false;
+	DWORD dwRet = ::WaitForSingleObject(m_pPlayThread[nVideoID]->m_hThread,8000);
+
+	if (m_pArrVideoCtrl[nVideoID]->status != -1) //thread exit...
 	{
-		delete m_pArrVideoCtrl[nVideoID];
-		m_pArrVideoCtrl[nVideoID]=NULL;
+		if (m_pPlayThread[nVideoID] != NULL && m_pPlayThread[nVideoID]->m_hThread > 0) 
+			::AfxTermThread((HINSTANCE__*)(m_pPlayThread[nVideoID]->m_hThread));
 	}
-	 
+
+	//::CloseHandle(m_pPlayThread[nVideoID]->m_hThread);
+	//m_pPlayThread[nVideoID]->m_hThread = NULL;
+	m_pPlayThread[nVideoID] = NULL;
+
+#ifdef _DEBUG
+	if (m_pArrVideoCtrl[nVideoID]->status==-1)
+		TRACE("\r\nTERMINATE thread window:%d!!!", nVideoID);
+#endif
+
+	delete m_pArrVideoCtrl[nVideoID];
+	m_pArrVideoCtrl[nVideoID]=NULL;
+
+	 	 
 	return bRet;
 }
 

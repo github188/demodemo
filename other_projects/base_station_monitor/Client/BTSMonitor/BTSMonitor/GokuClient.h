@@ -39,7 +39,27 @@ public:
 				m_pArrVideoCtrl[i]->status = 0;
 		}
 
-		//Wait the thread exit .
+		
+		for (i=0; i<cnMAX_VV; i++)
+		{
+			if (m_pArrVideoCtrl[i]==NULL)
+				continue;
+
+			if ( m_pArrVideoCtrl[i]->status==1)
+			{
+				::WaitForSingleObject(m_pPlayThread[i]->m_hThread,8000);
+				if (m_pArrVideoCtrl[i]->status != -1)
+					::AfxTermThread((HINSTANCE__*)(m_pPlayThread[i]->m_hThread));
+			}
+
+			m_pPlayThread[i] = NULL;
+			delete m_pArrVideoCtrl[i];
+			m_pArrVideoCtrl[i]=NULL;
+
+		}
+
+
+		/*/Wait the thread exit----------------------------------------------------- .
 		int nTry = 3;
 		for (i=0; i<nTry; i++)
 		{
@@ -90,7 +110,7 @@ public:
 				m_pArrVideoCtrl[i] = NULL;
 			}
 		}
-
+		*///-----------------------------------------------------------
 
 		delete socket;
 	}
