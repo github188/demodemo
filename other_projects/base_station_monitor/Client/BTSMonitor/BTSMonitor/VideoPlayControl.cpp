@@ -37,10 +37,13 @@ UINT video_read_thread(LPVOID param)
 
 	CLogFile::WriteLog("start video read thread");
 
-	if (control->socket->connect_server() > 0)
+
+	//if (control->socket->connect_server() > 0)
+	if (control->socket->SocketAttach())
 	{
 		control->status = 1;
-		while(1){
+		//while(1){
+		while(control->status == 1){
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
 					control->socket->write_wstring(control->vedio_command_list[i]);
 			}
@@ -54,11 +57,17 @@ UINT video_read_thread(LPVOID param)
 				control->callback(control->sessionId, buffer, ret);
 				control->socket->write_wstring(ack);
 			}else {
+				
+				//Need to reconnect the socket.
+				//control->socket->connect_server();
+
 				control->status = -1;
+				
 				break;
 			}
 		}
 	}
+
 	CLogFile::WriteLog("end video read thread.");
 
 	delete[] buffer;

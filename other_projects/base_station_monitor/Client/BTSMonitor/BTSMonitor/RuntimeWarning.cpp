@@ -195,7 +195,7 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
 			
 			//"位置",		//place
-			sLocation = pApp->pgkclient->btsmanager.GetCameraPlace(pAlarmInfo->uuid);
+			sLocation = pApp->pgkclient->btsmanager.GetCameraPlace(pAlarmInfo->BTSID);
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,sLocation,0,0,0,0);
 
 			//端局类型

@@ -138,6 +138,8 @@
 #define IDI_LEVEL_4                     344
 #define IDR_POPMENU_WARNMGR             344
 #define IDI_LEVEL_5                     345
+#define IDR_MENU1                       345
+#define IDR_POPUP_PLAYVIEW              345
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
@@ -227,13 +229,17 @@
 #define ID_WARNINGMGR_32802             32802
 #define ID_WARNINGMGR_EXPORT            32803
 #define ID_WARNINGMGR_SAVEAS            32804
+#define ID_PLAYVIEW_32805               32805
+#define ID_PLAYVIEW_CLOSE               32806
+#define ID_PLAYVIEW_32807               32807
+#define ID_PLAYVIEW_FULLSCREEN          32808
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        345
-#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_RESOURCE_VALUE        346
+#define _APS_NEXT_COMMAND_VALUE         32809
 #define _APS_NEXT_CONTROL_VALUE         1063
 #define _APS_NEXT_SYMED_VALUE           314
 #endif

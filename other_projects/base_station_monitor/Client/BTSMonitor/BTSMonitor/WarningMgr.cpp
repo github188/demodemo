@@ -302,7 +302,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
 			
 			//"位置",		//place
-			sLocation = m_btsMgr.GetCameraPlace(pAlarmInfo->uuid);
+			sLocation = m_btsMgr.GetCameraPlace(pAlarmInfo->BTSID);
 			m_lstFindWarnResult.SetItem(nCount,1,LVIF_TEXT,sLocation,0,0,0,0);
 
 			//端局类型

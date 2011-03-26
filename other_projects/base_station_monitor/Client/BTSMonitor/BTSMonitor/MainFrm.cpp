@@ -470,16 +470,28 @@ LRESULT CMainFrame::OnNotifyMessage(WPARAM wParam, LPARAM lParam)
 	{
 	case	MSG_SELECT_CAMERA_DEVICE:
 		{
-			CView *pView = GetActiveView();
-			int i=0;
-			//if (pView)
-			//	pView->SelectVideoView(lParam);
 		}
 		break;
 	default:;
 		//ASSERT(FALSE);
 
 	}
+
+	/*
+	CRect rect;
+	m_wndCameraView.GetClientRect(&rect);
+	rect.right-=1;
+	m_wndCameraView.MoveWindow(rect);
+	*/
+	CRect rect = m_wndCameraView.GetBorders();
+	if (rect.right>2)
+		rect.right = rect.right-1;
+	else
+		rect.right = rect.right+1;
+
+	m_wndCameraView.SetBorders(&rect);
+
+	m_wndCameraView.AdjustSizeImmediate();
 
 	return 0;
 }

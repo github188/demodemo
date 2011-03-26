@@ -5,6 +5,7 @@
 #include "BTSMonitor.h"
 #include "PlayView.h"
 #include "const.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,7 +21,8 @@ CPlayView::CPlayView()
 , m_nActiveViewID(0)
 , m_bIsVisible(false)
 {
-
+	m_bIsFullScreen  = FALSE;
+	m_pSaveParent = NULL;
 }
 
 CPlayView::~CPlayView()
@@ -31,6 +33,9 @@ BEGIN_MESSAGE_MAP(CPlayView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_PAINT()
 	ON_WM_LBUTTONDBLCLK()
+	ON_WM_CONTEXTMENU()
+	ON_COMMAND(ID_PLAYVIEW_CLOSE, &CPlayView::OnPlayviewClose)
+	ON_COMMAND(ID_PLAYVIEW_FULLSCREEN, &CPlayView::OnPlayviewFullscreen)
 END_MESSAGE_MAP()
 
 
@@ -80,7 +85,6 @@ void CPlayView::OnInitialUpdate()
 void CPlayView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	//AfxGetApp()->GetMainWnd()->SendMessage(WM_NOTIFY_MESSAGE,(WPARAM)MSG_SELECT_VIDEO,m_nViewID);
 	CWnd *pWnd = GetParent();
 	if (pWnd && pWnd->m_hWnd)
 		::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_SELECT_VIDEO,m_nViewID);
@@ -161,10 +165,14 @@ void CPlayView::OnPaint()
 void CPlayView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	
+	/*
 	CWnd *pWnd = GetParent();
 	if (pWnd && pWnd->m_hWnd)
 		::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_FULL_WINDOW,m_nViewID);
-	
+	*/
+
+	FullScreen();
 
 	CView::OnLButtonDblClk(nFlags, point);
 }
@@ -177,4 +185,50 @@ void CPlayView::HidePlayView(void)
 void CPlayView::ShowPlayView(void)
 {
 	m_bIsVisible = TRUE;
+}
+
+void CPlayView::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+	// TODO: Add your message handler code here
+	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_PLAYVIEW, point.x, point.y, this, TRUE);	
+}
+
+void CPlayView::OnPlayviewClose()
+{
+	// TODO: Add your command handler code here
+	CWnd *pWnd = GetParent();
+	if (pWnd && pWnd->m_hWnd)
+		::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_UNSELECT_CAMERA_DEVICE,NULL);
+
+}
+
+void CPlayView::OnPlayviewFullscreen()
+{
+	// TODO: Add your command handler code here
+	FullScreen();
+}
+
+void CPlayView::FullScreen(void)
+{
+	CMainFrame   *pFrame=(CMainFrame*)AfxGetApp()->m_pMainWnd;  	
+	if(!m_bIsFullScreen)
+	{
+		m_bIsFullScreen=TRUE;
+		m_pSaveParent=this->GetParent();
+		this->SetParent(GetDesktopWindow());
+		CRect rect;
+		GetDesktopWindow()->GetWindowRect(&rect);
+		this->SetWindowPos(&wndTopMost,rect.left,rect.top,rect.right,rect.bottom,SWP_SHOWWINDOW);
+	}
+	else
+	{
+		m_bIsFullScreen=FALSE;
+		this->SetParent( m_pSaveParent);
+		((CMainFrame *)AfxGetMainWnd())->RecalcLayout();	
+		
+		//m_pSaveParent->Invalidate();
+		::SendMessage(m_pSaveParent->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_RESTORE_VIEW,NULL);
+
+		//AfxGetApp()->GetMainWnd()->SendMessage(WM_NOTIFY_MESSAGE,NULL,NULL);
+	}
 }

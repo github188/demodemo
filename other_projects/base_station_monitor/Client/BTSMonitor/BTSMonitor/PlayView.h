@@ -40,9 +40,18 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 private:
 	bool m_bIsVisible;
+
+	BOOL m_bIsFullScreen;
+	CWnd *m_pSaveParent;
+
 public:
 	void HidePlayView(void);
 	void ShowPlayView(void);
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+	afx_msg void OnPlayviewClose();
+	afx_msg void OnPlayviewFullscreen();
+private:
+	void FullScreen(void);
 };
 
 
