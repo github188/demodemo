@@ -350,7 +350,8 @@ bool GokuClient::confirmAlarm(CString uuid)
 		return false;
 }
 
-VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
+//VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
+bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
 {
 	VideoPlayControl *control;
 	BTSInfo* bsinfo = this->btsmanager.btsmap[util::str2int(uuid)];
@@ -359,10 +360,37 @@ VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCal
 		CSimpleSocketImpl *masterSocket = new CSimpleSocketImpl(bsinfo->route, bsinfo->route);
 
 		control = new VideoPlayControl(masterSocket, callback, session);
-		control->real_play(uuid, channel);
-		CWinThread *playThread=AfxBeginThread(video_read_thread, control);
+		
+		if (control==NULL)
+			return false;
+		
+		m_pArrVideoCtrl[session] = control;
+
+		if ( control->socket->connect_server() > 0 )
+		{
+			control->real_play(uuid, channel);
+			
+			//Socket Detach 
+			if ( control->socket->SocketDetach() )
+				//CWinThread *playThread=AfxBeginThread(video_read_thread, control);
+				m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
+			else
+			{
+				//Close socket,free memory, return false.
+				//CString strError;
+				//strError.Format("≤•∑≈ ß∞‹%d",session);
+				//AfxMessageBox(strError);
+				delete m_pArrVideoCtrl[session];
+				m_pArrVideoCtrl[session] = NULL;
+				return false;
+			}
+		}
+		else
+			return false;
 	}
-	return control;
+
+	//return control;
+	return true;
 }
 
 VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, int session)
@@ -387,4 +415,55 @@ UINT alarm_getRealAlarm_thread(LPVOID param)
 	//the alarm should be get from the UI.
 
 	return 0;
+
 }
+bool GokuClient::Stop_Play(int nVideoID)
+{
+	bool bRet = false;
+	if (nVideoID<0 || nVideoID>cnMAX_VV-1)
+	{
+		CString sErrInfo;
+		sErrInfo.Format("º‡øÿ ”¥∞≤ª‘⁄∑∂Œßƒ⁄:%d", nVideoID);
+		AfxMessageBox(sErrInfo);
+		return bRet;
+	}
+
+	if (m_pArrVideoCtrl[nVideoID]==NULL) //Unknown , needn't do futher operation...
+		return true;
+
+	if ( m_pArrVideoCtrl[nVideoID]->status != 1) //Thread is exit....
+	{
+		delete m_pArrVideoCtrl[nVideoID];
+		m_pArrVideoCtrl[nVideoID]=NULL;
+		
+		return true;
+	}
+
+	 m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
+	int nRetry = 3; //1.5second
+
+	int i=0;
+	for (;i<nRetry; i++)
+	{
+		::Sleep(500); //wait thread eixt by itself
+		if ( m_pArrVideoCtrl[nVideoID]->status==-1)
+		{
+			delete m_pArrVideoCtrl[nVideoID];
+			m_pArrVideoCtrl[nVideoID]=NULL;
+			bRet = true;
+			break;
+		}
+
+	}
+
+	//if the thread is not exit, kill it abnormally...
+	TerminateThread(m_pPlayThread[nVideoID]->m_hThread, 0);  
+	if (!bRet)
+	{
+		delete m_pArrVideoCtrl[nVideoID];
+		m_pArrVideoCtrl[nVideoID]=NULL;
+	}
+	 
+	return bRet;
+}
+
