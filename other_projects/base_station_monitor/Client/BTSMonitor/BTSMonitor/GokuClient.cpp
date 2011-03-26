@@ -214,7 +214,7 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 	qalarmStr.Empty();
 	CString sCmd;
 	sCmd.Append("cmd>list_al?");
-	sCmd.Append("c=");
+	sCmd.Append("type=");
 	sCmd.Append(category);
 	sCmd.Append("&uuid=");
 	sCmd.Append(uuid);
@@ -225,7 +225,7 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 		sCmd.Append(" ");
 		sCmd.Append(startTime);
 	}
-	sCmd.Append("&type=");
+	sCmd.Append("&status=");
 	sCmd.Append(type);
 	sCmd.Append("&level=");
 	sCmd.Append(level);
