@@ -351,7 +351,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 					if(userObj.lastRealAlarmTime != null){
 						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
 					}else {
-						filter.put("extra_where_1", " or (alarmStatus == 1)");
+						filter.put("lastUpdateTime__>=", new Date(System.currentTimeMillis()));
+						filter.put("extra_where_1", " or (alarmStatus = 1)");
 					}
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}

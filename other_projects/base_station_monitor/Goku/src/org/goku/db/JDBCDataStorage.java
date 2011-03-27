@@ -558,6 +558,7 @@ public class JDBCDataStorage extends DataStorage {
 		for(String k: param.param.keySet()){
 			if(k.startsWith("extra_where_")){
 				extra_where += param.param.get(k);
+				continue;
 			} if(k.indexOf("__") > 0){
 				field = k.replaceAll("__", " ");
 			}else {
