@@ -351,7 +351,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 					if(userObj.lastRealAlarmTime != null){
 						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
 					}else {
-						filter.put("extra_where_1", " or (status == 1)");
+						filter.put("extra_where_1", " or (alarmStatus == 1)");
 					}
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}
@@ -359,19 +359,19 @@ public class MasterServerServlet extends BaseRouteServlet{
 				//基站ID过滤
 				String bsId = this.getStringParam(request, "uuid", null);
 				if(bsId != null && !"".equals(bsId) && !"all".equals(bsId)){
-					filter.put("uuid__=", bsId);
+					filter.put("baseStation__=", bsId);
 				}
 				
 				//状态过滤
 				String status = this.getStringParam(request, "status", null);
 				if(status != null && !"".equals(status) && !"all".equals(status)){
-					filter.put("status__=", status);
+					filter.put("alarmStatus__=", status);
 				}
 
 				//告警级别
 				String level = this.getStringParam(request, "level", null);
 				if(level != null && !"".equals(level) && !"all".equals(level)){
-					filter.put("level__>=", level);
+					filter.put("alarmLevel__>=", level);
 				}
 				
 				//告警类型
@@ -385,7 +385,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(type != null && !"".equals(type) && !"all".equals(type)){
 					log.info("Start time:" + startTime);
 					//filter.put("startTime__>=", type);
-				}				
+				}
 				
 				param.param = filter;
 				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);

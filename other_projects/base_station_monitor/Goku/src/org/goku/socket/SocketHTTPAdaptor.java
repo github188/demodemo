@@ -50,7 +50,7 @@ public class SocketHTTPAdaptor {
 			log.error(e.toString(), e);
 			resp.getWriter().println("505:System error");			
 		}finally{
-			resp.getWriter().println();
+			resp.getWriter().println("\n\n\n\n");
 			resp.flushBuffer();
 		}
 	}
