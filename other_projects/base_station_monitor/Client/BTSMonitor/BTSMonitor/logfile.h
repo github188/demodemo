@@ -16,6 +16,7 @@ public:
     static BOOL WriteLog(CString LogText, bool bsmall=false);
 	static CRITICAL_SECTION cs;
 	static void InitCriticalSection();
+	static void DelCriticalSection();
 };
 
 #endif
