@@ -134,8 +134,14 @@ int GokuSocket::connect_server()
 	if (cs.m_hSocket == INVALID_SOCKET) //如果是从新连接，不需要再Create()
 	{
 		if(cs.Create() == 0){
-			MessageBox(NULL,_T("Error create"), _T("Error create"),MB_OK);
-			DWORD errorcode=GetLastError();
+
+			//MessageBox(NULL,_T("Error create"), _T("Error create"),MB_OK);
+			//DWORD errorcode=GetLastError();
+
+			CString strError;
+			strError.Format("Create Socket error, Error Code: %d",GetLastError()); 
+			CLogFile::WriteLog(strError);
+
 			return -1;
 		}
 	}
@@ -143,7 +149,12 @@ int GokuSocket::connect_server()
 	CString host=ipaddr;
 	if(cs.Connect(host, port)==FALSE)
 	{
-		MessageBox(NULL,_T("Error connect"), _T("Error connect"),MB_OK);
+		//MessageBox(NULL,_T("Error connect"), _T("Error connect"),MB_OK);
+
+		CString strError;
+		strError.Format("Connect Socket error, Error Code: %d",GetLastError()); 
+		CLogFile::WriteLog(strError);
+
 		return -1;
 	}
 	return 1;
