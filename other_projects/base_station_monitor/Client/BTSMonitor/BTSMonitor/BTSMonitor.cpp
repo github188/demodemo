@@ -274,7 +274,9 @@ int CBTSMonitorApp::ExitInstance()
 	ExitSkinMagicLib();	
 	
 	delete pgkclient;
-	
+
+	CLogFile::DelCriticalSection();
+
 	return CWinAppEx::ExitInstance();
 }
 
