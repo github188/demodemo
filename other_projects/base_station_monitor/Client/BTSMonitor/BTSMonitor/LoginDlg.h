@@ -1,8 +1,8 @@
 #pragma once
-
+#include "afxwin.h"
 
 // CLoginDlg dialog
-#include "BTSMonitor.h"
+
 
 class CLoginDlg : public CDialog
 {
@@ -24,4 +24,9 @@ public:
 	virtual BOOL OnInitDialog();
 private:
 	CString m_strPort;
+	CStdioFile	m_fSaveInfo;
+public:
+	CComboBox m_cboUser;
+	CComboBox m_cboServer;
+	CComboBox m_cboPort;
 };
