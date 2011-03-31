@@ -100,7 +100,7 @@ void CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 	if (dwSend == SOCKET_ERROR || dwSend == 0)
 	{
 		CString sError;
-		sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError);
+		sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError());
 		AfxMessageBox(sError);
 		return;
 		//Need to close socket, and ReOpen(),  Close();??

@@ -138,7 +138,6 @@
 #define IDI_LEVEL_4                     344
 #define IDR_POPMENU_WARNMGR             344
 #define IDI_LEVEL_5                     345
-#define IDR_MENU1                       345
 #define IDR_POPUP_PLAYVIEW              345
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
@@ -204,7 +203,10 @@
 #define IDC_SAVE_PASSED_VIDEO           1055
 #define IDC_FIND_TARGET_WARNING         1060
 #define IDC_WINDOW_VEDIO                1061
-#define IDC_EDT_PORT                    1062
+#define IDC_CBO_USER                    1063
+#define IDC_CBO_SERVER                  1064
+#define IDC_COMBO4                      1065
+#define IDC_CBO_PORT                    1065
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -240,7 +242,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        346
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1063
+#define _APS_NEXT_CONTROL_VALUE         1064
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

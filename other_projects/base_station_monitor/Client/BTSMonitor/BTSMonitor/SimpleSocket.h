@@ -98,7 +98,11 @@ public:
 		if (cs.m_hSocket == INVALID_SOCKET) //如果是从新连接，不需要再Create()
 		{
 			if(cs.Create() == FALSE){
-				MessageBox(NULL,_T("创建网络连接失败!"), _T("错误"),MB_ICONERROR|MB_OK);
+				//MessageBox(NULL,_T("创建网络连接失败!"), _T("错误"),MB_ICONERROR|MB_OK);
+				CString strError;
+				strError.Format("Create Socket error, Error Code: %d",GetLastError()); 
+				CLogFile::WriteLog(strError);
+
 				SetConnectStatus(false);
 				return -1;
 			}
@@ -107,7 +111,11 @@ public:
 		CString host = ipaddr;
 		if(cs.Connect(host, port)==FALSE)
 		{
-			MessageBox(NULL,_T("无法连接网络!"), _T("错误"),MB_ICONERROR|MB_OK);
+			//MessageBox(NULL,_T("无法连接网络!"), _T("错误"),MB_ICONERROR|MB_OK);
+			CString strError;
+			strError.Format("Connect Socket error, Error Code: %d",GetLastError()); 
+			CLogFile::WriteLog(strError);
+
 			SetConnectStatus(false);
 			return -1;
 		}
