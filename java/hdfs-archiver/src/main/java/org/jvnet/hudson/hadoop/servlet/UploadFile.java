@@ -57,9 +57,11 @@ public class UploadFile extends BaseServlet{
 				    	}
 				    	stream.close();
 				    } else if(!item.getName().equals("")) {
-				        processUploadedFile(item, getArchivePath(user, dir, path), client);
+				    	String archivePath = getArchivePath(user, dir, path);
+				        processUploadedFile(item, archivePath, client);
 				        //request.setAttribute("message", "Update ok!");
 				        response.setHeader("upload_status", "ok");
+				        response.setHeader("archive_path", archivePath);
 				    }
 				}
 			} catch (Exception e) {
