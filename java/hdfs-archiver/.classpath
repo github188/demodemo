@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/Template-20100321.jar"/>
 	<classpathentry kind="lib" path="libs/Template.jar"/>
 	<classpathentry kind="lib" path="libs/commons-cli-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/mongo-2.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

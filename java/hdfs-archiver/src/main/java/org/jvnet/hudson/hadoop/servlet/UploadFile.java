@@ -2,15 +2,15 @@ package org.jvnet.hudson.hadoop.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.logging.Log;
@@ -42,6 +42,8 @@ public class UploadFile extends BaseServlet{
     		String dir = request.getParameter("dir");
     		String path = request.getParameter("path"); 
     		String client = request.getRemoteAddr().replace('.', '_');
+    		Map<String, String> meta = new HashMap<String, String>();
+    		String archivePath = null;
     		try {
 				FileItemIterator iter = upload.getItemIterator(request);
 				while (iter.hasNext()) {
@@ -54,11 +56,13 @@ public class UploadFile extends BaseServlet{
 				    		dir = Streams.asString(stream);
 				    	}else if(item.getFieldName().equals("path")){
 				    		path = Streams.asString(stream);
+				    	}else if(item.getFieldName().startsWith("meta_")) {
+				    		meta.put(item.getFieldName(), Streams.asString(stream));
 				    	}
 				    	stream.close();
 				    } else if(!item.getName().equals("")) {
-				    	String archivePath = getArchivePath(user, dir, path);
-				        processUploadedFile(item, archivePath, client);
+				    	archivePath = getArchivePath(user, dir, path);
+				        processUploadedFile(item, archivePath, client, meta);
 				        //request.setAttribute("message", "Update ok!");
 				        response.setHeader("upload_status", "ok");
 				        response.setHeader("archive_path", archivePath);
@@ -75,7 +79,7 @@ public class UploadFile extends BaseServlet{
     	doGet(request, response);
     }
     
-    protected void processUploadedFile(FileItemStream item, String path, String client) throws IOException{
+    protected void processUploadedFile(FileItemStream item, String path, String client, Map<String, String> meta) throws IOException{
     	path += "/" + item.getName();
     	int size = 0;
     	try{
@@ -88,7 +92,8 @@ public class UploadFile extends BaseServlet{
     	//Content-Length
     	InputStream ins = item.openStream();
     	HDFSArchiver.getArchiver().archiveFile(path, 
-    			ins, size, client);
+    			ins, size, client, 
+    			meta);
     	ins.close();
     }
     

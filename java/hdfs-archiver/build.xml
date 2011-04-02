@@ -64,7 +64,7 @@
             	<zipfileset src="libs/commons-logging-1.1.1.jar"/>
             	<zipfileset src="libs/commons-fileupload-1.2.2.jar"/>
             	<zipfileset src="libs/Template.jar"/>
-            	<zipfileset src="libs/mongo-2.4.jar"/>
+            	<zipfileset src="libs/mongo-2.5.2.jar"/>
             	<zipfileset src="libs/json_simple-1.1.jar"/>
 			</jar>
     		<signjar destDir="${dist.dir}"

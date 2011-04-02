@@ -22,7 +22,7 @@
 						<a href="${prefix}${item.filename}">${item.filename}</a>
 					</c:else>
 				</td>
-				<td>${item.length}</td>
+				<td>${item.get('localLength') || item.length }</td>
 				<td>${item.uploadDate}</td>
 				<td><a href="${prefix}${item.filename}?remove=Y">Remove</a>  
 				<a href="${prefix}${item.filename}?download=Y">Download</a>

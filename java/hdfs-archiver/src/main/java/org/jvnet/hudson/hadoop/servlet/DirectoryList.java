@@ -1,11 +1,12 @@
 package org.jvnet.hudson.hadoop.servlet;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -132,7 +133,18 @@ public class DirectoryList extends BaseServlet{
     		}
     		response.setContentType(content);
     		log.debug("Response file:" + path + ", content:" + content);
-    		file.writeTo(response.getOutputStream());
+    		if(file.containsField("localPath")){
+    			log.debug("local from local path:" + file.get("localPath"));
+    			byte[] buffer = new byte[1024 * 40];
+    			InputStream in = new FileInputStream(new File(file.get("localPath").toString()));
+    			for(int len = buffer.length; len == buffer.length; ){
+    				len = in.read(buffer);
+    				response.getOutputStream().write(buffer, 0, len);
+    			}
+    			in.close();
+    		}else {
+    			file.writeTo(response.getOutputStream());
+    		}
     	}else {
     		log.debug("Not found file:" + path);
     		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
