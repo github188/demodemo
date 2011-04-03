@@ -46,6 +46,7 @@ public abstract class DataStorage {
 	public abstract Collection<Map<String, Object>> query(String sql, Object[] param);
 	
 	public abstract boolean checkConnect();
+	public boolean isAdmin(User user){return false;}
 	
 	private static DataStorage dummy = new DummyDataStorage(null);
 	

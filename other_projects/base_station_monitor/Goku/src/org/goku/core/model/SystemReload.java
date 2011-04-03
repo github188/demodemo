@@ -16,7 +16,9 @@ public class SystemReload {
 	}
 	@SuppressWarnings("unchecked")
 	public void check(DataStorage storage){
-		if(System.currentTimeMillis() - lastCheck.getTime() < 5000) return; 
+		if(System.currentTimeMillis() - lastCheck.getTime() < 5000) return;
+		//如果环境变量中有no_auto_reload，就不自动加载配置。用于在测试环境
+		if(System.getenv("no_auto_reload") != null) return;
 		SystemLog status = null;
 		Object obj = storage.load(SystemLog.class, "param_updated");		
 		if(obj == null)return;

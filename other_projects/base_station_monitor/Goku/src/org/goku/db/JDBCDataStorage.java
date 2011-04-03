@@ -500,16 +500,20 @@ public class JDBCDataStorage extends DataStorage {
 		return rowCount > 0;
 	}
 	
+	public boolean isAdmin(User user){
+		String sql_is_admin = "select g.name from user_group g " +
+		  "join relation_user_group rg on(g.name=rg.user_group_id) " +
+		  "where rg.user_id=${0} and g.isAdmin=1";
+
+		Collection<Map<String, Object>> xx = query(sql_is_admin, new Object[]{user.name});
+		return xx.size() > 0;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public Collection<BaseStation> listStation(User user){
-		String sql_is_admin = "select g.name from user_group g " +
-							  "join relation_user_group rg on(g.name=rg.user_group_id) " +
-							  "where rg.user_id=${0} and g.isAdmin=1";
-		
 		String sql_station = null;
 		
-		Collection<Map<String, Object>> xx = query(sql_is_admin, new Object[]{user.name});
-		if(xx.size() > 0){
+		if(this.isAdmin(user)){
 			sql_station = "select b.* from base_station b";
 		}else {
 			sql_station = "select b.* from base_station b " +
@@ -555,11 +559,18 @@ public class JDBCDataStorage extends DataStorage {
 		
 		String field, op;
 		String extra_where = "";
+		String extra_join = "";
 		for(String k: param.param.keySet()){
 			if(k.startsWith("extra_where_")){
 				extra_where += param.param.get(k);
 				continue;
-			} if(k.indexOf("__") > 0){
+			}
+			if(k.startsWith("extra_join_")){
+				extra_join += param.param.get(k);
+				continue;
+			}
+			
+			if(k.indexOf("__") > 0){
 				field = k.replaceAll("__", " ");
 			}else {
 				field = k + " ="; 
@@ -572,13 +583,18 @@ public class JDBCDataStorage extends DataStorage {
 		if (extra_where.trim().length() > 0){
 			filter = "(" + filter + ")" + extra_where;
 		}
-		countSQL += " where " + filter;
+		countSQL += " " + extra_join + " where " + filter;
 		
 		if(param.order != null){
 			filter += " order by " + toOrderBy(param.order);
 		}
 		
 		filter += String.format(" LIMIT %s, %s", param.offset, param.limit);
+		
+		//如果有额外的连接查询，拼装一个完整的SQL到查询。
+		if(extra_join.length() > 0){
+			filter = buildSelectSql(obj) + " " + extra_join + " where " + filter;
+		}
 		
 		QueryResult result = new QueryResult();
 		result.sessionId = "";

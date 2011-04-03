@@ -327,6 +327,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 	/**
 	 * 返回告警信息列表。 
 	 */
+	@SuppressWarnings("unchecked")
 	public void list_al(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);
@@ -344,16 +345,19 @@ public class MasterServerServlet extends BaseRouteServlet{
 				param.offset = this.getIntParam(request, "offset", 0);
 				param.order = this.getStringParam(request, "order", null);
 				
+				Collection<AlarmRecord> extraAL = null;
 				int category = this.getIntParam(request, "c", 2);
 				Map<String, Object> filter = new HashMap<String, Object>();
 				if(category == 1){
 					//如果不是第一次查询，安时间查询。否则查询所有未确认告警。
 					if(userObj.lastRealAlarmTime != null){
 						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
+						extraAL = server.taskManager.getVideoEvents(userObj.name, userObj.lastRealAlarmTime.getTime());
 					}else {
 						filter.put("lastUpdateTime__>=", new Date(System.currentTimeMillis()));
 						filter.put("extra_where_1", " or (alarmStatus = 1)");
 					}
+					
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}
 				
@@ -388,8 +392,23 @@ public class MasterServerServlet extends BaseRouteServlet{
 					//filter.put("startTime__>=", type);
 				}
 				
+				//加入用户组限制，避免取道没有权限的基站信息。
+				if(!userObj.isAdmin){
+					filter.put("extra_join_1",
+							  String.format(
+							  " join (select base_station_id from relation_station_group r1 join relation_user_group rg " +
+							  "      on(r1.user_group_id=rg.user_group_id and rg.user_id='%s')" +
+							  ") rsg " +
+							  " on(baseStation=rsg.base_station_id) "
+							  , userObj.name)										
+							);
+				}
+				
 				param.param = filter;
 				QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
+				if(extraAL != null){
+					alarms.data.addAll(extraAL);
+				}
 				outputAlarmList(alarms, response.getWriter());
 			}
 		}
@@ -470,6 +489,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 						request.setAttribute(SESSION_ID, key);
 						request.setAttribute(SESSION_USER, userObj);
 						SystemLog.saveLog(SystemLog.LOGIN_OK, user, "master", remoteAddr);
+						userObj.isAdmin = server.storage.isAdmin(userObj);
 						response.getWriter().println("0:login ok$" + key);
 						//userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 					}else {
@@ -751,12 +771,19 @@ public class MasterServerServlet extends BaseRouteServlet{
 		String data = null;
 		String endTime = "", startTime = "", alarmName="", bsCategory = "";
 		BaseStation bs = null;
+		
+		Map<String, BaseStation> cache = new HashMap<String, BaseStation>();
+		
 		for(Iterator iter = result.data.iterator(); iter.hasNext();){
 			alarm = (AlarmRecord)iter.next();
 			endTime = alarm.endTime != null ? format.format(alarm.endTime) : "0";
 			startTime = alarm.startTime != null ? format.format(alarm.startTime) : "0";
 			alarmName = AlarmDefine.alarm(alarm.alarmCode).alarmName;
-			bs = (BaseStation)server.storage.load(BaseStation.class, alarm.baseStation);
+			bs = cache.get(alarm.baseStation);
+			if(bs == null){
+				bs = (BaseStation)server.storage.load(BaseStation.class, alarm.baseStation);
+				cache.put(alarm.baseStation, bs);
+			}
 			if(bs != null){
 				bsCategory = bs.getBTSCategoryName();
 			}else {

@@ -32,6 +32,7 @@ public class AlarmDefine implements Cloneable{
 	
 	//系统交互
 	public static final String AL_4001 = "4001"; //刷新基站列表 --修改权限/基站信息/转发服务器等问题。 
+	public static final String AL_4002 = "4002"; //刷新视频窗口 -- alarmLevel 表示窗口ID
 	
 	public String alarmCode = "";
 	public String alarmLevel = "1";

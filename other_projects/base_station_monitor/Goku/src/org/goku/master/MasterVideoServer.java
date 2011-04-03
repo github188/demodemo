@@ -34,6 +34,7 @@ public class MasterVideoServer {
 	public SocketManager socketManager = null;	
 	public RouteServerManager routeManager = null;
 	public VideoRecorderManager recordManager = null;
+	public VideoTaskManager taskManager = null;
 	private boolean running = true;
 	
 	private ThreadPoolExecutor threadPool = null;
@@ -78,7 +79,7 @@ public class MasterVideoServer {
 		threadPool.execute(routeManager);
 		log.info("Start route server manager...");
 		
-		log.info("Start video record manager..");
+		log.info("Start video record manager...");
 		recordManager = new VideoRecorderManager(settings, storage);
 		threadPool.execute(recordManager);		
 		
@@ -89,6 +90,11 @@ public class MasterVideoServer {
 		socketServer.setServlet(servelt);
 		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
+		log.info("Start scoket server at port " + port);	
+		
+		log.info("Start video task manager... ");
+		taskManager = new VideoTaskManager(storage);
+		threadPool.execute(taskManager);
 		
 		int httpPort = settings.getInt(Settings.HTTP_PORT, 8080);
 		log.info("Start http server at port " + httpPort);		
