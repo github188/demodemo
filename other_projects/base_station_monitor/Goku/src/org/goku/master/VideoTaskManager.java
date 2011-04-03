@@ -55,43 +55,47 @@ public class VideoTaskManager implements Runnable {
 	
 	@Override
 	public void run() {
-		while(isRunning){
-			this.reRefreshTask(false);
-			Collection<TaskStatus> wins = new ArrayList<TaskStatus>();
-			wins.addAll(activeTasks.values());
-			
-			for(TaskStatus task: wins){
-				VideoTask video = task.next();
-				if(video == null) continue;
-				AlarmRecord alarm = new AlarmRecord();
-				alarm.user = video.userName;
-				alarm.alarmCode = AlarmDefine.AL_4002;
-				alarm.alarmCategory = "3";
-				alarm.alarmStatus = "1";
-				alarm.baseStation = video.uuid;
-				alarm.channelId = video.channel;
-				alarm.alarmLevel = video.windowID + "";
-				alarm.lastUpdateTime = new Date(System.currentTimeMillis());
-				alarm.uuid = "0";
-				log.debug(String.format("video task, id:%s, user:%s, uuid:%s, ch:%s, win:%s, time:%ss",
-						video.taskID, alarm.user, alarm.baseStation, alarm.channelId,
-						alarm.alarmLevel, video.minShowTime
-						));
-				doneList.add(alarm);	
-			}
-			
-			//删除15秒前的变化。
-			long cur = System.currentTimeMillis();
-			for(Iterator<AlarmRecord> iter = doneList.iterator(); iter.hasNext(); ){
-				if(cur - iter.next().lastUpdateTime.getTime() > 1000 * 15){
-					iter.remove();
+		try{
+			while(isRunning){
+				this.reRefreshTask(false);
+				Collection<TaskStatus> wins = new ArrayList<TaskStatus>();
+				wins.addAll(activeTasks.values());
+				
+				for(TaskStatus task: wins){
+					VideoTask video = task.next();
+					if(video == null) continue;
+					AlarmRecord alarm = new AlarmRecord();
+					alarm.user = video.userName;
+					alarm.alarmCode = AlarmDefine.AL_4002;
+					alarm.alarmCategory = "3";
+					alarm.alarmStatus = "1";
+					alarm.baseStation = video.uuid;
+					alarm.channelId = video.channel;
+					alarm.alarmLevel = video.windowID + "";
+					alarm.lastUpdateTime = new Date(System.currentTimeMillis());
+					alarm.uuid = "0";
+					log.debug(String.format("video task, id:%s, user:%s, uuid:%s, ch:%s, win:%s, time:%ss",
+							video.taskID, alarm.user, alarm.baseStation, alarm.channelId,
+							alarm.alarmLevel, video.minShowTime
+							));
+					doneList.add(alarm);	
+				}
+				
+				//删除15秒前的变化。
+				long cur = System.currentTimeMillis();
+				for(Iterator<AlarmRecord> iter = doneList.iterator(); iter.hasNext(); ){
+					if(cur - iter.next().lastUpdateTime.getTime() > 1000 * 15){
+						iter.remove();
+					}
+				}
+				try {
+					Thread.sleep(1000);
+				}catch(InterruptedException e) {
+					log.warn(e.toString());
 				}
 			}
-			try {
-				Thread.sleep(1000);
-			}catch(InterruptedException e) {
-				log.warn(e.toString());
-			}
+		}catch(Throwable e){
+			log.error(e.toString(), e);
 		}
 	}
 	
