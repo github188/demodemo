@@ -1,0 +1,111 @@
+= BugFree 2.0 程序文件说明文档 =
+李玉鹏 <leeyupeng@gmail.com>
+v1.0, May 2009
+
+== 总述
+BugFree的大部分程序文件为php文件和模板文件，另有少量的js和css文件。
+文件命名基本遵循驼峰命名规则。
+
+== 程序目录结构
+. 根目录，用于存放常用操作程序，如Bug.php，Login.php等
+. Admin目录，用于存放后台管理程序
+. Include目录，用于存放系统的初始化程序、函数库以及一些第三方类
+. Lang目录，存放各种语言文件
+. Template目录，存放模板文件
+. JS目录，存放系统的js程序文件
+. Css目录，存放Css文件
+. Image目录，BugFree用到的一些图片
+. Shell目录，存放一些脚本文件，如定时发信脚本等
+. Data目录，存放一些系统数据文件，如模板编译的临时文件
+. Charts目录，用于存放展示统计信息的Flash文件
+. Doc目录，BugFree的一些相关文档
+
+== 根目录程序文件
+以下会列出根目录中常用到的一些文件及说明。
+
+=== 登录、注销页
+Login.php用于登录，Logout.php用于注销
+
+=== 首页 index.php
+用于展示BugFree的首页，如果用户未登录，将会跳转到登录页。其布局上分别引用了导航文件TopNav.php、模块列表文件ModuleList.php、用户常用操作列表文件UserControl.php以及Bug/Case/Result的查询表单和列表文件
+
+=== 操作程序
+Bug.php、Case.php、Result.php，用于Bug/Case/Result的各种视图操作，
+
+=== 操作路由程序 PostAction.php
+该文件将会接收Bug.php、Case.php、Result.php发送的各种请求，包括添加、编辑等，处理完毕后返回结果
+
+=== 查询表单程序
+SearchBug.php、SearchCase.php、SearchResult.php，用于展示查询Bug/Case/Result的表单
+
+=== 列表程序
+BugList.php、CaseList.php、ResultList.php，用于展示Bug/Case/Result的列表
+
+=== 统计程序
+Report.php，引用了ReportTop.php、ReportLeft.php、ReportRight.php三个文件，用于展示当前列表页的统计结果
+
+=== api.php
+具体原理和使用请参见文档 http://www.bugfree.org.cn/help/bugfree_api.html
+
+== Include目录
+该目录主要存放配置文件、初始化文件、常用函数文件和一些第三方类文件。
+
+=== Config.inc.Sample.php
+系统配置的样例文件，实际使用需更名为Config.inc.php
+
+=== 初始化程序 Init.inc.php
+初始化系统的一些环境变量，如数据库连接、session初始化等，并引用函数库、第三方类等
+
+=== 功能函数文件 FuncMain.php
+存放常用的功能性函数，如数组操作、常见SQL拼接等
+
+=== 模块函数文件 FuncModel.php
+存放针对Bug、Case、Result、项目、分组、用户等一些操作的函数
+
+=== 统计函数库 FuncStat.inc.php
+用于生成统计报表显示的类XML数据，提供给FusionCharts显示各种统计图表（如柱图、饼图等）
+
+=== 其他操作类介绍
+. Page.class.php，分页类
+. FusionCharts，用于报表显示，包含文件FusionCharts.php、FC_Colors.php
+. ADOdbLite，用于数据库操作
+. PHPMailer，发信类
+. TemplateLite，模板类
+. Xajax，一个轻量的ajax框架的后台程序
+
+== Lang目录
+语言目录，Languages.php用来配置当前可选的语言列表，每种语言单独存放在一个目录中
+
+== Template目录
+存放模板文件
+
+== JS目录
+. Main.js，存放BugFree自有的一些函数
+. calendar*.js，日历类
+. FusionCharts.js，用于FusionCharts的前台展示函数文件
+. overlib.js，用于显示一些浮动信息
+. TreeMenu.js，用于生成树状列表
+. xajax.js，一个轻量的ajax框架的前台程序
+. pngfix.js，用 javascript 修复 IE 下 PNG 图片不能透明显示的方法
+
+== Css目录
+存放一些样式表文件
+
+== Image目录
+存放图片文件
+
+== Shell目录
+一些BugFree日常应用脚本示例。.sh用于linux平台，.bat文件用于windows平台
+. NoticeBug.sh，用于发送Bug提醒
+. StatBug.sh，用于发送Bug统计
+
+== Data目录
+目前只有一个子目录TplCompile，用于存放模板缓存
+
+== Charts目录
+存放FusionCharts的前台flash文件
+
+== Doc目录
+存放BugFree的一些相关文档
+
+(C)2007-2009 http://www.bugfree.org.cn

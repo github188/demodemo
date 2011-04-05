@@ -1,0 +1,1389 @@
+/****************************** Basic *******************************/
+* {
+margin:0;
+padding:0;
+}
+
+input.button {
+background:url('../Image/input_button.png') no-repeat center center;
+height:24px;
+width:81px;
+border:none;
+font-size:12px;
+cursor:pointer;
+}
+
+html,body{
+height:100%;
+}
+
+a {
+color: #000000;
+}
+
+/* body */
+body {
+font-family: Tahoma;
+background:#F0F0F0;
+font-size: 12px;
+margin:0;
+padding:0;
+}
+
+/* base tab */
+.BaseTab {
+margin-top: 5px;
+background-color: #C1DAF0;
+padding-bottom: 15px;
+width: 100%;
+display: block;
+}
+
+.BaseTab ul {
+margin: 0;
+padding: 0;
+background-color: #FFFFFF;
+width: 100%;
+}
+
+.BaseTab ul li {
+list-style: none;
+margin-left: 0;
+padding: 3px 12px 4px;
+border:1px solid #999;
+border-bottom:0;
+font-weight: bold;
+display: inline;
+background: #FFFFFF;
+border-bottom: 1px solid #507CB5;
+float: left;
+line-height: 21px;	
+}
+
+.BaseTab ul li.SpaceTab {
+background: #FFFFFF;
+border-bottom: 1px solid #507CB5;
+border-top: 1px solid #FFFFFF;
+border-style: solid none solid;
+display: block;
+}
+
+.BaseTab ul li.Active {
+background: #C1DAF0;
+border-bottom: 1px solid #C1DAF0;
+border-top: 1px solid #507CB5;
+border-right: 1px solid #507CB5;
+border-left: 1px solid #507CB5;
+}
+
+.BaseTab ul li.Active a {
+text-decoration: none;
+}
+
+.BaseTab a, .BaseTab a:after {
+color: #37428A;
+}
+
+.BaseTab ul li.EndTab {
+background: #FFFFFF;
+border-bottom: 1px solid #507CB5;
+border-top: 1px solid #FFFFFF;
+border-style: solid none solid;
+margin: 0;
+display: block;
+float: none;
+}
+
+/* common div */
+div.CommonDiv{
+  background-color: #FFFFFF;
+  border: 1px solid #919B9C;
+  margin:1px;
+  margin-left: 10px;
+  float: left;
+  display: inline;
+}
+/* common div end*/
+
+/****************************** Layout ******************************/
+
+/* top nav */
+#TopNavMain {
+width: 100%;
+background:url('../Image/top_nav_menu.gif') repeat-x center center;
+height: 42px;
+margin: 0;
+clear: both;
+}
+
+#ProjectList {
+float: left
+}
+
+#TopNavLogo {
+float: left;
+margin:5px 10px 0 10px;
+}
+
+#AdminTopNavButton,
+#TopNavButton {
+margin:9px 0 0 10px;
+float:left;
+margin-top: 8px\9;
+*margin-top: 9px;
+}
+
+#AdminTopNavButton ul,
+#TopNavButton ul {
+list-style-type:none;
+padding:0;
+margin:0;
+}
+
+#AdminTopNavButton ul li,
+#TopNavButton ul li {
+display:inline;
+margin-left:10px;
+float:left;
+height:28px;
+width:85px;
+margin-top:5px;
+background:url('../Image/button.png') no-repeat center center;
+text-align:center;
+}
+
+#TopNavButton ul li.Active{
+background:url('../Image/button_active.png') no-repeat center center;
+}
+
+#AdminTopNavButton ul li.Active a,
+#TopNavButton ul li.Active a{
+color:#000000;
+}
+#AdminTopNavButton ul li a,
+#TopNavButton ul li a {
+text-decoration: none;
+font-size:12px;
+font-weight:600;
+color:#CDE9FF;
+}
+
+/* top id */
+#TopBCRId {
+float: left;
+margin-top: 5px;
+width: 70%;
+font-size: 20px;
+color: #000000;
+text-decoration: none;
+}
+
+#TopBCRId a {
+color: #000000;
+float: center;
+padding: 6px 1px 0 1px;
+text-decoration: none;
+}
+
+#TopNavAbout {
+float: right;
+margin: 10px 10px 0 0;
+}
+
+#TopNavAbout a {
+margin: 0 1px 0 0;
+color: #000000;
+text-decoration: line;
+}
+
+#TopNavAbout a:hover {
+color: #666666;
+}
+
+#UserName {
+background:url(../Image/user.png) left center no-repeat;
+padding-left:12px;
+margin-right:6px;
+}
+
+#EditMyInfo {
+background:url(../Image/config.png) left center no-repeat;
+padding-left:15px;
+}
+
+#TopBCR{
+background-color: #C6C3C6;
+float:left;
+width:100%;
+margin: 0px;
+padding-top:5px;
+clear:none;
+padding-bottom:0px;
+}
+
+#TopBCR ul li{
+padding: 3px 13px 3px;
+background-color: #C6C3C6;
+}
+
+#TopBCR ul li.SpaceTab, #TopBCR ul li.EndTab{
+border-top: 1px solid #C6C3C6;
+}
+
+#TopBCR ul li.Active {
+border-bottom: 1px solid #FFFFFF;
+}
+
+#TopBCR #CreatBC {
+padding-left:0;
+padding-right:0;
+border-width:1px 0 1px;
+}
+
+#TopBCR ul li.Cram{
+padding: 0;
+}
+
+#TopBCR ul li.Cram a{
+padding: 3px 13px 3px;
+display:block;
+margin:0;
+}
+
+#TopNavProjectListLi{
+float:left;
+height:22px;
+margin-top:0px;
+border-style:none;
+border-bottom:1px solid #507CB5;
+padding-bottom:0px;
+padding-right:5px;
+padding-left:0px;
+}
+
+#TopNavProjectList {
+width:150px!important;
+border:1px solid #BCBCBC;
+height:22px;
+line-height:22px;
+float:left;
+margin-top:15px;
+font-size:14px;
+}
+
+#Open {
+margin: 18px 0px 0px 10px;
+float: left;
+}
+
+#Open a {
+color:#000000;
+text-decoration:none;
+background:url(../Image/add.png) left center no-repeat;
+padding-left: 20px;
+border:none;
+}
+
+
+#Open a:hover {
+color:#666666;
+}
+
+/****************************** Forms *******************************/
+
+/****************************** Tables ******************************/
+
+/* common table */
+table.CommonTable{
+border-collapse: collapse;
+width:100%;
+border:1px solid #808080;
+font-size:12px;
+}
+
+table.CommonTable caption{
+font-size:13px;
+border:1px solid #808080;
+margin:0;
+}
+
+table.CommonTable th, table.CommonTable td{
+margin:1px;
+padding:2px 2px 2px;
+border-width: 1px 0;
+border-style:solid;
+border-color:#DDDDBB;
+}
+
+table.CommonTable label{
+font-size:12px;
+}
+
+table.CommonTable select.FullSelect{
+width:100%;
+}
+
+table.CommonTable select.MultiSelect{
+width:120px;
+}
+
+table.CommonTable a {
+text-decoration:none;
+}
+
+table.CommonTable th a:visited {
+color:#0000FF;
+}
+
+table.CommonSubTable {
+border-width:0;
+margin:0;
+}
+
+table.CommonSubTable th, table.CommonSubTable td{
+border-width: 0 0 1px 0;
+}
+
+/* common table end*/
+table.AdminTable tr th {
+text-align:left;
+}
+
+table.AdminTable a {
+color:BLUE;
+text-decoration:underline;
+}
+
+table.AdminTable 
+{
+border:none;
+}
+
+table.AdminTable caption
+{
+border:none;
+border-bottom: 1px solid #808080;
+padding-top:10px;
+padding-bottom:5px;
+background:#E8E8E8 url(../Image/control_bg.png) repeat-x top left;
+}
+
+body.AdminBody
+{
+border:none;
+background:#FFFFFF url(../Image/control_bg.png) repeat-x top left;
+}
+
+table.AdminTable tr.Droped{
+color:#878787;
+}
+/* admin table start */
+
+/* admin table end */
+
+/****************************** Print *******************************/
+
+
+
+/****************************** Theme *******************************/
+
+body {
+color: #020202;
+background-color: #FFFFFF;
+}
+
+/* top nav */
+body.BugMode {
+background:#FFFFFF url(../Image/control_bg.png) repeat-x top left;
+}
+
+h2.BugMode {
+  background-color: none;
+}
+
+body.BugMain {
+  background-color: none;
+}
+
+body.PaddingBoy {
+padding: 2px;
+}
+
+.BugMode #TopNavMain{
+background-color: #95B3DE;
+}
+
+.BugMode #TopBCR ul li.Active {
+border-bottom: 1px solid none;
+background-color: none;
+}
+
+table.BugMode {
+border-color: #8AAFE1;
+}
+
+table.BugMode caption,table.BugMode td.TdCaption{
+background-color:#D6DEEC;
+border-color: #8AAFE1;
+border-width: 1px 1px 0 1px;
+color: #666666;
+}
+
+
+body.CaseMode {
+background:#FFFFFF url(../Image/control_bg.png) repeat-x top left;
+}
+h2.CaseMode {
+  background-color: none;
+}
+body.CaseMain {
+  background-color: none;
+}
+
+.CaseMode #TopNavMain{
+background-color: #9DAF6F;
+}
+
+.CaseMode #TopBCR ul li ,.CaseMode #TopBCR ul li.SpaceTab, .CaseMode #TopBCR ul li.EndTab, .CaseMode #TopNavProjectListLi{
+border-bottom: 1px solid #3E7E2E;
+}
+
+.CaseMode #TopBCR ul li.Active {
+border-color: #3E7E2E;
+}
+
+.CaseMode #TopBCR ul li.Active {
+border-bottom: 1px solid none;
+background-color: none;
+}
+
+table.CaseMode {
+border-color: #3E7E2E;
+}
+
+table.CaseMode caption,table.CaseMode td.TdCaption{
+background-color:#B9C49B;
+border-color: #3E7E2E;
+border-width: 1px 1px 0 1px;
+color: #666666;
+}
+
+body.ResultMode {
+background:#FFFFFF url(../Image/control_bg.png) repeat-x top left;
+}
+
+h2.ResultMode {
+  background-color: none;
+}
+
+body.ResultMain {
+  background-color: none;
+}
+
+.ResultMode #TopNavMain{
+background-color: #B1A168;
+}
+
+.ResultMode #TopBCR ul li ,.ResultMode #TopBCR ul li.SpaceTab, .ResultMode #TopBCR ul li.EndTab, .ResultMode #TopNavProjectListLi{
+border-bottom: 1px solid #996633;
+}
+
+.ResultMode #TopBCR ul li.Active {
+border-color: #996633;
+}
+
+.ResultMode #TopBCR ul li.Active {
+border-bottom: 1px solid none;
+background-color: none;
+}
+
+table.ResultMode {
+border-color: #996633;
+}
+
+table.ResultMode caption,table.ResultMode td.TdCaption{
+background-color:#D2C99A;
+border-color: #996633;
+border-width: 1px 1px 0 1px;
+color: #666666;
+}
+
+
+/* img */
+a img {
+  border: 0;
+  }
+
+/* fieldset */
+fieldset.Normal{
+padding: 3px 0px 3px 12px;
+margin: 0;
+word-break: break-all;
+word-wrap:break-word;
+}
+
+fieldset.Normal legend{
+color:#008000;
+font-weight:bold;
+}
+
+textarea{
+padding:3px;
+}
+
+/* Form */
+form {
+margin:0;
+}
+
+form p {
+  width: 97%;
+  text-align: center;
+  }
+
+form p label {
+  width: 200px;
+  margin: 0;
+  float: left;
+  text-align: right;
+  }
+
+form p input {
+  margin-left: 12px;
+  float: left;
+  }
+
+form div {
+  text-align: center;
+  }
+
+#CustomDisplay, #CustomDispay div, #CustomDispay div label {
+  text-align: left;
+  font-size: 12px;
+}
+
+#CustomDisplay a{
+  text-decoration: none;
+  font-weight: bold;
+  color: #000000;
+}
+
+/* border */
+input, textarea, select{
+}
+
+/* focus */
+input:focus, textarea:focus, select:focus{
+background-color: #FEFDB9;
+border-color: #E88C25;
+}
+
+textarea{
+font-size:13px;
+}
+
+textarea{
+overflow-y:auto;
+overflow-x:auto;
+}
+
+.ActionButton{
+width:100px;
+}
+
+/* no bolder */
+.NoBorder {
+border: 0;
+}
+
+.FloatLeft{
+float:left;
+}
+
+.FloatRight{
+float:right;
+}
+
+/* reset button */
+.Reset {
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  color: #444444;
+  }
+
+
+
+#ActionMessage {
+  color: 030303;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  margin: 22px 22px;
+  padding: 3px 0;
+  }
+
+.GoodNews {
+  background-color: #52E070;
+  }
+
+.Warning {
+  background-color: #FF5000;
+  }
+
+.Error {
+  background-color: #FF3434;
+  }
+
+
+.CaseMode {
+  background-color: none;
+}
+.ResultMode {
+  background-color: none;
+}
+
+.AdminMode {
+  background-color: #333333;
+}
+
+.StatMode {
+  background-color: #0077CC;
+}
+
+
+a.BigButton {
+  display: block;
+  float:left;
+  padding: 4px 12px;
+  margin: 0px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-decoration: none;
+  }
+
+a.OpenBug {
+  background: #BC3818;
+  color: #FFFFFF;
+  border: 1px solid #BC3818;
+  border-right: 2px solid #ACACAC;
+  }
+
+a.OpenCase {
+  background: #344B28;
+  color: #FFFFFF;
+  border: 1px solid #ACACAC;
+  border-right: 2px solid #ACACAC;
+  }
+
+/* tab */
+.TabContainer {
+  margin: 4px 0 4px 4px;
+}
+
+.TabPage, .Tab, .TabSelect {
+  background-color: #FFFFFF;
+  border: 1px solid #919B9C;
+  float: left;
+  margin-left: 0px;
+  position: relative;
+}
+
+.Tab a, .TabSelect a{
+display:block;
+}
+
+.TabPage {
+  padding: 6px 0 3px 5px;
+  top: -2px;
+  width: 98%;
+  height: 180px;
+  z-index: 1;
+  line-height: 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.TabPage a {
+text-decoration:none;
+}
+
+.TabPage a:active, .TabPage a:visited{
+color: #6666BB;
+}
+
+.Tab, .TabSelect {
+  border-bottom-width: 0;
+  cursor: hand;
+  display: inline;
+  font-size: 100%;
+  margin: 3px 1px 0 0;
+  padding: 1px 4px 1px;
+  text-align: center;
+}
+
+.TabSelect {
+  margin: 1px 1px 0 0px;
+  padding: 2px 4px 1px;
+  z-index: 2;
+}
+
+.Tab a,  .Tab a:after {
+  text-decoration: none;
+  color: #AAAAAA;
+  font-weight: normal;
+}
+
+.TabSelect a, .TabSelect a:after {
+  text-decoration: none;
+  color: #000000;
+  font-weight: normal;
+}
+/* tab end*/
+
+/* table fulle link */
+a.FullLink {
+display:block;
+width:100%;
+}
+
+table.ListTable .SortActive {
+background-color:#CDE0FD;
+}
+
+table.ListTable th, table.ListTable td{
+padding:1px 4px;
+}
+
+table.SearchTable th, table.SearchTable td{
+border:0;
+}
+
+table.SearchTable #AndORTd {
+text-align:center;
+width:70px;
+}
+
+/* form common form */
+div.CommonForm {
+width:95%;
+margin-top: 3px;
+margin-left: 16px;
+}
+
+div.CommonForm h1 {
+font-size:small;
+display: inline;
+}
+
+div.CommonForm dl {
+margin:0;
+padding:1px 0;
+clear: both;
+display:block;
+}
+
+div.CommonForm dl.Line{
+float: left;
+border-bottom: 1px dotted #808080;
+width: 95%;
+height: 1px;
+padding: 0px;
+margin:1px 0;
+display:block;
+overflow:hidden;
+}
+
+div.CommonForm dl dt, div.CommonForm dl dd {
+float:left;
+}
+
+div.CommonForm dl dt {
+width:85px;
+text-align: left;
+padding-right: 1em;
+font-weight: bold;
+color: #111111;
+}
+
+div.CommonForm dl dd {
+margin:0;
+margin-right: 3px;;
+padding: 0;
+}
+
+div.CommonForm dd ol{
+padding-left:0;
+}
+
+div.CommonForm dd.SelectButton {
+padding-top:33px;
+}
+
+div.CommonForm dd.List {
+margin:0px;
+padding:1px 1px 1px 0;
+width:28%;
+}
+
+div.CommonForm dd.Block {
+text-align:left;
+padding:4px 5px;
+line-height: 120%;
+border:1px solid #808080;
+background-color: #F8F8F8;
+width:70%;
+overflow:auto;
+}
+
+div.CommonForm dd.List fieldset{
+width:98%;
+display:block;
+float:left;
+}
+
+div.CommonForm dd.List dl{
+float:left;
+margin-bottom:2px;
+padding:0px;
+clear:both;
+width:100%;
+}
+
+div.CommonForm dd.List dl dt{
+float:left;
+text-align:left;
+padding:0;
+margin:0;
+width:40%;
+clear:none;
+display:block;
+}
+
+div.CommonForm dd.List dl dd{
+float:left;
+text-align:left;
+padding:0;
+margin:0;
+width:auto;
+clear:none;
+}
+
+div.CommonForm select.FullSelect{
+height:1.1em;
+width:100%;
+}
+div.CommonForm select.MultiSelect{
+width:130px;
+}
+
+div.CommonForm select.NormalSelect{
+width:130px;
+}
+
+div.CommonForm label{
+font-size:1em;
+}
+/* form div */
+#BugMain, #CaseMain, #ResultMain{
+margin:0 auto;
+padding:5px 0pt 10px;
+text-align:left;
+width:981px;
+border-color:#DDDDDD;
+border-style:none solid solid;
+border-width:medium 0px 0px;
+}
+
+#BugMain {
+background-color: none;
+}
+
+#BugMainInfo, #BugHistory,  #CaseMainInfo, #CaseHistory, #ResultMainInfo, #ResultHistory{
+clear:both;
+width:100%;
+margin-top:5px;
+}
+
+#BugId, #CaseId, #ResultId {
+font-size:40px;
+float:right;
+margin-right:13px;
+margin-top:47px;
+}
+
+#BugSummaryInfo, #CaseSummaryInfo, #ResultSummaryInfo {
+width: 750px;
+margin-top:47px;
+float:left;
+}
+
+#BugMainInfo fieldset,#CaseMainInfo fieldset,#ResultMainInfo fieldset{
+width:100%;
+}
+
+#BugSummaryInfo dt,#CaseSummaryInfo dt,#ResultSummaryInfo dt{
+padding-left:13px;
+width:15%;
+margin-right:3px;
+}
+
+#BugSummaryInfo h1,#CaseSummaryInfo h1,#ResultSummaryInfo h1{
+margin:-10px 10px 0 0;font-size:18px;float:right;clear:none;
+}
+
+#BugHistory p, #CaseHistory p, #ResultHistory p{
+text-align:left;
+margin:3px;
+padding: 3px;
+line-height:1.5em;
+}
+#BugHistory  img, #CaseHistory img, #ResultHistory img{
+max-height: 300px;
+max-width: 300px;
+width:expression(this.width>300 && this.height<this.width?300:true);
+height:expression(this.height>300?300:true);
+overflow:hidden;
+clear:both;
+}
+
+#BugHistory fieldset, #CaseHistory fieldset,#ResultHistory fieldset{
+padding:0;
+}
+
+#BugHistory fieldset textarea,#CaseHistory fieldset textarea,#ResultHistory fieldset textarea{
+width:94%;
+margin:6px;
+margin-bottom:5px;
+}
+
+#BugReproInfo, #CaseReproInfo,#ResultReproInfo{
+width:41%
+}
+
+#BugHistoryInfo, #CaseHistoryInfo,#ResultHistoryInfo{
+width:56%
+}
+
+/* admin form div */
+div.AdminForm {
+width: 70%;
+margin-left: 100px;
+}
+
+div.AdminForm dd.SelectButton {
+padding-top:50px;
+}
+
+div.AdminForm select.MultiSelect {
+width: 150px;
+padding:1px;
+}
+
+div.AdminForm dl dt{
+width: 20%;
+word-break:break-all;
+word-wrap:break-word;
+}
+
+#ParentModuleID{
+width: 100%;
+}
+
+/* pagination */
+#Pagination {
+font-size:12px;
+}
+
+#Pagination a {
+margin: 0 2px;
+clear: none;
+}
+
+/* Bug, Case required field */
+.RequiredField {
+	background-color: #FFFFBB;
+}
+
+/* Bug, Case readonly field */
+.ReadOnlyField {
+	background-color: none;
+	border: 0;
+}
+
+.BugStatusActive a.Title {
+color: #115FA2;
+font-weight:bold;
+}
+.BugStatusActive span.Title {
+background:url('../Image/active.png') no-repeat;
+padding-left:18px;
+float:left;
+width:340px;
+}
+
+.BugStatusResolved span.Title {
+background:url('../Image/resolved.png') no-repeat;
+padding-left:18px;
+float:left;
+width:340px;
+}
+
+
+.BugStatusClosed a, .BugStatusClosed {
+color: #878787;
+}
+
+.BugStatusClosed span.Title {
+padding-left:18px;
+float:left;
+width:340px;
+}
+
+
+.ResultValueFail span.Title {
+background:url('../Image/failed.png') no-repeat;
+padding-left:18px;
+float:left;
+width:340px;
+}
+
+.ResultValueFail a.Title {
+color: #FF0000;
+}
+
+.ResultValuePass span.Title {
+background:url('../Image/passed.png') no-repeat;
+padding-left:18px;
+float:left;
+width:340px;
+}
+
+
+/****************** New Add *********************/
+#BGColor {
+background:#F0F0F0;
+}
+
+#ModuleListFE {
+width:250px;
+padding-top:8px;
+background:url(../Image/banner_header.gif) no-repeat left top;
+}
+
+#ModuleTree {
+width:240px;
+overflow-y:scroll;
+overflow-x:hidden;
+padding-left:10px;
+background:url(../Image/banner.gif) repeat-y;
+}
+
+#LeftUserControl {
+margin:0px;
+padding:10px 10px 0px 10px;
+height:92%;
+background:url(../Image/banner.gif) repeat-y;
+}
+
+#ModuleListBottom {
+width:250px;
+height:8px;
+background:url(../Image/banner_bottom.gif) no-repeat center left;
+}
+
+table.TabelReset {
+margin:0px;
+padding:0px;
+border:none;
+background:#FFFFFF;
+}
+
+table.TabelReset caption {
+background:#FFFFFF;
+border:none;
+padding:10px 0px 10px 0px;
+font-size:13px;
+font-weight:bold;
+}
+
+body.LMode {
+margin-left:10px;
+height:100%;
+background:#F0F0F0;
+}
+
+body.RMode {
+margin-right:10px;
+height:100%;
+background:#F0F0F0;
+}
+
+table.TableMode {
+margin:0px;
+padding:0px;
+border:none;
+}
+
+table.TableMode td, table.TableMode th {
+margin:0px;
+padding:0px;
+border:none;
+}
+
+table.TableMode td.TdCaption {
+border:none;
+height:37px;
+}
+
+table.TableMode td.TdCaption a {
+text-decoration:underline;
+}
+
+table.TableMode td.TdCaption tr td{
+border:none;
+}
+
+#VReport {
+background:url(../Image/report.gif) no-repeat;
+padding-left:16px;
+}
+
+#ListSubTable {
+padding-left:10px;
+}
+
+table.TableSubMode {
+width:98%;
+}
+
+table.TableSubMode tr {
+height:25px;
+border-color:#DBDADA;
+}
+
+table.TableSubMode th, table.TableSubMode td {
+border:1px solid #DBDADA;
+border-width:1px 0;
+padding:1px 4px;
+white-space:nowrap;
+}
+
+table.TableSubMode tr.TabLink:hover {
+background:none;
+}
+
+table.TableSubMode tr:hover {
+background:#D8EDFF;
+}
+
+table.TableSubMode th a {
+color:#000000;
+}
+
+table.TableSubMode th a:visited {
+color:#000000;
+}
+
+#Control {
+border:1px solid #CFCFCF;
+border-right:none;
+background:#FFFFFF url(../Image/control_bg.png) repeat-x top left;
+text-align:left;
+height:100%;
+margin:0;
+padding:0;
+cursor:pointer;
+}
+
+#BlankCover {
+padding-right:10px;
+background:#FFFFFF url(../Image/table_bg.png) repeat-x top left;
+border-right:1px solid #CFCFCF;
+border-bottom:1px solid #CFCFCF;
+}
+
+#SearchTable caption {
+background:none;
+}
+
+#SearchTable {
+background:none;
+}
+
+#SearchBlankCover {
+border-right:1px solid #CFCFCF;
+border-top:1px solid #CFCFCF;
+height:145px;
+padding-right:10px;
+background:#FFFFFF url(../Image/search_bg.png) repeat-x top left;
+}
+
+#ButtonList {
+height:24px;
+vertical-align:middle;
+margin-right:49px;
+padding-top:9px;
+}
+
+#TopNavBug {
+padding:7px 28px 8px;
+display:block;
+margin:0;
+}
+
+#TopNavCase {
+padding:7px 8px 8px;
+display:block;
+margin:0;
+}
+
+#TopNavResult {
+padding:7px 4px 8px;
+display:block;
+margin:0;
+}
+
+td.SortActive a {
+font-weight:bold;
+color:#48ABF8;
+}
+
+.TabPage {
+background:#F0F9FD;
+}
+
+.TabSelect {
+background:#F0F9FD;
+}
+
+.Btn {
+background:url('../Image/input_button.png') no-repeat center center;
+border:0;
+width:81px;
+height:24px;
+valign:middle;
+cursor:pointer;
+font-size:12px;
+color:#000000;
+}
+
+.Btn[disabled='disabled'] {
+background:url('../Image/input_button_hover.png') no-repeat center center;
+border:0;
+width:81px;
+height:24px;
+valign:middle;
+cursor:pointer;
+font-size:12px;
+color:#D0D0D0;
+}
+
+.Btn:hover {
+background:url('../Image/input_button_hover.png') no-repeat center center;
+}
+
+#BugMain input.ReadOnlyField, #CaseMain input.ReadOnlyField, #ResultMain input.ReadOnlyField {
+background:none;
+}
+
+.TopBar {
+width:100;
+left:0;
+top:0;
+position:fixed!important;
+position:absolute; 
+z-index:10;
+}
+
+#ProjectID {
+width:136px;
+}
+
+#ModuleID {
+width:400px;
+}
+
+.AdminButton
+{
+display:block;
+margin:0;
+padding:7px 8px 8px;
+}
+
+#AdminTopNavButton ul li.Active{
+background:url('../Image/admin_button_active.png') no-repeat center center;
+}
+
+div.AdminNav
+{
+margin-top:5px;
+}
+
+span.BugStatusActive {
+background:url('../Image/active.png') no-repeat center center;
+float:left;
+width:18px;
+}
+
+span.BugStatusResolved {
+background:url('../Image/resolved.png') no-repeat center center;
+float:left;
+width:18px;
+}
+
+span.BugStatusClosed {
+float:left;
+width:18px;
+}
+
+span.ResultValueFailed {
+background:url('../Image/failed.png') no-repeat center center;
+float:left;
+width:18px;
+}
+
+span.ResultValueBlank {
+float:left;
+width:18px;
+}
+
+span.ResultValuePassed {
+background:url('../Image/passed.png') no-repeat center center;
+float:left;
+width:18px;
+}
+
+div.EditMyInfo dl dt
+{
+width:135px;
+}
+
+form.AdminSearch
+{
+float:left;
+margin-left:20px;
+text-align:left;
+}
+
+input.readonly
+{
+background:#CFCFCF;
+color:#525252;
+border:solid 1px;
+}
+div.AdminAction
+{
+margin: 10px 0px 0px 0px;
+height:30px;
+border-bottom: 1px solid #AAAAAA;
+}
+
+div.AdminAction a 
+{
+font-size:14px;
+color: blue;
+text-decoration: underline;
+}

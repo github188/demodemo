@@ -1,0 +1,690 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.4" />
+<title>BugFree 2.0 程序文件说明文档</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revision {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+div.imageblock img { border: 1px solid silver; }
+span.image img { border-style: none; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){generateToc(2)}
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, October 2006. License: GPL */
+
+function getText(el) {
+  var text = "";
+  for (var i = el.firstChild; i != null; i = i.nextSibling) {
+    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+      text += i.data;
+    else if (i.firstChild != null)
+      text += getText(i);
+  }
+  return text;
+}
+
+function TocEntry(el, text, toclevel) {
+  this.element = el;
+  this.text = text;
+  this.toclevel = toclevel;
+}
+
+function tocEntries(el, toclevels) {
+  var result = new Array;
+  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+  // Function that scans the DOM tree for header elements (the DOM2
+  // nodeIterator API would be a better technique but not supported by all
+  // browsers).
+  var iterate = function (el) {
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+        var mo = re.exec(i.tagName)
+        if (mo)
+          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+        iterate(i);
+      }
+    }
+  }
+  iterate(el);
+  return result;
+}
+
+// This function does the work. toclevels = 1..4.
+function generateToc(toclevels) {
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementsByTagName("body")[0], toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "toc" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    document.getElementById("header").removeChild(toc);
+}
+/*]]>*/
+</script>
+</head>
+<body>
+<div id="header">
+<h1>BugFree 2.0 程序文件说明文档</h1>
+<span id="author">李玉鹏</span><br />
+<span id="email"><tt>&lt;<a href="mailto:leeyupeng@gmail.com">leeyupeng@gmail.com</a>&gt;</tt></span><br />
+<span id="revision">version 1.0,</span>
+May 2009
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<h2 id="_">1. 总述</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>BugFree的大部分程序文件为php文件和模板文件，另有少量的js和css文件。
+文件命名基本遵循驼峰命名规则。</p></div>
+</div>
+<h2 id="__2">2. 程序目录结构</h2>
+<div class="sectionbody">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+根目录，用于存放常用操作程序，如Bug.php，Login.php等
+</p>
+</li>
+<li>
+<p>
+Admin目录，用于存放后台管理程序
+</p>
+</li>
+<li>
+<p>
+Include目录，用于存放系统的初始化程序、函数库以及一些第三方类
+</p>
+</li>
+<li>
+<p>
+Lang目录，存放各种语言文件
+</p>
+</li>
+<li>
+<p>
+Template目录，存放模板文件
+</p>
+</li>
+<li>
+<p>
+JS目录，存放系统的js程序文件
+</p>
+</li>
+<li>
+<p>
+Css目录，存放Css文件
+</p>
+</li>
+<li>
+<p>
+Image目录，BugFree用到的一些图片
+</p>
+</li>
+<li>
+<p>
+Shell目录，存放一些脚本文件，如定时发信脚本等
+</p>
+</li>
+<li>
+<p>
+Data目录，存放一些系统数据文件，如模板编译的临时文件
+</p>
+</li>
+<li>
+<p>
+Charts目录，用于存放展示统计信息的Flash文件
+</p>
+</li>
+<li>
+<p>
+Doc目录，BugFree的一些相关文档
+</p>
+</li>
+</ol></div>
+</div>
+<h2 id="__3">3. 根目录程序文件</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>以下会列出根目录中常用到的一些文件及说明。</p></div>
+<h3 id="__4">3.1. 登录、注销页</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Login.php用于登录，Logout.php用于注销</p></div>
+<h3 id="_index_php">3.2. 首页 index.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>用于展示BugFree的首页，如果用户未登录，将会跳转到登录页。其布局上分别引用了导航文件TopNav.php、模块列表文件ModuleList.php、用户常用操作列表文件UserControl.php以及Bug/Case/Result的查询表单和列表文件</p></div>
+<h3 id="__5">3.3. 操作程序</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Bug.php、Case.php、Result.php，用于Bug/Case/Result的各种视图操作，</p></div>
+<h3 id="_postaction_php">3.4. 操作路由程序 PostAction.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>该文件将会接收Bug.php、Case.php、Result.php发送的各种请求，包括添加、编辑等，处理完毕后返回结果</p></div>
+<h3 id="__6">3.5. 查询表单程序</h3><div style="clear:left"></div>
+<div class="paragraph"><p>SearchBug.php、SearchCase.php、SearchResult.php，用于展示查询Bug/Case/Result的表单</p></div>
+<h3 id="__7">3.6. 列表程序</h3><div style="clear:left"></div>
+<div class="paragraph"><p>BugList.php、CaseList.php、ResultList.php，用于展示Bug/Case/Result的列表</p></div>
+<h3 id="__8">3.7. 统计程序</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Report.php，引用了ReportTop.php、ReportLeft.php、ReportRight.php三个文件，用于展示当前列表页的统计结果</p></div>
+<h3 id="_api_php">3.8. api.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>具体原理和使用请参见文档 <a href="http://www.bugfree.org.cn/help/bugfree_api.html">http://www.bugfree.org.cn/help/bugfree_api.html</a></p></div>
+</div>
+<h2 id="_include">4. Include目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>该目录主要存放配置文件、初始化文件、常用函数文件和一些第三方类文件。</p></div>
+<h3 id="_config_inc_sample_php">4.1. Config.inc.Sample.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>系统配置的样例文件，实际使用需更名为Config.inc.php</p></div>
+<h3 id="_init_inc_php">4.2. 初始化程序 Init.inc.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>初始化系统的一些环境变量，如数据库连接、session初始化等，并引用函数库、第三方类等</p></div>
+<h3 id="_funcmain_php">4.3. 功能函数文件 FuncMain.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>存放常用的功能性函数，如数组操作、常见SQL拼接等</p></div>
+<h3 id="_funcmodel_php">4.4. 模块函数文件 FuncModel.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>存放针对Bug、Case、Result、项目、分组、用户等一些操作的函数</p></div>
+<h3 id="_funcstat_inc_php">4.5. 统计函数库 FuncStat.inc.php</h3><div style="clear:left"></div>
+<div class="paragraph"><p>用于生成统计报表显示的类XML数据，提供给FusionCharts显示各种统计图表（如柱图、饼图等）</p></div>
+<h3 id="__9">4.6. 其他操作类介绍</h3><div style="clear:left"></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Page.class.php，分页类
+</p>
+</li>
+<li>
+<p>
+FusionCharts，用于报表显示，包含文件FusionCharts.php、FC_Colors.php
+</p>
+</li>
+<li>
+<p>
+ADOdbLite，用于数据库操作
+</p>
+</li>
+<li>
+<p>
+PHPMailer，发信类
+</p>
+</li>
+<li>
+<p>
+TemplateLite，模板类
+</p>
+</li>
+<li>
+<p>
+Xajax，一个轻量的ajax框架的后台程序
+</p>
+</li>
+</ol></div>
+</div>
+<h2 id="_lang">5. Lang目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>语言目录，Languages.php用来配置当前可选的语言列表，每种语言单独存放在一个目录中</p></div>
+</div>
+<h2 id="_template">6. Template目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>存放模板文件</p></div>
+</div>
+<h2 id="_js">7. JS目录</h2>
+<div class="sectionbody">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Main.js，存放BugFree自有的一些函数
+</p>
+</li>
+<li>
+<p>
+calendar*.js，日历类
+</p>
+</li>
+<li>
+<p>
+FusionCharts.js，用于FusionCharts的前台展示函数文件
+</p>
+</li>
+<li>
+<p>
+overlib.js，用于显示一些浮动信息
+</p>
+</li>
+<li>
+<p>
+TreeMenu.js，用于生成树状列表
+</p>
+</li>
+<li>
+<p>
+xajax.js，一个轻量的ajax框架的前台程序
+</p>
+</li>
+<li>
+<p>
+pngfix.js，用 javascript 修复 IE 下 PNG 图片不能透明显示的方法
+</p>
+</li>
+</ol></div>
+</div>
+<h2 id="_css">8. Css目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>存放一些样式表文件</p></div>
+</div>
+<h2 id="_image">9. Image目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>存放图片文件</p></div>
+</div>
+<h2 id="_shell">10. Shell目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>一些BugFree日常应用脚本示例。.sh用于linux平台，.bat文件用于windows平台
+. NoticeBug.sh，用于发送Bug提醒
+. StatBug.sh，用于发送Bug统计</p></div>
+</div>
+<h2 id="_data">11. Data目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>目前只有一个子目录TplCompile，用于存放模板缓存</p></div>
+</div>
+<h2 id="_charts">12. Charts目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>存放FusionCharts的前台flash文件</p></div>
+</div>
+<h2 id="_doc">13. Doc目录</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>存放BugFree的一些相关文档</p></div>
+<div class="paragraph"><p>&#169;2007-2009 <a href="http://www.bugfree.org.cn">http://www.bugfree.org.cn</a></p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0<br />
+Last updated 2009-05-30 21:36:20 中国标准时间
+</div>
+</div>
+</body>
+</html>

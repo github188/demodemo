@@ -1,0 +1,14 @@
+body{font-family: Tahoma;font-size: 12px;margin:0;padding:0;}
+a:link{color: #0164C9;}a:visited{color: #0164C9;}
+table.CommonTable{border-collapse: collapse;width:100%;border:1px solid #808080;background-color: #FFFFFF;font-size:12px;}
+table.CommonTable caption{font-size:13px;border:1px solid #808080;margin:0;}
+table.CommonTable th, table.CommonTable td{margin:1px;padding:2px 1px 1px;border-width: 1px 0;border-style:solid;border-color:#DDDDBB;}
+table.BugMode th{background-color:#D6DEEC;border-color: #8AAFE1;border-width: 1px 1px 0 1px;color: #666666;}
+table.CaseMode th{background-color:#B9C49B;border-color: #3E7E2E;border-width: 1px 1px 0 1px;color: #666666;}
+table.ResultMode th{background-color:#D2C99A;border-color: #996633;border-width: 1px 1px 0 1px;color: #666666;}
+.BugStatusActive{background-color: #FFDDDD;}
+.BugStatusResolved{background-color: #FFFFBB;}
+.BugStatusClosed{background-color: #FFFFFF;}
+.BugStatusClosed a {color: #878787;}
+.BugStatusResolved a {color:#000000;}
+.BugStatusActive a {color: #115FA2;font-weight:bold;}

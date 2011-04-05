@@ -1,0 +1,378 @@
+= BugFree 2.0 数据库设计文档
+李玉鹏 <leeyupeng@gmail.com>
+v1.0, May 2009
+
+
+== 项目表 TestProject
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|ProjectID      |项目编号|smallint(5) unsigned|NO |PRI|NULL
+|2.|ProjectName    |项目名称|varchar(100)        |NO |MUL|
+|3.|ProjectManagers|项目管理员列表|text                |YES|   |NULL
+|4.|ProjectGroupIDs|项目的分组ID列表|text                |YES|   |NULL
+|5.|ProjectDoc     |项目文档地址|varchar(255)        |NO |   |
+|6.|ProjectPlan    |项目计划地址|varchar(255)        |NO |   |
+|7.|DisplayOrder   |展示顺序|tinyint(3) unsigned |NO |MUL|0
+|8.|AddedBy        |添加人|varchar(30)         |NO |   |
+|9.|AddDate        |添加时间|datetime            |NO |   |0000-00-00 00:00:00
+|10.|LastEditedBy   |最后修改人|varchar(30)         |NO |   |
+|11.|LastDate       |最后修改时间|datetime            |NO |   |0000-00-00 00:00:00
+|12.|IsDroped       |是否被删除|enum('1','0')       |NO |MUL|0
+|==========================
+
+.备注
+===================
+. ProjectManagers存储用户的登录名，多个用户用逗号分隔，如：zhangxing,sunming
+. ProjectGroupIDs存储哪些分组ID可以访问这个项目，多个分组ID用逗号分隔，如：3,43,1
+. ProjectDoc和ProjectPlan字段为历史遗留字段，2.0.3中已经废弃不用
+. DisplayOrder用于项目列表下拉框的排序，数字越大越在前面，下面涉及到排序的字段同理
+. IsDroped为'1'时表示被删除，将不出现在查询列表中，下同。另外删除项目时，其下面所有的Module/Bug/Case/Result的IsDroped也都会被置为1
+===================
+
+== 模块表 TestModule
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|ModuleID    |模块编号|int(10) unsigned     |NO |PRI|NULL
+|2.|ModuleType  |模块类型|enum('Bug','Case')   |YES|   |Bug
+|3.|ProjectID   |所属项目编号|smallint(10) unsigned|NO |MUL|0
+|4.|ModuleName  |模块名称|varchar(100)         |NO |MUL|
+|5.|ModuleGrade |模块层级|tinyint(4)           |NO |MUL|0
+|6.|ParentID    |父模块ID|int(10) unsigned     |NO |MUL|0
+|7.|ModuleOwner |模块负责人|varchar(30)          |YES|   |NULL
+|8.|DisplayOrder|展示顺序|tinyint(3) unsigned  |NO |MUL|0
+|9.|AddDate     |添加时间|datetime             |NO |   |0000-00-00 00:00:00
+|10.|LastDate    |最后修改时间|datetime             |NO |   |0000-00-00 00:00:00
+|11.|IsDroped    |是否被删除|enum('1','0')        |NO |MUL|0
+|==========================
+
+.备注
+===================
+. 模块只有Bug和Case两种，Result与Case共用模块列表
+, ModuleGrade用于表示该模块处于模块属性列表的第几级
+. 提交、编辑Bug/Case选择Bug/Case所属的模块时，如果ModuleOwner不为空，则会在'指派给'的列表中自动选择ModuleOwner
+===================
+
+
+== Bug表 BugInfo
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|BugID         |Bug编号     |mediumint(7) unsigned|NO |PRI| NULL
+|2.|ProjectID     |所属项目编号|smallint(5) unsigned |NO |   | 0
+|3.|ProjectName   |所属项目名称|varchar(100)         |NO |   |
+|4.|ModuleID      |所属模块编号|int(10) unsigned     |NO |MUL| 0
+|5.|ModulePath    |所属模块路径|varchar(240)         |NO |   |
+|6.|BugTitle      |Bug标题     |varchar(150)         |YES|MUL| NULL
+|7.|BugSeverity   |Bug严重程度|tinyint(4)           |NO |MUL| 0
+|8.|BugPriority   |Bug优先级 |tinyint(4)           |YES|   | NULL
+|9.|BugType       |Bug类型     |varchar(20)          |NO |MUL|
+|10.|BugOS         |操作系统|varchar(100)         |YES|   | NULL
+|11.|BugBrowser    |浏览器    |varchar(100)         |YES|   | NULL
+|12.|BugMachine    |机器硬件|varchar(255)         |YES|   | NULL
+|13.|HowFound      |如何发现|varchar(50)          |YES|   | NULL
+|14.|ReproSteps    |重现步骤|text                 |YES|   | NULL
+|15.|BugStatus     |Bug当前状态|varchar(20)          |NO |MUL|
+|16.|BugSubStatus  |Bug处理状态|varchar(50)          |NO |   |
+|17.|LinkID        |相关Bug编号|varchar(255)         |YES|   | NULL
+|18.|CaseID        |相关Case编号|varchar(255)         |NO |   |
+|19.|DuplicateID   |重复的Bug编号|varchar(255)         |YES|   | NULL
+|20.|MailTo        |抄送列表|varchar(255)         |NO |   |
+|21.|OpenedBy      |Bug提交者 |varchar(30)          |NO |MUL|
+|22.|OpenedDate    |提交日期|datetime             |NO |   | 0000-00-00 00:00:00
+|23.|OpenedBuild   |提交时所属Build|varchar(100)         |NO |   |
+|24.|AssignedTo    |Bug指定负责者|varchar(30)          |NO |MUL|
+|25.|AssignedDate  |分派日期|datetime             |NO |   | 0000-00-00 00:00:00
+|26.|ResolvedBy    |解决者    |varchar(30)          |NO |MUL|
+|27.|Resolution    |解决方案|varchar(20)          |NO |MUL|
+|28.|ResolvedBuild |解决时的Build|varchar(100)         |NO |   |
+|29.|ResolvedDate  |解决时间|datetime             |NO |   | 0000-00-00 00:00:00
+|30.|ClosedBy      |Bug关闭者 |varchar(30)          |NO |MUL|
+|31.|ClosedDate    |Bug关闭时间|datetime             |NO |   | 0000-00-00 00:00:00
+|32.|LastEditedBy  |最后更新者|varchar(30)          |NO |MUL|
+|33.|LastEditedDate|最后更新时间|datetime             |NO |   | 0000-00-00 00:00:00
+|34.|ModifiedBy    |曾经修改人    |text                 |YES|   | NULL
+|35.|BugKeyword    |关键词|varchar(255)         |YES|   | NULL
+|36.|ResultID      |相关TestResultID|mediumint(8) unsigned|YES|   | NULL
+|37.|CustomField1  |自定义字段一|varchar(255)         |YES|   | NULL
+|38.|CustomField2  |自定义字段二|varchar(255)         |YES|   | NULL
+|39.|CustomField3  |自定义字段三|varchar(255)         |YES|   | NULL
+|40.|IsDroped      |是否被删除  |enum('1','0')        |NO   |     | 0
+|==========================
+
+.备注
+===================
+. 所属项目名称和所属项目路径为冗余字段，下同
+. Severity记录Bug的严重程度，可选值为1-4,数字越小，严重性程度越高
+. BugStatus记录当前Bug 的状态，可选值为：Active，Resolved，Closed.
+. BugSubStatus记录当前Bug的处理状态，可选值为：LocalFix，CheckIn，CanotRegress
+. Resolution记录当前Bug的解决方案
+. ReproSteps用来记录bug重现的步骤
+. DuplicateID用来记录重复的bug，多个bug之间使用逗号隔开
+. BugKeyword用来记录Bug的关键词，用户可以自己定义，便于查询
+. CaseID和ResultID两个字段用来记录这个Bug是由哪个TestCase，哪个TestResult产生的
+. CustomField1/2/3 三个自定义字段用于用户自定义开发
+. ModifiedBy记录曾经操作过Case的用户，逗号分隔，按时间先后顺序排列存放，下同
+. HowFound字段用来记录发现Bug的途径
+[width="25%",cols="3s,8",frame="all",options="header"]
+|==========================
+|缩写|含义
+|AdHoc|无意中
+|BugBash|集中测试
+|BVT|版本验证测试
+|Customer|客户
+|Partner|合作伙伴
+|Regression|回归测试
+|SpecReview|Spec检查
+|TestCase|测试用例
+|Other|其他
+|==========================
+===================
+
+
+== Case表 CaseInfo
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1. |CaseID         |Case编号   |mediumint(8) unsigned|NO |PRI|NULL
+|2. |ProjectID      |所属项目编号|smallint(5) unsigned |NO |MUL|0
+|3. |ProjectName    |所属项目名称|varchar(100)         |NO |MUL|
+|4. |ModuleID       |所属模块编号|smallint(5) unsigned |NO |MUL|0
+|5. |ModulePath     |所属模块路径|varchar(255)         |NO |MUL|
+|6. |CaseTitle      |Case标题   |varchar(150)         |NO |MUL|
+|7. |CasePriority   |Case优先级|tinyint(3) unsigned  |YES|MUL|NULL
+|8. |CaseType       |Case类型   |varchar(20)          |NO |MUL|
+|9. |CaseStatus     |Case当前状态|varchar(20)          |NO |   |
+|10. |CaseMethod     |Case的执行方法|varchar(10)          |NO |   |
+|11.|CasePlan       |测试计划|varchar(10)          |NO |   |
+|12.|CaseSteps      |Case的步骤|text                 |YES|   |NULL
+|13.|OpenedBy       |Case添加人|varchar(30)          |NO |MUL|
+|14.|OpenedDate     |添加时间|datetime             |NO |   |0000-00-00 00:00:00
+|15.|AssignedTo     |Case指派人|varchar(30)          |NO |MUL|
+|16.|AssignedDate   |Case指派时间|datetime             |NO |   |0000-00-00 00:00:00
+|17.|LastEditedBy   |最后修改人|varchar(30)          |NO |   |
+|18.|LastEditedDate |最后修改时间|datetime             |NO |   |0000-00-00 00:00:00
+|19.|ModifiedBy     |曾经修改人|text                 |YES|   |NULL
+|20.|ScriptedBy     |脚本编写者|varchar(30)          |NO |   |
+|21.|ScriptedDate   |脚本编写时间|varchar(10)          |NO |   |
+|22.|ScriptStatus   |脚本状态|varchar(20)          |NO |   |
+|23.|ScriptLocation |脚本地址|varchar(255)         |NO |   |
+|24.|MailTo         |发信给   |varchar(255)         |YES|   |NULL
+|25.|MarkForDeletion|标记是否删除|enum('0','1')        |NO |   |0
+|26.|LinkID         |相关CaseID |varchar(240)         |NO |   |
+|27.|BugID          |相关BugID  |varchar(255)         |NO |   |
+|28.|ResultID       |产生的ResultID|text                 |YES|   |NULL
+|29.|CaseKeyword    |Case关键词|varchar(255)         |NO |MUL|
+|30.|CustomField1   |自定义字段一|varchar(255)         |NO |   |
+|31.|CustomField2   |自定义字段二|varchar(255)         |NO |   |
+|32.|CustomField3   |自定义字段三|varchar(255)         |NO |   |
+|33.|IsDroped       |是否被删除|enum('1','0')        |NO |MUL|0
+|==========================
+
+.备注
+===================
+. CasePriority优先级1-4，1最优先
+. MarkForDeletion仅仅用于标识这个Case是否还有用，方便用户在查询列表中通过这个字段进行查询
+. ResultID存放一个Case产生的所有Result，用逗号分隔
+===================
+
+
+== Result表 ResultInfo
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1. |ResultID     |Result编号|mediumint(8) unsigned|NO |PRI|NULL
+|2. |ProjectID    |所属项目编号|smallint(5) unsigned|NO |MUL|0
+|3. |ProjectName  |所属项目名称|varchar(100)        |NO |MUL|
+|4. |ModuleID     |所属模块编号|smallint(5) unsigned|NO |MUL|0
+|5. |ModulePath   |所属模块路径|varchar(255)        |NO |MUL|
+|6. |CaseID       |相关Case编号|mediumint(8) unsigned|NO |MUL|0
+|7. |ResultTitle  |Result标题|varchar(150)        |NO| |
+|8. |ResultValue  |Result结果|enum('Pass','Fail') |NO |MUL|Fail
+|9. |ResultStatus |Result状态|varchar(30)         |NO| |
+|10.|MailTo       |发信给|varchar(255)        |NO| |
+|11.|OpenedBy     |添加人|varchar(30)         |NO |MUL|
+|12.|OpenedDate   |添加时间|datetime            |NO||0000-00-00 00:00:00
+|13.|ResultSteps  |Result的步骤|text                |YES||NULL
+|14.|AssignedTo   |被指派人|varchar(30)         |NO |MUL|
+|15.|AssignedDate |指派时间|datetime            |NO||0000-00-00 00:00:00
+|16.|LastEditedBy |最后修改人|varchar(30)         |NO| |
+|17.|LastEditedDate|最后修改时间|datetime            |NO||0000-00-00 00:00:00
+|18.|ModifiedBy   |曾经修改人|text                |YES||NULL
+|19.|ResultOS     |操作系统类型|varchar(100)        |NO| |
+|20.|ResultBrowser|浏览器类型|varchar(100)        |NO| |
+|21.|ResultMachine|机器硬件类型|varchar(255)        |NO| |
+|22.|ResultBuild  |产生Result的Build号|varchar(255)        |NO| |
+|23.|ResultKeyword|关键词|varchar(255)        |NO| |
+|24.|BugID        |产生的Bug编号|varchar(255)        |NO| |
+|25.|CustomField1 |自定义字段一|varchar(255)        |NO| |
+|26.|CustomField2 |自定义字段二|varchar(255)        |NO| |
+|27.|CustomField3 |自定义字段三|varchar(255)        |NO| |
+|28.|IsDroped     |是否被删除|enum('1','0')       |NO |MUL|0
+|==========================
+
+.备注
+===================
+. 一个Result可以产生多个Bug，BugID中的Bug编号用逗号分隔
+. ResultOS、ResultBrowser、ResultMachine三个字段用来记录执行用例时的操作系统、浏览器和机器的硬件类型
+===================
+
+
+== 操作表 TestAction
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|ActionID    |操作编号|mediumint(8) unsigned      |NO |PRI|NULL
+|2.|ActionTarget|操作对象|enum('Bug','Case','Result')|NO |MUL|Bug
+|3.|IdValue     |操作对象编号|mediumint(8) unsigned      |NO |   |0
+|4.|ActionUser  |操作人|varchar(30)                |NO |   |
+|5.|ActionType  |操作类型|varchar(30)                |NO |   |
+|6.|ActionDate  |操作时间|datetime                   |NO |   |0000-00-00 00:00:00
+|7.|ActionNote  |操作时添加的备注|text                       |YES|   |NULL
+|==========================
+
+.备注
+===================
+. 此表用来记录对Bug, Case或者Result的每一次操作
+. IdValue用来记录操作对象的编号，如操作对象为Bug，则为对应的BugID
+. ActionTarget用来区分是对Bug还是Case还是Result进行的操作
+. ActionType可能的取值范围：Opened, Edited, Resolved, Closed, Activated
+===================
+
+
+== 历史记录表 TestHistory
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|HistoryID  |历史记录编号|mediumint(8) unsigned|NO  |PRI|NULL
+|2.|ActionID   |对应的Action编号|mediumint(8) unsigned|NO  |MUL|0
+|3.|ActionField|修改的字段|varchar(30)          |NO  |   |
+|4.|OldValue   |旧值|text                 |YES |   |NULL
+|5.|NewValue   |新值|text                 |YES |   |NULL
+|==========================
+
+.备注
+===================
+. 此表用来记录每一次操作所修改的字段前后的取值，一条记录只记录一个字段的变化
+. 此表通过ActionID和TestAction进行关联
+===================
+
+
+== 相关文件表 TestFile
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|FileID   |文件编号|int(10) unsigned     |NO  |PRI|NULL
+|2.|ActionID |对应的ActionID|mediumint(8) unsigned|NO  |MUL|0
+|3.|FileTitle|用于显示的文件名称|varchar(100)         |NO  |   |
+|4.|FileName |实际存储的文件名称|varchar(50)          |NO  |   |
+|5.|FileType |文件类型|varchar(10)          |NO  |   |
+|6.|FileSize |文件大小|varchar(20)          |NO  |   |
+|7.|IsDroped |是否被删除|enum('0','1')        |NO  |   |0
+|==========================
+
+.备注
+===================
+. 此表用来记录每一个操作时所添加的文件
+. 此表通过ActionID和TestAction进行关联
+. Filetype通过用户上传时文件的扩展名判断
+===================
+
+== 用户表 TestUser
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1. |UserID      |用户编号|smallint(4)  |NO  |PRI|NULL
+|2. |UserName    |用户名|varchar(20)  |NO  |   |
+|3. |UserPassword|用户密码|varchar(40)  |NO  |   |
+|4. |RealName    |真实姓名|varchar(20)  |NO  |   |
+|5. |Email       |邮件地址|varchar(50)  |NO  |   |
+|6. |AddedBy     |添加人|varchar(30)  |NO  |   |
+|7. |AddDate     |添加时间|datetime     |NO  |   |0000-00-00 00:00:00
+|8. |LastEditedBy|最后修改人|varchar(30)  |NO  |   |
+|9. |LastDate    |最后修改时间|datetime     |NO  |   |0000-00-00 00:00:00
+|10.|IsDroped    |是否被删除|enum('1','0')|NO  |   |0
+|==========================
+
+.备注
+===================
+. UserName用于登录，RealName用于前台显示
+. 当删除一个用户的时候并没有真正从数据库中删除，只是把IsDroped置为1，添加用户的时候就不会重复添加了
+
+===================
+
+
+== 分组表 TestGroup
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|GroupID      |分组编号|smallint(5) unsigned|NO  |PRI|NULL
+|2.|GroupName    |分组名称|varchar(60)         |NO  |   |
+|3.|GroupManagers|分组管理员|text                |YES |   |NULL
+|4.|GroupUser    |分组用户|longtext            |YES |   |NULL
+|5.|AddedBy      |添加人|varchar(30)         |YES |   |NULL
+|6.|AddDate      |添加时间|datetime            |NO  |   |0000-00-00 00:00:00
+|7.|LastEditedBy |最后修改人|varchar(30)         |YES |   |NULL
+|8.|LastDate     |最后修改时间|datetime            |NO  |   |0000-00-00 00:00:00
+|==========================
+
+.备注
+===================
+. GroupManagers里的用户可以通过后台修改分组里的用户
+===================
+
+
+== 自定义查询表 TestUserQuery
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|QueryID    |查询编号|int(10) unsigned           |NO  |PRI|NULL
+|2.|UserName   |查询所属用户|varchar(30)                |NO  |MUL|
+|3.|QueryType  |查询所属类型|enum('Bug','Case','Result')|YES |MUL|Bug
+|4.|QueryTitle |查询标题|varchar(100)               |NO  |   |
+|5.|QueryString|查询条件|text                       |YES |   |NULL
+|6.|AddDate    |添加时间|datetime                   |NO  |   |0000-00-00 00:00:00
+|==========================
+
+.备注
+===================
+. 暂无
+===================
+
+
+
+== 访问记录表 TestUserLog
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|LogID    |记录编号|mediumint(8) unsigned|NO  |PRI|NULL
+|2.|UserName |用户名|varchar(30)          |NO  |MUL|
+|3.|LoginIP  |登录IP|varchar(15)          |NO  |   |
+|4.|LoginTime|登录时间|datetime             |NO  |   |0000-00-00 00:00:00
+|==========================
+
+.备注
+===================
+. 暂无
+===================
+
+== 系统配置表 TestOptions
+[width="95%",cols="3s,8,11,11,3,4,11",frame="all",options="header"]
+|==========================
+|序号|字段名|字段描述|字段类型|Null|索引|默认
+|1.|OptionId   |配置编号|bigint(20) |NO  |PRI|NULL
+|2.|OptionName |配置名称|varchar(64)|NO  |PRI|
+|3.|OptionValue|配置值|longtext   |NO  |   |NULL
+|==========================
+
+.备注
+===================
+. 用于存放系统的一些配置值，如当前数据库表结构的版本值等
+===================
+
+
+
+
+
+(C)2007-2009 http://www.bugfree.org.cn

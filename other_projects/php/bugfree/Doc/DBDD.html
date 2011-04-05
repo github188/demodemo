@@ -1,0 +1,2762 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.4" />
+<title>BugFree 2.0 数据库设计文档</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revision {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+div.imageblock img { border: 1px solid silver; }
+span.image img { border-style: none; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){generateToc(2)}
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, October 2006. License: GPL */
+
+function getText(el) {
+  var text = "";
+  for (var i = el.firstChild; i != null; i = i.nextSibling) {
+    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+      text += i.data;
+    else if (i.firstChild != null)
+      text += getText(i);
+  }
+  return text;
+}
+
+function TocEntry(el, text, toclevel) {
+  this.element = el;
+  this.text = text;
+  this.toclevel = toclevel;
+}
+
+function tocEntries(el, toclevels) {
+  var result = new Array;
+  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+  // Function that scans the DOM tree for header elements (the DOM2
+  // nodeIterator API would be a better technique but not supported by all
+  // browsers).
+  var iterate = function (el) {
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+        var mo = re.exec(i.tagName)
+        if (mo)
+          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+        iterate(i);
+      }
+    }
+  }
+  iterate(el);
+  return result;
+}
+
+// This function does the work. toclevels = 1..4.
+function generateToc(toclevels) {
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementsByTagName("body")[0], toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "toc" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    document.getElementById("header").removeChild(toc);
+}
+/*]]>*/
+</script>
+</head>
+<body>
+<div id="header">
+<h1>BugFree 2.0 数据库设计文档</h1>
+<span id="author">李玉鹏</span><br />
+<span id="email"><tt>&lt;<a href="mailto:leeyupeng@gmail.com">leeyupeng@gmail.com</a>&gt;</tt></span><br />
+<span id="revision">version 1.0,</span>
+May 2009
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<h2 id="_testproject">1. 项目表 TestProject</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectID</p></td>
+<td align="left" valign="top"><p class="table">项目编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectName</p></td>
+<td align="left" valign="top"><p class="table">项目名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectManagers</p></td>
+<td align="left" valign="top"><p class="table">项目管理员列表</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectGroupIDs</p></td>
+<td align="left" valign="top"><p class="table">项目的分组ID列表</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectDoc</p></td>
+<td align="left" valign="top"><p class="table">项目文档地址</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectPlan</p></td>
+<td align="left" valign="top"><p class="table">项目计划地址</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">DisplayOrder</p></td>
+<td align="left" valign="top"><p class="table">展示顺序</p></td>
+<td align="left" valign="top"><p class="table">tinyint(3) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddedBy</p></td>
+<td align="left" valign="top"><p class="table">添加人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后修改人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>11.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>12.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+ProjectManagers存储用户的登录名，多个用户用逗号分隔，如：zhangxing,sunming
+</p>
+</li>
+<li>
+<p>
+ProjectGroupIDs存储哪些分组ID可以访问这个项目，多个分组ID用逗号分隔，如：3,43,1
+</p>
+</li>
+<li>
+<p>
+ProjectDoc和ProjectPlan字段为历史遗留字段，2.0.3中已经废弃不用
+</p>
+</li>
+<li>
+<p>
+DisplayOrder用于项目列表下拉框的排序，数字越大越在前面，下面涉及到排序的字段同理
+</p>
+</li>
+<li>
+<p>
+IsDroped为'1'时表示被删除，将不出现在查询列表中，下同。另外删除项目时，其下面所有的Module/Bug/Case/Result的IsDroped也都会被置为1
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testmodule">2. 模块表 TestModule</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleID</p></td>
+<td align="left" valign="top"><p class="table">模块编号</p></td>
+<td align="left" valign="top"><p class="table">int(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleType</p></td>
+<td align="left" valign="top"><p class="table">模块类型</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>Bug</em>,<em>Case</em>)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">Bug</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectID</p></td>
+<td align="left" valign="top"><p class="table">所属项目编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleName</p></td>
+<td align="left" valign="top"><p class="table">模块名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleGrade</p></td>
+<td align="left" valign="top"><p class="table">模块层级</p></td>
+<td align="left" valign="top"><p class="table">tinyint(4)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">ParentID</p></td>
+<td align="left" valign="top"><p class="table">父模块ID</p></td>
+<td align="left" valign="top"><p class="table">int(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleOwner</p></td>
+<td align="left" valign="top"><p class="table">模块负责人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">DisplayOrder</p></td>
+<td align="left" valign="top"><p class="table">展示顺序</p></td>
+<td align="left" valign="top"><p class="table">tinyint(3) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>11.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+模块只有Bug和Case两种，Result与Case共用模块列表
+, ModuleGrade用于表示该模块处于模块属性列表的第几级
+</p>
+</li>
+<li>
+<p>
+提交、编辑Bug/Case选择Bug/Case所属的模块时，如果ModuleOwner不为空，则会在'指派给'的列表中自动选择ModuleOwner
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_bug_buginfo">3. Bug表 BugInfo</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugID</p></td>
+<td align="left" valign="top"><p class="table">Bug编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(7) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectID</p></td>
+<td align="left" valign="top"><p class="table">所属项目编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectName</p></td>
+<td align="left" valign="top"><p class="table">所属项目名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleID</p></td>
+<td align="left" valign="top"><p class="table">所属模块编号</p></td>
+<td align="left" valign="top"><p class="table">int(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModulePath</p></td>
+<td align="left" valign="top"><p class="table">所属模块路径</p></td>
+<td align="left" valign="top"><p class="table">varchar(240)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugTitle</p></td>
+<td align="left" valign="top"><p class="table">Bug标题</p></td>
+<td align="left" valign="top"><p class="table">varchar(150)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugSeverity</p></td>
+<td align="left" valign="top"><p class="table">Bug严重程度</p></td>
+<td align="left" valign="top"><p class="table">tinyint(4)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugPriority</p></td>
+<td align="left" valign="top"><p class="table">Bug优先级</p></td>
+<td align="left" valign="top"><p class="table">tinyint(4)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugType</p></td>
+<td align="left" valign="top"><p class="table">Bug类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugOS</p></td>
+<td align="left" valign="top"><p class="table">操作系统</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>11.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugBrowser</p></td>
+<td align="left" valign="top"><p class="table">浏览器</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>12.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugMachine</p></td>
+<td align="left" valign="top"><p class="table">机器硬件</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>13.</strong></p></td>
+<td align="left" valign="top"><p class="table">HowFound</p></td>
+<td align="left" valign="top"><p class="table">如何发现</p></td>
+<td align="left" valign="top"><p class="table">varchar(50)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>14.</strong></p></td>
+<td align="left" valign="top"><p class="table">ReproSteps</p></td>
+<td align="left" valign="top"><p class="table">重现步骤</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>15.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugStatus</p></td>
+<td align="left" valign="top"><p class="table">Bug当前状态</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>16.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugSubStatus</p></td>
+<td align="left" valign="top"><p class="table">Bug处理状态</p></td>
+<td align="left" valign="top"><p class="table">varchar(50)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>17.</strong></p></td>
+<td align="left" valign="top"><p class="table">LinkID</p></td>
+<td align="left" valign="top"><p class="table">相关Bug编号</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>18.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseID</p></td>
+<td align="left" valign="top"><p class="table">相关Case编号</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>19.</strong></p></td>
+<td align="left" valign="top"><p class="table">DuplicateID</p></td>
+<td align="left" valign="top"><p class="table">重复的Bug编号</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>20.</strong></p></td>
+<td align="left" valign="top"><p class="table">MailTo</p></td>
+<td align="left" valign="top"><p class="table">抄送列表</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>21.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedBy</p></td>
+<td align="left" valign="top"><p class="table">Bug提交者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>22.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedDate</p></td>
+<td align="left" valign="top"><p class="table">提交日期</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>23.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedBuild</p></td>
+<td align="left" valign="top"><p class="table">提交时所属Build</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>24.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedTo</p></td>
+<td align="left" valign="top"><p class="table">Bug指定负责者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>25.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedDate</p></td>
+<td align="left" valign="top"><p class="table">分派日期</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>26.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResolvedBy</p></td>
+<td align="left" valign="top"><p class="table">解决者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>27.</strong></p></td>
+<td align="left" valign="top"><p class="table">Resolution</p></td>
+<td align="left" valign="top"><p class="table">解决方案</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>28.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResolvedBuild</p></td>
+<td align="left" valign="top"><p class="table">解决时的Build</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>29.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResolvedDate</p></td>
+<td align="left" valign="top"><p class="table">解决时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>30.</strong></p></td>
+<td align="left" valign="top"><p class="table">ClosedBy</p></td>
+<td align="left" valign="top"><p class="table">Bug关闭者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>31.</strong></p></td>
+<td align="left" valign="top"><p class="table">ClosedDate</p></td>
+<td align="left" valign="top"><p class="table">Bug关闭时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>32.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后更新者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>33.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedDate</p></td>
+<td align="left" valign="top"><p class="table">最后更新时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>34.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModifiedBy</p></td>
+<td align="left" valign="top"><p class="table">曾经修改人</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>35.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugKeyword</p></td>
+<td align="left" valign="top"><p class="table">关键词</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>36.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultID</p></td>
+<td align="left" valign="top"><p class="table">相关TestResultID</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>37.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField1</p></td>
+<td align="left" valign="top"><p class="table">自定义字段一</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>38.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField2</p></td>
+<td align="left" valign="top"><p class="table">自定义字段二</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>39.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField3</p></td>
+<td align="left" valign="top"><p class="table">自定义字段三</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>40.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+所属项目名称和所属项目路径为冗余字段，下同
+</p>
+</li>
+<li>
+<p>
+Severity记录Bug的严重程度，可选值为1-4,数字越小，严重性程度越高
+</p>
+</li>
+<li>
+<p>
+BugStatus记录当前Bug 的状态，可选值为：Active，Resolved，Closed.
+</p>
+</li>
+<li>
+<p>
+BugSubStatus记录当前Bug的处理状态，可选值为：LocalFix，CheckIn，CanotRegress
+</p>
+</li>
+<li>
+<p>
+Resolution记录当前Bug的解决方案
+</p>
+</li>
+<li>
+<p>
+ReproSteps用来记录bug重现的步骤
+</p>
+</li>
+<li>
+<p>
+DuplicateID用来记录重复的bug，多个bug之间使用逗号隔开
+</p>
+</li>
+<li>
+<p>
+BugKeyword用来记录Bug的关键词，用户可以自己定义，便于查询
+</p>
+</li>
+<li>
+<p>
+CaseID和ResultID两个字段用来记录这个Bug是由哪个TestCase，哪个TestResult产生的
+</p>
+</li>
+<li>
+<p>
+CustomField1/2/3 三个自定义字段用于用户自定义开发
+</p>
+</li>
+<li>
+<p>
+ModifiedBy记录曾经操作过Case的用户，逗号分隔，按时间先后顺序排列存放，下同
+</p>
+</li>
+<li>
+<p>
+HowFound字段用来记录发现Bug的途径
+</p>
+</li>
+</ol></div>
+<div class="tableblock">
+<table rules="all"
+width="25%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="27%" />
+<col width="72%" />
+<thead>
+<tr>
+<th align="left" valign="top">缩写</th>
+<th align="left" valign="top">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>AdHoc</strong></p></td>
+<td align="left" valign="top"><p class="table">无意中</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>BugBash</strong></p></td>
+<td align="left" valign="top"><p class="table">集中测试</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>BVT</strong></p></td>
+<td align="left" valign="top"><p class="table">版本验证测试</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Customer</strong></p></td>
+<td align="left" valign="top"><p class="table">客户</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Partner</strong></p></td>
+<td align="left" valign="top"><p class="table">合作伙伴</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Regression</strong></p></td>
+<td align="left" valign="top"><p class="table">回归测试</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>SpecReview</strong></p></td>
+<td align="left" valign="top"><p class="table">Spec检查</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>TestCase</strong></p></td>
+<td align="left" valign="top"><p class="table">测试用例</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Other</strong></p></td>
+<td align="left" valign="top"><p class="table">其他</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+</div>
+<h2 id="_case_caseinfo">4. Case表 CaseInfo</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseID</p></td>
+<td align="left" valign="top"><p class="table">Case编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectID</p></td>
+<td align="left" valign="top"><p class="table">所属项目编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectName</p></td>
+<td align="left" valign="top"><p class="table">所属项目名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleID</p></td>
+<td align="left" valign="top"><p class="table">所属模块编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModulePath</p></td>
+<td align="left" valign="top"><p class="table">所属模块路径</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseTitle</p></td>
+<td align="left" valign="top"><p class="table">Case标题</p></td>
+<td align="left" valign="top"><p class="table">varchar(150)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">CasePriority</p></td>
+<td align="left" valign="top"><p class="table">Case优先级</p></td>
+<td align="left" valign="top"><p class="table">tinyint(3) unsigned</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseType</p></td>
+<td align="left" valign="top"><p class="table">Case类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseStatus</p></td>
+<td align="left" valign="top"><p class="table">Case当前状态</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseMethod</p></td>
+<td align="left" valign="top"><p class="table">Case的执行方法</p></td>
+<td align="left" valign="top"><p class="table">varchar(10)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>11.</strong></p></td>
+<td align="left" valign="top"><p class="table">CasePlan</p></td>
+<td align="left" valign="top"><p class="table">测试计划</p></td>
+<td align="left" valign="top"><p class="table">varchar(10)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>12.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseSteps</p></td>
+<td align="left" valign="top"><p class="table">Case的步骤</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>13.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedBy</p></td>
+<td align="left" valign="top"><p class="table">Case添加人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>14.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>15.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedTo</p></td>
+<td align="left" valign="top"><p class="table">Case指派人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>16.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedDate</p></td>
+<td align="left" valign="top"><p class="table">Case指派时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>17.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后修改人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>18.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>19.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModifiedBy</p></td>
+<td align="left" valign="top"><p class="table">曾经修改人</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>20.</strong></p></td>
+<td align="left" valign="top"><p class="table">ScriptedBy</p></td>
+<td align="left" valign="top"><p class="table">脚本编写者</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>21.</strong></p></td>
+<td align="left" valign="top"><p class="table">ScriptedDate</p></td>
+<td align="left" valign="top"><p class="table">脚本编写时间</p></td>
+<td align="left" valign="top"><p class="table">varchar(10)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>22.</strong></p></td>
+<td align="left" valign="top"><p class="table">ScriptStatus</p></td>
+<td align="left" valign="top"><p class="table">脚本状态</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>23.</strong></p></td>
+<td align="left" valign="top"><p class="table">ScriptLocation</p></td>
+<td align="left" valign="top"><p class="table">脚本地址</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>24.</strong></p></td>
+<td align="left" valign="top"><p class="table">MailTo</p></td>
+<td align="left" valign="top"><p class="table">发信给</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>25.</strong></p></td>
+<td align="left" valign="top"><p class="table">MarkForDeletion</p></td>
+<td align="left" valign="top"><p class="table">标记是否删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>0</em>,<em>1</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>26.</strong></p></td>
+<td align="left" valign="top"><p class="table">LinkID</p></td>
+<td align="left" valign="top"><p class="table">相关CaseID</p></td>
+<td align="left" valign="top"><p class="table">varchar(240)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>27.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugID</p></td>
+<td align="left" valign="top"><p class="table">相关BugID</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>28.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultID</p></td>
+<td align="left" valign="top"><p class="table">产生的ResultID</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>29.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseKeyword</p></td>
+<td align="left" valign="top"><p class="table">Case关键词</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>30.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField1</p></td>
+<td align="left" valign="top"><p class="table">自定义字段一</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>31.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField2</p></td>
+<td align="left" valign="top"><p class="table">自定义字段二</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>32.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField3</p></td>
+<td align="left" valign="top"><p class="table">自定义字段三</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>33.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+CasePriority优先级1-4，1最优先
+</p>
+</li>
+<li>
+<p>
+MarkForDeletion仅仅用于标识这个Case是否还有用，方便用户在查询列表中通过这个字段进行查询
+</p>
+</li>
+<li>
+<p>
+ResultID存放一个Case产生的所有Result，用逗号分隔
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_result_resultinfo">5. Result表 ResultInfo</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultID</p></td>
+<td align="left" valign="top"><p class="table">Result编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectID</p></td>
+<td align="left" valign="top"><p class="table">所属项目编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ProjectName</p></td>
+<td align="left" valign="top"><p class="table">所属项目名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModuleID</p></td>
+<td align="left" valign="top"><p class="table">所属模块编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModulePath</p></td>
+<td align="left" valign="top"><p class="table">所属模块路径</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">CaseID</p></td>
+<td align="left" valign="top"><p class="table">相关Case编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultTitle</p></td>
+<td align="left" valign="top"><p class="table">Result标题</p></td>
+<td align="left" valign="top"><p class="table">varchar(150)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultValue</p></td>
+<td align="left" valign="top"><p class="table">Result结果</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>Pass</em>,<em>Fail</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">Fail</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultStatus</p></td>
+<td align="left" valign="top"><p class="table">Result状态</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">MailTo</p></td>
+<td align="left" valign="top"><p class="table">发信给</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>11.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedBy</p></td>
+<td align="left" valign="top"><p class="table">添加人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>12.</strong></p></td>
+<td align="left" valign="top"><p class="table">OpenedDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>13.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultSteps</p></td>
+<td align="left" valign="top"><p class="table">Result的步骤</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>14.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedTo</p></td>
+<td align="left" valign="top"><p class="table">被指派人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>15.</strong></p></td>
+<td align="left" valign="top"><p class="table">AssignedDate</p></td>
+<td align="left" valign="top"><p class="table">指派时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>16.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后修改人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>17.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>18.</strong></p></td>
+<td align="left" valign="top"><p class="table">ModifiedBy</p></td>
+<td align="left" valign="top"><p class="table">曾经修改人</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>19.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultOS</p></td>
+<td align="left" valign="top"><p class="table">操作系统类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>20.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultBrowser</p></td>
+<td align="left" valign="top"><p class="table">浏览器类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>21.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultMachine</p></td>
+<td align="left" valign="top"><p class="table">机器硬件类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>22.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultBuild</p></td>
+<td align="left" valign="top"><p class="table">产生Result的Build号</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>23.</strong></p></td>
+<td align="left" valign="top"><p class="table">ResultKeyword</p></td>
+<td align="left" valign="top"><p class="table">关键词</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>24.</strong></p></td>
+<td align="left" valign="top"><p class="table">BugID</p></td>
+<td align="left" valign="top"><p class="table">产生的Bug编号</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>25.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField1</p></td>
+<td align="left" valign="top"><p class="table">自定义字段一</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>26.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField2</p></td>
+<td align="left" valign="top"><p class="table">自定义字段二</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>27.</strong></p></td>
+<td align="left" valign="top"><p class="table">CustomField3</p></td>
+<td align="left" valign="top"><p class="table">自定义字段三</p></td>
+<td align="left" valign="top"><p class="table">varchar(255)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>28.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+一个Result可以产生多个Bug，BugID中的Bug编号用逗号分隔
+</p>
+</li>
+<li>
+<p>
+ResultOS、ResultBrowser、ResultMachine三个字段用来记录执行用例时的操作系统、浏览器和机器的硬件类型
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testaction">6. 操作表 TestAction</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionID</p></td>
+<td align="left" valign="top"><p class="table">操作编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionTarget</p></td>
+<td align="left" valign="top"><p class="table">操作对象</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>Bug</em>,<em>Case</em>,<em>Result</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">Bug</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">IdValue</p></td>
+<td align="left" valign="top"><p class="table">操作对象编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionUser</p></td>
+<td align="left" valign="top"><p class="table">操作人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionType</p></td>
+<td align="left" valign="top"><p class="table">操作类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionDate</p></td>
+<td align="left" valign="top"><p class="table">操作时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionNote</p></td>
+<td align="left" valign="top"><p class="table">操作时添加的备注</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+此表用来记录对Bug, Case或者Result的每一次操作
+</p>
+</li>
+<li>
+<p>
+IdValue用来记录操作对象的编号，如操作对象为Bug，则为对应的BugID
+</p>
+</li>
+<li>
+<p>
+ActionTarget用来区分是对Bug还是Case还是Result进行的操作
+</p>
+</li>
+<li>
+<p>
+ActionType可能的取值范围：Opened, Edited, Resolved, Closed, Activated
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testhistory">7. 历史记录表 TestHistory</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">HistoryID</p></td>
+<td align="left" valign="top"><p class="table">历史记录编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionID</p></td>
+<td align="left" valign="top"><p class="table">对应的Action编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionField</p></td>
+<td align="left" valign="top"><p class="table">修改的字段</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">OldValue</p></td>
+<td align="left" valign="top"><p class="table">旧值</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">NewValue</p></td>
+<td align="left" valign="top"><p class="table">新值</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+此表用来记录每一次操作所修改的字段前后的取值，一条记录只记录一个字段的变化
+</p>
+</li>
+<li>
+<p>
+此表通过ActionID和TestAction进行关联
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testfile">8. 相关文件表 TestFile</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">FileID</p></td>
+<td align="left" valign="top"><p class="table">文件编号</p></td>
+<td align="left" valign="top"><p class="table">int(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">ActionID</p></td>
+<td align="left" valign="top"><p class="table">对应的ActionID</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">FileTitle</p></td>
+<td align="left" valign="top"><p class="table">用于显示的文件名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">FileName</p></td>
+<td align="left" valign="top"><p class="table">实际存储的文件名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(50)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">FileType</p></td>
+<td align="left" valign="top"><p class="table">文件类型</p></td>
+<td align="left" valign="top"><p class="table">varchar(10)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">FileSize</p></td>
+<td align="left" valign="top"><p class="table">文件大小</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>0</em>,<em>1</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+此表用来记录每一个操作时所添加的文件
+</p>
+</li>
+<li>
+<p>
+此表通过ActionID和TestAction进行关联
+</p>
+</li>
+<li>
+<p>
+Filetype通过用户上传时文件的扩展名判断
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testuser">9. 用户表 TestUser</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">UserID</p></td>
+<td align="left" valign="top"><p class="table">用户编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(4)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">UserName</p></td>
+<td align="left" valign="top"><p class="table">用户名</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">UserPassword</p></td>
+<td align="left" valign="top"><p class="table">用户密码</p></td>
+<td align="left" valign="top"><p class="table">varchar(40)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">RealName</p></td>
+<td align="left" valign="top"><p class="table">真实姓名</p></td>
+<td align="left" valign="top"><p class="table">varchar(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">Email</p></td>
+<td align="left" valign="top"><p class="table">邮件地址</p></td>
+<td align="left" valign="top"><p class="table">varchar(50)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddedBy</p></td>
+<td align="left" valign="top"><p class="table">添加人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后修改人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>9.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>10.</strong></p></td>
+<td align="left" valign="top"><p class="table">IsDroped</p></td>
+<td align="left" valign="top"><p class="table">是否被删除</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>1</em>,<em>0</em>)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+UserName用于登录，RealName用于前台显示
+</p>
+</li>
+<li>
+<p>
+当删除一个用户的时候并没有真正从数据库中删除，只是把IsDroped置为1，添加用户的时候就不会重复添加了
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testgroup">10. 分组表 TestGroup</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">GroupID</p></td>
+<td align="left" valign="top"><p class="table">分组编号</p></td>
+<td align="left" valign="top"><p class="table">smallint(5) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">GroupName</p></td>
+<td align="left" valign="top"><p class="table">分组名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(60)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">GroupManagers</p></td>
+<td align="left" valign="top"><p class="table">分组管理员</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">GroupUser</p></td>
+<td align="left" valign="top"><p class="table">分组用户</p></td>
+<td align="left" valign="top"><p class="table">longtext</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddedBy</p></td>
+<td align="left" valign="top"><p class="table">添加人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>7.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastEditedBy</p></td>
+<td align="left" valign="top"><p class="table">最后修改人</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>8.</strong></p></td>
+<td align="left" valign="top"><p class="table">LastDate</p></td>
+<td align="left" valign="top"><p class="table">最后修改时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+GroupManagers里的用户可以通过后台修改分组里的用户
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testuserquery">11. 自定义查询表 TestUserQuery</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">QueryID</p></td>
+<td align="left" valign="top"><p class="table">查询编号</p></td>
+<td align="left" valign="top"><p class="table">int(10) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">UserName</p></td>
+<td align="left" valign="top"><p class="table">查询所属用户</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">QueryType</p></td>
+<td align="left" valign="top"><p class="table">查询所属类型</p></td>
+<td align="left" valign="top"><p class="table">enum(<em>Bug</em>,<em>Case</em>,<em>Result</em>)</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table">Bug</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">QueryTitle</p></td>
+<td align="left" valign="top"><p class="table">查询标题</p></td>
+<td align="left" valign="top"><p class="table">varchar(100)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>5.</strong></p></td>
+<td align="left" valign="top"><p class="table">QueryString</p></td>
+<td align="left" valign="top"><p class="table">查询条件</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">YES</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>6.</strong></p></td>
+<td align="left" valign="top"><p class="table">AddDate</p></td>
+<td align="left" valign="top"><p class="table">添加时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+暂无
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testuserlog">12. 访问记录表 TestUserLog</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">LogID</p></td>
+<td align="left" valign="top"><p class="table">记录编号</p></td>
+<td align="left" valign="top"><p class="table">mediumint(8) unsigned</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">UserName</p></td>
+<td align="left" valign="top"><p class="table">用户名</p></td>
+<td align="left" valign="top"><p class="table">varchar(30)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">MUL</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">LoginIP</p></td>
+<td align="left" valign="top"><p class="table">登录IP</p></td>
+<td align="left" valign="top"><p class="table">varchar(15)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>4.</strong></p></td>
+<td align="left" valign="top"><p class="table">LoginTime</p></td>
+<td align="left" valign="top"><p class="table">登录时间</p></td>
+<td align="left" valign="top"><p class="table">datetime</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">0000-00-00 00:00:00</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+暂无
+</p>
+</li>
+</ol></div>
+</div></div>
+</div>
+<h2 id="_testoptions">13. 系统配置表 TestOptions</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+width="95%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="5%" />
+<col width="15%" />
+<col width="21%" />
+<col width="21%" />
+<col width="5%" />
+<col width="7%" />
+<col width="21%" />
+<thead>
+<tr>
+<th align="left" valign="top">序号</th>
+<th align="left" valign="top">字段名</th>
+<th align="left" valign="top">字段描述</th>
+<th align="left" valign="top">字段类型</th>
+<th align="left" valign="top">Null</th>
+<th align="left" valign="top">索引</th>
+<th align="left" valign="top">默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>1.</strong></p></td>
+<td align="left" valign="top"><p class="table">OptionId</p></td>
+<td align="left" valign="top"><p class="table">配置编号</p></td>
+<td align="left" valign="top"><p class="table">bigint(20)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>2.</strong></p></td>
+<td align="left" valign="top"><p class="table">OptionName</p></td>
+<td align="left" valign="top"><p class="table">配置名称</p></td>
+<td align="left" valign="top"><p class="table">varchar(64)</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table">PRI</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>3.</strong></p></td>
+<td align="left" valign="top"><p class="table">OptionValue</p></td>
+<td align="left" valign="top"><p class="table">配置值</p></td>
+<td align="left" valign="top"><p class="table">longtext</p></td>
+<td align="left" valign="top"><p class="table">NO</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">NULL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">备注</div>
+<div class="exampleblock-content">
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+用于存放系统的一些配置值，如当前数据库表结构的版本值等
+</p>
+</li>
+</ol></div>
+</div></div>
+<div class="paragraph"><p>&#169;2007-2009 <a href="http://www.bugfree.org.cn">http://www.bugfree.org.cn</a></p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0<br />
+Last updated 2009-05-25 06:40:46 中国标准时间
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<?php
+/**
+ * BugFree is free software under the terms of the FreeBSD License.
+ *
+ * search case form.
+ *
+ * @link        http://www.bugfree.org.cn
+ * @package     BugFree
+ */
+/* Init BugFree system. */
+require('Include/Init.inc.php');
+
+$FieldName = 'Field';
+$OperatorName = 'Operator';
+$ValueName = 'Value';
+$AndOrName = 'AndOr';
+
+$FieldList = array();
+$OperatorList = array();
+$ValueList = array();
+$AndOrList = array();
+$FieldCount = $_CFG['QueryFieldNumber'];
+$Attrib = 'class="FullSelect"';
+
+$And = 'checked';
+$Or = '';
+
+$FieldListSelectItem = array(0=>'ProjectName',1=>'OpenedBy',2=>'ModulePath',3=>'AssignedTo',4=>'CaseID',5=>'CaseTitle');
+$OperatorListSelectItem = array(0=>'=', 2=>'LIKE', 5=>'LIKE');
+
+if($_REQUEST['reset'])
+{
+    $_SESSION['CaseFieldListCondition']='';
+    $_SESSION['CaseOperatorListCondition']='';
+    $_SESSION['CaseAndOrListCondition']='';
+    $_SESSION['CaseValueListCondition']='';
+    $_SESSION['CaseQueryCondition'] = '';
+    $_SESSION['CaseQueryTitle'] = '';
+    $_SESSION['CaseFieldsToShow'] = '';
+}
+
+if($_SESSION['CaseFieldListCondition']!='')
+  $FieldListSelectItem = $_SESSION['CaseFieldListCondition'];
+if($_SESSION['CaseOperatorListCondition']!='')
+  $OperatorListSelectItem = $_SESSION['CaseOperatorListCondition'];
+if($_SESSION['CaseAndOrListCondition']!='')
+  $SelectItem = $_SESSION['CaseAndOrListCondition'];
+if($_SESSION['CaseValueListCondition']!='')
+  $ValueListSelectItem = $_SESSION['CaseValueListCondition'];
+
+if(strpos($_SESSION['CaseQueryCondition'],') OR (')!== FALSE)
+{
+   $Or = 'checked';
+   $And = '';
+}
+
+
+if($_GET['QueryID'])
+{
+   $QueryInfo = dbGetRow('TestUserQuery', '', "QueryID='{$_REQUEST[QueryID]}' AND QueryType='Case'");
+   $AndOr = $QueryInfo['QueryString'];
+ 
+   if(strpos($QueryInfo['QueryString'],') OR (')!== FALSE)
+   {
+      $Or = 'checked';
+      $And = '';
+   }
+   if(strpos($QueryInfo['QueryString'],') AND (')!== FALSE)
+   {
+      $Or = '';
+      $And = 'checked';
+   }
+
+  if($QueryInfo['FieldList']!='')
+       $FieldListSelectItem = unserialize($QueryInfo['FieldList']);
+   if($QueryInfo['OperatorList']!='')
+       $OperatorListSelectItem = unserialize($QueryInfo['OperatorList']); 
+   if($QueryInfo['AndOrList']!='')
+       $SelectItem =  unserialize($QueryInfo['AndOrList']);  
+   if($QueryInfo['ValueList']!='')
+       $ValueListSelectItem = unserialize($QueryInfo['ValueList']); 
+}
+
+if($_REQUEST['UpdateQueryID'])
+{
+   $QueryStr = addslashes($_SESSION['CaseQueryCondition']);
+   $AndOrListCondition = serialize($_SESSION['CaseAndOrListCondition']);
+   $OperatorListCondition = serialize($_SESSION['CaseOperatorListCondition']);
+   $ValueListCondition = mysql_real_escape_string(serialize($_SESSION['CaseValueListCondition']));
+   $FieldListCondition = serialize($_SESSION['CaseFieldListCondition']);
+   $FieldsToShow = implode(",",array_keys(testSetCustomFields('Case')));
+
+   if(strpos($QueryStr, ') OR (')!== FALSE)
+   {
+      $Or = 'checked';
+      $And = '';
+   }
+   if(strpos($QueryStr,') AND (')!== FALSE)
+   {
+      $Or = '';
+      $And = 'checked';
+   }
+   
+   dbUpdateRow('TestUserQuery', 'QueryString', "'{$QueryStr}'", 'AndOrList', "'{$AndOrListCondition}'", 'OperatorList', 
+                    "'$OperatorListCondition'", 'ValueList',"'$ValueListCondition'", 'FieldList', "'$FieldListCondition'", 'FieldsToShow', "'$FieldsToShow'","QueryID={$_REQUEST['UpdateQueryID']}");
+   
+   jsGoTo('CaseList.php',"parent.RightBottomFrame");
+  
+}
+
+for($I=0; $I<$FieldCount; $I ++)
+{
+    $FieldListOnChange = ' onchange="setQueryForm('.$I.');"';
+    $OperatorListOnChange = ' onchange="setQueryValue('.$I.');"';
+    $FieldList[$I] = htmlSelect($_LANG['CaseQueryField'], $FieldName . $I, $Mode, $FieldListSelectItem[$I], $Attrib.$FieldListOnChange);
+    $OperatorList[$I] = htmlSelect($_LANG['Operators'], $OperatorName . $I, $Mode, $OperatorListSelectItem[$I], $Attrib.$OperatorListOnChange);
+    $ValueList[$I] = '<input id="'.$ValueName.$I.'" name="' . $ValueName.$I .'" type="text" size="5" style="width:95%;"/>';
+    $AndOrList[$I] = htmlSelect($_LANG['AndOr'], $AndOrName . $I, $Mode, $SelectItem[$I], $Attrib);
+}
+
+$AutoTextValue['PriorityText']=jsArray($_LANG['CasePriorities']);
+$AutoTextValue['PriorityValue']=jsArray($_LANG['CasePriorities'], 'Key');
+$AutoTextValue['TypeText']=jsArray($_LANG['CaseTypes']);
+$AutoTextValue['TypeValue']=jsArray($_LANG['CaseTypes'], 'Key');
+$AutoTextValue['StatusText']=jsArray($_LANG['CaseStatuses']);
+$AutoTextValue['StatusValue']=jsArray($_LANG['CaseStatuses'], 'Key');
+
+$AutoTextValue['MethodText']=jsArray($_LANG['CaseMethods']);
+$AutoTextValue['MethodValue']=jsArray($_LANG['CaseMethods'], 'Key');
+$AutoTextValue['PlanText']=jsArray($_LANG['CasePlans']);
+$AutoTextValue['PlanValue']=jsArray($_LANG['CasePlans'], 'Key');
+$AutoTextValue['MarkForDeletionText']=jsArray($_LANG['MarkForDeletions']);
+$AutoTextValue['MarkForDeletionValue']=jsArray($_LANG['MarkForDeletions'], 'Key');
+$AutoTextValue['ScriptStatusText']=jsArray($_LANG['ScriptStatuses']);
+$AutoTextValue['ScriptStatusValue']=jsArray($_LANG['ScriptStatuses'], 'Key');
+
+
+$SimpleProjectList = array(''=>'')+testGetValidSimpleProjectList();
+
+$AutoTextValue['ProjectNameText']=jsArray($SimpleProjectList);
+$AutoTextValue['ProjectNameValue']=jsArray($SimpleProjectList);
+
+$UserList = testGetCurrentUserNameList('PreAppend');
+$ACUserList = array(''=>'', 'Active' => 'Active') + $UserList;
+$UserList = array(''=>'') + $UserList;
+$AutoTextValue['ACUserText']=jsArray($ACUserList);
+$AutoTextValue['ACUserValue']=jsArray($ACUserList, 'Key');
+$AutoTextValue['UserText']=jsArray($UserList);
+$AutoTextValue['UserValue']=jsArray($UserList, 'Key');
+$AutoTextValue['ScriptedByText']=jsArray($UserList);
+$AutoTextValue['ScriptedByValue']=jsArray($UserList, 'Key');
+
+$AutoTextValue['FieldType'] = jsArray($_CFG['FieldType']);
+$AutoTextValue['FieldOperationTypeValue'] = jsArray($_CFG['FieldTypeOperation']);
+$AutoTextValue['FieldOperationTypeText'] = jsArray($_LANG['FieldTypeOperationName']);
+
+$TPL->assign('OperatorListSelectItem', $OperatorListSelectItem);
+$TPL->assign('ValueListSelectItem', $ValueListSelectItem);
+
+$TPL->assign('QueryTitle', $_REQUEST['QueryTitle']);
+
+$TPL->assign('And', $And);
+$TPL->assign('Or', $Or);
+
+$TPL->assign('AutoTextValue', $AutoTextValue);
+$TPL->assign("FieldList", $FieldList);
+$TPL->assign("OperatorList", $OperatorList);
+$TPL->assign("ValueList", $ValueList);
+$TPL->assign("AndOrList", $AndOrList);
+$TPL->assign("FieldCount",$FieldCount);
+
+$TPL->display('Search.tpl');
+
+?>

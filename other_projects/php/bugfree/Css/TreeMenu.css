@@ -1,0 +1,45 @@
+.bugTreeMenu img.forClick {
+  cursor:pointer;
+  vertical-align:middle;
+  }
+
+.bugTreeMenu img.forClick {
+  width:20px;
+  height:15px;
+  }
+
+.bugTreeMenu ul {
+  padding:0;
+  margin:0 0 0 10px;
+  }
+.bugTreeMenu li {
+  list-style:none;
+  padding:0;
+  }
+
+.bugTreeMenu .ClosedNode ul {
+  display:none;
+  }
+
+.bugTreeMenu .ChildNode img.forClick {
+  background:none;
+  cursor:default;
+  }
+
+.bugTreeMenu .OpenedNode img.forClick {
+  background:url(../Image/TreeMenu/opened.gif) no-repeat 0 0;
+  }
+.bugTreeMenu .ClosedNode img.forClick {
+  background:url(../Image/TreeMenu/closed.gif) no-repeat 0 0;
+  }
+.bugTreeMenu .ChildNode img.forClick {
+  background:url(../Image/TreeMenu/child.gif) no-repeat 5px 5px;
+  }
+
+.bugTreeMenu a {
+  text-decoration:none;
+  }
+.bugTreeMenu a, .bugTreeMenu a:visited {
+  color:#000;
+  background:inherit;
+  }
