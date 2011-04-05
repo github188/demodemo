@@ -348,6 +348,46 @@ function sysHtml2Txt($Html)
     return $Html;
 }
 /**
+ * mail funciton on sina app engine.
+ *
+ * @author                            <deonwu@gmail.com>
+ * @param   string      $ToList       To address list.
+ * @param   string      $CCList       CC address list.
+ * @param   string      $Subject      Subject.
+ * @param   string      $Message      Message.
+ */
+function sysMail($ToList,$CCList,$Subject,$Message)
+{
+    global $_CFG, $_LANG;
+
+    if(!$_CFG['Mail']['On'])
+    {
+        return;
+    }
+    $mail = new SaeMail();
+    #$mail->quickSend($ToList, $Subject, $Message, "deonwu@sina.com", "hwnaxgmj");
+
+    #$mail->clean();
+    $op = array(from => "kgd924@163.com",
+                to => $ToList, 
+                cc => $CCList, 
+                subject => $Subject, 
+                content => $Message,
+                smtp_host => "smtp.163.com",
+                smtp_username => "kgd924@163.com",
+                smtp_password => "",
+                content_type => "HTML"
+               );
+    
+    $mail->setOpt($op);
+
+    if(!$mail->send())
+    {
+       //jsAlert($Mail->ErrorInfo);
+    }
+}
+
+/**
  * Enhanced mail function.
  *
  * @author                            Chunsheng Wang <wwccss@263.net>
@@ -356,7 +396,7 @@ function sysHtml2Txt($Html)
  * @param   string      $Subject      Subject.
  * @param   string      $Message      Message.
  */
-function sysMail($ToList,$CCList,$Subject,$Message)
+function sysMail_bak($ToList,$CCList,$Subject,$Message)
 {
     global $_CFG, $_LANG;
 
