@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CPlayView, CView)
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_PLAYVIEW_CLOSE, &CPlayView::OnPlayviewClose)
 	ON_COMMAND(ID_PLAYVIEW_FULLSCREEN, &CPlayView::OnPlayviewFullscreen)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -231,4 +232,19 @@ void CPlayView::FullScreen(void)
 
 		//AfxGetApp()->GetMainWnd()->SendMessage(WM_NOTIFY_MESSAGE,NULL,NULL);
 	}
+}
+
+#define		VIDEO_BACK_COLOR	RGB(100,100,160)
+
+BOOL CPlayView::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+	CRect rt;
+	GetClientRect(&rt);
+	CBrush br;
+	br.CreateSolidBrush(VIDEO_BACK_COLOR);
+	pDC->FillRect(&rt,&br);
+
+	return TRUE;
+	return CView::OnEraseBkgnd(pDC);
 }

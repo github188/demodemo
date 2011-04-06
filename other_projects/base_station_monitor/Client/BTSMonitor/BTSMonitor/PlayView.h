@@ -52,6 +52,8 @@ public:
 	afx_msg void OnPlayviewFullscreen();
 private:
 	void FullScreen(void);
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 
