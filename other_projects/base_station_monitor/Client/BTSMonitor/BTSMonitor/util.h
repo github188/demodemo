@@ -15,6 +15,7 @@ public:
 	static DWORD widechar2str(WCHAR *src, char **des);
 //>>>>>>> .r647
 	static void nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen);
+	static void TrimSpecialChar(CString& src, char ch);
 };
 
 #endif

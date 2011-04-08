@@ -88,3 +88,21 @@ void util::nettolocal(WCHAR *dstlocal, char *netbuffer, int netlen)
 		memcpy(&dstlocal[i], &pconvs, sizeof(pconvs));
 	}
 }
+
+void util::TrimSpecialChar(CString& src, char ch)
+{
+	CString des;
+	int i=0;
+	int len = src.GetLength();
+	for (i=0; i<len; i++)
+	{
+		if (src[i] == ch)
+			continue;
+
+		des += src[i];
+	}
+
+	src.Empty();
+	src = des;
+
+}
