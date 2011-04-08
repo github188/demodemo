@@ -23,7 +23,6 @@ CLoginDlg::CLoginDlg(CWnd* pParent /*=NULL*/)
 
 CLoginDlg::~CLoginDlg()
 {
-	m_fSaveInfo.Close();
 }
 
 void CLoginDlg::DoDataExchange(CDataExchange* pDX)
@@ -80,7 +79,14 @@ void CLoginDlg::OnBnClickedOk()
 			pApp->pgkclient->listbtstree(pApp->btsTotalStr);
 
 			//Save default data
-			m_fSaveInfo.SetLength(0);
+			CFileException error;
+			if ( ! m_fSaveInfo.Open("LogOnInfo.txt", CFile::modeCreate | CFile::modeReadWrite, &error) )
+			{
+				CString strError;
+				strError.Format( "Can't open file %s, error = %u\n", "LogOnInfo.txt", error.m_cause );
+				AfxMessageBox(strError);	
+				return;
+			}
 
 			CString sDefault = CString("default") + CString("\t") + username + CString("\t") + sHost + CString("\t") + port + CString("\r\n");
 			m_fSaveInfo.WriteString(sDefault);
@@ -100,7 +106,8 @@ void CLoginDlg::OnBnClickedOk()
 				m_cboUser.GetLBText(i,rString);
 				if ( rString.IsEmpty() )
 					continue;
-				rString.Append("\t");
+								
+				sUserInfo.Append("\t");
 				sUserInfo.Append(rString);
 			}
 			sUserInfo.Append("\r\n");
@@ -119,7 +126,11 @@ void CLoginDlg::OnBnClickedOk()
 				m_cboServer.GetLBText(i,rString);
 				if ( rString.IsEmpty() )
 					continue;
-				rString.Append("\t");
+
+				if (rString == "0.0.0.0")
+					continue;
+
+				sServerInfo.Append("\t");
 				sServerInfo.Append(rString);
 			}
 			sServerInfo.Append("\r\n");
@@ -138,11 +149,13 @@ void CLoginDlg::OnBnClickedOk()
 				m_cboPort.GetLBText(i,rString);
 				if ( rString.IsEmpty() )
 					continue;
-				rString.Append("\t");
+				sPortInfo.Append("\t");
 				sPortInfo.Append(rString);
 			}
 			sPortInfo.Append("\r\n");
 			m_fSaveInfo.WriteString(sPortInfo);
+			m_fSaveInfo.Close();
+
 			//
 			OnOK();
 		}
@@ -164,7 +177,7 @@ BOOL CLoginDlg::OnInitDialog()
 	//CString server="hzluming.3322.org";
 	//this->SetDlgItemText(IDC_EDIT_SERVER, server);
 	CFileException error;
-	if ( ! m_fSaveInfo.Open("LogOnInfo.txt", CFile::modeCreate | CFile::modeReadWrite, &error) )
+	if ( ! m_fSaveInfo.Open("LogOnInfo.txt", CFile::modeNoTruncate | CFile::modeCreate | CFile::modeReadWrite, &error) )
 	{
 		CString strError;
 		strError.Format( "Can't open file %s, error = %u\n", "LogOnInfo.txt", error.m_cause );
@@ -210,8 +223,15 @@ BOOL CLoginDlg::OnInitDialog()
 			if (temp == "default")
 			{
 				pos = util::split_next(rOneLine, strUserDefault, '\t', pos+1);
+				util::TrimSpecialChar(strUserDefault,0xd);
+
 				pos = util::split_next(rOneLine, strServerDefault, '\t', pos+1);
+				util::TrimSpecialChar(strServerDefault,0xd);
+
 				pos = util::split_next(rOneLine, strPortDefault, '\t', pos+1);
+				util::TrimSpecialChar(strPortDefault,0xd);
+
+				//Remove the 
 				
 				continue;
 			}
@@ -219,9 +239,9 @@ BOOL CLoginDlg::OnInitDialog()
 			if (temp == "user")
 			{
 				pos = util::split_next(rOneLine, temp, '\t', pos+1);
-				strUserDefault = temp;
 				while( !temp.IsEmpty() )
 				{
+					util::TrimSpecialChar(temp,0xd);
 					m_cboUser.AddString(temp);
 					pos = util::split_next(rOneLine, temp, '\t', pos+1);
 				}
@@ -233,9 +253,9 @@ BOOL CLoginDlg::OnInitDialog()
 			if (temp == "server")
 			{
 				pos = util::split_next(rOneLine, temp, '\t', pos+1);
-				strServerDefault = temp;
 				while( !temp.IsEmpty() )
 				{
+					util::TrimSpecialChar(temp,0xd);
 					m_cboServer.AddString(temp);
 					pos = util::split_next(rOneLine, temp, '\t', pos+1);
 				}
@@ -248,9 +268,9 @@ BOOL CLoginDlg::OnInitDialog()
 			if (temp == "port")
 			{
 				pos = util::split_next(rOneLine, temp, '\t', pos+1);
-				strPortDefault = temp;
 				while( !temp.IsEmpty() )
 				{
+					util::TrimSpecialChar(temp,0xd);
 					m_cboPort.AddString(temp);
 					pos = util::split_next(rOneLine, temp, '\t', pos+1);
 				}
@@ -262,6 +282,7 @@ BOOL CLoginDlg::OnInitDialog()
 		}
 
 	}
+	m_fSaveInfo.Close();
 
 	//this->SetDlgItemText(IDC_EDT_PORT, "8000");
 

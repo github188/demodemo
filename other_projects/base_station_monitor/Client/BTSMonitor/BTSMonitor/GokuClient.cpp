@@ -19,9 +19,9 @@ int GokuClient::execute_command(CString &cmd)
 	util::split_next(cmd_msg, code, ':', 0);
 	*///------------Modify above code----------------
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(cmd,sMsg);
-	if (sMsg.IsEmpty())
-		return -1; //?????
+	if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
+		return -1; 
+
 	util::split_next(sMsg, code, ':', 0);
 	///----by-liang----------------------------------
 	
@@ -37,12 +37,20 @@ int GokuClient::login(const TCHAR *username, const TCHAR *password)
 
 int GokuClient::login(CString &user, CString &password)
 {
-	buffer.Empty();
-	buffer.Append("cmd>login?user=");
-	buffer.Append(user);
-	buffer.Append("&password=");
-	buffer.Append(password);
-	int ret = execute_command(buffer);
+	//buffer.Empty();
+	CString sCmd = "cmd>login?user=";
+	sCmd+=user;
+	sCmd+="&password=";
+	sCmd+=password;
+	
+	/*
+	sCmd.Append("cmd>login?user=");
+	sCmd.Append(user);
+	sCmd.Append("&password=");
+	sCmd.Append(password);
+	*/
+
+	int ret = execute_command(sCmd);
 	
 	if (ret == 0)
 	{
@@ -95,7 +103,9 @@ void GokuClient::listbtstree(CString &str)
 	sCmd.Append("cmd>list_bs_tree");
 	sCmd.Append("\n");
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return;
+
 	if (sMsg.IsEmpty())
 		return;
 
@@ -144,9 +154,12 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 	sCmd.Append("\n");
 
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return;
+
 	if (sMsg.IsEmpty())
 		return;
+
 	CString temp;
 	int pos=util::split_next(sMsg, temp, '$', 0);
 	pos=util::split_next(sMsg, temp, '$', pos+1);
@@ -236,7 +249,9 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid, CString startDat
 	sCmd.Append("\n");
 
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return;
+
 	if (sMsg.IsEmpty())
 		return;
 
@@ -289,7 +304,9 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 	sCmd.Append("\n");
 
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg))
+		return;
+
 	if (sMsg.IsEmpty())
 		return;
 
@@ -336,7 +353,9 @@ bool GokuClient::confirmAlarm(CString uuid)
 	sCmd.Append("\n");
 
 	CString sMsg;
-	socket->SendCmdAndRecvMsg(sCmd,sMsg);
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return false;
+
 	if (sMsg.IsEmpty())
 		return false;
 

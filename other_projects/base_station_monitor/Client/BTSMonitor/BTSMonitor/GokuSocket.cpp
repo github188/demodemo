@@ -35,7 +35,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		if (nRead==0 || SOCKET_ERROR == nRead)
 		{
 			CString sError;
-			sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError);
+			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
 			AfxMessageBox(sError);
 			bRead = FALSE;
 			return 0;
