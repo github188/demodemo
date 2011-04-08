@@ -89,7 +89,7 @@ int CSimpleSocket::write_wstring(CString &data)
 	return len;
 }
 
-void CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
+bool CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 {
 	::EnterCriticalSection( &m_Lock );
 	
@@ -102,7 +102,7 @@ void CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 		CString sError;
 		sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError());
 		AfxMessageBox(sError);
-		return;
+		return false;
 		//Need to close socket, and ReOpen(),  Close();??
 	}
 	m_bufferLimit = m_bufferPos = 0;
@@ -110,8 +110,12 @@ void CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 	//Receive Data
 	ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 	m_bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
+	if (m_bufferLimit == 0)
+		return false;
 
 	sMsg = m_sBuffer;
 
 	::LeaveCriticalSection( &m_Lock );
+
+	return true;
 }

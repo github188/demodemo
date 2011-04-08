@@ -71,7 +71,7 @@ public:
 	}
 
 	//Send & Receive Data
-	void SendCmdAndRecvMsg(CString& sCmd, CString& sMsg);
+	bool SendCmdAndRecvMsg(CString& sCmd, CString& sMsg);
 	void SetConnectStatus(bool bConnect) {m_bIsConnect =bConnect; }; 
 	bool IsConnectStatus() {return m_bIsConnect; }; 
 
