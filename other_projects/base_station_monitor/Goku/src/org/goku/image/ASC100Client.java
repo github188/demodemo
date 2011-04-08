@@ -20,16 +20,28 @@ public class ASC100Client {
 
 	private Log log = null;
 	private ASC100MX mx = null;
-	private String location = "";
+	private String srId = "";
+	private String channel = "";
+	private String defaultMx = null;
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
-	private ByteBuffer inBuffer = ByteBuffer.allocate(64 * 1024);
 	private ImageInfo image = null;
+	private ASC100Package inBuffer = new ASC100Package();
 	
-	private byte lastCmd = 0;
 	
-	public ASC100Client(String location){
-		this.location = location;
+	public ASC100Client(String location){		
+		if(location.indexOf(':') > 0){
+			String[] tmp = location.split(":", 2);
+			if(tmp[0].trim().length() > 0){
+				defaultMx = tmp[0].trim();
+			}
+			tmp = tmp[1].split("\\.", 3);
+			if(tmp.length < 3) throw new Error("Error Image client location:" + location);
+			this.srId = tmp[0] + "." + tmp[1];
+			this.channel = tmp[2];
+		}
+		
 		log = LogFactory.getLog("asc100." + location);
+
 	};
 	
 	public ASC100Client(BaseStation info){
@@ -37,40 +49,61 @@ public class ASC100Client {
 		this.info = info;
 	};
 	
+	/**
+	 * 开始处理一个串口通道的数据。
+	 * 1. 不是每次处理的Buffer都是一个完整的图片通信协议包。
+	 * @param buffer
+	 */
 	public void process(ByteBuffer buffer){
 		//当前数据包处理状态。
-		byte status = (byte)0xff; 
-		short cur = 0;
-		byte cmd = 0;
-		short len = 0;
-		
-		inBuffer.clear();
-		short checksum = 0;
+		byte cur = 0;
 		while(buffer.hasRemaining()){
-			cur = buffer.get();
-			if(status != 0 && cur != status) continue;
-			if(status == 0xff){	//开始标志
-				cmd = buffer.get();
-				len = buffer.getShort();
-				status = 0;
-			}else if(status == 0){ //数据处理
-				if(cur == 0xFD){
-					cur += buffer.get(); //转义。
-				}
-				len--;
-				inBuffer.put((byte)cur);
-				if(len == 0){
-					checksum = buffer.getShort();
-					status = (byte)0xfe;
-					inBuffer.flip();
-					if(checksum == this.getCheckSum(inBuffer.asReadOnlyBuffer())){
-						processData(cmd, inBuffer);
-					}else {
-						log.warn("check sum error, drop data");
+			switch(inBuffer.status){
+				case ASC100Package.STATUS_INIT:
+					if(buffer.get() == 0xFF){
+						inBuffer.status = ASC100Package.STATUS_CMD;
 					}
-				}
-			}else if(status == 0xfe){
-				status = (byte)0xff;	//当前读到结束标志了，等待下一个开始标志。
+					break;
+				case ASC100Package.STATUS_CMD:
+					inBuffer.cmd = buffer.get();
+					inBuffer.status = ASC100Package.STATUS_LENGTH;
+					break;
+				case ASC100Package.STATUS_LENGTH:
+					inBuffer.len = ASC100MX.unsignedShort(buffer);
+					inBuffer.inBuffer.limit(inBuffer.len);
+					inBuffer.status = ASC100Package.STATUS_DATA;
+					break;
+				case ASC100Package.STATUS_DATA:
+					//图片传输数据，不需要转义数据里面的. 0xFF,0xFE等字符。
+					if (inBuffer.cmd == 0x06 && inBuffer.len > 0){
+						inBuffer.inBuffer.put(buffer);
+					}else if(inBuffer.escaped){ //正在读一个转义字符。
+						cur = buffer.get();
+						inBuffer.inBuffer.put((byte)(0xfd + cur));
+						inBuffer.escaped = false;
+					}else {
+						cur = buffer.get();
+						if(cur == 0xfd){
+							inBuffer.escaped = true;
+						}else {
+							inBuffer.inBuffer.put(cur);
+						}
+					}
+					if(!inBuffer.inBuffer.hasRemaining()){
+						inBuffer.inBuffer.flip();
+						inBuffer.status = ASC100Package.STATUS_CHECKSUM;
+					}
+					break;
+				case ASC100Package.STATUS_CHECKSUM:
+					inBuffer.checkSum = ASC100MX.unsignedShort(buffer);
+					inBuffer.bufferCheckSum = getCheckSum(inBuffer.inBuffer.asReadOnlyBuffer());
+					processData(inBuffer);
+					inBuffer.status = ASC100Package.STATUS_END;
+					break;
+				case ASC100Package.STATUS_END:
+					if(buffer.get() == 0xFF){
+						inBuffer.clear();						
+					}
 			}			
 		}
 		
@@ -119,19 +152,22 @@ public class ASC100Client {
 		}
 	}
 	
-	public void processData(byte cmd, ByteBuffer inBuffer){
-		if(this.lastCmd == 0x02){
-			if(cmd == 0x00){
+	public void processData(ASC100Package data){
+		if(data.checkSum != data.bufferCheckSum){
+			log.debug("Drop package the check sum error.");
+		}else {
+			if(data.cmd == 0x00){
 				eventProxy.notFoundImage(new ImageClientEvent(this));
-			}else if(cmd == 0x06){
+			}else if(data.cmd == 0x06){
 				try {
-					processImageData(inBuffer);
+					processImageData(data.inBuffer);
 				} catch (IOException e) {
 					log.error(e.toString(), e);
-				}
+				}			
 			}
 		}
 	}
+
 	
 	private void processImageData(ByteBuffer inBuffer) throws IOException{
 		int count = inBuffer.getShort();
@@ -199,7 +235,15 @@ public class ASC100Client {
 	}
 	
 	public String getClientId(){
-		return this.location;
+		return srId + "." + channel;
+	}
+	
+	public String getSrId(){
+		return srId;
+	}
+	
+	public String defaultMx(){
+		return defaultMx;
 	}
 	
 	public void readImage(){

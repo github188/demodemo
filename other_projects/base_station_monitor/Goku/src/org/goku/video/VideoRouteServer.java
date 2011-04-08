@@ -117,6 +117,7 @@ public class VideoRouteServer {
 		socketServer.setServlet(servelt);
 		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
+		log.info("Start scoket server at port " + port);
 		
 		int startPort = settings.getInt(Settings.PROXY_PORT_START, 9000);
 		int endPort = settings.getInt(Settings.PROXY_PORT_END, 9000);

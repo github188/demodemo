@@ -27,7 +27,7 @@ import org.goku.video.odip.VideoDestination;
  * 
  * @author deon
  */
-public class SocketVideoAdapter {
+public class SocketVideoAdapter implements SocketAdaptor{
 	private Log log = LogFactory.getLog("client.socket.video");
 	private VideoRouteServer server = null;
 	private VideoRecorderManager recordManager = null;

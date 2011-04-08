@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  * cmd>login?uuid=123&xxx=bbb
  */
 
-public class SocketHTTPAdaptor {
+public class SocketHTTPAdaptor implements SocketAdaptor{
 	private Log log = LogFactory.getLog("client.socket.http");
 	private String servlet = null;
 	private HttpServlet httpServelt = null;

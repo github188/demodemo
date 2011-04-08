@@ -18,6 +18,7 @@ import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
 import org.goku.socket.SimpleSocketServer;
 import org.goku.socket.SocketManager;
+import org.goku.video.odip.MonitorClient;
 
 public class ImageRouteServer {
 	private Log log = LogFactory.getLog("main");
@@ -33,8 +34,10 @@ public class ImageRouteServer {
 	public SocketManager socketManager = null;
 	public SimpleSocketServer socketServer = null;	
 	private ThreadPoolExecutor threadPool = null; 
+	public String groupName = null;
+	
 	private boolean running = true;
-	private static final String servelt = "org.goku.video.DefaultRouteServerServlet";
+	private static final String servelt = "org.goku.image.ImageRouteServerServlet";
 	
 	private int remotePort = 0;	
 	private int localPort = 0;	
@@ -50,6 +53,9 @@ public class ImageRouteServer {
 	
 	public void startUp() throws Exception{
 		log.info("Starting image routing server...");	
+		
+		groupName = settings.getString(Settings.GROUP_NAME, "image");
+		log.info("Routing group name:" + groupName);		
 		
 		log.info("init DB connection...");
 		this.storage = DataStorage.create(settings);
@@ -81,9 +87,9 @@ public class ImageRouteServer {
 		
 		localPort = settings.getInt(Settings.UDP_LOCAL_PORT, 0);
 		remotePort = settings.getInt(Settings.UDP_REMOTE_PORT, 0);		
-		log.info(String.format("MX remote UDP port:%s, local UDP port", remotePort, localPort));
-		
-		mx = new ASC100MX(remotePort, localPort);
+		log.info(String.format("MX remote UDP port:%s, local UDP:%s", remotePort, localPort));		
+		mx = new ASC100MX(remotePort, localPort, threadPool);
+		threadPool.execute(mx);
 		
 		log.info("Starting alarm manager server...");
 		manager = new AlarmMonitorCenter(threadPool);
@@ -91,8 +97,10 @@ public class ImageRouteServer {
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
+		socketServer.imageAdapter = new ImageSocketAdaptor();
 		socketServer.setServlet(servelt);
 		threadPool.execute(socketServer);
+		log.info("Start scoket server at port " + port);
 		
 		final int httpPort = settings.getInt(Settings.HTTP_PORT, 8083);
 		log.info("Start http server at port " + httpPort);
@@ -102,7 +110,17 @@ public class ImageRouteServer {
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
-				master.registerRoute("", httpPort, "image", socketServer.listenPort + "");
+				for(int i = 0; i < 5; i++){
+					if(master.registerRoute("", httpPort, groupName, socketServer.listenPort + "")){
+						break;
+					}else {
+						log.info("Failed to connect master, try again 5 seconds later.");
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e1) {
+						}
+					}
+				}
 				log.info("started http...");	
 			}
 		});
@@ -128,10 +146,17 @@ public class ImageRouteServer {
 		}else if(station == null){
 			log.warn("Not found base station by uuid '" + uuid + "'");			
 		}else {
-			log.warn("Not a vedio base station '" + uuid + "'");
+			log.warn("Not a image base station '" + uuid + "'");
 		}
 		return false;		
 		//client.connect(selector);
 	}
+	
+	/**
+	 * 删除一个监控视频，例如，需要负载调度，或连接错误时。
+	 * @param client
+	 */
+	public void removeMonitorClient(ASC100Client client){
+	}	
 
 }

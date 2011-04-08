@@ -15,8 +15,10 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 	private ServerSocketChannel serverChannel = null;
 	protected SelectionKey selectionKey = null;
 	
-	private SocketHTTPAdaptor httpAdapter = null;
-	private SocketVideoAdapter videoAdapter = null;
+	public SocketAdaptor httpAdapter = null;
+	public SocketAdaptor videoAdapter = null;
+	public SocketAdaptor imageAdapter = null;
+	
 	private String servelt = null;
 	private VideoRecorderManager recordManager = null;
 	
@@ -41,8 +43,10 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 		if(!started){
 			started = true;
 			httpAdapter = new SocketHTTPAdaptor(servelt);
-			videoAdapter = new SocketVideoAdapter();
-			videoAdapter.setRecorderManager(recordManager);
+			if(recordManager != null){
+				videoAdapter = new SocketVideoAdapter();
+				((SocketVideoAdapter)videoAdapter).setRecorderManager(recordManager);
+			}
 			serverChannel = manager.listen("0.0.0.0", this.listenPort, this);
 		}else if(selectionKey.isAcceptable()){
 			try {
@@ -86,9 +90,15 @@ public class SimpleSocketServer implements Runnable, SelectionHandler {
 				}
 			}else if(data.startsWith("video>")){
 				this.videoAdapter.runCommand(data, client);
+			}else if(data.startsWith("img>")){
+				if(this.imageAdapter != null){
+					this.imageAdapter.runCommand(data, client);
+				}else {
+					log.debug("The imageAdapter have not create, or It's not a image rout server.");
+				}
 			}else {
 				if(client.connectionMode == SocketClient.MODE_HTTP){
-					String error = String.format("Drop unkonw command:'%s', the valid prefix is 'cmd>' or 'video>'.", data);
+					String error = String.format("Drop unkonw command:'%s', the valid prefix are 'cmd>', 'video>' and 'img>'.", data);
 					client.write(error.getBytes());
 				}
 			}
