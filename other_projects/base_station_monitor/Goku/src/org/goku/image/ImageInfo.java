@@ -1,6 +1,7 @@
 package org.goku.image;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class ImageInfo {
 	private int frameSize = 0;
@@ -16,6 +17,7 @@ public class ImageInfo {
 	public int zipRate = 0;
 	public int channel = 0;
 	public ByteBuffer buffer = null;
+	public Date generateDate = null;
 	
 	//图片分片总数
 	private int frameCount = 0;	

@@ -78,7 +78,7 @@ class BaseStationAdmin(admin.ModelAdmin):
         
     
 class AlarmRecordAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'videoPath']
+    fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'combineUuid', 'dataSize', 'videoPath']
     list_display = ('uuid', 'base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmLevel', 'alarmStatus', 'user', 'videoPath')
     #list_filter = ['alarmCode', ]
     search_fields = ['base_station', 'alarmCode', ]

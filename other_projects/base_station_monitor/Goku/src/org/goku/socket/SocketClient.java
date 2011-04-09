@@ -146,7 +146,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 		}
 	}
 	
-	protected void write(byte[] src) throws IOException{
+	public void write(byte[] src) throws IOException{
 		ByteBuffer buffer = ByteBuffer.allocate(src.length);
 		buffer.put(src);
 		buffer.flip();

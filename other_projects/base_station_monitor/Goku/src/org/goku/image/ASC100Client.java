@@ -246,11 +246,33 @@ public class ASC100Client {
 		return defaultMx;
 	}
 	
-	public void readImage(){
+	public void getAlarmImage(){
 		try {
 			sendCommand((byte)0x02, new byte[]{06});
 		} catch (IOException e) {
 			log.error(e.toString(), e);
+		}
+	}
+	
+	/**
+	 * 点播实时图片。
+	 */
+	public void getRealImage(int channel){
+		byte cmd = 0;
+		switch(channel){
+			case 1: cmd = 0x02; break;
+			case 2: cmd = 0x02; break;
+			case 3: cmd = 0x07; break;
+			case 4: cmd = 0x08; break;
+		}
+		if(cmd != 0){
+			try {
+				sendCommand((byte)0x02, new byte[]{06});
+			} catch (IOException e) {
+				log.error(e.toString(), e);
+			}
+		}else {
+			log.debug("Invalid image channel:" + channel);
 		}
 	}
 	
@@ -270,7 +292,10 @@ public class ASC100Client {
 
 		@Override
 		public void recevieImageOK(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			//在Listener处理过程中，可能需要修改Listener
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);
+			for(ImageClientListener l: lss){
 				l.recevieImageOK(event);
 			}
 		}
@@ -281,5 +306,20 @@ public class ASC100Client {
 				l.notFoundImage(event);
 			}
 		}
+
+		@Override
+		public void connectionError(ImageClientEvent event) {
+			for(ImageClientListener l: ls){
+				l.connectionError(event);
+			}
+		}
+
+		@Override
+		public void message(ImageClientEvent event) {
+			for(ImageClientListener l: ls){
+				l.message(event);
+			}
+		}
 	};
+
 }

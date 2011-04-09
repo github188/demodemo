@@ -34,6 +34,10 @@ public class AlarmDefine implements Cloneable{
 	public static final String AL_4001 = "4001"; //刷新基站列表 --修改权限/基站信息/转发服务器等问题。 
 	public static final String AL_4002 = "4002"; //刷新视频窗口 -- alarmLevel 表示窗口ID
 	
+	//图片告警
+	public static final String AL_5001 = "5001"; //图片告警
+	public static final String AL_5002 = "5002"; //图片连接错误
+	
 	public String alarmCode = "";
 	public String alarmLevel = "1";
 	public String alarmName = "";	
@@ -69,6 +73,9 @@ public class AlarmDefine implements Cloneable{
 		add(new AlarmDefine(AL_2003, "时间和服务器不同步","3", 5, "1", ""));
 		
 		add(new AlarmDefine(AL_4001, "刷新基站列表", "3", 5, "1", ""));
+		
+		add(new AlarmDefine(AL_5001, "图片告警", "2", 10, "1", ""));
+		add(new AlarmDefine(AL_5002, "硬件连接", "3", 10, "1", ""));
 	}
 	public static AlarmDefine alarm(String code){
 		AlarmDefine alarm = alarms.get(code);		

@@ -182,6 +182,7 @@ class AlarmRecord(models.Model):
                                      choices=(('1', "视频"),
                                        ('2', "图片"),
                                        ('3', "无视频/图片"),
+                                       ('4', "副图片"),
                                        ),                     
                                      default='1',
                                      verbose_name="视频/图片"
@@ -194,7 +195,17 @@ class AlarmRecord(models.Model):
                                             ('4', "无效告警"),
                                        ),                                   
                                    default='1',
-                                   verbose_name="告警状态")    
+                                   verbose_name="告警状态")
+    combineUuid = models.CharField(max_length=32, verbose_name="主图片ID",
+                                   help_text='只用于图片告警.',
+                                   blank=True,
+                                   null=True
+                                   )
+    dataSize = models.IntegerField(max_length=12, verbose_name="图片大小",
+                                   help_text='图片的长宽规格，由基站协议定义。',
+                                   default=0,
+                                   blank=True)
+    
     user = models.CharField(max_length=20, default='', null=True, verbose_name="确认人员")
     videoPath = models.CharField(max_length=1024, default='', blank=True, null=True, verbose_name="保存路径")
     startTime = models.DateTimeField(verbose_name='开始时间', null=True)

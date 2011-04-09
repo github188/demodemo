@@ -1,5 +1,6 @@
 package org.goku.core.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
@@ -16,7 +17,8 @@ public class AlarmRecord implements JSONStreamAware{
 	protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final String ORM_TABLE = "alarm_record";
 	public static final String[] ORM_FIELDS = new String[]{"uuid", "baseStation", 
-		"channelId", "alarmCode", "alarmStatus", "user",  "alarmLevel", "alarmCategory",
+		"channelId", "alarmCode", "alarmStatus", "user",  "alarmLevel",
+		"combineUuid", "alarmCategory",
 		"startTime", "endTime", "lastUpdateTime", "comfirmTime", "videoPath"};
 	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
 	
@@ -26,7 +28,18 @@ public class AlarmRecord implements JSONStreamAware{
 	public String startTimeString;
 	public String alarmCode = "";
 	public String alarmLevel = "1";
-	public String alarmCategory = "1"; //图片,视频,无视频／图片
+	public String combineUuid = null;
+	/**
+	 * 图片大小。
+	 */
+	public int dataSize = 0;
+	
+	/**
+	 * 合并图片--
+	 * 某一个时间端内, 在实时告警窗口之显示一个告警信息,但是所有的告警图片都需要
+	 * 保存。当图片不需要显示时，分类设置为"合并图片"。
+	 */
+	public String alarmCategory = "1"; //图片,视频,无视频／图片, 合并图片
 	/**
 	 * 告警处理状态，超时，正在发生，手动取消，删除
 	 */
@@ -43,6 +56,7 @@ public class AlarmRecord implements JSONStreamAware{
 	 * 零时保存。
 	 */
 	public transient FileVideoRecorder recorder = null;
+	public transient File absPath = null;	
 	
 	public String getLevel(){
 		return this.alarmLevel;

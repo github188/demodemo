@@ -18,7 +18,6 @@ import org.goku.http.StartupListener;
 import org.goku.settings.Settings;
 import org.goku.socket.SimpleSocketServer;
 import org.goku.socket.SocketManager;
-import org.goku.video.odip.MonitorClient;
 
 public class ImageRouteServer {
 	private Log log = LogFactory.getLog("main");
@@ -26,13 +25,14 @@ public class ImageRouteServer {
 	public Map<String, ASC100Client> clients = Collections.synchronizedMap(new HashMap<String, ASC100Client>());
 	
 	public Settings settings = null;
-	public DataStorage storage = null;	
+	public DataStorage storage = null;
 	public HTTPRemoteClient master = null;
-	public AlarmMonitorCenter manager = null;
+	public AlarmMonitorCenter alarmManager = null;
 	public ASC100MX mx = null;
 	public SimpleHTTPServer httpServer = null;
 	public SocketManager socketManager = null;
-	public SimpleSocketServer socketServer = null;	
+	public SimpleSocketServer socketServer = null;
+	public FileManager fileManager = null;
 	private ThreadPoolExecutor threadPool = null; 
 	public String groupName = null;
 	
@@ -91,9 +91,11 @@ public class ImageRouteServer {
 		mx = new ASC100MX(remotePort, localPort, threadPool);
 		threadPool.execute(mx);
 		
+		fileManager = new FileManager(settings, storage);
+		
 		log.info("Starting alarm manager server...");
-		manager = new AlarmMonitorCenter(threadPool);
-		threadPool.execute(manager);
+		alarmManager = new AlarmMonitorCenter(threadPool);
+		threadPool.execute(alarmManager);
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
@@ -139,7 +141,7 @@ public class ImageRouteServer {
 		if(station != null && station.devType == 2){
 			ASC100Client client = new ASC100Client(station);
 			this.clients.put(uuid, client);
-			this.manager.addClient(client);
+			this.alarmManager.addClient(client);
 			mx.register(client);
 			
 			return true;
@@ -151,6 +153,10 @@ public class ImageRouteServer {
 		return false;		
 		//client.connect(selector);
 	}
+	
+	public ASC100Client getMonitorClient(String uuid){
+		return clients.get(uuid);
+	}	
 	
 	/**
 	 * 删除一个监控视频，例如，需要负载调度，或连接错误时。
