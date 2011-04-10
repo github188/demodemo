@@ -42,8 +42,10 @@ public:
 	afx_msg void OnWarningScroolingOff();
 	afx_msg void OnWarningScroolingOn();
 private:
-	int m_nCurItem;
+	int  m_nCurItem;
 	long m_alarmIndex;
+	bool m_bOnScroll;
+
 public:
 //	afx_msg void OnHdnItemdblclickLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
@@ -53,4 +55,5 @@ public:
 	void DecPopVedioCount(void);
 	void IncPopVedioCount(void);
 	bool AckedWarning(CString sUUID);
+	bool DeleteItemByUUID(CString sUUID);
 };

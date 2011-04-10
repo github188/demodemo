@@ -4,8 +4,9 @@
 #include "stdafx.h"
 #include "BTSMonitor.h"
 #include "RuntimeWarning.h"
+#include "CriticalWarning.h"
 #include "WarnPopVideo.h"
-
+#include "WarningWnd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,7 +14,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 // CRuntimeWarning dialog
-static BOOL bOnScroll = FALSE;
 IMPLEMENT_DYNAMIC(CRuntimeWarning, CPropertyPage)
 
 CRuntimeWarning::CRuntimeWarning()
@@ -21,6 +21,7 @@ CRuntimeWarning::CRuntimeWarning()
 	, m_nCurItem(0)
 	, m_alarmIndex(0)
 	, m_nPopViewCount(0)
+	,m_bOnScroll(false)
 {
 	int i=0;
 	for (;i<cnMAX_POP_WINDOW; i++)
@@ -309,7 +310,7 @@ void CRuntimeWarning::OnTimer(UINT_PTR nIDEvent)
 		m_lstRuntimeWarning.SetItem(nn,7,LVIF_TEXT,strTime,0,0,0,0);
 	}
 
-	if (bOnScroll)
+	if (m_bOnScroll)
 	{
 		m_lstRuntimeWarning.EnsureVisible(nn,TRUE);
 	}
@@ -363,10 +364,23 @@ void CRuntimeWarning::OnWarningAck()
 	CString sUUID = m_lstRuntimeWarning.GetItemText(m_nCurItem,8);
 	if ( pApp->pgkclient->confirmAlarm(sUUID) )
 	{
+		LV_ITEM lvitem = {0};
+		lvitem.iItem = m_nCurItem;
+		lvitem.iSubItem = 0; //UUID
+		lvitem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM;
+		m_lstRuntimeWarning.GetItem(&lvitem);
+
 		m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
-		//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
 		m_lstRuntimeWarning.DeleteItem(m_nCurItem);
 		m_nCurItem = -1;
+
+		//if this warning is critical warning, should be delete the counterpart item in the critical listview
+		if ( lvitem.iImage > 3) //Critical warning..
+		{
+			CWarningWnd* pParent = (CWarningWnd*)GetParent();//DeleteItemByUUID(sUUID);
+			if (pParent)
+				pParent->m_pCriticalPg->DeleteItemByUUID(sUUID);
+		}
 	}
 	else
 		AfxMessageBox("¸æ¾¯È·ÈÏÊ§°Ü!");
@@ -390,7 +404,7 @@ void CRuntimeWarning::OnWarningScroolingOff( )
 {
 	// TODO: Add your command handler code here
 	//m_lstRuntimeWarning.EnsureVisible(m_nCurItem,TRUE);
-	bOnScroll = FALSE;
+	m_bOnScroll = FALSE;
 	
 	m_lstRuntimeWarning.EnsureVisible(m_nCurItem,TRUE);
 
@@ -401,7 +415,7 @@ void CRuntimeWarning::OnWarningScroolingOn( )
 	// TODO: Add your command handler code here
 	//m_lstRuntimeWarning.EnsureVisible(m_nCurItem,FALSE);
 	//m_lstRuntimeWarning.EnsureVisible(0,TRUE);
-	bOnScroll = TRUE;
+	m_bOnScroll = TRUE;
 
 }
 
@@ -456,6 +470,18 @@ bool CRuntimeWarning::AckedWarning(CString sUUID)
 			CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
 			if ( pApp->pgkclient->confirmAlarm(sUUID) )
 			{
+				//if this warning is critical warning, should be delete the counterpart 
+				//item in the critical listview
+				LV_ITEM lvitem = {0};
+				lvitem.iItem = m_nCurItem;
+				lvitem.iSubItem = 0; //UUID
+				lvitem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM;
+				m_lstRuntimeWarning.GetItem(&lvitem);
+				if ( lvitem.iImage > 3) //Critical warning..
+				{
+					//DeleteItemByUUID(sUUID);
+				}
+
 				//m_lstRuntimeWarning.SetItem(m_nCurItem,0,LVIF_IMAGE,"",WARNING_ACK,0,0,0);
 				//m_lstRuntimeWarning.GetItemData(WARNING_ACK);
 				m_lstRuntimeWarning.DeleteItem(i);
@@ -472,4 +498,25 @@ bool CRuntimeWarning::AckedWarning(CString sUUID)
 	}
 
 	return bAcked;
+}
+
+bool CRuntimeWarning::DeleteItemByUUID(CString sUUID)
+{
+	int i=0;
+	CString curUUID;
+	bool bRet = false;
+	int nCnt = m_lstRuntimeWarning.GetItemCount();
+	for(i=0; i<nCnt; i++)
+	{
+		curUUID = m_lstRuntimeWarning.GetItemText(i,8);
+		if (curUUID == sUUID)
+		{
+			m_lstRuntimeWarning.DeleteItem(i);
+			bRet = true;
+			break;
+		}
+	}
+
+	return bRet;
+
 }
