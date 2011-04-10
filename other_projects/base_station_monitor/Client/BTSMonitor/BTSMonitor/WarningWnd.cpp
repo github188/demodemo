@@ -152,10 +152,16 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 #endif
 
 	if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
+	{
 		m_pRuntimePg->AddListView(ALARM_REFRESH);
+		m_pCriticalPg->AddListView(ALARM_REFRESH);
+	}
 
 	if (!pApp->pgkclient->alarmmanager.curNewAlarmList.IsEmpty())
+	{
 		m_pRuntimePg->AddListView(ALARM_NEW);
+		m_pCriticalPg->AddListView(ALARM_NEW);
+	}
 
 	CDockablePane::OnTimer(nIDEvent);
 }
