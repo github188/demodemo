@@ -127,7 +127,16 @@ public:
 	int read_buffer(char *buffer, int size){
 		CString xx;
 		int len = cs.Receive(buffer, size);
-		//buffer[len] = 0;
+		//buffer[len] = 0		
+		if (len==0 || SOCKET_ERROR==len)
+		{
+			CString sError;
+			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
+			CLogFile::WriteLog(sError);
+			AfxMessageBox(sError);
+			return 0;
+		}
+
 		util::int2str(xx, len);
 		CLogFile::WriteLog(CString("read buffer:") + xx);
 		if(len > 0 && len < 1024){
