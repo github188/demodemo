@@ -16,6 +16,8 @@
             <mkdir dir="${build.dir}"/>                  
             <mkdir dir="${build.dir}/classes"/> 
             <mkdir dir="${build.dir}/lib"/>
+            <mkdir dir="${build.dir}/test_reports"/>
+            <mkdir dir="${build.dir}/unittest"/>            
             <mkdir dir="${dist.dir}"/> 
    </target> 
     <path id="dependent-lib">
@@ -72,6 +74,47 @@
     		  </path>
     		</signjar>                
          </target>
+         
+   <target name="compile-test" depends="properties">
+                <javac srcdir="unittest"
+                           destdir="${build.dir}/unittest"
+                           includes="**/*.java"
+                           deprecation="on"
+                           debug="true"
+                           target="1.5"
+                           source="1.5"
+                           encoding="utf-8"
+                           includeantruntime="flase"
+                >
+	            <classpath>	
+    	        	  <pathelement location="${dist.dir}/${name}-${version}.jar"/>
+        				<fileset dir="libs" >
+           					<include name="*.jar"/>
+        				</fileset>
+                </classpath>
+                
+                </javac>
+    </target>       
+         
+    <target name="test" depends="compile-test">
+         <junit printsummary="yes" haltonfailure="yes">
+           <classpath>           		
+              <pathelement location="${dist.dir}/${name}-${version}.jar"/>
+              <pathelement location="${build.dir}/unittest"/>
+              <fileset dir="libs" >
+           		 <include name="*.jar"/>
+        	  </fileset>
+              
+           </classpath>
+
+		   <formatter type="plain"/>
+           <batchtest fork="yes" todir="${build.dir}/test_reports">
+              	<fileset dir="unittest">
+                	<include name="**/Test**.java"/>
+           	  	</fileset>
+           </batchtest>
+         </junit>
+    </target>
          
 	<target name="gen-key">
         <delete quiet="true" file="test_key"/> 

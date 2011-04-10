@@ -144,8 +144,8 @@ public class ASC100MX implements Runnable{
 			writeBuffer.putShort((short)(outputCount++ % 65535)); 
 			String[] channelAddr = locationId.split("\\.");
 			
-			writeBuffer.put(Byte.parseByte(channelAddr[0], 16));
 			writeBuffer.put(Byte.parseByte(channelAddr[1], 16));
+			writeBuffer.put(Byte.parseByte(channelAddr[0], 16));
 			writeBuffer.put(Byte.parseByte(channelAddr[2], 16));
 			writeBuffer.put((byte)0);
 			
@@ -153,6 +153,8 @@ public class ASC100MX implements Runnable{
 			writeBuffer.putShort((short)data.limit());
 			
 			writeBuffer.put(data);
+			//更新limit的位置。
+			writeBuffer.flip();
 			
 			ByteBuffer sub = writeBuffer.asReadOnlyBuffer();
 			sub.position(4);
