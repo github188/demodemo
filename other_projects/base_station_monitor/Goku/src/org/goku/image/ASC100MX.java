@@ -220,13 +220,25 @@ public class ASC100MX implements Runnable{
 		
 		String ipAddr = mx.getAddress().getHostAddress();
 		for(int i = 0; i < channelCount; i++){
-			short node2 = data.get();
-			short node1 = data.get();
+			byte node2 = data.get();
+			byte node1 = data.get();
 			String srID = String.format("%x.%x", node1, node2);
 			String oldMx = srRoute.get(srID);
 			if(oldMx == null || !oldMx.equals(ipAddr)){
 				srRoute.put(srID, ipAddr);
+				updateASC100Data(srID, ipAddr);
 				log.info(String.format("Update Mx table:%s->%s", srID, ipAddr));
+			}
+		}
+	}
+	
+	protected void updateASC100Data(String sr, String mx){
+		Collection<ASC100Client> clients = new ArrayList<ASC100Client>();
+		clients.addAll(clientTable.values());
+		for(ASC100Client c: clients){
+			if(c.getSrId().equals(sr)){
+				c.info.locationId = mx + ":" + c.getClientId();
+				ImageRouteServer.getInstance().storage.save(c.info, new String[]{"locationId"});
 			}
 		}
 	}
@@ -272,8 +284,8 @@ public class ASC100MX implements Runnable{
 						int count = buff.get();
 						buff.getShort(); //去掉UDP包序号。
 						for(; count > 0; count--){
-							byte node1 = buff.get();
 							byte node2 = buff.get();
+							byte node1 = buff.get();
 							byte channelId = buff.get();
 							buff.get();
 							int len = unsignedShort(buff); // i.getShort();

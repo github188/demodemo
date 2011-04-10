@@ -17,6 +17,7 @@ import org.goku.core.model.BaseStation;
 public class ASC100Client {
 	public BaseStation info = null;
 	public Collection<ImageClientListener> ls = Collections.synchronizedCollection(new ArrayList<ImageClientListener>());
+	public long lastActive = 0;
 
 	private Log log = null;
 	private ASC100MX mx = null;
@@ -26,7 +27,6 @@ public class ASC100Client {
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private ImageInfo image = null;
 	private ASC100Package inBuffer = new ASC100Package();
-	private long lastActive = 0;
 	
 	
 	public ASC100Client(String location){
