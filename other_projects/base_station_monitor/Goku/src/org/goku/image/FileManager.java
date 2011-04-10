@@ -1,6 +1,9 @@
 package org.goku.image;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -10,6 +13,7 @@ import java.util.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.db.DataStorage;
 import org.goku.db.QueryParameter;
@@ -36,13 +40,53 @@ public class FileManager {
 	public FileManager(Settings settings, DataStorage storage){
 		this.storage = storage;
 		initRootPath(settings.getString(Settings.FILE_ROOT_PATH, "data"));	
-		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);
-		
-		//alarmTimeOut = settings.getInt(Settings.AUTO_CONFIRM_TIME, 5);
+		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);		
 	}
 	
-	public AlarmRecord saveImageFile(ASC100Client client, ImageInfo image){	
-		return null;
+	public AlarmRecord saveImageFile(ASC100Client client, ImageInfo image) throws IOException{
+		log.info(String.format("Save image uuid:%s, ch:%s, time:%s", client.info.uuid, image.channel, image.generateDate));
+		AlarmDefine alarm = AlarmDefine.alarm(AlarmDefine.AL_5001);
+		String path = getSavePath(image.generateDate, client.info.uuid, "", alarm.alarmCode, image.channel + "");
+		FileOutputStream os = new FileOutputStream(new File(rootPath, path));
+		os.getChannel().write(image.buffer);
+		os.close();
+		
+		//检查最短触发时间。
+		Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
+		//
+		String sql = "select combineUuid from alarm_record where " +
+						"startTime > ${0} and baseStation = ${1} and channelId= ${2} " +
+						"and alarmCode = ${3} limit 1";
+		Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
+				client.info.uuid,
+				image.channel,
+				alarm.alarmCode});
+		String combineUuid = null;
+		if(xx.size() > 0){
+			combineUuid = (String)xx.iterator().next().get("combineUuid");
+		}
+		
+		AlarmRecord rec = new AlarmRecord();
+		rec.videoPath = path;
+		rec.alarmCode = alarm.alarmCode;
+		rec.startTime = image.generateDate;
+		rec.endTime = image.generateDate;
+		rec.baseStation = client.info.uuid;
+		rec.channelId = image.channel + "";
+		rec.alarmLevel = alarm.alarmLevel;
+		rec.alarmStatus = "1";
+		rec.dataSize = image.imageSize;
+		rec.generatePK();
+		if(combineUuid != null){
+			rec.alarmCategory = "4";
+			rec.combineUuid = combineUuid;
+		}else {
+			rec.alarmCategory = alarm.alarmCategory;
+			rec.combineUuid = rec.uuid;
+		}
+		storage.save(rec);
+		
+		return rec;
 	}
 	
 	/**

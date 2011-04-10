@@ -26,9 +26,10 @@ public class ASC100Client {
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private ImageInfo image = null;
 	private ASC100Package inBuffer = new ASC100Package();
+	private long lastActive = 0;
 	
 	
-	public ASC100Client(String location){		
+	public ASC100Client(String location){
 		if(location.indexOf(':') > 0){
 			String[] tmp = location.split(":", 2);
 			if(tmp[0].trim().length() > 0){
@@ -67,11 +68,28 @@ public class ASC100Client {
 				case ASC100Package.STATUS_CMD:
 					inBuffer.cmd = buffer.get();
 					inBuffer.status = ASC100Package.STATUS_LENGTH;
+					inBuffer.paddingIndex = 0;
 					break;
 				case ASC100Package.STATUS_LENGTH:
-					inBuffer.len = ASC100MX.unsignedShort(buffer);
-					inBuffer.inBuffer.limit(inBuffer.len);
-					inBuffer.status = ASC100Package.STATUS_DATA;
+					if(inBuffer.escaped){ //正在读一个转义字符。
+						cur = buffer.get();
+						inBuffer.padding[inBuffer.paddingIndex++] = (byte)(0xfd + cur);
+						inBuffer.escaped = false;
+					}else {
+						cur = buffer.get();
+						if(cur == 0xfd){
+							inBuffer.escaped = true;
+						}else {
+							inBuffer.padding[inBuffer.paddingIndex++] = cur;
+						}
+					}
+					if(inBuffer.paddingIndex >=2){					
+						inBuffer.len = ((inBuffer.padding[1] << 8) | 0x00ff) & 
+						 			    (inBuffer.padding[0]       | 0xff00); 
+						inBuffer.inBuffer.limit(inBuffer.len);
+						inBuffer.status = ASC100Package.STATUS_DATA;
+						inBuffer.paddingIndex = 0;
+					}
 					break;
 				case ASC100Package.STATUS_DATA:
 					//图片传输数据，不需要转义数据里面的. 0xFF,0xFE等字符。
@@ -95,18 +113,39 @@ public class ASC100Client {
 					}
 					break;
 				case ASC100Package.STATUS_CHECKSUM:
-					inBuffer.checkSum = ASC100MX.unsignedShort(buffer);
-					inBuffer.bufferCheckSum = getCheckSum(inBuffer.inBuffer.asReadOnlyBuffer());
-					processData(inBuffer);
-					inBuffer.status = ASC100Package.STATUS_END;
+					if(inBuffer.escaped){ //正在读一个转义字符。
+						cur = buffer.get();
+						inBuffer.padding[inBuffer.paddingIndex++] = (byte)(0xfd + cur);
+						inBuffer.escaped = false;
+					}else {
+						cur = buffer.get();
+						if(cur == 0xfd){
+							inBuffer.escaped = true;
+						}else {
+							inBuffer.padding[inBuffer.paddingIndex++] = cur;
+						}
+					}	
+					if(inBuffer.paddingIndex >=2){
+						inBuffer.checkSum =  ((inBuffer.padding[1] << 8) | 0x00ff) & 
+		 			    					  (inBuffer.padding[0]       | 0xff00); 
+						inBuffer.bufferCheckSum = getCheckSum(inBuffer.inBuffer.asReadOnlyBuffer());
+						processData(inBuffer);
+						inBuffer.status = ASC100Package.STATUS_END;
+						inBuffer.paddingIndex = 0;
+					}
 					break;
 				case ASC100Package.STATUS_END:
-					if(buffer.get() == 0xFF){
+					if(buffer.get() == 0xFE){
 						inBuffer.clear();						
 					}
 			}			
 		}
 		
+		//报告设备处于活动状态。
+		if(System.currentTimeMillis() - this.lastActive > 60 * 1000){
+			this.eventProxy.active(new ImageClientEvent(this));
+			this.lastActive = System.currentTimeMillis();
+		}
 	}
 	
 	public short getCheckSum(ByteBuffer data){
@@ -163,7 +202,7 @@ public class ASC100Client {
 					processImageData(data.inBuffer);
 				} catch (IOException e) {
 					log.error(e.toString(), e);
-				}			
+				}
 			}
 		}
 	}
@@ -320,6 +359,13 @@ public class ASC100Client {
 				l.message(event);
 			}
 		}
+		
+		@Override
+		public void active(ImageClientEvent event) {
+			for(ImageClientListener l: ls){
+				l.active(event);
+			}
+		}	
 	};
 
 }

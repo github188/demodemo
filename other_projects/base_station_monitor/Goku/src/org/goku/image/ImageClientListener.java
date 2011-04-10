@@ -24,4 +24,11 @@ public interface ImageClientListener {
 	 * @param event
 	 */
 	public void message(ImageClientEvent event);
+
+	/**
+	 * 定时报告设备有数据到达。
+	 * @param event
+	 */
+	public void active(ImageClientEvent event);
+	
 }

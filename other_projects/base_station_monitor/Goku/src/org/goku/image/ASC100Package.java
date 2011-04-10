@@ -27,6 +27,12 @@ public class ASC100Package {
 	
 	public ByteBuffer inBuffer = ByteBuffer.allocate(64 * 1024);
 	
+	/**
+	 * 读缓冲
+	 */
+	public byte[] padding = new byte[5];
+	public int paddingIndex = 0;
+	
 	
 	/**
 	 * 当前是否正读到一个escaped;

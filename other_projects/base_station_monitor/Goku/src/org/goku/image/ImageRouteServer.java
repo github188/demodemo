@@ -1,6 +1,7 @@
 package org.goku.image;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -142,6 +143,7 @@ public class ImageRouteServer {
 			ASC100Client client = new ASC100Client(station);
 			this.clients.put(uuid, client);
 			this.alarmManager.addClient(client);
+			client.addListener(activeReport);
 			mx.register(client);
 			
 			return true;
@@ -164,5 +166,24 @@ public class ImageRouteServer {
 	 */
 	public void removeMonitorClient(ASC100Client client){
 	}	
+	
+	
+	private ImageClientListener activeReport = new AbstractImageListener(){
+		public void active(final ImageClientEvent event) {
+			threadPool.execute(new Runnable(){
+				@Override
+				public void run() {
+					try {
+						event.source.info.connectionStatus = "connected";
+						event.source.info.lastActive = new Date(System.currentTimeMillis());
+						storage.save(event.source.info, 
+									 new String[]{"connectionStatus", 
+												  "lastActive"});
+					} catch (Throwable e) {
+						log.error("Failed to update client status." + e.toString(), e);
+					}
+				}});
+		};
+	};	
 
 }
