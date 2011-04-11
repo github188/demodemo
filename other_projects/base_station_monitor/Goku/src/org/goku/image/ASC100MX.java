@@ -341,6 +341,9 @@ public class ASC100MX implements Runnable{
 			queue[order % queue.length] = data;
 			if(next_index == -1) next_index = order % queue.length;
 			size++;
+			/*避免长时间没有收到数据包，中间突然来了一个间隔的包，作为超时读取处理。
+			 */
+			last_get_time = System.currentTimeMillis();
 		}
 		
 		public ByteBuffer getNext(){
@@ -351,7 +354,7 @@ public class ASC100MX implements Runnable{
 				queue[next_index] = null;
 				next_index = (next_index + 1) % queue.length;
 				last_get_time = System.currentTimeMillis();
-			}else if(System.currentTimeMillis() - last_get_time > 1000) { //超时等待，跳过丢失的包。
+			}else if(System.currentTimeMillis() - last_get_time > 5000) { //超时等待，跳过丢失的包。
 				for(int i = queue.length; i > 0; i--){
 					next_index = (next_index + 1) % queue.length;
 					if(queue[next_index] != null) {
@@ -383,7 +386,7 @@ public class ASC100MX implements Runnable{
 		station.channels = "1:ch1,2:ch2";
 		ASC100Client client = new ASC100Client(station);
 		testObj.register(client);
-		client.getAlarmImage();
+		client.getDateTime();
 		
 		System.out.println("xxxx");
 		Thread.sleep(1000 * 60);

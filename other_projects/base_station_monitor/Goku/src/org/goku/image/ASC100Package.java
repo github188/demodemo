@@ -22,8 +22,8 @@ public class ASC100Package {
 	 * 数据包的长度。-1表示没有初始化
 	 */		
 	public int len = -1;
-	public int checkSum = 0;
-	public int bufferCheckSum = 0;
+	public short checkSum = 0;
+	public short bufferCheckSum = 0;
 	
 	public ByteBuffer inBuffer = ByteBuffer.allocate(64 * 1024);
 	

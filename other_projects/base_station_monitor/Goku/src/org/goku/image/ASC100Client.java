@@ -42,9 +42,9 @@ public class ASC100Client {
 			this.channel = tmp[2];
 		}
 		
-		log = LogFactory.getLog("asc100." + location);
+		log = LogFactory.getLog("asc100." + srId + "." + this.channel);
 		outBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
+		inBuffer.clear();
 	};
 	
 	public ASC100Client(BaseStation info){
@@ -61,9 +61,10 @@ public class ASC100Client {
 		//当前数据包处理状态。
 		byte cur = 0;
 		while(buffer.hasRemaining()){
+			//log.info("current status:" + inBuffer.status);
 			switch(inBuffer.status){
 				case ASC100Package.STATUS_INIT:
-					if(buffer.get() == 0xFF){
+					if(buffer.get() == (byte)0xFF){
 						inBuffer.status = ASC100Package.STATUS_CMD;
 					}
 					break;
@@ -79,13 +80,16 @@ public class ASC100Client {
 						inBuffer.escaped = false;
 					}else {
 						cur = buffer.get();
-						if(cur == 0xfd){
+						if(cur == (byte)0xfd){
 							inBuffer.escaped = true;
+						}else if(cur == (byte)0xfe){
+							inBuffer.clear();
+							eventProxy.connectionError(new ImageClientEvent(this));
 						}else {
 							inBuffer.padding[inBuffer.paddingIndex++] = cur;
 						}
 					}
-					if(inBuffer.paddingIndex >=2){					
+					if(inBuffer.paddingIndex >=2){
 						inBuffer.len = ((inBuffer.padding[1] << 8) | 0x00ff) & 
 						 			    (inBuffer.padding[0]       | 0xff00); 
 						inBuffer.inBuffer.limit(inBuffer.len);
@@ -104,8 +108,11 @@ public class ASC100Client {
 						inBuffer.escaped = false;
 					}else {
 						cur = buffer.get();
-						if(cur == 0xfd){
+						if(cur == (byte)0xfd){
 							inBuffer.escaped = true;
+						}else if(cur == (byte)0xfe){
+							inBuffer.clear();
+							eventProxy.connectionError(new ImageClientEvent(this));
 						}else {
 							inBuffer.inBuffer.put(cur);
 						}
@@ -122,25 +129,41 @@ public class ASC100Client {
 						inBuffer.escaped = false;
 					}else {
 						cur = buffer.get();
-						if(cur == 0xfd){
+						if(cur == (byte)0xfd){
 							inBuffer.escaped = true;
+						}else if(cur == (byte)0xfe){
+							inBuffer.clear();
+							eventProxy.connectionError(new ImageClientEvent(this));
 						}else {
 							inBuffer.padding[inBuffer.paddingIndex++] = cur;
 						}
 					}	
 					if(inBuffer.paddingIndex >=2){
-						inBuffer.checkSum =  ((inBuffer.padding[1] << 8) | 0x00ff) & 
-		 			    					  (inBuffer.padding[0]       | 0xff00); 
-						inBuffer.bufferCheckSum = getCheckSum(inBuffer.inBuffer.asReadOnlyBuffer());
+						inBuffer.checkSum =  (short)(((inBuffer.padding[1] << 8) | 0x00ff) & 
+		 			    					          (inBuffer.padding[0]       | 0xff00));
+						//inBuffer.inBuffer.flip();
+						//ByteBuffer tmp = inBuffer.inBuffer.asReadOnlyBuffer();
+						//tmp.get();
+						inBuffer.bufferCheckSum = getCheckSum(
+								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)(inBuffer.len >> 8 & 0xff)},
+								inBuffer.inBuffer.asReadOnlyBuffer());
 						processData(inBuffer);
 						inBuffer.status = ASC100Package.STATUS_END;
 						inBuffer.paddingIndex = 0;
 					}
 					break;
 				case ASC100Package.STATUS_END:
-					if(buffer.get() == 0xFE){
+					if(buffer.get() == (byte)0xFE){
 						inBuffer.clear();						
+					}else if(buffer.get() == (byte)0xFF){
+						inBuffer.clear();
+						inBuffer.status = ASC100Package.STATUS_CMD;
 					}
+					
+					break;
+				default:
+					log.warn("Invalid package status:%s" + ASC100Package.STATUS_END);
+					inBuffer.clear();
 			}			
 		}
 		
@@ -149,6 +172,14 @@ public class ASC100Client {
 			this.eventProxy.active(new ImageClientEvent(this));
 			this.lastActive = System.currentTimeMillis();
 		}
+	}
+	
+	public short getCheckSum(byte[] head, ByteBuffer data){
+		ByteBuffer temp = ByteBuffer.allocate(head.length + data.remaining());
+		temp.put(head);
+		temp.put(data);
+		temp.flip();
+		return getCheckSum(temp);
 	}
 	
 	public short getCheckSum(ByteBuffer data){
@@ -216,8 +247,9 @@ public class ASC100Client {
 	
 	public void processData(ASC100Package data){
 		if(data.checkSum != data.bufferCheckSum){
-			log.debug("Drop package the check sum error.");
+			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 		}else {
+			log.debug(String.format("Client command:0x%x, length:%s", data.cmd, data.len));
 			if(data.cmd == 0x00){
 				eventProxy.notFoundImage(new ImageClientEvent(this));
 			}else if(data.cmd == 0x06){
@@ -226,6 +258,8 @@ public class ASC100Client {
 				} catch (IOException e) {
 					log.error(e.toString(), e);
 				}
+			}else{
+				log.debug(String.format("Drop unkown command:0x, length:%s", data.cmd, data.len));
 			}
 		}
 	}
@@ -336,6 +370,14 @@ public class ASC100Client {
 		}else {
 			log.debug("Invalid image channel:" + channel);
 		}
+	}
+	
+	public void getDateTime(){
+		try {
+			sendCommand((byte)0x02, new byte[]{01});
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}		
 	}
 	
 	public void addListener(ImageClientListener l){
