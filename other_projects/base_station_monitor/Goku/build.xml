@@ -91,6 +91,9 @@
         				<fileset dir="libs" >
            					<include name="*.jar"/>
         				</fileset>
+    					<fileset dir="jmock-2.5.1" >
+       						<include name="*.jar"/>
+    					</fileset>	            	
                 </classpath>
                 
                 </javac>
@@ -105,7 +108,9 @@
               <fileset dir="libs" >
            		 <include name="*.jar"/>
         	  </fileset>
-           	
+			  <fileset dir="jmock-2.5.1" >
+				 <include name="*.jar"/>
+			  </fileset>           	
            </classpath>
 
 		   <formatter type="plain"/>

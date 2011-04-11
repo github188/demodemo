@@ -162,7 +162,12 @@ public class ASC100MX implements Runnable{
 			writeBuffer.putShort(dataSumCheck(sub));
 			
 			writeBuffer.position(0);
-			channel.send(writeBuffer, addr);
+			for(int i = 10; i > 0 && writeBuffer.hasRemaining(); i--){
+				channel.send(writeBuffer, addr);
+			}
+			if(writeBuffer.hasRemaining()){
+				throw new IOException("Time out to send UPD package.");
+			}
 			log.info(String.format("Send to MX %s->%s size %s", client.getClientId(), addr.toString(), data.limit()));
 		}else {
 			log.info("Not found MX server for node:" + locationId);
@@ -171,6 +176,13 @@ public class ASC100MX implements Runnable{
 	
 	public void close(){
 		this.isRunning = false;
+		if(channel != null){
+			try {
+				channel.close();
+			} catch (IOException e) {
+				log.info("Error to close MX UDP channel.");
+			}
+		}
 	}
 	
 	/**

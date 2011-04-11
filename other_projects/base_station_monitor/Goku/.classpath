@@ -13,6 +13,9 @@
 	<classpathentry kind="lib" path="libs/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="jmock-2.5.1/jmock-2.5.1.jar"/>
+	<classpathentry kind="lib" path="jmock-2.5.1/jmock-junit4-2.5.1.jar"/>
+	<classpathentry kind="lib" path="jmock-2.5.1/jmock-legacy-2.5.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
