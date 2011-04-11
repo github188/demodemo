@@ -13,10 +13,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.model.BaseStation;
 
 /**
  * 如果SR+通道ID,在数据库不存在就丟掉。
@@ -328,7 +331,7 @@ public class ASC100MX implements Runnable{
 	 * 判断下一个应处理的包。如果下一个包是需要处理的包开始处理。如果不是则等待1秒钟。
 	 * 如果超时则跳过丢失的包。
 	 */
-	class IncomeQueue {
+	public static class IncomeQueue {
 		public int next_index = -1;
 		public long last_get_time = 0;
 		public int size = 0;
@@ -364,4 +367,25 @@ public class ASC100MX implements Runnable{
 			return d;
 		}
 	}
+	
+	public static void main(String[] args) throws Exception{
+		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 10, 60, TimeUnit.SECONDS, 
+				new LinkedBlockingDeque<Runnable>(5));
+		ASC100MX testObj = new ASC100MX(5001, 5004, threadPool);
+		threadPool.execute(testObj);
+		
+		Thread.sleep(1000);
+		
+		BaseStation station = new BaseStation();
+		
+		station.uuid = "1234";
+		station.locationId = "192.168.1.254:12.34.3";
+		station.channels = "1:ch1,2:ch2";
+		ASC100Client client = new ASC100Client(station);
+		testObj.register(client);
+		client.getAlarmImage();
+		
+		System.out.println("xxxx");
+		Thread.sleep(1000 * 60);
+	} 
 }

@@ -2,6 +2,7 @@ package org.goku.image;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ public class ASC100Client {
 		}
 		
 		log = LogFactory.getLog("asc100." + location);
+		outBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
 	};
 	
@@ -89,6 +91,7 @@ public class ASC100Client {
 						inBuffer.inBuffer.limit(inBuffer.len);
 						inBuffer.status = ASC100Package.STATUS_DATA;
 						inBuffer.paddingIndex = 0;
+						log.debug(String.format("Reading cmd:%x, length:%s", inBuffer.cmd, inBuffer.len));
 					}
 					break;
 				case ASC100Package.STATUS_DATA:
@@ -149,11 +152,13 @@ public class ASC100Client {
 	}
 	
 	public short getCheckSum(ByteBuffer data){
-		short sum = 0;
+		int sum = 0;
 		while(data.hasRemaining()){
 			sum += data.get();
 		}
-		return sum;
+		//sum = ((~(sum % 0x10000)) + 1) & 0xffff;
+		
+		return (short)(((~(sum % 0x10000)) + 1) & 0xffff);
 	}	
 	
 	/**
@@ -163,27 +168,45 @@ public class ASC100Client {
 	 * @throws IOException 
 	 */
 	public void sendCommand(byte cmd, byte data[]) throws IOException{
-		ByteBuffer temp = null;
+		ByteBuffer temp = ByteBuffer.allocate(data.length +5);
+		temp.order(ByteOrder.LITTLE_ENDIAN);
+		temp.clear();
+		temp.put(cmd);
+		temp.putShort((short)data.length);
+		temp.put(data);
+		temp.flip();
+		short checkSum = getCheckSum(temp);
+		temp.limit(temp.capacity());
+		temp.putShort(checkSum);
+		temp.flip();
+		
 		synchronized(outBuffer){
 			outBuffer.clear();
 			outBuffer.put((byte)0xff);
-			outBuffer.put(cmd);
-			outBuffer.putShort((short)data.length);
-			for(int b: data){	//处理数据转义。
-				if(b < 0xfd){
-					outBuffer.put((byte)b);
-				}else {
-					outBuffer.put((byte)0xfd);
-					outBuffer.put((byte)(b - 0xfd));
+			byte cur = 0;
+			while(temp.hasRemaining()){
+				cur = temp.get();
+				switch(cur){
+					case (byte)0xff:
+						outBuffer.put((byte)0xfd);
+						outBuffer.put((byte)2);
+						break;
+					case (byte)0xfe:
+						outBuffer.put((byte)0xfd);
+						outBuffer.put((byte)1);
+						break;
+					case (byte)0xfd:
+						outBuffer.put((byte)0xfd);
+						outBuffer.put((byte)0);
+						break;
+					default:
+						outBuffer.put(cur);
 				}
 			}
-			temp = outBuffer.asReadOnlyBuffer();
-			temp.limit(outBuffer.position());
-			temp.position(4);
 			
-			outBuffer.putShort(getCheckSum(temp));
 			outBuffer.put((byte)0xfe);
 			if(mx != null){
+				outBuffer.flip();
 				mx.send(this, outBuffer);
 			}else {
 				log.warn("Can't send data, the client have not register to MX");

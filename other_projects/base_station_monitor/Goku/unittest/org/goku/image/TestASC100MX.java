@@ -8,12 +8,14 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.goku.image.ASC100MX.IncomeQueue;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class TestASC100MX {
 	private ASC100MX testObj = null;
@@ -62,6 +64,45 @@ public class TestASC100MX {
 		Thread.sleep(100);
 				 
 		context.assertIsSatisfied();
+	}
+	
+	/**
+	 * 测试输入对列，对乱序数据的修正。
+	 */
+	@Test
+	public void testIncomeQueue() {
+		IncomeQueue queue = new IncomeQueue();
+		ByteBuffer b1 = ByteBuffer.allocate(1);
+		ByteBuffer b2 = ByteBuffer.allocate(2);		
+		ByteBuffer b3 = ByteBuffer.allocate(3);
+		ByteBuffer b4 = ByteBuffer.allocate(4);
+		
+		/**
+		 * 简单序列，取结束后为空。 
+		 */
+		queue.put(1, b1);
+		ByteBuffer t = queue.getNext();
+		assertEquals(t.limit(), 1);
+		assertEquals(queue.getNext(), null);
+
+		queue = new IncomeQueue();
+		queue.put(1, b1);
+		queue.put(3, b3);
+		assertEquals(t.limit(), 1);
+		//2号不存在。
+		assertEquals(queue.getNext(), null);
+		
+		//加入2后，连续2个数据有效。
+		queue.put(2, b2);
+		assertEquals(queue.getNext().limit(), 2);
+		assertEquals(queue.getNext().limit(), 3);
+		assertEquals(queue.getNext(), null);
+		
+		//4号正确序列
+		queue.put(4, b4);
+		assertEquals(queue.getNext().limit(), 3);
+
+		
 	}
 	
 	
