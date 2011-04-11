@@ -97,14 +97,15 @@
     </target>       
          
     <target name="test" depends="compile-test">
-         <junit printsummary="yes" haltonfailure="yes">
-           <classpath>           		
-              <pathelement location="${dist.dir}/${name}-${version}.jar"/>
+         <junit printsummary="yes" haltonfailure="yes" fork="true" newenvironment="true">
+           <classpath>
+           	<!-- Can't use singed jar -->
+              <pathelement location="${build.dir}/lib/${name}-${version}.jar"/>
               <pathelement location="${build.dir}/unittest"/>
               <fileset dir="libs" >
            		 <include name="*.jar"/>
         	  </fileset>
-              
+           	
            </classpath>
 
 		   <formatter type="plain"/>
