@@ -108,9 +108,11 @@ public class ASC100MX implements Runnable{
 			try {
 				readBuffer.clear();
 				InetSocketAddress client = (InetSocketAddress)channel.receive(readBuffer);
-				readBuffer.flip();
-				log.info(String.format("Recevive from MX %s, size %s", client.toString(), readBuffer.remaining()));
-				this.process(client, readBuffer);
+				if(client != null){
+					readBuffer.flip();
+					log.info(String.format("Recevive from MX %s, size %s", client.toString(), readBuffer.remaining()));
+					this.process(client, readBuffer);
+				}
 			}catch(AsynchronousCloseException ex){
 				log.error("The UDP channel is closed.");
 			} catch (Exception ex) {
@@ -385,10 +387,37 @@ public class ASC100MX implements Runnable{
 		station.locationId = "192.168.1.254:12.34.3";
 		station.channels = "1:ch1,2:ch2";
 		ASC100Client client = new ASC100Client(station);
+		client.addListener(new ImageClientListener(){
+
+			@Override
+			public void recevieImageOK(ImageClientEvent event) {
+				System.out.println("recevieImageOK");
+			}
+
+			@Override
+			public void notFoundImage(ImageClientEvent event) {
+				System.out.println("notFoundImage");				
+			}
+
+			@Override
+			public void connectionError(ImageClientEvent event) {
+				System.out.println("connectionError");				
+			}
+
+			@Override
+			public void message(ImageClientEvent event) {
+				System.out.println("message");				
+			}
+
+			@Override
+			public void active(ImageClientEvent event) {
+				System.out.println("active");				
+			}});
 		testObj.register(client);
-		client.getDateTime();
+		client.getAlarmImage();
 		
 		System.out.println("xxxx");
 		Thread.sleep(1000 * 60);
+		System.out.println("done.");
 	} 
 }

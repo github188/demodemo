@@ -45,6 +45,7 @@ public class ASC100Package {
 		this.len = -1;
 		checkSum = 0;
 		bufferCheckSum = 0;
+		this.paddingIndex = 0;
 		inBuffer.clear();
 	}
 }

@@ -62,6 +62,10 @@ public class ASC100Client {
 		byte cur = 0;
 		while(buffer.hasRemaining()){
 			//log.info("current status:" + inBuffer.status);
+			if(inBuffer.paddingIndex > 3) {
+				log.info("current status:" + inBuffer.status);
+				System.exit(1);
+			}
 			switch(inBuffer.status){
 				case ASC100Package.STATUS_INIT:
 					if(buffer.get() == (byte)0xFF){
@@ -92,15 +96,21 @@ public class ASC100Client {
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.len = ((inBuffer.padding[1] << 8) | 0x00ff) & 
 						 			    (inBuffer.padding[0]       | 0xff00); 
-						inBuffer.inBuffer.limit(inBuffer.len);
-						inBuffer.status = ASC100Package.STATUS_DATA;
-						inBuffer.paddingIndex = 0;
-						log.debug(String.format("Reading cmd:%x, length:%s", inBuffer.cmd, inBuffer.len));
+						if(inBuffer.len > 0 && inBuffer.len < 1024 * 10){
+							log.debug(String.format("Reading cmd:%x, length:%s", inBuffer.cmd, inBuffer.len));
+							inBuffer.inBuffer.limit(inBuffer.len);
+							inBuffer.status = ASC100Package.STATUS_DATA;
+							inBuffer.paddingIndex = 0;							
+						}else {
+							log.debug("Error length data:%s" + inBuffer.len);
+							inBuffer.clear();
+							eventProxy.connectionError(new ImageClientEvent(this));							
+						}
 					}
 					break;
 				case ASC100Package.STATUS_DATA:
 					//图片传输数据，不需要转义数据里面的. 0xFF,0xFE等字符。
-					if (inBuffer.cmd == 0x06 && inBuffer.len > 0){
+					if (inBuffer.cmd == 0x06 && inBuffer.len > 0 && false){
 						inBuffer.inBuffer.put(buffer);
 					}else if(inBuffer.escaped){ //正在读一个转义字符。
 						cur = buffer.get();
@@ -357,7 +367,7 @@ public class ASC100Client {
 		byte cmd = 0;
 		switch(channel){
 			case 1: cmd = 0x02; break;
-			case 2: cmd = 0x02; break;
+			case 2: cmd = 0x03; break;
 			case 3: cmd = 0x07; break;
 			case 4: cmd = 0x08; break;
 		}
