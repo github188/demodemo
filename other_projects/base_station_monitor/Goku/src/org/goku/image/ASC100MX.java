@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,6 +108,8 @@ public class ASC100MX implements Runnable{
 				readBuffer.flip();
 				log.info(String.format("Recevive from MX %s, size %s", client.toString(), readBuffer.remaining()));
 				this.process(client, readBuffer);
+			}catch(AsynchronousCloseException ex){
+				log.error("The UDP channel is closed.");
 			} catch (Exception ex) {
 				log.error("Process Error:" + ex.toString(), ex);
 			}
@@ -197,11 +200,13 @@ public class ASC100MX implements Runnable{
 		}else if(cmd == 0x00){
 			ByteBuffer tmp = ByteBuffer.allocate(data.limit()); 
 			tmp.put(data);
+			tmp.flip();
 			
 			ByteBuffer copy = tmp.duplicate();
 			copy.get();
 			int order = unsignedShort(copy);
 			String ipAddr = client.getAddress().getHostAddress();
+			log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
 			IncomeQueue queue = this.mxIncomeQueue.get(ipAddr);
 			if(queue == null){
 				queue = new IncomeQueue();

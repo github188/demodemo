@@ -21,8 +21,7 @@ public class TestASC100MX {
 	Mockery context = null;
 	
 	/**
-	 * 注册一个Client,收到一个简单的串口数据后。Client可以收到需要处理的数据。
-	 * 
+	 * JMock使用的一个Demo. 
 	 */
 	@Test
 	public void testDemoJmock2(){
@@ -40,18 +39,27 @@ public class TestASC100MX {
 	
 	/**
 	 * 注册一个Client,收到一个简单的串口数据后。Client可以收到需要处理的数据。
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * 
 	 */
 	@Test
-	public void testRoutingToASC100Client(){
+	public void testRoutingToASC100Client() throws Exception{
 		final ASC100Client client = context.mock(ASC100Client.class);
 		context.checking(new Expectations() {{			 
-			 oneOf(client).getSrId(); will(returnValue("ea.12.1"));
-			 oneOf(client).getClientId(); will(returnValue("ea.12"));
+			 allowing(client).getSrId(); will(returnValue("ea.12"));
+			 allowing(client).getClientId(); will(returnValue("ea.12.1"));
+			 allowing(client).defaultMx(); will(returnValue("127.0.0.1"));
+			 allowing(client).setASC100MX(with(any(ASC100MX.class)));
+			 oneOf(client).process(with(any(ByteBuffer.class)));
 		}});
+		testObj.register(client);
+		threadPool.execute(testObj);
+		//等待服务端启动。
+		Thread.sleep(100);
 		
-		client.getSrId();
-		client.getClientId();
+		this.sendUPDPackage(6001, new byte[]{0, 1, 10, 0, 0x12, (byte)0xea, 1, 0, 2, 0, (byte)0xff, 1});
+		Thread.sleep(100);
 				 
 		context.assertIsSatisfied();
 	}
