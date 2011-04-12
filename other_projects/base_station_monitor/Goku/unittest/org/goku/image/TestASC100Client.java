@@ -129,7 +129,7 @@ public class TestASC100Client {
 	
 	@Before
 	public void setup_TestASC100Client(){
-		System.out.println("xxx_setup...");
+		System.out.println("...test setup...");
 		packages = new ArrayList<ASC100Package>();
 		/**
 		 * 重载数据处理方法，跳过图片数据处理。
