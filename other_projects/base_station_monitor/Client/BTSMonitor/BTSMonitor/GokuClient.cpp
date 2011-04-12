@@ -560,7 +560,8 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 		pImage->getImageText(line);
 		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
 		pImage->decodeImageData(line);
-
+		CString filename="1.jpg";
+		pImage->savedata(filename);
 		return pImage;
 	}
 }

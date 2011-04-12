@@ -2,6 +2,9 @@
 #include "MonitorImage.h"
 #include "util.h"
 #include "base64.h"
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 void MonitorImage::getImageText(CString &line)
 {
@@ -21,4 +24,11 @@ void MonitorImage::decodeImageData(CString &base64line)
 	int len=util::str2int(lenth);
 	data=new char[3017];
 	DecodeBase64(base64line.GetBuffer(), data);
+}
+
+void MonitorImage::savedata(CString &filename)
+{
+	ofstream ofs(filename, ios::binary|ios::out);
+	ofs.write(data, 3017);
+	ofs.close();
 }

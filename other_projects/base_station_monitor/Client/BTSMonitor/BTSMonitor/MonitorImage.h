@@ -27,6 +27,7 @@ public:
 
 	void getImageText(CString &line);
 	void decodeImageData(CString &base64line);
+	void savedata(CString &filename);
 };
 
 #endif
