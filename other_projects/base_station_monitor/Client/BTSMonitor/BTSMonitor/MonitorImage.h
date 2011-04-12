@@ -2,6 +2,7 @@
 #define MONITOR_IMAGE_H
 
 #include "util.h"
+#include "SimpleSocket.h"
 
 class MonitorImage
 {
@@ -16,6 +17,8 @@ class MonitorImage
 	char* data;
 
 public:
+	CSimpleSocket *mSock;
+
 	void getSessionFromLine(CString line)
 	{
 		int pos=0;
@@ -28,6 +31,7 @@ public:
 	void getImageText(CString &line);
 	void decodeImageData(CString &base64line);
 	void savedata(CString &filename);
+	void getNextImage();
 };
 
 #endif

@@ -537,6 +537,7 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
 	if(imageSock->connect_server()>0)
 	{
+		pImage->mSock=imageSock;
 		CString sCmd;
 		sCmd.Append("img>alarm_image?");
 		sCmd.Append("alarmId=");

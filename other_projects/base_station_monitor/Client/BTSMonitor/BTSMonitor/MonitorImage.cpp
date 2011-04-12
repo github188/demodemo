@@ -32,3 +32,8 @@ void MonitorImage::savedata(CString &filename)
 	ofs.write(data, 3017);
 	ofs.close();
 }
+
+void MonitorImage::getNextImage()
+{
+	
+}
