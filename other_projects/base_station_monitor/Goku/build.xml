@@ -100,7 +100,7 @@
     </target>       
          
     <target name="test" depends="compile-test">
-         <junit printsummary="yes" haltonfailure="yes" fork="true" newenvironment="true">
+         <junit printsummary="yes" haltonfailure="no" fork="true" newenvironment="true">
            <classpath>
            	<!-- Can't use singed jar -->
               <pathelement location="${build.dir}/lib/${name}-${version}.jar"/>

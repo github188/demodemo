@@ -1,6 +1,7 @@
 package org.goku.image;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ImageInfo {
@@ -44,11 +45,12 @@ public class ImageInfo {
 	public int recieveData(int frame, ByteBuffer data){
 		if(frame == 1){
 			this.frameSize = data.remaining();			
-		}
+		}		
 		
 		if(buffer != null){
 			buffer.position((frame - 1) * this.frameSize);
 			buffer.put(data);
+			ack[frame -1] = 1;
 		}
 		
 		return frame;
@@ -56,10 +58,25 @@ public class ImageInfo {
 	
 	
 	public int[] getReTryFrames(){
-		return null;
+		int[] frames = new int[ack.length];
+		int next = 0;
+		for(int i = 1; i <= ack.length; i++){
+			if(ack[i-1] == 0){
+				frames[next++] = i;
+			}
+		}
+		
+		int[] r = new int[next];
+		System.arraycopy(frames, 0, r, 0, r.length);		
+		return r;
 	}
 	
 	public boolean haveMoreData(){
+		for(int i = 1; i < ack.length; i++){
+			if(ack[i-1] == 0){
+				return true;
+			}
+		}
 		return false;
 	}
 }

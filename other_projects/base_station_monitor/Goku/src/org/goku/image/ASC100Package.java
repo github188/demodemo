@@ -38,13 +38,15 @@ public class ASC100Package {
 	 * 当前是否正读到一个escaped;
 	 */
 	public boolean escaped = false;
+	public boolean autoEscaped = true;
 	
 	public void clear(){
-		this.status = STATUS_INIT;
+		this.status = STATUS_CMD;
 		this.cmd = 0;
 		this.len = -1;
-		checkSum = 0;
-		bufferCheckSum = 0;
+		this.autoEscaped = true;
+		this.checkSum = 0;
+		this.bufferCheckSum = 0;
 		this.paddingIndex = 0;
 		inBuffer.clear();
 	}

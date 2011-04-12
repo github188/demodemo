@@ -81,14 +81,13 @@ public class TestASC100MX {
 		 * 简单序列，取结束后为空。 
 		 */
 		queue.put(1, b1);
-		ByteBuffer t = queue.getNext();
-		assertEquals(t.limit(), 1);
+		assertEquals(queue.getNext().limit(), 1);
 		assertEquals(queue.getNext(), null);
 
 		queue = new IncomeQueue();
 		queue.put(1, b1);
 		queue.put(3, b3);
-		assertEquals(t.limit(), 1);
+		assertEquals(queue.getNext().limit(), 1);
 		//2号不存在。
 		assertEquals(queue.getNext(), null);
 		
@@ -100,9 +99,7 @@ public class TestASC100MX {
 		
 		//4号正确序列
 		queue.put(4, b4);
-		assertEquals(queue.getNext().limit(), 3);
-
-		
+		assertEquals(queue.getNext().limit(), 4);
 	}
 	
 	

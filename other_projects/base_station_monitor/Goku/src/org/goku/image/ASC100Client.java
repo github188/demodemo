@@ -19,6 +19,7 @@ public class ASC100Client {
 	public BaseStation info = null;
 	public Collection<ImageClientListener> ls = Collections.synchronizedCollection(new ArrayList<ImageClientListener>());
 	public long lastActive = 0;
+	public ASC100Package inBuffer = new ASC100Package();
 
 	private Log log = null;
 	private ASC100MX mx = null;
@@ -27,7 +28,7 @@ public class ASC100Client {
 	private String defaultMx = null;
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private ImageInfo image = null;
-	private ASC100Package inBuffer = new ASC100Package();
+	private byte lastCmd = 0;
 	
 	
 	public ASC100Client(String location){
@@ -60,38 +61,36 @@ public class ASC100Client {
 	public void process(ByteBuffer buffer){
 		//当前数据包处理状态。
 		byte cur = 0;
+		//autoEscaped
+		
 		while(buffer.hasRemaining()){
-			//log.info("current status:" + inBuffer.status);
-			if(inBuffer.paddingIndex > 3) {
-				log.info("current status:" + inBuffer.status);
-				System.exit(1);
+			cur = buffer.get();
+			//数据需要转义处理。
+			if(inBuffer.autoEscaped){
+				if(cur == (byte)0xFF ||cur == (byte)0xFE){
+					inBuffer.clear();
+					continue;
+				}else if(cur == (byte)0xFD){
+					inBuffer.escaped = true;
+					continue;
+				}else if(inBuffer.escaped){
+					cur = (byte)(0xfd + cur);
+					inBuffer.escaped = false;
+				}
 			}
 			switch(inBuffer.status){
-				case ASC100Package.STATUS_INIT:
-					if(buffer.get() == (byte)0xFF){
-						inBuffer.status = ASC100Package.STATUS_CMD;
-					}
-					break;
 				case ASC100Package.STATUS_CMD:
-					inBuffer.cmd = buffer.get();
+					inBuffer.cmd = cur;
 					inBuffer.status = ASC100Package.STATUS_LENGTH;
 					inBuffer.paddingIndex = 0;
+					//图片数据不需要转义。
+					if(inBuffer.cmd == 0x06){
+						inBuffer.autoEscaped = false;
+					}
 					break;
 				case ASC100Package.STATUS_LENGTH:
-					if(inBuffer.escaped){ //正在读一个转义字符。
-						cur = buffer.get();
-						inBuffer.padding[inBuffer.paddingIndex++] = (byte)(0xfd + cur);
-						inBuffer.escaped = false;
-					}else {
-						cur = buffer.get();
-						if(cur == (byte)0xfd){
-							inBuffer.escaped = true;
-						}else if(cur == (byte)0xfe){
-							inBuffer.clear();
-							eventProxy.connectionError(new ImageClientEvent(this));
-						}else {
-							inBuffer.padding[inBuffer.paddingIndex++] = cur;
-						}
+					if(inBuffer.paddingIndex < 2){
+						inBuffer.padding[inBuffer.paddingIndex++] = cur;
 					}
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.len = ((inBuffer.padding[1] << 8) | 0x00ff) & 
@@ -110,71 +109,31 @@ public class ASC100Client {
 					break;
 				case ASC100Package.STATUS_DATA:
 					//图片传输数据，不需要转义数据里面的. 0xFF,0xFE等字符。
-					if (inBuffer.cmd == 0x06 && inBuffer.len > 0 && false){
-						inBuffer.inBuffer.put(buffer);
-					}else if(inBuffer.escaped){ //正在读一个转义字符。
-						cur = buffer.get();
-						inBuffer.inBuffer.put((byte)(0xfd + cur));
-						inBuffer.escaped = false;
-					}else {
-						cur = buffer.get();
-						if(cur == (byte)0xfd){
-							inBuffer.escaped = true;
-						}else if(cur == (byte)0xfe){
-							inBuffer.clear();
-							eventProxy.connectionError(new ImageClientEvent(this));
-						}else {
-							inBuffer.inBuffer.put(cur);
-						}
-					}
+					inBuffer.inBuffer.put(cur);
 					if(!inBuffer.inBuffer.hasRemaining()){
 						inBuffer.inBuffer.flip();
 						inBuffer.status = ASC100Package.STATUS_CHECKSUM;
+						inBuffer.paddingIndex = 0;
 					}
 					break;
 				case ASC100Package.STATUS_CHECKSUM:
-					if(inBuffer.escaped){ //正在读一个转义字符。
-						cur = buffer.get();
-						inBuffer.padding[inBuffer.paddingIndex++] = (byte)(0xfd + cur);
-						inBuffer.escaped = false;
-					}else {
-						cur = buffer.get();
-						if(cur == (byte)0xfd){
-							inBuffer.escaped = true;
-						}else if(cur == (byte)0xfe){
-							inBuffer.clear();
-							eventProxy.connectionError(new ImageClientEvent(this));
-						}else {
-							inBuffer.padding[inBuffer.paddingIndex++] = cur;
-						}
-					}	
+					if(inBuffer.paddingIndex < 2){
+						inBuffer.padding[inBuffer.paddingIndex++] = cur;
+					}
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.checkSum =  (short)(((inBuffer.padding[1] << 8) | 0x00ff) & 
 		 			    					          (inBuffer.padding[0]       | 0xff00));
-						//inBuffer.inBuffer.flip();
-						//ByteBuffer tmp = inBuffer.inBuffer.asReadOnlyBuffer();
-						//tmp.get();
 						inBuffer.bufferCheckSum = getCheckSum(
 								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)(inBuffer.len >> 8 & 0xff)},
 								inBuffer.inBuffer.asReadOnlyBuffer());
 						processData(inBuffer);
 						inBuffer.status = ASC100Package.STATUS_END;
 						inBuffer.paddingIndex = 0;
+						//无论是否在传图片数据，读到一个包结束始终进入转义状态。
+						inBuffer.autoEscaped = true;
 					}
 					break;
-				case ASC100Package.STATUS_END:
-					if(buffer.get() == (byte)0xFE){
-						inBuffer.clear();						
-					}else if(buffer.get() == (byte)0xFF){
-						inBuffer.clear();
-						inBuffer.status = ASC100Package.STATUS_CMD;
-					}
-					
-					break;
-				default:
-					log.warn("Invalid package status:%s" + ASC100Package.STATUS_END);
-					inBuffer.clear();
-			}			
+			}
 		}
 		
 		//报告设备处于活动状态。
@@ -221,6 +180,7 @@ public class ASC100Client {
 		temp.putShort(checkSum);
 		temp.flip();
 		
+		this.lastCmd = cmd;
 		synchronized(outBuffer){
 			outBuffer.clear();
 			outBuffer.put((byte)0xff);
@@ -276,11 +236,9 @@ public class ASC100Client {
 
 	
 	private void processImageData(ByteBuffer inBuffer) throws IOException{
-		int count = inBuffer.getShort();
-		int curFrame = inBuffer.getShort();
-		int len = inBuffer.getShort();
-		int tem = inBuffer.get();
-		len += (tem << 24);
+		int count = ASC100MX.unsignedShort(inBuffer); // inBuffer.getShort();
+		int curFrame = ASC100MX.unsignedShort(inBuffer);
+		int len = ASC100MX.unsignedShort3(inBuffer);
 				
 		if(curFrame == 0){
 			inBuffer.getShort();
@@ -290,9 +248,7 @@ public class ASC100Client {
 			image.imageStatus = inBuffer.get();
 			image.channel = inBuffer.get();
 			
-			int xxLen = inBuffer.getShort();
-			tem = inBuffer.get();
-			len += (tem << 24);
+			int xxLen = ASC100MX.unsignedShort3(inBuffer); //inBuffer.getShort();
 			if(len != xxLen){
 				log.error(String.format("The picture length error, %s(head) != %s(picdata)", len, xxLen));
 			}
@@ -300,7 +256,7 @@ public class ASC100Client {
 			image.zipRate = inBuffer.get();
 			this.sendCommand((byte)0x21, new byte[]{});
 		}else if (image != null){
-			int paddingLen = inBuffer.getShort();
+			int paddingLen = ASC100MX.unsignedShort(inBuffer);
 			if(paddingLen == inBuffer.remaining()){
 				image.recieveData(curFrame, inBuffer);
 			}else {
