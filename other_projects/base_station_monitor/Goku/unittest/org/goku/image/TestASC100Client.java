@@ -136,8 +136,12 @@ public class TestASC100Client {
 		 */
 		testClient = new ASC100Client("12.34.1"){
 			public void processData(ASC100Package data){
-				log.debug(String.format("process ASC100 message:0x%x, length:%s, remaining:%s", data.cmd, data.len, data.inBuffer.remaining()));
-				packages.add(data.copy());				
+				if(data.checkSum != data.bufferCheckSum){
+					log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
+				}else {
+					log.debug(String.format("process ASC100 message:0x%x, length:%s, remaining:%s", data.cmd, data.len, data.inBuffer.remaining()));
+					packages.add(data.copy());
+				}
 			}
 		};
 	}
