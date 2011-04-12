@@ -2,7 +2,7 @@ package org.goku.image;
 
 import java.nio.ByteBuffer;
 
-public class ASC100Package {
+public class ASC100Package implements Cloneable{
 	public static final int STATUS_INIT = 1;
 	public static final int STATUS_CMD = 2;
 	public static final int STATUS_LENGTH = 3;
@@ -49,5 +49,17 @@ public class ASC100Package {
 		this.bufferCheckSum = 0;
 		this.paddingIndex = 0;
 		inBuffer.clear();
+	}
+	
+	public ASC100Package copy(){
+		ASC100Package n = null;
+		try {
+			n = (ASC100Package)this.clone();
+			n.inBuffer = ByteBuffer.allocate(inBuffer.remaining());
+			n.inBuffer.put(inBuffer.asReadOnlyBuffer());
+			n.inBuffer.flip();
+		} catch (CloneNotSupportedException e) {
+		}
+		return n;
 	}
 }

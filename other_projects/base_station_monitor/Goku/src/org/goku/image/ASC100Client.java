@@ -21,7 +21,7 @@ public class ASC100Client {
 	public long lastActive = 0;
 	public ASC100Package inBuffer = new ASC100Package();
 
-	private Log log = null;
+	protected Log log = null;
 	private ASC100MX mx = null;
 	private String srId = "";
 	private String channel = "";
@@ -219,17 +219,17 @@ public class ASC100Client {
 		if(data.checkSum != data.bufferCheckSum){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 		}else {
-			log.debug(String.format("Client command:0x%x, length:%s", data.cmd, data.len));
-			if(data.cmd == 0x00){
-				eventProxy.notFoundImage(new ImageClientEvent(this));
-			}else if(data.cmd == 0x06){
+			log.debug(String.format("process ASC100 message:0x%x, length:%s, remaining:%s", data.cmd, data.len, data.inBuffer.remaining()));
+			if(data.cmd == 0x06){
 				try {
 					processImageData(data.inBuffer);
 				} catch (IOException e) {
 					log.error(e.toString(), e);
 				}
-			}else{
-				log.debug(String.format("Drop unkown command:0x, length:%s", data.cmd, data.len));
+			}else {
+				ImageClientEvent event = new ImageClientEvent(this);
+				event.data = data;
+				this.eventProxy.message(event);
 			}
 		}
 	}
