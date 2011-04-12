@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\base64.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BTSInfo.cpp"
 				>
 			</File>
@@ -254,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\MainFrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MonitorImage.cpp"
 				>
 			</File>
 			<File
@@ -347,6 +355,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\base64.h"
+				>
+			</File>
+			<File
 				RelativePath=".\BTSInfo.h"
 				>
 			</File>
@@ -408,6 +420,10 @@
 			</File>
 			<File
 				RelativePath=".\MainFrm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MonitorImage.h"
 				>
 			</File>
 			<File

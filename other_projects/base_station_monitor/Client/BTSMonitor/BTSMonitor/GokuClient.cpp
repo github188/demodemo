@@ -499,3 +499,68 @@ bool GokuClient::Stop_Play(int nVideoID)
 	return bRet;
 }
 
+MonitorImage* GokuClient::getRealImage(CString btsid, CString channelid)
+{
+	MonitorImage *pImage=new MonitorImage();
+	CString ip;
+	int pos=util::split_next(host, ip, ':',0);
+	ip.Append(":");
+	ip.Append("8083");
+
+	GokuSocket *imageSock=new GokuSocket(ip, ip);
+	if(imageSock->connect_server()>0)
+	{
+		CString sCmd;
+		sCmd.Append("img>real_image?");
+		sCmd.Append("baseStation=");
+		sCmd.Append(btsid);
+		sCmd.Append("&");
+		sCmd.Append("channel=");
+		sCmd.Append(channelid);
+		sCmd.Append("&");
+		sCmd.Append("encode=raw\n");
+		
+		CString sMsg;
+		if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+			return false;
+	}
+}
+
+MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
+{
+	MonitorImage *pImage=new MonitorImage();
+	CString ip;
+	int pos=util::split_next(host, ip, ':',0);
+	ip.Append(":");
+	ip.Append("8003");
+
+	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
+	if(imageSock->connect_server()>0)
+	{
+		CString sCmd;
+		sCmd.Append("img>alarm_image?");
+		sCmd.Append("alarmId=");
+		sCmd.Append(alarmID);
+		sCmd.Append("\n");
+		//sCmd.Append("&");
+		//sCmd.Append("encode=raw\n");
+		
+		CString sMsg;
+		if ( !imageSock->SendCmdAndRecvMsg(sCmd,sMsg) )
+			return NULL;
+		CString line;
+		int ileft=0, iright=0, ipos=0;
+		ipos=sMsg.Find('\n', ileft);
+		line=sMsg.Mid(ileft, ipos-ileft+1);
+		//get the session.
+		pImage->getSessionFromLine(line);
+		ileft=ipos;
+		ipos=sMsg.Find('\n', ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft+1);
+		pImage->getImageText(line);
+		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
+		pImage->decodeImageData(line);
+
+		return pImage;
+	}
+}

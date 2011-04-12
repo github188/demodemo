@@ -157,6 +157,7 @@ void CLoginDlg::OnBnClickedOk()
 			m_fSaveInfo.Close();
 
 			//
+			pApp->pgkclient->getAlarmImagebyBase64("100401");
 			OnOK();
 		}
 		else

@@ -4,6 +4,7 @@
 #include "BTSManager.h"
 #include "AlarmManager.h"
 #include "VideoPlayControl.h"
+#include "MonitorImage.h"
 
 class GokuClient{
 	CString buffer;
@@ -20,6 +21,7 @@ public:
 	GokuClient(CString &primary_server, CString &secondary_server)
 	{
 		int i=0;
+		host=primary_server;
 		for (; i<cnMAX_VV; i++)
 		{
 			m_pPlayThread[i]=NULL;
@@ -136,8 +138,11 @@ public:
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
+	MonitorImage* getRealImage(CString btsid, CString channelid);
+	MonitorImage* getAlarmImagebyBase64(CString alarmID);
 protected:
 	int execute_command(CString &cmd);
+	CString host;
 	CString m_sUserName;
 	CString m_sPassword;
 	int		m_nSid;
