@@ -1,8 +1,11 @@
 package org.goku.image;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -226,6 +229,10 @@ public class ASC100MX implements Runnable{
 				queue = new IncomeQueue();
 				this.mxIncomeQueue.put(ipAddr, queue);
 			}
+			//如果下一个序号为0，自动复位数据。表示一个新的会话开始。
+			if(order == 0){
+				queue.next_index = -1;
+			}
 			log.debug("put:" + order);
 			queue.put(order, tmp);
 			
@@ -405,6 +412,13 @@ public class ASC100MX implements Runnable{
 			@Override
 			public void recevieImageOK(ImageClientEvent event) {
 				System.out.println("recevieImageOK");
+				try {
+					FileOutputStream picOs = new FileOutputStream(new File("temp.jpg"));
+					picOs.getChannel().write(event.image.buffer);
+					picOs.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override

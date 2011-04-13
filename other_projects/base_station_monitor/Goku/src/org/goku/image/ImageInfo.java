@@ -19,6 +19,8 @@ public class ImageInfo {
 	public int channel = 0;
 	public ByteBuffer buffer = null;
 	public Date generateDate = null;
+	public int waitingFrames = 0;
+	public int reTry = 0;
 	
 	//图片分片总数
 	private int frameCount = 0;	
@@ -26,7 +28,7 @@ public class ImageInfo {
 	
 	public void setFameCount(int count){
 		this.frameCount = count;
-		ack = new byte[count];
+		ack = new byte[count -1 ];
 	}
 	
 	public int getFrameCount(){
@@ -60,9 +62,9 @@ public class ImageInfo {
 	public int[] getReTryFrames(){
 		int[] frames = new int[ack.length];
 		int next = 0;
-		for(int i = 1; i <= ack.length; i++){
-			if(ack[i-1] == 0){
-				frames[next++] = i;
+		for(int i = 0; i < ack.length; i++){
+			if(ack[i] == 0){
+				frames[next++] = i+1;
 			}
 		}
 		
@@ -72,7 +74,7 @@ public class ImageInfo {
 	}
 	
 	public boolean haveMoreData(){
-		for(int i = 1; i < ack.length; i++){
+		for(int i = 1; i <= ack.length; i++){
 			if(ack[i-1] == 0){
 				return true;
 			}

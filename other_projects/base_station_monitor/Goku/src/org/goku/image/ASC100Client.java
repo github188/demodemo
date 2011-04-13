@@ -22,7 +22,7 @@ public class ASC100Client {
 	public ASC100Package inBuffer = new ASC100Package();
 
 	protected Log log = null;
-	private ASC100MX mx = null;
+	protected ASC100MX mx = null;
 	private String srId = "";
 	private String channel = "";
 	private String defaultMx = null;
@@ -130,7 +130,11 @@ public class ASC100Client {
 							inBuffer.inBuffer.clear();
 							inBuffer.inBuffer.limit(inBuffer.len);
 							inBuffer.status = ASC100Package.STATUS_DATA;
-							inBuffer.paddingIndex = 0;							
+							inBuffer.paddingIndex = 0;
+							if(inBuffer.cmd == 0x06 && this.image != null && inBuffer.len > 24){
+								inBuffer.inBuffer.limit(inBuffer.len -2);
+								log.debug("read image data length:" +inBuffer.len);
+							}							
 						}else {
 							log.debug(String.format("Error length data:%s, b1:0x%x, b2:0x%x", inBuffer.len, inBuffer.padding[0], inBuffer.padding[1]));
 							inBuffer.clear();
@@ -254,6 +258,9 @@ public class ASC100Client {
 	public void processData(ASC100Package data){
 		if(data.checkSum != data.bufferCheckSum){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
+			if(data.cmd == 0x06 && image != null){
+				image.waitingFrames--;
+			}
 		}else {
 			log.debug(String.format("process ASC100 message:0x%x, length:%s, remaining:%s", data.cmd, data.len, data.inBuffer.remaining()));
 			if(data.cmd == 0x06){
@@ -292,18 +299,21 @@ public class ASC100Client {
 			image.zipRate = inBuffer.get();
 			log.debug(String.format("Image info ch:%s, status:%s, imageSize:%s, zipRate:%s, len:%s, frames:%s",
 					image.channel, image.imageStatus, image.imageSize, image.zipRate, len, count));
-			this.sendCommand((byte)0x21, new byte[]{});
+			image.waitingFrames = count -1;
+			this.sendCommand((byte)0x21, new byte[]{});			
 		}else if (image != null){
 			int paddingLen = ASC100MX.unsignedShort(inBuffer);
+			image.waitingFrames--;
 			if(paddingLen == inBuffer.remaining()){
-				log.debug(String.format("Image recieve frame:%s# size:%s", curFrame, inBuffer.remaining()));				
+				log.debug(String.format("Image recieve frame:%s# size:%s, count:%s, remaining:%s", curFrame, inBuffer.remaining(), count, image.waitingFrames));				
 				image.recieveData(curFrame, inBuffer);
 			}else {
 				log.error(String.format("The picture data error, %s(remaining) != %s(buffer)", paddingLen, inBuffer.remaining()));				
 			}
-			if(!image.haveMoreData()){
+			if(image.waitingFrames <= 0){
 				int[] retry = image.getReTryFrames();
-				if(retry == null){
+				image.waitingFrames = retry.length;			
+				if(retry == null || retry.length == 0){
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
 					ImageClientEvent event = new ImageClientEvent(this);
@@ -320,6 +330,11 @@ public class ASC100Client {
 	}
 	
 	private void sendRetryFrame(int[] frames) throws IOException{
+		String tmp = "";
+		for(int i : frames) {
+			tmp += " " + i;
+		}
+		log.debug("sendRetryFrame:" + tmp);
 		outBuffer.clear();
 		outBuffer.putShort((short)frames.length);
 		for(int i: frames){

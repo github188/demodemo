@@ -64,6 +64,7 @@
             	<zipfileset src="libs/log4j-1.2.16.jar"/>  
             	<zipfileset src="libs/slf4j-api-1.6.1.jar"/>  
             	<zipfileset src="libs/slf4j-log4j12-1.6.1.jar"/>  
+            	<zipfileset src="libs/comm.jar"/>  
 			</jar>
     		<signjar destDir="${dist.dir}"
     		    alias="Goku" keystore="test_key"
