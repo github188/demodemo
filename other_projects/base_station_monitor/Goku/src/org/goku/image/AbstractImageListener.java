@@ -16,4 +16,7 @@ public class AbstractImageListener implements ImageClientListener{
 	
 	@Override
 	public void active(ImageClientEvent event) {};
+	
+	@Override
+	public void debugRawData(ImageClientEvent event) {};
 }

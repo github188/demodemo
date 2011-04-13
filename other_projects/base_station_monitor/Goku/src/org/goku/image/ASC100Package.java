@@ -17,7 +17,7 @@ public class ASC100Package implements Cloneable{
 	/**
 	 * 协议包的命令字。
 	 */
-	public int cmd = 0;
+	public byte cmd = 0;
 	/**
 	 * 数据包的长度。-1表示没有初始化
 	 */		

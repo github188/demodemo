@@ -30,5 +30,11 @@ public interface ImageClientListener {
 	 * @param event
 	 */
 	public void active(ImageClientEvent event);
+
+	/**
+	 * 测试用的没有解码的数据包。
+	 * @param event
+	 */
+	public void debugRawData(ImageClientEvent event);
 	
 }

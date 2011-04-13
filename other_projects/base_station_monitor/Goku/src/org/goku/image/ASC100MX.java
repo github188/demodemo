@@ -1,5 +1,7 @@
 package org.goku.image;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -104,13 +106,20 @@ public class ASC100MX implements Runnable{
 	    }
 	    
 	    log.info("Started UPD server at port " + this.localPort);
+	    long lastBenchmarkTime = System.currentTimeMillis();
+	    long readByte = 0;
 	    while (this.isRunning) {
 			try {
 				readBuffer.clear();
 				InetSocketAddress client = (InetSocketAddress)channel.receive(readBuffer);
 				if(client != null){
 					readBuffer.flip();
-					log.info(String.format("Recevive from MX %s, size %s", client.toString(), readBuffer.remaining()));
+					readByte += readBuffer.remaining();
+					if(System.currentTimeMillis() - lastBenchmarkTime > 1000){
+						log.info(String.format("Recevive from MX %s, Read speed %s B/S", client.toString(), readByte));
+						readByte = 0;
+						lastBenchmarkTime = System.currentTimeMillis();
+					}
 					this.process(client, readBuffer);
 				}
 			}catch(AsynchronousCloseException ex){
@@ -163,13 +172,13 @@ public class ASC100MX implements Runnable{
 			writeBuffer.put(data);
 			//更新limit的位置。
 			writeBuffer.flip();
-			
+			/*
 			ByteBuffer sub = writeBuffer.asReadOnlyBuffer();
 			sub.position(4);
 			writeBuffer.position(2);
-			writeBuffer.putShort(dataSumCheck(sub));
-			
+			writeBuffer.putShort(dataSumCheck(sub));			
 			writeBuffer.position(0);
+			*/
 			for(int i = 10; i > 0 && writeBuffer.hasRemaining(); i--){
 				channel.send(writeBuffer, addr);
 			}
@@ -211,17 +220,16 @@ public class ASC100MX implements Runnable{
 			copy.get();
 			int order = unsignedShort(copy);
 			String ipAddr = client.getAddress().getHostAddress();
-			log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
+			//log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
 			IncomeQueue queue = this.mxIncomeQueue.get(ipAddr);
 			if(queue == null){
 				queue = new IncomeQueue();
 				this.mxIncomeQueue.put(ipAddr, queue);
 			}
+			log.debug("put:" + order);
 			queue.put(order, tmp);
-			//开始在另一个线程处理
-			if(!this.inProcessing){
-				this.threadPool.execute(this.queueWorker);
-			}
+			
+			this.queueWorker.run();
 		}else {
 			log.info(String.format("Unkown package, Control data:0x%x.", cmd));
 		}
@@ -231,7 +239,7 @@ public class ASC100MX implements Runnable{
 		String channelId = String.format("%x.%x.%x", node1, node2, channel);
 		ASC100Client client = this.clientTable.get(channelId);
 		if(client != null){
-			log.info("Process data client:" + channelId + ", size:" + data.remaining());
+			//log.info("Process data client:" + channelId + ", size:" + data.remaining());
 			client.process(data);
 		}else {
 			log.debug("Unkown client id:" + channelId);
@@ -306,7 +314,8 @@ public class ASC100MX implements Runnable{
 				for(IncomeQueue q: qList){
 					for(ByteBuffer buff = q.getNext(); buff != null; buff = q.getNext()){
 						int count = buff.get();
-						buff.getShort(); //去掉UDP包序号。
+						int order = unsignedShort(buff); //去掉UDP包序号。
+						log.debug(String.format("--------------Process UPD #%s------------", order));
 						for(; count > 0; count--){
 							byte node2 = buff.get();
 							byte node1 = buff.get();
@@ -337,11 +346,12 @@ public class ASC100MX implements Runnable{
 		public int next_index = -1;
 		public long last_get_time = 0;
 		public int size = 0;
-		public ByteBuffer[] queue = new ByteBuffer[100];
+		//public ByteBuffer[] queue = new ByteBuffer[2000];
+		public Map<Integer, ByteBuffer> queue = new HashMap<Integer, ByteBuffer>();
 		
 		public void put(int order, ByteBuffer data){
-			queue[order % queue.length] = data;
-			if(next_index == -1) next_index = order % queue.length;
+			queue.put(order, data);
+			if(next_index == -1) next_index = order;
 			size++;
 			/*避免长时间没有收到数据包，中间突然来了一个间隔的包，作为超时读取处理。
 			 */
@@ -351,18 +361,16 @@ public class ASC100MX implements Runnable{
 		public ByteBuffer getNext(){
 			ByteBuffer d = null;
 			if(size <= 0) return null;
-			if(queue[next_index] != null){
-				d = queue[next_index];
-				queue[next_index] = null;
-				next_index = (next_index + 1) % queue.length;
+			if(queue.containsKey(next_index)){
+				d = queue.remove(next_index);
+				next_index = (next_index+1) % 65535;
 				last_get_time = System.currentTimeMillis();
-			}else if(System.currentTimeMillis() - last_get_time > 5000) { //超时等待，跳过丢失的包。
-				for(int i = queue.length; i > 0; i--){
-					next_index = (next_index + 1) % queue.length;
-					if(queue[next_index] != null) {
-						d = queue[next_index];
-						queue[next_index] = null;
-						next_index = (next_index + 1) % queue.length;
+			}else if(System.currentTimeMillis() - last_get_time > 1000) { //超时等待，跳过丢失的包。
+				for(int i = 10; i > 0; i--){
+					next_index = (next_index + 1) % 65535;
+					if(queue.containsKey(next_index)){
+						d = queue.remove(next_index);
+						next_index = (next_index+1) % 65535;
 						last_get_time = System.currentTimeMillis();
 						break;
 					}
@@ -373,11 +381,16 @@ public class ASC100MX implements Runnable{
 		}
 	}
 	
+	static int count = 0;
 	public static void main(String[] args) throws Exception{
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 10, 60, TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(5));
 		ASC100MX testObj = new ASC100MX(5001, 5004, threadPool);
 		threadPool.execute(testObj);
+		
+		final FileWriter writer = new FileWriter(new File("raw.log"));
+		//int count = 0;
+		writer.append("---------------------\n");
 		
 		Thread.sleep(1000);
 		
@@ -412,12 +425,36 @@ public class ASC100MX implements Runnable{
 			@Override
 			public void active(ImageClientEvent event) {
 				System.out.println("active");				
-			}});
+			}
+
+			@Override
+			public void debugRawData(ImageClientEvent event) {
+				while(event.raw.hasRemaining()){
+					try {
+						writer.append(String.format("%02X ", event.raw.get()));
+						count++;
+						if(count % 16 == 0){
+							writer.append("\n");
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					writer.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}}
+		
+		);
 		testObj.register(client);
-		client.getAlarmImage();
+		//client.getDateTime();
+		client.getRealImage(1);
+		//client.getAlarmImage();
 		
 		System.out.println("xxxx");
-		Thread.sleep(1000 * 60);
+		Thread.sleep(1000 * 120);
 		System.out.println("done.");
 	} 
 }
