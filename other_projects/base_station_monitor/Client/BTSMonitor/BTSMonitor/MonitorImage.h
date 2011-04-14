@@ -32,6 +32,22 @@ public:
 		data=NULL;
 	}
 
+	~MonitorImage()
+	{
+		width="";
+		height="";
+		datetime="";
+		lenth="";
+		bts="";
+		channel="";
+		session="";
+		status="";
+		if(data!=NULL)
+		{
+			delete[] data;
+		}
+	}
+
 	void getSessionFromLine(CString line)
 	{
 		int pos=0;
