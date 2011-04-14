@@ -176,7 +176,7 @@ public class DummyDataStorage extends DataStorage {
 		if(file.isFile()){
 			log.info("Loading db file:" + file.getAbsolutePath());
 			log.info("BS:<uuid>$<devType>$<groupName>$<IP:port>$<channels>$<location>$<name>");
-			log.info("RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>");
+			log.info("RE:<uuid>$<videoPath>$<alarmCode>$<baseStation>$<channelId>$<alarmStatus>$<alarmCategory>$<imgUUID>");
 			log.info("LO:<uuid>$<name>$<parent>");
 			log.info("TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>");
 			try {
@@ -231,6 +231,12 @@ public class DummyDataStorage extends DataStorage {
 						}
 						if(bsinfo.length > 5){
 							alarm.alarmStatus = bsinfo[5];
+						}
+						if(bsinfo.length > 6){
+							alarm.alarmCategory =bsinfo[6];
+						}
+						if(bsinfo.length > 7){
+							alarm.combineUuid =bsinfo[7];
 						}
 						alarmList.add(alarm);						
 					}else if(line.startsWith("LO:")){
@@ -314,12 +320,22 @@ public class DummyDataStorage extends DataStorage {
 			result.data.addAll(objects.get(cls)); // = new Vector();
 		}
 		Object val = param.param.get("lastUpdateTime__>=");
+		AlarmRecord alarm = null;
 		if(val != null){
-			AlarmRecord alarm = null;
 			long curTime = ((Date)val).getTime();
 			for(Iterator i = result.data.iterator(); i.hasNext();){
 				alarm = (AlarmRecord)i.next();
 				if(alarm.lastUpdateTime.getTime() < curTime){
+					i.remove();
+				}
+			}
+		}
+		//图片查询
+		Object img = param.param.get("combineUuid__=");
+		if(img != null){
+			for(Iterator i = result.data.iterator(); i.hasNext();){
+				alarm = (AlarmRecord)i.next();
+				if(alarm.combineUuid == null || !alarm.combineUuid.equals(img)){
 					i.remove();
 				}
 			}
