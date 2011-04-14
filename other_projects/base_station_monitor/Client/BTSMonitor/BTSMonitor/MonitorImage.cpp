@@ -34,6 +34,7 @@ void MonitorImage::savedata(CString &filename)
 {
 	ofstream ofs(filename, ios::binary|ios::out);
 	int len=util::str2int(lenth);
+	//int len=3017;
 	ofs.write(data, len);
 	ofs.close();
 }
@@ -51,7 +52,7 @@ bool MonitorImage::getNextImage()
 	line=sMsg.Mid(ileft, ipos-ileft+1);
 	ileft=ipos;
 	ipos=sMsg.Find('\n', ileft+1);
-	line=sMsg.Mid(ileft+1, ipos-ileft+1);
+	line=sMsg.Mid(ileft+1, ipos-ileft);
 	getImageText(line);
 	line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
 	decodeImageData(line);

@@ -19,6 +19,19 @@ class MonitorImage
 public:
 	CSimpleSocket *mSock;
 
+	MonitorImage()
+	{
+		width="";
+		height="";
+		datetime="";
+		lenth="";
+		bts="";
+		channel="";
+		session="";
+		status="";
+		data=NULL;
+	}
+
 	void getSessionFromLine(CString line)
 	{
 		int pos=0;

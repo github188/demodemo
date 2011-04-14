@@ -532,7 +532,8 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 	CString ip;
 	int pos=util::split_next(host, ip, ':',0);
 	ip.Append(":");
-	ip.Append("8003");
+	//ip.Append("8003");
+	ip.Append("8002");
 
 	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
 	if(imageSock->connect_server()>0)
@@ -557,7 +558,7 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 		pImage->getSessionFromLine(line);
 		ileft=ipos;
 		ipos=sMsg.Find('\n', ileft+1);
-		line=sMsg.Mid(ileft+1, ipos-ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft);
 		pImage->getImageText(line);
 		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
 		pImage->decodeImageData(line);

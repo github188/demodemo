@@ -25,6 +25,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 	///Receive all data ---------------------------------
 	int nTotalRead=0;
 	const int cnLF=0xA;
+	const int cnLD=0XD;
 	int  nRead=0;
 	BOOL bRead=TRUE;
 	int nSpace=0;
@@ -44,7 +45,7 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		nTotalRead+=nRead;
 		if (nRead>0 && nTotalRead>4)
 		{
-			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLF) )
+			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLD) )
 			{
 				bRead = FALSE;
 				break;
