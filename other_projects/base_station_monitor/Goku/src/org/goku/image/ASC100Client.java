@@ -266,7 +266,7 @@ public class ASC100Client {
 	
 	public void processData(ASC100Package data){
 		if(data.checkSum != data.bufferCheckSum && 
-				data.checkSum != data.bufferCheckSum - 256 //不知道为什么校验马经常相差256
+				(data.checkSum - data.bufferCheckSum) % 256 != 0 //不知道为什么校验马经常相差256
 		  ){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 			if(data.cmd == 0x06 && image != null){
