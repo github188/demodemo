@@ -70,7 +70,7 @@ public class DownloadChannel extends VideoChannel {
 			log.debug("download done");
 			this.writeChannel.close();
 			//this.writeChannel = null;
-			this.closeSocketChannel();
+			this.reconnectSocketChannel();
 		}else if(this.selectionKey == null){
 			this.writeChannel.close();
 			//this.writeChannel = null;
@@ -83,7 +83,8 @@ public class DownloadChannel extends VideoChannel {
 		}
 	}
 	
-	public void closeSocketChannel() throws IOException{
+	/*
+	public void reconnectSocketChannel() throws IOException{
 		log.info("Close " + this.toString());
 		if(this.writeChannel != null){
 			this.writeChannel.close();
@@ -94,13 +95,27 @@ public class DownloadChannel extends VideoChannel {
 			this.selectionKey.cancel();
 			//this.selectionKey = null;
 		}
-		this.client.handler.stopPlayVideo(this.file.channel);
-	}
+		//this.client.handler.stopPlayVideo(this.file.channel);
+	}*/
+	
+	public void closeVideoChannel() throws IOException{
+		log.info("Close " + this.toString());
+		if(this.writeChannel != null){
+			this.writeChannel.close();
+			this.writeChannel = null;
+		}
+		if(this.selectionKey != null){
+			this.selectionKey.channel().close();
+			this.selectionKey.cancel();
+			//this.selectionKey = null;
+		}
+		this.client.handler.stopPlayVideo(this.file.channel);	
+	}	
 	
 	/**
 	 * 保存数据流，不是些回Socket.
 	 */
-	public void writeDown(ByteBuffer src) {
+	public void saveVideoStream(ByteBuffer src) {
 		while(src.hasRemaining()){
 			try {
 				this.downSize += this.writeChannel.write(src);

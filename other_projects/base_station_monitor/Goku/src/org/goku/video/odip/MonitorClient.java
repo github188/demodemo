@@ -156,7 +156,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 						if(ch.videoChannel != null){
 							log.debug("Close timeouted video channel.");
 							try {
-								ch.videoChannel.closeSocketChannel();
+								ch.videoChannel.reconnectSocketChannel();
 							} catch (IOException e) {
 								log.debug(e.toString(), e);
 							}
@@ -259,7 +259,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 		MonitorChannel ch = info.getChannel(channel);
 		if(ch != null && ch.videoChannel != null){
 			try {
-				ch.videoChannel.closeSocketChannel();
+				ch.videoChannel.closeVideoChannel();
 			} catch (IOException e) {
 				log.error(e.toString(), e);
 			}

@@ -239,7 +239,7 @@ public class VideoRouteServer {
 				for(MonitorChannel ch : old.getChannels()){
 					if(ch.videoChannel != null){
 						try {
-							ch.videoChannel.closeSocketChannel();
+							ch.videoChannel.reconnectSocketChannel();
 						} catch (IOException e) {
 							log.error(e);
 						}

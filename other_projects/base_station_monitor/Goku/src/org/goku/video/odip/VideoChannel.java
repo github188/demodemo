@@ -1,8 +1,8 @@
 package org.goku.video.odip;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
@@ -11,7 +11,6 @@ import java.util.Queue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.MonitorChannel;
-import org.goku.socket.ChannelHandler;
 import org.goku.socket.NIOSocketChannel;
 import org.goku.socket.SelectionHandler;
 
@@ -118,7 +117,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 					}
 				}
 			}else if(readLen == -1){
-				this.closeSocketChannel();
+				this.reconnectSocketChannel();
 				break;
 			}else if(!buffer.hasRemaining()){
 				//如果当前缓冲区读满了，开始处理数据。
@@ -176,8 +175,9 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		//log.debug("wirte to DVR Video channel:" + src.remaining());
 		if(this.writeQueue.size() > 10){
 			try {
-				this.closeSocketChannel();
+				this.reconnectSocketChannel();
 			} catch (IOException e) {
+				log.error(e.toString());
 			}
 		}else if(this.writeQueue.offer(src)){
 			//如果当前Socket没有注册写操作.
@@ -198,8 +198,12 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		this.selectionKey = key;
 	}
 	
-	public void closeSocketChannel() throws IOException{
-		log.info("Close " + this.toString());
+	/**
+	 * 由于网络原因Socket出错，需要自动重连设备。
+	 * @throws IOException
+	 */
+	public void reconnectSocketChannel() throws IOException{
+		log.info("Close socket " + this.toString());
 		if(this.selectionKey != null){
 			this.selectionKey.channel().close();
 			this.selectionKey.cancel();
@@ -207,6 +211,22 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		if(this.channel != null){
 			this.channel.videoChannel = null;
 		}
+		this.client.realPlay(this.channel.id);
+	}
+	
+	/**
+	 * 关闭视频通道。
+	 * @throws IOException
+	 */
+	public void closeVideoChannel() throws IOException{
+		log.info("Close " + this.toString());
+		if(this.selectionKey != null){
+			this.selectionKey.channel().close();
+			this.selectionKey.cancel();
+		}
+		if(this.channel != null){
+			this.channel.videoChannel = null;
+		}		
 	}
 
 	@Override
@@ -214,7 +234,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		if(this.selectionKey.isReadable()){
 			int readLen = ((SocketChannel)this.selectionKey.channel()).read(buffer);
 			if(readLen == -1){
-				this.closeSocketChannel();
+				this.reconnectSocketChannel();
 			}else {
 				this.readSize += readLen;
 			}

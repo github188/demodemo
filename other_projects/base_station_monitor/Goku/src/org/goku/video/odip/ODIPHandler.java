@@ -424,14 +424,14 @@ public class ODIPHandler {
 		//int type = header.getByte(24);
 		//this.client.route.route(buffer, 20, channel);
 		if(socket instanceof DownloadChannel){
-			((DownloadChannel)socket).writeDown(buffer);
+			((DownloadChannel)socket).saveVideoStream(buffer);
 			if(header.externalLength == 0){
 				try {
-					((DownloadChannel)socket).closeSocketChannel();
+					((DownloadChannel)socket).closeVideoChannel();
 				} catch (IOException e) {
 					log.error(e.toString(), e);
 				}
-			}			
+			}
 		}
 	}
 	
