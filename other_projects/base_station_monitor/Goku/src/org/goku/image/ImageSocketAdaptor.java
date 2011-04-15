@@ -152,8 +152,10 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		InputStream in = new FileInputStream(alarm.absPath);
 		in.read(data);
 		in.close();		
-		String meta = String.format("size:%s$time:%s$length:%s$base:%s$ch:%s$status:$%s",
-				size, date, data.length, alarm.baseStation, alarm.channelId, alarm.alarmStatus);
+		//String meta = String.format("size:%s$time:%s$length:%s$base:%s$ch:%s$status:$%s",
+		//		size, date, data.length, alarm.baseStation, alarm.channelId, alarm.alarmStatus);
+		String meta = String.format("%s$%s$%s$%s$%s$$%s",
+				size.replace('*', '$'), date, data.length, alarm.baseStation, alarm.channelId, alarm.alarmStatus);		
 		log.debug("image file:" + meta);
 		out.println(meta);
 		out.println(data, encode);
