@@ -203,7 +203,7 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 	 * @throws IOException
 	 */
 	public void reconnectSocketChannel() throws IOException{
-		log.info("Close socket " + this.toString());
+		log.info("Reconnect video channel " + this.toString());
 		if(this.selectionKey != null){
 			this.selectionKey.channel().close();
 			this.selectionKey.cancel();
