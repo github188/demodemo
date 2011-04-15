@@ -84,20 +84,22 @@ public class UDP232Client extends ASC100Client implements Runnable {
 	public void process(ByteBuffer buffer){
 		byte[] data = new byte[buffer.remaining()];		
 		buffer.get(data);
-		try {
-			String logBuffer = "\n<--";
-			for(byte b: data){
-				logBuffer += String.format("%02X ", b);
+		synchronized(os){
+			try {
+				String logBuffer = "\n<--";
+				for(byte b: data){
+					logBuffer += String.format("%02X ", b);
+				}
+				logBuffer += "-->\n";
+				rawLog.append(logBuffer);
+				rawLog.flush();
+				log.info("write:" + logBuffer);
+				
+				os.write(data);
+				os.flush();
+			} catch (IOException e) {
+				log.error(e.toString(), e);
 			}
-			logBuffer += "-->\n";
-			rawLog.append(logBuffer);
-			rawLog.flush();
-			log.info("write:" + logBuffer);
-			
-			os.write(data);
-			os.flush();
-		} catch (IOException e) {
-			log.error(e.toString(), e);
 		}
 	}
 }

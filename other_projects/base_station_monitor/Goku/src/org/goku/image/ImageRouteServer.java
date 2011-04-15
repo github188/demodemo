@@ -34,6 +34,7 @@ public class ImageRouteServer {
 	public SocketManager socketManager = null;
 	public SimpleSocketServer socketServer = null;
 	public FileManager fileManager = null;
+	public int max_retry_times = 0;
 	private ThreadPoolExecutor threadPool = null; 
 	public String groupName = null;
 	
@@ -89,6 +90,7 @@ public class ImageRouteServer {
 		localPort = settings.getInt(Settings.UDP_LOCAL_PORT, 0);
 		remotePort = settings.getInt(Settings.UDP_REMOTE_PORT, 0);		
 		log.info(String.format("MX remote UDP port:%s, local UDP:%s", remotePort, localPort));		
+		log.info("Max retry times:" + max_retry_times);
 		mx = new ASC100MX(remotePort, localPort, threadPool);
 		threadPool.execute(mx);
 		
@@ -97,6 +99,9 @@ public class ImageRouteServer {
 		log.info("Starting alarm manager server...");
 		alarmManager = new AlarmMonitorCenter(threadPool);
 		threadPool.execute(alarmManager);
+		//this.alarmCheckPeriod = s.getInt(Settings.ALARM_CHECK_PERIOD, 3);
+		alarmManager.setAlarmCheckTime(settings.getInt(Settings.ALARM_CHECK_PERIOD, 10));
+		max_retry_times = settings.getInt("max_retry_times", 5);
 		
 		int port = settings.getInt(Settings.LISTEN_PORT, 8000);
 		socketServer = new SimpleSocketServer(socketManager, port);
@@ -145,6 +150,7 @@ public class ImageRouteServer {
 			this.alarmManager.addClient(client);
 			client.addListener(activeReport);
 			mx.register(client);
+			client.maxRetryTime = max_retry_times;
 			
 			return true;
 		}else if(station == null){

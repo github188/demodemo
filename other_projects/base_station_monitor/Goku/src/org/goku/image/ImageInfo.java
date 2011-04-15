@@ -18,7 +18,7 @@ public class ImageInfo {
 	public int zipRate = 0;
 	public int channel = 0;
 	public ByteBuffer buffer = null;
-	public Date generateDate = null;
+	public Date generateDate = new Date(System.currentTimeMillis());
 	public int waitingFrames = 0;
 	public int reTry = 0;
 	

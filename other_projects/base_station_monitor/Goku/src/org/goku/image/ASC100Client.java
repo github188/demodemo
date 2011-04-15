@@ -20,6 +20,8 @@ public class ASC100Client {
 	public Collection<ImageClientListener> ls = Collections.synchronizedCollection(new ArrayList<ImageClientListener>());
 	public long lastActive = 0;
 	public ASC100Package inBuffer = new ASC100Package();
+	public ImageInfo image = null;
+	public int maxRetryTime = 5;
 
 	protected Log log = null;
 	protected ASC100MX mx = null;
@@ -27,7 +29,6 @@ public class ASC100Client {
 	private String channel = "";
 	private String defaultMx = null;
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
-	private ImageInfo image = null;
 	private byte lastCmd = 0;
 	private long readCount = 0;
 	private long lastBenchTime = 0;
@@ -65,6 +66,8 @@ public class ASC100Client {
 		readCount += buffer.remaining();
 		if(System.currentTimeMillis() - this.lastBenchTime > 1000){
 			log.debug(String.format("Read %s byte in %1.2f", readCount, (System.currentTimeMillis() - this.lastBenchTime) / 1000.0));
+			this.lastBenchTime = System.currentTimeMillis();
+			readCount = 0;
 		}
 		ImageClientEvent event = new ImageClientEvent(this);
 		event.raw = buffer.asReadOnlyBuffer();
@@ -116,7 +119,7 @@ public class ASC100Client {
 						inBuffer.autoEscaped = false;
 					}
 					
-					log.debug(String.format("Reading cmd:%x, ", inBuffer.cmd));
+					//log.debug(String.format("Reading cmd:%x, ", inBuffer.cmd));
 					break;
 				case ASC100Package.STATUS_LENGTH:
 					if(inBuffer.paddingIndex < 2){
@@ -159,8 +162,9 @@ public class ASC100Client {
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.checkSum =  (short)(((inBuffer.padding[1] << 8) | 0x00ff) & 
 		 			    					          (inBuffer.padding[0]       | 0xff00));
+						log.debug(String.format("read checkSum:0x%x 0x%x",inBuffer.padding[0], inBuffer.padding[1]));
 						inBuffer.bufferCheckSum = getCheckSum(
-								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)(inBuffer.len >> 8 & 0xff)},
+								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)((inBuffer.len >> 8) & 0xff)},
 								inBuffer.inBuffer.asReadOnlyBuffer());
 						processData(inBuffer);
 						inBuffer.status = ASC100Package.STATUS_END;
@@ -192,13 +196,17 @@ public class ASC100Client {
 		byte b = 0; 
 		while(data.hasRemaining()){
 			b = data.get();
-			sum += b;
+			sum += b;//data.getShort();
 			if(b < 0) sum += 256;
 			sum = sum % 0x10000;
 		}
+		/*
+		if(data.hasRemaining()){
+			sum += data.get();
+		}*/
 		//sum = ((~(sum % 0x10000)) + 1) & 0xffff;
 		
-		return (short)(((~(sum % 0x10000)) + 1) & 0xffff);
+		return (short)((0x10000 - (sum % 0x10000)) & 0xffff);
 	}	
 	
 	/**
@@ -208,6 +216,7 @@ public class ASC100Client {
 	 * @throws IOException 
 	 */
 	public void sendCommand(byte cmd, byte data[]) throws IOException{
+		//log.info(".....data:" + data.length);
 		ByteBuffer temp = ByteBuffer.allocate(data.length +5);
 		temp.order(ByteOrder.LITTLE_ENDIAN);
 		temp.clear();
@@ -256,10 +265,27 @@ public class ASC100Client {
 	}
 	
 	public void processData(ASC100Package data){
-		if(data.checkSum != data.bufferCheckSum){
+		if(data.checkSum != data.bufferCheckSum && 
+				data.checkSum != data.bufferCheckSum - 256 //不知道为什么校验马经常相差256
+		  ){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 			if(data.cmd == 0x06 && image != null){
 				image.waitingFrames--;
+				if (image != null && image.waitingFrames <= 0){
+					int[] retry = image.getReTryFrames();
+					image.waitingFrames = retry.length;			
+					if(image.reTry < maxRetryTime){
+						try {
+							sendRetryFrame(retry);
+						} catch (IOException e) {
+							log.error(e.toString(), e);
+						}
+						image.reTry++;
+					}else {
+						log.debug(String.format("Drop image retry %s times.", image.reTry++));
+						this.image = null;
+					}
+				}
 			}
 		}else {
 			log.debug(String.format("process ASC100 message:0x%x, length:%s, remaining:%s", data.cmd, data.len, data.inBuffer.remaining()));
@@ -320,8 +346,12 @@ public class ASC100Client {
 					event.image = this.image;
 					this.eventProxy.recevieImageOK(event);
 					this.image = null;
-				}else {
+				}else if(image.reTry < maxRetryTime){
 					sendRetryFrame(retry);
+					image.reTry++;
+				}else {
+					log.debug(String.format("Drop image retry %s times.", image.reTry++));
+					this.image = null;
 				}
 			}
 		}else {
@@ -363,7 +393,7 @@ public class ASC100Client {
 	}
 	
 	public void getAlarmImage(){
-		this.image = null;
+		if(this.image != null) return;
 		try {
 			sendCommand((byte)0x02, new byte[]{06});
 		} catch (IOException e) {
@@ -372,19 +402,20 @@ public class ASC100Client {
 	}
 	
 	public void restart(){
-		this.image = null;
 		try {
 			sendCommand((byte)0x03, new byte[]{05});
 		} catch (IOException e) {
 			log.error(e.toString(), e);
 		}		
+		this.image = null;
 	}
 	
 	/**
 	 * 点播实时图片。
 	 */
-	public void getRealImage(int channel){
-		this.image = null;
+	public boolean getRealImage(int channel){
+		//this.image = null;
+		if (image != null) return false;
 		byte cmd = 0;
 		switch(channel){
 			case 1: cmd = 0x02; break;
@@ -394,13 +425,15 @@ public class ASC100Client {
 		}
 		if(cmd != 0){
 			try {
-				sendCommand((byte)0x02, new byte[]{06});
+				sendCommand((byte)0x02, new byte[]{cmd});
+				return true;
 			} catch (IOException e) {
 				log.error(e.toString(), e);
 			}
 		}else {
 			log.debug("Invalid image channel:" + channel);
 		}
+		return false;
 	}
 	
 	public void getDateTime(){

@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.image.ImageSocketAdaptor.SessionCache;
+import org.goku.settings.Settings;
 
 /**
  * 告警管理中心，定时向设备发送。告警查询命令。根据告警图片信息，生成一个客户端通知消息。
@@ -35,10 +36,12 @@ public class AlarmMonitorCenter implements Runnable {
 	@Override
 	public void run() {
 		isRunning = true;
+		//this.setAlarmCheckTime(seconds)
 	}
 	
 	public void checkAllClient(){
 		synchronized(clients){
+			log.info("Check all image alarm...");
 			for(ASC100Client c: clients){
 				c.getAlarmImage();
 			}
@@ -47,6 +50,7 @@ public class AlarmMonitorCenter implements Runnable {
 	
 	public void setAlarmCheckTime(int seconds){
 		timer.cancel();
+		timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -56,6 +60,9 @@ public class AlarmMonitorCenter implements Runnable {
 			}
 		}, 100, 1000 * seconds);
 		this.alarmCheckTime = seconds;
+		log.info(String.format("start image alarm monitor, check period:%s sec.",
+				this.alarmCheckTime));
+
 	}
 	
 	public void addClient(ASC100Client client){

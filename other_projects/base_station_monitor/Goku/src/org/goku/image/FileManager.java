@@ -55,12 +55,13 @@ public class FileManager {
 		Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
 		//
 		String sql = "select combineUuid from alarm_record where " +
-						"startTime > ${0} and baseStation = ${1} and channelId= ${2} " +
+						"startTime > ${0} and startTime <= ${4} and baseStation = ${1} and channelId= ${2} " +
 						"and alarmCode = ${3} limit 1";
 		Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
 				client.info.uuid,
 				image.channel,
-				alarm.alarmCode});
+				alarm.alarmCode,
+				image.generateDate});
 		String combineUuid = null;
 		if(xx.size() > 0){
 			combineUuid = (String)xx.iterator().next().get("combineUuid");
@@ -85,6 +86,7 @@ public class FileManager {
 			rec.combineUuid = rec.uuid;
 		}
 		storage.save(rec);
+		log.debug(String.format("image alarm uuid:%s, combinedUUID:%s, path:%s", rec.uuid, rec.combineUuid, rec.videoPath));
 		
 		return rec;
 	}

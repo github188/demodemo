@@ -143,10 +143,11 @@ public class ASC100MX implements Runnable{
 	}
 	
 	public void register(ASC100Client client){
-		log.info("Register image client:" + client.getClientId());
+		log.info(String.format("Register image client:%s->%s", client.info.uuid, client.getClientId()));
 		this.clientTable.put(client.getClientId(), client);
 		//如果已经存在SR和MX的映射关系则不改变。
 		if(!this.srRoute.containsKey(client.getSrId())){
+			log.info(String.format("Update MX record:%s->%s", client.getSrId(), client.defaultMx()));
 			this.srRoute.put(client.getSrId(), client.defaultMx());
 		}
 		client.setASC100MX(this);
@@ -223,7 +224,7 @@ public class ASC100MX implements Runnable{
 			copy.get();
 			int order = unsignedShort(copy);
 			String ipAddr = client.getAddress().getHostAddress();
-			//log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
+			log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
 			IncomeQueue queue = this.mxIncomeQueue.get(ipAddr);
 			if(queue == null){
 				queue = new IncomeQueue();
@@ -322,7 +323,7 @@ public class ASC100MX implements Runnable{
 					for(ByteBuffer buff = q.getNext(); buff != null; buff = q.getNext()){
 						int count = buff.get();
 						int order = unsignedShort(buff); //去掉UDP包序号。
-						log.debug(String.format("--------------Process UPD #%s------------", order));
+						//log.debug(String.format("--------------Process UPD #%s------------", order));
 						for(; count > 0; count--){
 							byte node2 = buff.get();
 							byte node1 = buff.get();

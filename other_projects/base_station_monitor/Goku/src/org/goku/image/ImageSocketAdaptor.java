@@ -184,7 +184,11 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 				sessionCache.set(sid,  session, 30);
 				ascClient.getRealImage(nch);
 				ascClient.addListener(new RealImageListener(sid, nch));
-				out.println("0$real_image$" + sid);
+				if(ascClient.image != null && ascClient.image.channel != nch){
+					out.println("2$loading$" + ascClient.image.channel);
+				}else {
+					out.println("0$real_image$" + sid);
+				}
 			}
 		}
 	}
@@ -346,6 +350,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 				SessionCache session = (SessionCache) sessionCache.get(sessionId);
 				session.image = event.image;
 				event.source.removeListener(this);
+				log.debug("Get image for session:" + sessionId);
 			}
 		};
 	}
