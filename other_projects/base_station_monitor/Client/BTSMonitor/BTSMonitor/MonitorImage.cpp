@@ -12,8 +12,8 @@ void MonitorImage::getImageText(CString &line)
 	//size:352*288$time:2011-04-09 18-27-55$length:3017$base:1004$ch:1$status:$2
 	//CString size;
 	//pos=util::split_next(line, size, '$', 0);
-	pos=util::split_next(line, width, '$', 0);
 	pos=util::split_next(line, height, '$', 0);
+	pos=util::split_next(line, width, '$', pos+1);
 	pos=util::split_next(line, datetime, '$', pos+1);
 	pos=util::split_next(line, lenth, '$', pos+1);
 	pos=util::split_next(line, bts, '$', pos+1);
@@ -26,7 +26,7 @@ void MonitorImage::decodeImageData(CString &base64line)
 	int len=util::str2int(lenth);
 	if(data!=NULL)
 		delete[] data;
-	data=new char[len];
+	data=new char[len+1];
 	DecodeBase64(base64line.GetBuffer(), data);
 }
 

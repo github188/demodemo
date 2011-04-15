@@ -517,13 +517,26 @@ MonitorImage* GokuClient::getRealImage(CString btsid, CString channelid)
 		sCmd.Append("&");
 		sCmd.Append("channel=");
 		sCmd.Append(channelid);
-		sCmd.Append("&");
-		sCmd.Append("encode=raw\n");
+		sCmd.Append("\n");
 		
 		CString sMsg;
 		if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 			return false;
+		CString line;
+		int ileft=0, iright=0, ipos=0;
+		ipos=sMsg.Find('\n', ileft);
+		line=sMsg.Mid(ileft, ipos-ileft+1);
+		//get the session.
+		pImage->getSessionFromLine(line);
+		ileft=ipos;
+		ipos=sMsg.Find('\n', ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft);
+		pImage->getImageText(line);
+		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
+		pImage->decodeImageData(line);
+		return pImage;
 	}
+	return NULL;
 }
 
 MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
@@ -532,8 +545,8 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 	CString ip;
 	int pos=util::split_next(host, ip, ':',0);
 	ip.Append(":");
-	//ip.Append("8003");
-	ip.Append("8002");
+	ip.Append("8003");
+	//ip.Append("8002");
 
 	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
 	if(imageSock->connect_server()>0)
@@ -562,8 +575,13 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 		pImage->getImageText(line);
 		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
 		pImage->decodeImageData(line);
-		CString filename="1.jpg";
-		pImage->savedata(filename);
+		//CString filename="1.jpg";
+		//pImage->savedata(filename);
+
+		//pImage->getNextImage();
+		//filename="2.jpg";
+		//pImage->savedata(filename);
 		return pImage;
 	}
+	return NULL;
 }
