@@ -3,6 +3,10 @@
 #include "logfile.h"
 #include "GokuSocket.h"
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -45,8 +49,12 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		nTotalRead+=nRead;
 		if (nRead>0 && nTotalRead>4)
 		{
-			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLD) )
+			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLD)
+					|| (( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLF)))
 			{
+				//ofstream ofs("1.data", ios::binary|ios::out);
+				//ofs.write(buffer, nTotalRead);
+				//ofs.close();
 				bRead = FALSE;
 				break;
 			}
