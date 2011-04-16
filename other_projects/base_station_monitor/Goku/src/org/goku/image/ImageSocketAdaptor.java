@@ -348,9 +348,11 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			   this.channel == event.image.channel 
 			  ){
 				SessionCache session = (SessionCache) sessionCache.get(sessionId);
-				session.image = event.image;
-				event.source.removeListener(this);
-				log.debug("Get image for session:" + sessionId);
+				if(session != null){
+					session.image = event.image;
+					event.source.removeListener(this);
+					log.debug("Get image for session:" + sessionId);
+				}
 			}
 		};
 	}

@@ -41,7 +41,7 @@ public class AlarmMonitorCenter implements Runnable {
 	
 	public void checkAllClient(){
 		synchronized(clients){
-			log.info("Check all image alarm...");
+			log.info("Check all image alarm, client size:" + clients.size());
 			for(ASC100Client c: clients){
 				c.getAlarmImage();
 			}

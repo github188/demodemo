@@ -143,7 +143,8 @@ public class ASC100MX implements Runnable{
 	}
 	
 	public void register(ASC100Client client){
-		log.info(String.format("Register image client:%s->%s", client.info.uuid, client.getClientId()));
+		log.info(String.format("Register image client:%s->%s", client.info != null ? client.info.uuid: "", 
+				client.getClientId()));
 		this.clientTable.put(client.getClientId(), client);
 		//如果已经存在SR和MX的映射关系则不改变。
 		if(!this.srRoute.containsKey(client.getSrId())){
@@ -224,7 +225,7 @@ public class ASC100MX implements Runnable{
 			copy.get();
 			int order = unsignedShort(copy);
 			String ipAddr = client.getAddress().getHostAddress();
-			log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
+			//log.debug(String.format("Process UPD #%s from %s", order, ipAddr));
 			IncomeQueue queue = this.mxIncomeQueue.get(ipAddr);
 			if(queue == null){
 				queue = new IncomeQueue();
@@ -234,7 +235,7 @@ public class ASC100MX implements Runnable{
 			if(order == 0){
 				queue.next_index = -1;
 			}
-			log.debug("put:" + order);
+			log.debug(String.format("---Get UPD:#%s@%s, Wating order:%s---", order, ipAddr, queue.next_index));
 			queue.put(order, tmp);
 			
 			this.queueWorker.run();
@@ -359,7 +360,9 @@ public class ASC100MX implements Runnable{
 		
 		public void put(int order, ByteBuffer data){
 			queue.put(order, data);
-			if(next_index == -1) next_index = order;
+			if(next_index == -1 || (next_index > order && order != 0)){
+				next_index = order;
+			}
 			size++;
 			/*避免长时间没有收到数据包，中间突然来了一个间隔的包，作为超时读取处理。
 			 */

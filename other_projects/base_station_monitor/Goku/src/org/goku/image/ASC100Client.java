@@ -3,6 +3,9 @@ package org.goku.image;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -323,8 +326,18 @@ public class ASC100Client {
 			}
 			image.imageSize = inBuffer.get();
 			image.zipRate = inBuffer.get();
-			log.debug(String.format("Image info ch:%s, status:%s, imageSize:%s, zipRate:%s, len:%s, frames:%s",
-					image.channel, image.imageStatus, image.imageSize, image.zipRate, len, count));
+			String date = String.format("%02x%02x-%02x-%02x %02x:%02x:%02x:%02x0", inBuffer.get(), inBuffer.get(),inBuffer.get(),inBuffer.get(),
+					inBuffer.get(), inBuffer.get(),inBuffer.get(),inBuffer.get());
+			if(!date.startsWith("0000")){
+				DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+				try {
+					image.generateDate = format.parse(date);
+				} catch (ParseException e) {
+					log.error("Error gengerated time:" + date);
+				}
+			}
+			log.debug(String.format("Image info ch:%s, status:%s, imageSize:%s, zipRate:%s, len:%s, frames:%s, date:%s",
+					image.channel, image.imageStatus, image.imageSize, image.zipRate, len, count, date));
 			image.waitingFrames = count -1;
 			this.sendCommand((byte)0x21, new byte[]{});			
 		}else if (image != null){
@@ -499,8 +512,20 @@ public class ASC100Client {
 		public void debugRawData(ImageClientEvent event) {
 			for(ImageClientListener l: ls){
 				l.debugRawData(event);
-			}			
+			}
 		}
 	};
+	
+	public boolean equals(Object o){
+		if(o instanceof ASC100Client){
+			ASC100Client oo = (ASC100Client)o;
+			if(oo.info != null && info != null && oo.info.uuid.equals(info.uuid)){
+				return true;
+			}else if(oo.getClientId().equals(getClientId())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

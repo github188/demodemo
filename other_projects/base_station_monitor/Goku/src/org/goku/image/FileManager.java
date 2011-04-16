@@ -52,7 +52,7 @@ public class FileManager {
 		os.close();
 		
 		//检查最短触发时间。
-		Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
+		Date checkTime = new Date(image.generateDate.getTime() - alarm.reActiveTime * 1000 * 60);
 		//
 		String sql = "select combineUuid from alarm_record where " +
 						"startTime > ${0} and startTime <= ${4} and baseStation = ${1} and channelId= ${2} " +
