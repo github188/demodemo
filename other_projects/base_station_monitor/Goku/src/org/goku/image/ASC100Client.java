@@ -326,15 +326,10 @@ public class ASC100Client {
 			}
 			image.imageSize = inBuffer.get();
 			image.zipRate = inBuffer.get();
-			String date = String.format("%02x%02x-%02x-%02x %02x:%02x:%02x:%02x0", inBuffer.get(), inBuffer.get(),inBuffer.get(),inBuffer.get(),
+			String date = String.format("%02x%02x%02x%02x%02x%02x%02x%02x0", inBuffer.get(), inBuffer.get(),inBuffer.get(),inBuffer.get(),
 					inBuffer.get(), inBuffer.get(),inBuffer.get(),inBuffer.get());
 			if(!date.startsWith("0000")){
-				DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-				try {
-					image.generateDate = format.parse(date);
-				} catch (ParseException e) {
-					log.error("Error gengerated time:" + date);
-				}
+				image.setGenerateDate(date);
 			}
 			log.debug(String.format("Image info ch:%s, status:%s, imageSize:%s, zipRate:%s, len:%s, frames:%s, date:%s",
 					image.channel, image.imageStatus, image.imageSize, image.zipRate, len, count, date));

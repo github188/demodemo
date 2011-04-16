@@ -1,6 +1,9 @@
 package org.goku.image;
 
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -47,7 +50,7 @@ public class ImageInfo {
 	public int recieveData(int frame, ByteBuffer data){
 		if(frame == 1){
 			this.frameSize = data.remaining();			
-		}		
+		}
 		
 		if(buffer != null){
 			buffer.position((frame - 1) * this.frameSize);
@@ -55,9 +58,25 @@ public class ImageInfo {
 			ack[frame -1] = 1;
 		}
 		
+		if(frame == 1){
+			byte[] date = new byte[14];
+			buffer.position(0x18);
+			buffer.get(date);
+			if(date[0] == '2' && date[1] == '0'){
+				setGenerateDate(new String(date) + "000");
+			}
+		}
+		
 		return frame;
 	};
 	
+	public void setGenerateDate(String date){
+		DateFormat format= new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		try {
+			generateDate = format.parse(date);
+		} catch (ParseException e) {
+		}
+	}
 	
 	public int[] getReTryFrames(){
 		int[] frames = new int[ack.length];
