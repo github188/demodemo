@@ -503,12 +503,12 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
 {
 	MonitorImage *pImage=new MonitorImage();
 
-	CString ip;
-	int pos=util::split_next(binfo->route, ip, ':',0);
-	ip.Append(":");
-	ip.Append(IMAGE_PORT);
+	//CString ip;
+	//int pos=util::split_next(binfo->route, ip, ':',0);
+	//ip.Append(":");
+	//ip.Append(IMAGE_PORT);
 
-	GokuSocket *imageSock=new GokuSocket(ip, ip);
+	GokuSocket *imageSock=new GokuSocket(binfo->route, binfo->route);
 	if(imageSock->connect_server()>0)
 	{
 		CString sCmd;
