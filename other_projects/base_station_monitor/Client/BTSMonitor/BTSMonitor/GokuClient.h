@@ -6,6 +6,8 @@
 #include "VideoPlayControl.h"
 #include "MonitorImage.h"
 
+#define IMAGE_PORT	"8003"
+
 class GokuClient{
 	CString buffer;
 	CString cmd_msg; //last command status.
@@ -138,7 +140,7 @@ public:
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
-	MonitorImage* getRealImage(CString btsid, CString channelid);
+	MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo);
 	MonitorImage* getAlarmImagebyBase64(CString alarmID);
 protected:
 	int execute_command(CString &cmd);

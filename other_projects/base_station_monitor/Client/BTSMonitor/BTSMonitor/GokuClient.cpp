@@ -499,13 +499,14 @@ bool GokuClient::Stop_Play(int nVideoID)
 	return bRet;
 }
 
-MonitorImage* GokuClient::getRealImage(CString btsid, CString channelid)
+MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
 {
 	MonitorImage *pImage=new MonitorImage();
+
 	CString ip;
-	int pos=util::split_next(host, ip, ':',0);
+	int pos=util::split_next(binfo->route, ip, ':',0);
 	ip.Append(":");
-	ip.Append("8083");
+	ip.Append(IMAGE_PORT);
 
 	GokuSocket *imageSock=new GokuSocket(ip, ip);
 	if(imageSock->connect_server()>0)
@@ -513,10 +514,10 @@ MonitorImage* GokuClient::getRealImage(CString btsid, CString channelid)
 		CString sCmd;
 		sCmd.Append("img>real_image?");
 		sCmd.Append("baseStation=");
-		sCmd.Append(btsid);
+		sCmd.Append(binfo->uuid);
 		sCmd.Append("&");
 		sCmd.Append("channel=");
-		sCmd.Append(channelid);
+		sCmd.Append(binfo->channelInfo);
 		sCmd.Append("\n");
 		
 		CString sMsg;
@@ -545,7 +546,7 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 	CString ip;
 	int pos=util::split_next(host, ip, ':',0);
 	ip.Append(":");
-	ip.Append("8003");
+	ip.Append(IMAGE_PORT);
 	//ip.Append("8002");
 
 	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
