@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -69,6 +70,13 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 					);
 		}else if(cmd.equals("next_image")){
 			nextImage(client, out, param.get("session"), param.get("encode"));
+		}else if(cmd.equals("restart")){
+			restart(client, out, param.get("baseStation"));
+		}else if(cmd.equals("get_date")){
+			getDate(client, out, param.get("baseStation"));
+		}else if(cmd.equals("set_date")){
+			setDate(client, out, param.get("baseStation"),					
+					param.get("date"));
 		}
 		out.println("");
 		out.println("");
@@ -256,7 +264,140 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			}
 		}
 	}
+	
+	protected void restart(SocketClient client, OutputWriter out, String baseStation) throws IOException {
+		if(baseStation == null || "".equals(baseStation.trim())){
+			out.println("-2$param error");
+		}else {
+			ASC100Client ascClient = server.getMonitorClient(baseStation);
+			if(client == null){
+				out.println("1$Not found base station");
+			}else {
+				
+				final String[] result = new String[]{"3$timeout"};
+				ImageClientListener l = new AbstractImageListener() {
+					public void message(ImageClientEvent event){
+						if(event.data.len == 2){
+							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
+							if(b.get() == 3 && b.get() == 5){
+								if(event.data.cmd == 2){
+									result[0] = "2$restart failed";
+								}else if(event.data.cmd == 0){
+									result[0] = "0$restart ok";
+								}
+ 								synchronized(this){
+									this.notifyAll();
+								}
+							}
+						}
+					};
+				};
+				ascClient.addListener(l);		
+				ascClient.restart();
+				try {
+					synchronized(l){
+						l.wait(1000 * 10);
+					}
+				} catch (InterruptedException e) {
+				}finally{
+					ascClient.removeListener(l);
+				}				
+				out.println(result[0]);
+			}
+		}
+	}
+	
+	protected void getDate(SocketClient client, OutputWriter out, String baseStation) throws IOException {
+		if(baseStation == null || "".equals(baseStation.trim())){
+			out.println("-2$param error");
+		}else {
+			ASC100Client ascClient = server.getMonitorClient(baseStation);
+			if(client == null){
+				out.println("1$Not found base station");
+			}else {
+				final String[] date = new String[1];
+				ImageClientListener l = new AbstractImageListener() {
+					public void message(ImageClientEvent event){
+						if(event.data.len == 8){
+							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
+							if(b.get() == 2 && b.get() == 1){
+								date[0] = String.format("%02x-%02x-%02x %02x:%02x:%02x",
+										b.get(), b.get(), b.get(), 
+										b.get(), b.get(), b.get());
+								synchronized(this){
+									this.notifyAll();
+								}
+							}
+						}
+					};
+				};
+				ascClient.addListener(l);		
+				ascClient.getDateTime();
+				try {
+					synchronized(l){
+						l.wait(1000 * 10);
+					}
+				} catch (InterruptedException e) {
+				}finally{
+					ascClient.removeListener(l);
+				}
+				if(date[0] != null){
+					out.println("0$" + date[0]);
+				}else {
+					out.println("2$timeout");
+				}
+			}
+		}
+	}	
 		
+	protected void setDate(SocketClient client, OutputWriter out, String baseStation, String date) throws IOException {
+		if(baseStation == null || "".equals(baseStation.trim())){
+			out.println("-2$param error");
+		}else {
+			ASC100Client ascClient = server.getMonitorClient(baseStation);
+			if(client == null){
+				out.println("1$Not found base station");
+			}else {
+				final String[] result = new String[]{"3$timeout"};
+				ImageClientListener l = new AbstractImageListener() {
+					public void message(ImageClientEvent event){
+						if(event.data.len == 2){
+							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
+							if(b.get() == 1
+							  //&& b.get() == 6 文档上需要检查。设备返回没有这个标志
+							  ){
+								if(event.data.cmd == 2){
+									result[0] = "2$set date failed";
+								}else if(event.data.cmd == 0){
+									result[0] = "0$set date ok";
+								}
+ 								synchronized(this){
+									this.notifyAll();
+								}
+							}
+						}
+					};
+				};
+				ascClient.addListener(l);
+				if(date == null || date.length() != 12){
+					ascClient.setDateTime(new Date());
+				}else {
+					ascClient.setDateTime(date);
+				}
+				try {
+					synchronized(l){
+						l.wait(1000 * 10);
+					}
+				} catch (InterruptedException e) {
+				}finally{
+					ascClient.removeListener(l);
+				}
+				out.println(result[0]);
+			}
+		}
+	}	
+		
+	
 	protected Map<String, String> parseCommand(String command){
 		Map<String, String> p = new HashMap<String, String>();
 		command = command.replace("img>", "");

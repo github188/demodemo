@@ -25,6 +25,9 @@ public class ImageInfo {
 	public int waitingFrames = 0;
 	public int reTry = 0;
 	
+	//图片开始传的时间，用来计算传输超时。
+	public Date startDate = new Date(System.currentTimeMillis());
+	
 	//图片分片总数
 	private int frameCount = 0;	
 	private int dataSize = 0;

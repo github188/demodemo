@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,7 +111,10 @@ public class ASC100Client {
 			}
 			switch(inBuffer.status){
 				case ASC100Package.STATUS_CMD:
-					if(cur != 0 && cur != 1 && cur != 2 && cur != 6){
+					if(cur != 0 && cur != 1 && 
+					   cur != 2 && cur != 6 && 
+					   cur != (byte)0xA0 && cur != (byte)0x30 
+					   ){
 						inBuffer.clear();
 						break;
 					}
@@ -131,11 +135,15 @@ public class ASC100Client {
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.len = ((inBuffer.padding[1] << 8) | 0x00ff) & 
 						 			    (inBuffer.padding[0]       | 0xff00); 
-						if(inBuffer.len > 0 && inBuffer.len < 1024 * 10){
+						if(inBuffer.len >= 0 && inBuffer.len < 1024 * 10){
 							log.debug(String.format("Reading cmd:%x, length:%s, b1:0x%x, b2:0x%x", inBuffer.cmd, inBuffer.len, inBuffer.padding[0], inBuffer.padding[1]));
 							inBuffer.inBuffer.clear();
 							inBuffer.inBuffer.limit(inBuffer.len);
-							inBuffer.status = ASC100Package.STATUS_DATA;
+							if(inBuffer.len != 0){
+								inBuffer.status = ASC100Package.STATUS_DATA;
+							}else {
+								inBuffer.status = ASC100Package.STATUS_CHECKSUM;
+							}
 							inBuffer.paddingIndex = 0;
 							if(inBuffer.cmd == 0x06 && this.image != null && inBuffer.len > 24){
 								inBuffer.inBuffer.limit(inBuffer.len -2);
@@ -196,19 +204,13 @@ public class ASC100Client {
 	
 	public short getCheckSum(ByteBuffer data){
 		int sum = 0;
-		byte b = 0; 
+		short b = 0; 
 		while(data.hasRemaining()){
 			b = data.get();
-			sum += b;//data.getShort();
-			if(b < 0) sum += 256;
+			if(b < 0) b+=256;
+			sum += b;
 			sum = sum % 0x10000;
-		}
-		/*
-		if(data.hasRemaining()){
-			sum += data.get();
-		}*/
-		//sum = ((~(sum % 0x10000)) + 1) & 0xffff;
-		
+		}		
 		return (short)((0x10000 - (sum % 0x10000)) & 0xffff);
 	}	
 	
@@ -268,8 +270,8 @@ public class ASC100Client {
 	}
 	
 	public void processData(ASC100Package data){
-		if(data.checkSum != data.bufferCheckSum && 
-				(data.checkSum - data.bufferCheckSum) % 256 != 0 //不知道为什么校验马经常相差256
+		if(data.checkSum != data.bufferCheckSum 
+				&&(data.checkSum - data.bufferCheckSum) % 256 != 0 //不知道为什么校验马经常相差256
 		  ){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 			if(data.cmd == 0x06 && image != null){
@@ -298,10 +300,17 @@ public class ASC100Client {
 				} catch (IOException e) {
 					log.error(e.toString(), e);
 				}
-			}else {
+			}else {				
+				//设备请求校时
+				if(data.cmd == (byte)0xA0){
+					this.ackClientTime();
+				}else if(data.cmd == (byte)0x30){
+					log.debug(String.format("Restart client, message:%s", data.inBuffer.asCharBuffer().toString()));
+					this.image = null;
+				}
 				ImageClientEvent event = new ImageClientEvent(this);
 				event.data = data;
-				this.eventProxy.message(event);
+				this.eventProxy.message(event);				
 			}
 		}
 	}
@@ -348,6 +357,7 @@ public class ASC100Client {
 				int[] retry = image.getReTryFrames();
 				image.waitingFrames = retry.length;			
 				if(retry == null || retry.length == 0){
+					log.debug("recevieImageOK..");
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
 					ImageClientEvent event = new ImageClientEvent(this);
@@ -401,7 +411,14 @@ public class ASC100Client {
 	}
 	
 	public void getAlarmImage(){
-		if(this.image != null) return;
+		if(this.image != null) {
+			//如果图片传输时间超过1分钟。取消传输的图片。
+			if(System.currentTimeMillis() - this.image.startDate.getTime() > 60 * 1000){
+				this.image = null;
+			}else {
+				return;
+			}
+		}
 		try {
 			sendCommand((byte)0x02, new byte[]{06});
 		} catch (IOException e) {
@@ -444,6 +461,24 @@ public class ASC100Client {
 		return false;
 	}
 	
+	protected void ackClientTime(){
+		try {
+			byte[] time = new byte[7];//{(byte)0xA0}
+			time[0] = (byte)0xA0;
+			DateFormat format= new SimpleDateFormat("yyMMddHHmmss");
+			String date = format.format(new Date());
+			log.info("Set time:" + date);
+			for(int i = 0; i < 6; i++){
+				time[i+1] = Byte.parseByte(date.substring(i * 2, (i + 1) * 2), 16);
+			}
+			//
+			//time[2] += 1;
+			sendCommand((byte)0xA0, time);
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}		
+	}
+	
 	public void getDateTime(){
 		try {
 			sendCommand((byte)0x02, new byte[]{01});
@@ -451,6 +486,26 @@ public class ASC100Client {
 			log.error(e.toString(), e);
 		}		
 	}
+	
+	public void setDateTime(Date newDate){
+		DateFormat format= new SimpleDateFormat("yyMMddHHmmss");
+		setDateTime(format.format(newDate));		
+	}
+	
+	public void setDateTime(String date){
+		try {
+			if(date.length() != 12) return;
+			byte[] time = new byte[7];//{(byte)0xA0}
+			time[0] = (byte)0x06;
+			for(int i = 0; i < 6; i++){
+				time[i+1] = Byte.parseByte(date.substring(i * 2, (i + 1) * 2), 16);
+			}
+			sendCommand((byte)0x01, time);
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
+	}	
+		
 	
 	public void addListener(ImageClientListener l){
 		if(!this.ls.contains(l)){
@@ -478,34 +533,45 @@ public class ASC100Client {
 
 		@Override
 		public void notFoundImage(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);				
+			for(ImageClientListener l: lss){
 				l.notFoundImage(event);
 			}
 		}
 
 		@Override
 		public void connectionError(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);					
+			for(ImageClientListener l: lss){
 				l.connectionError(event);
 			}
 		}
 
 		@Override
 		public void message(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			//在Listener处理过程中，可能需要修改Listener
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);			
+			for(ImageClientListener l: lss){
 				l.message(event);
 			}
 		}
 		
 		@Override
 		public void active(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);				
+			for(ImageClientListener l: lss){
 				l.active(event);
 			}
 		}	
 		
 		public void debugRawData(ImageClientEvent event) {
-			for(ImageClientListener l: ls){
+			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			lss.addAll(ls);				
+			for(ImageClientListener l: lss){
 				l.debugRawData(event);
 			}
 		}
