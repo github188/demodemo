@@ -25,6 +25,9 @@
 #include "logfile.h"
 #include "GokuClient.h"
 
+//Tasks
+#include "ConfigMgr.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -72,6 +75,16 @@ CBTSMonitorView::CBTSMonitorView()
 
 CBTSMonitorView::~CBTSMonitorView()
 {
+	//Stop the Thread
+	/*
+	m_gConfigMgr.SetTaskExit();
+	DWORD dwRet = ::WaitForSingleObject(m_pTaskThread->m_hThread,2000);
+	if (dwRet == WAIT_TIMEOUT)
+	{
+		if (m_pTaskThread != NULL && m_pTaskThread->m_hThread > 0) 
+			::AfxTermThread((HINSTANCE__*)(m_pTaskThread->m_hThread));		
+	}
+	*/
 }
 
 BOOL CBTSMonitorView::PreCreateWindow(CREATESTRUCT& cs)
@@ -357,6 +370,8 @@ void CBTSMonitorView::OnInitialUpdate()
 
 	MoveWindow(&rc);
 	
+	//Begin the Task Thread...
+	//m_pTaskThread = AfxBeginThread((AFX_THREADPROC)ProcessTask, (LPVOID)this);
 }
 
 void CBTSMonitorView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -637,6 +652,28 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 }
 
+void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh)
+{
+	int nActView = nVV;
+	
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	CString sChannelID = sCh;
+	PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
+	BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
+	if(bOpenRet)
+	{
+		PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+		//Play Remote Vedio runatime			
+		bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
+		
+		if (bRet)
+			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+		else
+			m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+	}
+}
 int play_video(int  sessionId, char * pBuffer, int  len)
 {
 	//wstring log;
@@ -659,8 +696,8 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 	if (nViewIndex<0 || nViewIndex > cnMAX_VV-1)
 	{
 		CString sErrInfo;
-		sErrInfo.Format("超出视窗显示数量范围:%d", nViewIndex);
-		AfxMessageBox(sErrInfo);
+		sErrInfo.Format("超出视窗显示数量范围:%d\r\n", nViewIndex);
+		CLogFile::WriteLog(sErrInfo);
 		return ;
 	}
 
@@ -677,4 +714,175 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 		
 		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
 	}
+}
+void CBTSMonitorView::SaveTaskInfo(int nVV, CString& sUUID, CString& sCh)
+{
+	if (m_vvControl.vvInfo[nVV].bMonitoring)
+	{
+		sUUID = m_vvControl.vvInfo[nVV].sUUID;
+		sCh   = m_vvControl.vvInfo[nVV].sCh;
+	}
+	else
+	{
+		sUUID = "";
+		sCh   = "";
+	}
+
+}
+
+void CBTSMonitorView::ProcessTask(LPVOID pv)
+{
+	CBTSMonitorView *pMonitorView = (CBTSMonitorView*)pv;
+
+	if (!pMonitorView) return;
+
+	CObArray* pObjArray = m_gConfigMgr.GetTaskList();
+	int nTaskCount = 0;
+	if (!pObjArray )
+		nTaskCount = pObjArray->GetCount();
+
+	DWORD dwRet = 0;
+	int	  i, pos = 0;
+	BOOL  bRun = TRUE;
+	while(bRun)
+	{
+		dwRet = m_gConfigMgr.WaitForTask();
+		switch(dwRet)
+		{
+		case WAIT_OBJECT_0: //task Notify, add, delete etc...
+			{
+				//Need refrest the array Task List.
+
+
+				m_gConfigMgr.SetTaskNoSignal();
+			}
+			break;
+		case WAIT_OBJECT_0+1: //exit
+			bRun = FALSE;
+			break;
+		case WAIT_ABANDONED:
+			break;
+		case WAIT_TIMEOUT:
+			{
+				//Check , whether there need to start task , or stop task.
+				nTaskCount = pObjArray->GetCount();
+				if (nTaskCount>0)
+				{
+					CTaskItem *pObjTask = NULL;
+					CString sY, sM,sD; //Year, Month , Day
+					for(i=0;i<nTaskCount;i++)
+					{
+						CTime curTime = CTime::GetCurrentTime();
+						VERIFY(pObjTask = (CTaskItem*)pObjArray->GetAt(i));
+
+						//Check whether the task get to the start time,
+						pos = util::split_next(pObjTask->sBeginDate, sY, '-', 0);
+						pos = util::split_next(pObjTask->sBeginDate, sM, '-', pos+1);
+						pos = util::split_next(pObjTask->sBeginDate, sD, '-', pos+1);
+						CTime beginDate(atoi(sY),atoi(sM),atoi(sD),0,0,0,-1);
+
+						pos = util::split_next(pObjTask->sEndDate, sY, '-', 0);
+						pos = util::split_next(pObjTask->sEndDate, sM, '-', pos+1);
+						pos = util::split_next(pObjTask->sEndDate, sD, '-', pos+1);
+						CTime endDate(atoi(sY),atoi(sM),atoi(sD),23,59,59,-1);
+
+						//......Begin....O......End....
+						//Judge the time is arrived or not [21..20..17..13..12..8..4]
+						// 22:00:00 to 02:00:00,           [  22 23 0 1 2 3]
+						BOOL bOneDay = (pObjTask->nBeginHour <= pObjTask->nEndHour); //5:30:30 ~ 20:30:30 || 22:30:23 ~ 3:12:20
+						CTime tB(curTime.GetYear(),curTime.GetMonth(),curTime.GetDay(),pObjTask->nBeginHour,pObjTask->nBeginMin,pObjTask->nBeginSec);
+						CTime tE(curTime.GetYear(),curTime.GetMonth(),curTime.GetDay(),pObjTask->nEndHour,pObjTask->nEndMin,pObjTask->nEndSec);
+						if (!bOneDay)
+							tE = tE + CTimeSpan( 1, 0, 0, 0 );  //Add One Day
+
+						switch( pObjTask->status)
+						{
+						 case 1: //Waiting
+							 {
+								 //..O....Begin..........End....
+								 if (beginDate > curTime ) //Task is not arrived
+									 break;
+
+								 //.......Begin..........End...O.
+								 if (endDate < curTime ) //Task time is expired, Finished (Monitoring is never to be done)
+								 {
+									 pObjTask->status = 3;
+									 break;
+								 }
+
+
+								 if(curTime>tB && curTime<tE)
+								 {
+									 pMonitorView->SaveTaskInfo(pObjTask->nVV, pObjTask->sUUID_Old, pObjTask->sCh_Old);
+
+									 //Stop old Ch Mornitoring
+									 if ( !pObjTask->sUUID_Old.IsEmpty()) //UUID is Empty, current playview has no channel to be mornitoring.
+										pMonitorView->StopMonitorBTS(pObjTask->nVV);
+
+									 //Start the current Task...
+									 pMonitorView->StartMonitorBTS(pObjTask->nVV,pObjTask->sUUID, pObjTask->sCh);
+
+									 pObjTask->status = 2; //monitoring...
+
+								 }
+								
+							 }
+							 break;
+						 case 2: //monitoring
+							 {
+								 //will exist two status, time is expired, or still in monitoring
+
+								 //.......Begin..........End...O.
+								 if (endDate < curTime ) //Task time is expired, Finished (Monitoring is never to be done)
+								 {
+									 //Stop Task, & restore old Monitoring
+									 pMonitorView->StopMonitorBTS(pObjTask->nVV);
+
+									 if (!pObjTask->sUUID_Old.IsEmpty())
+										pMonitorView->StartMonitorBTS(pObjTask->nVV,pObjTask->sUUID_Old, pObjTask->sCh_Old);
+
+									 pObjTask->status = 3;
+									 break;
+								 }
+
+								 //.......Begin.....0.....End....
+								 if(curTime>tB && curTime<tE) //Still in Monitoring
+									 pObjTask->status = 2; //monitoring...
+								 else //need to wait...
+								 {
+									 CString sError;
+									 sError.Format("TaskName: %s, from Monitoring to Idle status, it's abnormal!\r\n", pObjTask->sName);
+									 //something error.
+									 CLogFile::WriteLog(sError);
+									 //pObjTask->status = 1;
+								 }
+
+							 }
+							 break;
+						 case 3: //Finished
+							 {
+								 //.....Show the processing status in the task bar?...
+
+
+							 }
+							 break;
+						 case 4: //dead..., need to delete this item.
+							 {
+								 //delete itself, free memory...
+								 pObjArray->RemoveAt(i);
+								 delete pObjTask;
+								 pObjTask = NULL;
+
+							 }
+							 break;
+						}
+					}//End For.
+
+				}
+
+			} //TimeOut Case
+			break;
+		} //Switch Case
+	} //While (bRun)
+
 }

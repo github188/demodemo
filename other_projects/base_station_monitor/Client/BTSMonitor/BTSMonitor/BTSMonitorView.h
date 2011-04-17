@@ -22,6 +22,8 @@ typedef struct tagVV_INFO
 	CView* vv;
 	CRect  rc;
 	BOOL   bMonitoring;
+	CString sUUID;
+	CString sCh;
 }VV_INFO;
 typedef enum tagVV_COUNT
 {
@@ -101,7 +103,13 @@ public:
 	void SelectVideoView(int nVideoViewID);
 //	afx_msg void OnVv1();
 	void StartMonitorBTS(CString strBtsInfo);
+	void StartMonitorBTS(int nVV, CString sUUID, CString sCh);
 	void StopMonitorBTS(int nViewIndex);
+
+	//Task List
+	static void ProcessTask(LPVOID pv);
+	void	SaveTaskInfo(int nVV, CString& sUUID, CString& sCh);
+	CWinThread *m_pTaskThread;
 };
 
 #ifndef _DEBUG  // BTSMonitorView.cpp 中的调试版本
