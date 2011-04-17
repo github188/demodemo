@@ -193,6 +193,7 @@
 #define IDC_DATETIME_START              1042
 #define IDC_DATETIME_END                1043
 #define IDC_EDIT_DEVICEID               1044
+#define IDC_CBO_DEVICE_ID               1044
 #define IDC_OGON_PIC                    1045
 #define IDC_DGM_LOGO                    1046
 #define IDC_EDT_USER                    1048
@@ -205,8 +206,10 @@
 #define IDC_WINDOW_VEDIO                1061
 #define IDC_CBO_USER                    1063
 #define IDC_CBO_SERVER                  1064
-#define IDC_COMBO4                      1065
+#define IDC_BTN_DELETE_TASK             1064
 #define IDC_CBO_PORT                    1065
+#define IDC_COMBO1                      1065
+#define IDC_CBO_CHANNEL                 1065
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -242,7 +245,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        346
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1064
+#define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif
