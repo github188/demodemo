@@ -30,6 +30,8 @@
 //Warning Timer During...
 #define WARNING_UPDATE_DURING		10000			
 
+#define CONFIG_FILE "config.ini"
+
 //Warning Ack...
 typedef enum tagWARNING_STATUS
 {
@@ -46,6 +48,7 @@ typedef enum tagALARM_COMING_TYPE
 
 const int cnMAX_VV = 25;
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
+
 
 int play_video(int  sessionId, char * pBuffer, int  len);
 
