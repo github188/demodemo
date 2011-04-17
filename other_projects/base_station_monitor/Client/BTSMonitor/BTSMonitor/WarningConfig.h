@@ -1,4 +1,5 @@
 #pragma once
+#include "afxwin.h"
 
 
 // CWarningConfig dialog
@@ -22,4 +23,9 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	CComboBox m_cboPicWin;
+	CComboBox m_cboPlayInterval;
+	CButton m_chkWarnEnable;
+	CString m_strWarnSound;
+	CComboBox m_cboPopWinCnt;
 };
