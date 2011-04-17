@@ -16,6 +16,7 @@ public:
 	CSimpleSocket *socket;
 	int sessionId;
 	int status;  //0 not start, -1 end, 1 running, -2 start error
+	bool bIsBlocking; //just for judge whether the socket blocked or not
 
 	//不能在界面线程调用socket，发送和接受方法。其他线程把需要发送的命令保存到list,由socket线程统一发送。
 	vector<CString> vedio_command_list;
@@ -25,6 +26,7 @@ public:
 		callback = handle;
 		sessionId = sid;
 		status = 0;
+		bIsBlocking = true;
 	}
 
 	~VideoPlayControl(){

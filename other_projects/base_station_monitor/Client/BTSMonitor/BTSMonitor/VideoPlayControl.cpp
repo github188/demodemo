@@ -44,6 +44,7 @@ UINT video_read_thread(LPVOID param)
 		control->status = 1;
 		//while(1){
 		while(control->status == 1){
+			control->bIsBlocking = false;
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
 					control->socket->write_wstring(control->vedio_command_list[i]);
 			}
