@@ -51,7 +51,7 @@ public:
 	virtual int connect_server() {return 0;}
 	virtual void close() {}
 	virtual int read_buffer(char *buffer, int size);
-
+	virtual void CancelSocket() {return;};
 	//int write_wstring(wstring &data){
 	//	write_log(L"write_wstring:" + data);
 	//	int writeLen = wcstombs(buffer, data.c_str(), data.length());
@@ -132,8 +132,8 @@ public:
 		{
 			CString sError;
 			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
-			CLogFile::WriteLog(sError);
-			AfxMessageBox(sError);
+			//CLogFile::WriteLog(sError);
+			//AfxMessageBox(sError);
 			return 0;
 		}
 
@@ -162,6 +162,9 @@ public:
 		return bOk;
 	}
 
+	void CancelSocket() {
+		cs.CancelBlockingCall();
+	}
 protected:
 		virtual int write_data(const char *buff, int len){
 		//char sendcmd_startch[200];
