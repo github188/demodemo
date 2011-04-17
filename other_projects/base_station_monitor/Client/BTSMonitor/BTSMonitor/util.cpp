@@ -7,6 +7,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+char __TempBuffer[_MAX_PATH];
+char __MainAppPath[_MAX_PATH];
+char __MainAppFileName[_MAX_PATH];
+
+
 int util::split_next(const CString &src, CString &des, char ch, int start)
 {
 	int pos = 0;
@@ -105,4 +110,132 @@ void util::TrimSpecialChar(CString& src, char ch)
 	src.Empty();
 	src = des;
 
+}
+
+void util::InitApp()
+{
+	GetModuleFileName(NULL,__MainAppFileName, _MAX_PATH);
+	strcpy_s(__MainAppPath ,sizeof(__MainAppPath), ExtractFilePath(__MainAppFileName));
+}
+
+char* util::GetAppPath()
+{
+	return (char *)__MainAppPath;
+}
+
+
+char* util::GetAppFileName()
+{
+	return (char *)__MainAppFileName;
+}
+
+////////////////////////////////////////////////////////////////
+char* util::GetApplicationFullPath()
+{
+	static char tmpBuffer[_MAX_PATH];
+	GetModuleFileName(NULL,tmpBuffer,_MAX_PATH);
+	strcpy_s(tmpBuffer, _MAX_PATH, ExtractFilePath(tmpBuffer));
+	
+	
+	return (char *)tmpBuffer;
+}
+
+char* util::GetApplicationFileName()
+{
+	static char tmpBuffer[_MAX_PATH];
+	GetModuleFileName(NULL,tmpBuffer,_MAX_PATH);
+	return (char *)tmpBuffer;
+}
+
+BOOL  util::CharInString(char ch,const char *s)
+{
+	int len = strlen(s);
+	for(int i=0; i<len; i++)
+	{
+		if(ch==s[i]) 
+			return TRUE;
+	}
+	return FALSE;
+}
+
+int   util::LastDelimiter(const char *Delimiters,const char *s)
+{
+  char ch;
+  int i;
+  for (i=strlen(s)-1 ; i>=0 ; i--)
+  {
+	  ch=s[i];
+	  if(CharInString(ch,Delimiters)) break;
+  }
+  return i;
+}
+
+char *util::ExtractFileExt(const char *filename,char *outstring)
+{
+  int i = LastDelimiter(".\\:", filename);
+  int len = strlen(filename) - i;
+  if ((i >= 0) && (filename[i] == '.'))
+  {
+	  memcpy(outstring,&filename[i],len);
+	  outstring[len]=0;
+  }
+  else
+  {
+	  outstring[0]=0;
+  }
+  return outstring;
+}
+
+char *util::ExtractFileName(const char *filename,char *outstring)
+{
+  int I = LastDelimiter("\\:", filename)+1;
+  int len=strlen(filename) - I;
+  memcpy(outstring,&filename[I],len);
+  outstring[len]=0;
+  return outstring;
+}
+
+char *util::ExtractFilePath(const char *filename,char *outstring)
+{
+  int I = LastDelimiter("\\:", filename) +1;
+  memcpy(outstring,filename,I);
+  outstring[I]=0;
+  return outstring;
+}
+
+char *util::ChangeFileExt(const char *filename,const char *ext,char *outstring)
+{
+  int I = LastDelimiter(".\\:",filename);
+  if ((I == -1) || (filename[I] != '.'))
+	  I = strlen(filename);
+  memcpy(outstring,filename,I);
+  memcpy(&outstring[I],ext,strlen(ext));
+  outstring[I+strlen(ext)]=0 ;
+  return outstring;
+}
+
+char *util::ExtractFileNameHead(const char *filename,char *outstring)
+{
+	ExtractFileName(filename,outstring);//jxl change
+	for(int i=0; outstring[i]!=0 ;i++)
+	{
+		if(outstring[i]=='.')
+		{
+			outstring[i] = 0;
+			break;
+		}
+	}
+	return outstring;
+}
+BOOL util::FileExists(const char *filename)
+{
+   CFileFind finder;
+   BOOL bWorking = finder.FindFile(filename);
+   while (bWorking)
+   {
+      bWorking = finder.FindNextFile();
+	  if(!finder.IsDirectory())
+		  return TRUE;
+   }
+   return FALSE;
 }
