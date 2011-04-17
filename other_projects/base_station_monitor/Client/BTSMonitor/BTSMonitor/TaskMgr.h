@@ -38,4 +38,8 @@ private:
 	CListCtrl m_lstTask;
 public:
 	void InitTaskLstView(void);
+	CComboBox m_cboDeviceID;
+	CComboBox m_cboChannel;
+	afx_msg void OnCbnSelchangeCboDeviceId();
+	afx_msg void OnBnClickedBtnDeleteTask();
 };
