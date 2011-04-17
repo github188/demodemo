@@ -76,3 +76,18 @@ CString BTSManager::GetCameraUUID(CString sDevName)
 	}
 	return CString("");
 }
+CStringArray& BTSManager::GetChannelsByUUID(CString sUUID)
+{
+	CStringArray sChannels;
+	POSITION pos = btsmap.GetStartPosition();
+	int iKey;
+	BTSInfo* pBTSInfo=NULL;
+	while (pos != NULL)
+	{
+		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
+		if (pBTSInfo && pBTSInfo->uuid == sUUID)
+			sChannels.Append(pBTSInfo->ch_list);
+	}
+	return sChannels;
+
+}
