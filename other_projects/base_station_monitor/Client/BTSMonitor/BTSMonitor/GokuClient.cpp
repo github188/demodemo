@@ -457,30 +457,32 @@ bool GokuClient::Stop_Play(int nVideoID)
 		return true;
 	}
 
+
+	m_pArrVideoCtrl[nVideoID]->bIsBlocking = true; //
 	m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
-	/*	
-	int nRetry = 3; 
-	int i=0;
-	for (;i<nRetry; i++)
+
+	DWORD dwRet = ::WaitForSingleObject(m_pPlayThread[nVideoID]->m_hThread,2000);
+	if (dwRet == WAIT_TIMEOUT)
 	{
-		::Sleep(500); //wait thread eixt by itself
-		if ( m_pArrVideoCtrl[nVideoID]->status==-1)
+		if (m_pArrVideoCtrl[nVideoID]->bIsBlocking)
+			m_pArrVideoCtrl[nVideoID]->socket->CancelSocket();
+
+		//Continue wait another 2s
+		dwRet = ::WaitForSingleObject(m_pPlayThread[nVideoID]->m_hThread,3000);
+		if (dwRet == WAIT_TIMEOUT)
 		{
-			delete m_pArrVideoCtrl[nVideoID];
-			m_pArrVideoCtrl[nVideoID]=NULL;
-			bRet = true;
-			break;
+			if (m_pPlayThread[nVideoID] != NULL && m_pPlayThread[nVideoID]->m_hThread > 0) 
+				::AfxTermThread((HINSTANCE__*)(m_pPlayThread[nVideoID]->m_hThread));
 		}
 	}
-	*/
-
-	bool bRet = false;
-	DWORD dwRet = ::WaitForSingleObject(m_pPlayThread[nVideoID]->m_hThread,8000);
-
-	if (m_pArrVideoCtrl[nVideoID]->status != -1) //thread exit...
+	else
 	{
-		if (m_pPlayThread[nVideoID] != NULL && m_pPlayThread[nVideoID]->m_hThread > 0) 
-			::AfxTermThread((HINSTANCE__*)(m_pPlayThread[nVideoID]->m_hThread));
+		if (m_pArrVideoCtrl[nVideoID]->status != -1) //thread is still not exit...
+		{
+
+			if (m_pPlayThread[nVideoID] != NULL && m_pPlayThread[nVideoID]->m_hThread > 0) 
+				::AfxTermThread((HINSTANCE__*)(m_pPlayThread[nVideoID]->m_hThread));
+		}
 	}
 
 	//::CloseHandle(m_pPlayThread[nVideoID]->m_hThread);
@@ -496,7 +498,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 	m_pArrVideoCtrl[nVideoID]=NULL;
 
 	 	 
-	return bRet;
+	return true;
 }
 
 MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
