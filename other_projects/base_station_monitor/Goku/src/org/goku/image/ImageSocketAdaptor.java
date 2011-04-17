@@ -78,8 +78,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			setDate(client, out, param.get("baseStation"),					
 					param.get("date"));
 		}
-		out.println("");
-		out.println("");
+		out.println("\n\n\n");
 		out.flush();
 	}
 	
