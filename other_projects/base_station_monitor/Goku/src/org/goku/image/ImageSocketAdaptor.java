@@ -273,14 +273,14 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 				out.println("1$Not found base station");
 			}else {
 				
-				final String[] result = new String[]{"3$timeout"};
+				final String[] result = new String[]{"2$timeout"};
 				ImageClientListener l = new AbstractImageListener() {
 					public void message(ImageClientEvent event){
 						if(event.data.len == 2){
 							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
 							if(b.get() == 3 && b.get() == 5){
 								if(event.data.cmd == 2){
-									result[0] = "2$restart failed";
+									result[0] = "3$restart failed";
 								}else if(event.data.cmd == 0){
 									result[0] = "0$restart ok";
 								}
@@ -357,7 +357,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			if(client == null){
 				out.println("1$Not found base station");
 			}else {
-				final String[] result = new String[]{"3$timeout"};
+				final String[] result = new String[]{"2$timeout"};
 				ImageClientListener l = new AbstractImageListener() {
 					public void message(ImageClientEvent event){
 						if(event.data.len == 2){
@@ -366,7 +366,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 							  //&& b.get() == 6 文档上需要检查。设备返回没有这个标志
 							  ){
 								if(event.data.cmd == 2){
-									result[0] = "2$set date failed";
+									result[0] = "3$set date failed";
 								}else if(event.data.cmd == 0){
 									result[0] = "0$set date ok";
 								}
