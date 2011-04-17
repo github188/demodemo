@@ -225,6 +225,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ConfigMgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CriticalWarning.cpp"
 				>
 			</File>
@@ -380,6 +384,10 @@
 			</File>
 			<File
 				RelativePath=".\CameraView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ConfigMgr.h"
 				>
 			</File>
 			<File
@@ -553,11 +561,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\DGM_log2.bmp"
+				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_log2.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_log2.bmp"
+				RelativePath=".\res\DGM_log2.bmp"
 				>
 			</File>
 			<File
@@ -653,11 +661,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
+				RelativePath=".\res\LogOn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\LogOn.ico"
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
 				>
 			</File>
 			<File
