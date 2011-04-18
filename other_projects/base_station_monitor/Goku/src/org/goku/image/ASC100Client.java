@@ -164,6 +164,9 @@ public class ASC100Client {
 						inBuffer.inBuffer.flip();
 						inBuffer.status = ASC100Package.STATUS_CHECKSUM;
 						inBuffer.paddingIndex = 0;
+						
+						//到了校验和阶段始终需要数据转义
+						inBuffer.autoEscaped = true;		
 					}
 					break;
 				case ASC100Package.STATUS_CHECKSUM:
@@ -173,15 +176,13 @@ public class ASC100Client {
 					if(inBuffer.paddingIndex >=2){
 						inBuffer.checkSum =  (short)(((inBuffer.padding[1] << 8) | 0x00ff) & 
 		 			    					          (inBuffer.padding[0]       | 0xff00));
-						log.debug(String.format("read checkSum:0x%x 0x%x",inBuffer.padding[0], inBuffer.padding[1]));
+						//log.debug(String.format("read checkSum:0x%x 0x%x",inBuffer.padding[0], inBuffer.padding[1]));
 						inBuffer.bufferCheckSum = getCheckSum(
 								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)((inBuffer.len >> 8) & 0xff)},
 								inBuffer.inBuffer.asReadOnlyBuffer());
 						processData(inBuffer);
 						inBuffer.status = ASC100Package.STATUS_END;
 						inBuffer.paddingIndex = 0;
-						//无论是否在传图片数据，读到一个包结束始终进入转义状态。
-						inBuffer.autoEscaped = true;
 					}
 					break;
 			}
@@ -270,9 +271,7 @@ public class ASC100Client {
 	}
 	
 	public void processData(ASC100Package data){
-		if(data.checkSum != data.bufferCheckSum 
-				&&(data.checkSum - data.bufferCheckSum) % 256 != 0 //不知道为什么校验马经常相差256
-		  ){
+		if(data.checkSum != data.bufferCheckSum){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 			if(data.cmd == 0x06 && image != null){
 				image.waitingFrames--;
@@ -357,7 +356,7 @@ public class ASC100Client {
 				int[] retry = image.getReTryFrames();
 				image.waitingFrames = retry.length;			
 				if(retry == null || retry.length == 0){
-					log.debug("recevieImageOK..");
+					//log.debug("recevieImageOK..");
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
 					ImageClientEvent event = new ImageClientEvent(this);

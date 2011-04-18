@@ -81,6 +81,7 @@ public class AlarmMonitorCenter implements Runnable {
 	
 	private ImageClientListener alarmListener = new AbstractImageListener(){
 		public void recevieImageOK(final ImageClientEvent event) {
+			log.debug("recevieImageOK, status:" + event.image.imageStatus);
 			if(event.image != null && event.image.imageStatus == 1){
 				//保存图片需要数据库操作和写文件，所以放到线程里面做。
 				executor.execute(new Runnable(){
