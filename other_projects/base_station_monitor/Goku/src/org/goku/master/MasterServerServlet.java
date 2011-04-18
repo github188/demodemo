@@ -262,6 +262,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 		for(String attr: attrs){
 			val = this.getStringParam(request, attr, null);
 			if(val == null)continue;
+			updated.add(attr);
 			try{
 				if(attr.equals("showOrder") || attr.equals("windowID")){
 					task.getClass().getField(attr).set(task, new Integer(val));
