@@ -54,8 +54,12 @@ public class AlarmMonitorCenter implements Runnable {
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
-				if(isRunning){
-					checkAllClient();
+				try{
+					if(isRunning){
+						checkAllClient();
+					}
+				}catch(Throwable e){
+					log.error(e.toString(), e);
 				}
 			}
 		}, 100, 1000 * seconds);
