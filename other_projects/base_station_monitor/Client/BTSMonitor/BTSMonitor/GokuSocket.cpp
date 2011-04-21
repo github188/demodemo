@@ -84,7 +84,6 @@ int GokuSocket::read_buffer(char *buffer, int size)
 	ZeroMemory(buffer, BUFSIZE);
 	int nNum = util::widechar2str(ubuffer, &buffer);
 
-
 	/*/--------------------------------------------------
 	if (len%2)
 	{
@@ -152,6 +151,13 @@ int GokuSocket::connect_server()
 			CLogFile::WriteLog(strError);
 
 			return -1;
+		}
+
+		int timelen=1000;
+		if(cs.SetSockOpt(SO_RCVTIMEO, &timelen, sizeof(int))==0)
+		{
+			int errorno=cs.GetLastError();
+			::MessageBox(NULL, "error", "setsockopt", MB_OK);
 		}
 	}
 
