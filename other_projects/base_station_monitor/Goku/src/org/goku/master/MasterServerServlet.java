@@ -181,7 +181,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 				Collection<VideoTask> list = server.storage.listTask(userObj);
 				response.getWriter().println("0:Video task list$" + list.size());
 				outputVideoTask(list, response.getWriter());
-				response.getWriter().println("");
 			}
 		}		
 	}
@@ -228,7 +227,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}else {
 				saveOrCreateTask(request, userObj.name);
 				response.getWriter().println("0:Save OK");
-				response.getWriter().println("");
 			}
 		}
 	}
@@ -296,7 +294,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 				Collection<BaseStation> list = server.storage.listStation(userObj);
 				response.getWriter().println("0:Base station list$" + list.size());
 				outputStationInfo(list, response.getWriter(), server.routeManager, mode);
-				response.getWriter().println("");
 			}
 		}
 	}
@@ -320,7 +317,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 				Location node = server.storage.getRootLocation(userObj);
 				response.getWriter().println("0:Base station list$" + node.getTreeCount());
 				outputStationTreeInfo(node, response.getWriter(), server.routeManager, mode);
-				response.getWriter().println("");
 			}
 		}
 	}	
