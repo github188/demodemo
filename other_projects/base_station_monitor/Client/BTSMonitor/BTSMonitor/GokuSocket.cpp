@@ -153,7 +153,7 @@ int GokuSocket::connect_server()
 			return -1;
 		}
 
-		int timelen=1000;
+		int timelen=5000;
 		if(cs.SetSockOpt(SO_RCVTIMEO, &timelen, sizeof(int))==0)
 		{
 			int errorno=cs.GetLastError();
