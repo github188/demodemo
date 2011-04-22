@@ -246,20 +246,38 @@ BOOL CCameraView::FindNewTarget(CString sFindStr)
 
 BOOL CCameraView::FindNextTarget(void)
 {
+
+	m_ctrlCameraTree.SetActiveWindow();
+	m_ctrlCameraTree.SetFocus();
+
 	if (m_sFindStr.IsEmpty())
 		return FALSE;
 
 	BOOL bRet = FALSE;
 
 	HTREEITEM hItemFind = NULL;
-	HTREEITEM hItemChild = m_ctrlCameraTree.GetChildItem(m_hItemCurFind);
-	if (hItemChild)
-		hItemFind = FindTarget(hItemChild, m_sFindStr);
 
-	if (hItemFind)
+	//Child's Item need to find.
+	HTREEITEM hItemChild = m_ctrlCameraTree.GetChildItem(m_hItemCurFind);
+	//if (hItemChild)
+	//	hItemFind = FindTarget(hItemChild, m_sFindStr);
+	if(hItemChild)
 	{
-		m_hItemCurFind = hItemFind;
-		return TRUE;
+		while(hItemChild)
+		{
+			hItemFind = FindTarget(hItemChild, m_sFindStr);
+
+			if (hItemFind)
+			{
+				m_hItemCurFind = hItemFind;
+
+				m_ctrlCameraTree.SelectItem(m_hItemCurFind);
+				
+				return TRUE;
+			}
+
+			hItemChild = m_ctrlCameraTree.GetNextSiblingItem(hItemChild);
+		}
 	}
 
 
@@ -271,6 +289,9 @@ BOOL CCameraView::FindNextTarget(void)
 		if (hItemFind)
 		{
 			m_hItemCurFind = hItemFind;
+
+			m_ctrlCameraTree.SelectItem(m_hItemCurFind);
+
 			return TRUE;
 		}
 		hItemBrother=m_ctrlCameraTree.GetNextSiblingItem(hItemBrother);
@@ -293,6 +314,9 @@ BOOL CCameraView::FindNextTarget(void)
 			if (hItemFind)
 			{
 				m_hItemCurFind = hItemFind;
+
+				m_ctrlCameraTree.SelectItem(m_hItemCurFind);
+
 				return TRUE;
 			}
 		}
@@ -343,6 +367,9 @@ HBRUSH CCameraView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 }
 void CCameraView::OnFindBTS()
 {
+	m_ctrlCameraTree.SetActiveWindow();
+	m_ctrlCameraTree.SetFocus();
+
 	CString str;
 	m_pEdtFind ->GetWindowText(str);
 
