@@ -368,7 +368,83 @@ bool GokuClient::confirmAlarm(CString uuid)
 	else
 		return false;
 }
+bool GokuClient::getTaskList(CString& sTaskList)
+{
+	
+	CString sCmd; //="cmd>list_task?sid=";
+	if (!m_nSid)
+		sCmd.Format("cmd>list_task?sid=%d", m_nSid);
+	else
+		sCmd=="cmd>list_task?sid=";
 
+	sCmd.Append("\n");
+
+	CString sMsg;
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return false;
+
+	if (sMsg.IsEmpty())
+		return false;
+
+	CString temp;
+	//util::split_next(sMsg, temp, '$', 0);
+	util::split_next(sMsg, temp, ':', 0);
+	int retval=util::str2int(temp);
+	///------by-liang--------------------------------------
+	if(retval==0)
+	{
+		sTaskList = sMsg;
+		return true;
+	}
+
+	return false;
+}
+bool GokuClient::saveTaskInfo(CString sTaskID, 
+		CString sName, 
+		CString sUUID, 
+		CString sCh, 
+		CString sWindowID, 
+		CString sWeek, 
+		CString sStartDate,
+		CString sEndDate, 
+		CString sStartTime,
+		CString sEndTime,
+		CString sMinShowTime,
+		CString sShowOrder)
+
+{
+	//save_task?taskID=1&name=test&uuid=1004&channel=1&windowID=1&weeks=1,2,3,4&startTime=18:11&endTime=20:11&minShowTime=10&showOrder=10
+	CString sCmd;
+	sCmd.Format("save_task?taskID=%s&name=%s&uuid=%s&channel=%s&windowID=%s&weeks=%s&startDate=%s&endDate=%s&startTime=%s&endTime=%s&minShowTime=%s&showOrder=%s",
+		sTaskID,
+		sName,
+		sUUID,
+		sCh,
+		sWindowID,
+		sWeek,
+		sStartDate,
+		sEndDate,
+		sStartTime,
+		sEndTime,
+		sMinShowTime,
+		sShowOrder);
+	sCmd.Append("\n");
+
+	CString sMsg;
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return false;
+
+	if (sMsg.IsEmpty())
+		return false;
+
+	CString temp;
+	util::split_next(sMsg, temp, '$', 0);
+	int retval=util::str2int(temp);
+	///------by-liang--------------------------------------
+	if(retval==0)
+		return true;
+	return false;
+}
 //VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
 bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
 {
@@ -436,6 +512,57 @@ UINT alarm_getRealAlarm_thread(LPVOID param)
 	return 0;
 
 }
+UINT Command_SendAndReceiveTimer(LPVOID param)
+{
+	GokuSocket *socket = (GokuSocket *)param;
+
+	if (!socket)		return 0;
+
+	bool bAutoWaiting = false;
+
+	bool bRuning = true;
+	while(bRuning)
+	{
+		DWORD dwRet = ::WaitForMultipleObjects(2, socket->m_hEvent, false, socket->GetWaitTime());
+		switch(dwRet)
+		{
+		case WAIT_OBJECT_0: //SetAutoWait....that mean's begin to counting...
+			{
+				bAutoWaiting = true;
+			}
+			break;
+		case WAIT_OBJECT_0+1:
+			{
+				bAutoWaiting = false;
+			}
+			break;
+		case WAIT_OBJECT_0+2:
+			bRuning = false;
+			break;
+		case WAIT_ABANDONED_0:
+			break;
+		case WAIT_ABANDONED_0+1:
+			break;
+		case WAIT_ABANDONED_0+2:
+			break;
+		case WAIT_TIMEOUT:
+			{
+				socket->CancelSocket();
+			}
+			break;
+		case WAIT_FAILED:
+			{
+				DWORD dwError = GetLastError();
+				bRuning = false;
+
+			}
+			break;
+		}
+	}//...while...
+
+	return 0x11;
+}
+
 bool GokuClient::Stop_Play(int nVideoID)
 {
 	if (nVideoID<0 || nVideoID>cnMAX_VV-1)

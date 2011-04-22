@@ -8,6 +8,10 @@
 
 #define IMAGE_PORT	"8003"
 
+
+UINT alarm_getRealAlarm_thread(LPVOID param);
+UINT Command_SendAndReceiveTimer(LPVOID param);
+
 class GokuClient{
 	CString buffer;
 	CString cmd_msg; //last command status.
@@ -32,6 +36,13 @@ public:
 
 		socket = new GokuSocket(primary_server, secondary_server);
 		m_nConnectCode = socket->connect_server();
+		
+		m_pTimerThread = NULL;
+		if (m_nConnectCode>0)
+		{
+			m_pTimerThread = AfxBeginThread(Command_SendAndReceiveTimer, socket);
+		}
+		m_nSid = 0;
 	}
 
 	~GokuClient()
@@ -115,6 +126,7 @@ public:
 			}
 		}
 		*///-----------------------------------------------------------
+		socket->ExitAutoWait();
 
 		delete socket;
 	}
@@ -134,6 +146,21 @@ public:
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
 	
+	//Get Task List Information.
+	bool getTaskList(CString& sTaskList);
+	bool saveTaskInfo(CString sTaskID, 
+		CString sName, 
+		CString sUUID, 
+		CString sCh, 
+		CString sWindowID, 
+		CString sWeek, 
+		CString sStartDate,
+		CString sEndDate, 
+		CString sStartTime,
+		CString sEndTime,
+		CString sMinShowTime,
+		CString sShowOrder);
+
 	//VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
@@ -152,8 +179,8 @@ protected:
 	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV];
 	CWinThread		 *m_pPlayThread[cnMAX_VV];
 
+	CWinThread		 *m_pTimerThread; //Control GoKuSocket
+
 public:
 	bool Stop_Play(int nVideoID);
 };
-
-UINT alarm_getRealAlarm_thread(LPVOID param);

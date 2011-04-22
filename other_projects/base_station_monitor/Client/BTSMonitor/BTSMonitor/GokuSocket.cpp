@@ -2,7 +2,7 @@
 #include "util.h"
 #include "logfile.h"
 #include "GokuSocket.h"
-
+#include "const.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -15,6 +15,8 @@ static char THIS_FILE[] = __FILE__;
 
 int GokuSocket::read_buffer(char *buffer, int size)
 {
+	StartAutoWait(5); //5 second
+
 	//char szBuffer[BUFSIZE];   
 	//ZeroMemory(szBuffer,sizeof(szBuffer)); 
 	
@@ -28,11 +30,38 @@ int GokuSocket::read_buffer(char *buffer, int size)
 
 	///Receive all data ---------------------------------
 	int nTotalRead=0;
-	const int cnLF=0xA;
-	const int cnLD=0XD;
 	int  nRead=0;
 	BOOL bRead=TRUE;
-	int nSpace=0;
+	int  i,nTrimLF, nSpace=0;
+	i = nTrimLF = nSpace = 0;
+	
+	//trim off LF
+	char chLF[2];
+	while(bRead)
+	{
+		nRead = cs.Receive(chLF, 2);
+		if (nRead==0 || SOCKET_ERROR == nRead)
+		{
+			CString sError;
+			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
+			//AfxMessageBox(sError);
+			CLogFile::WriteLog(sError);
+			bRead = FALSE;
+
+			StopAutoWait();
+			return 0;
+		}
+
+		if ( chLF[1] == cnLF)
+			continue;
+
+		break;
+	}
+
+	buffer[0]=chLF[0];
+	buffer[1]=chLF[1];
+	nTotalRead+=nRead;
+	
 	while(bRead)
 	{
 		nSpace = BUFSIZE-nTotalRead;
@@ -43,18 +72,42 @@ int GokuSocket::read_buffer(char *buffer, int size)
 			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
 			AfxMessageBox(sError);
 			bRead = FALSE;
+
+			StopAutoWait();
 			return 0;
 		}
 
 		nTotalRead+=nRead;
-		if (nRead>0 && nTotalRead>4)
+		if (nRead>0 && nTotalRead>=4)
 		{
-			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLD)
+			//------------------------------------liangjl 2011-04-20--------------------------
+			//some time , we will read the end character which is not be read from the pre cmd.
+			/*/so ,here we should throw these messages...
+			if (( *(buffer+1) == cnLF) && ( *(buffer+3) == cnLF) )
+			{
+				for (i=1; i<nTotalRead; i+=2)
+				{
+					if ( *(buffer+i) == cnLF)
+						continue;
+					
+					break;
+				}
+
+				nTrimLF = i-1; //trim LF in front of the sMsg.
+
+				if (nTrimLF==nTotalRead) // this mean, we read nothing..., we should continue read ...
+					continue; //while...
+			}
+			*///---------------------------------------------------------------------------------
+
+
+			if ( ( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnCR)
 					|| (( *(buffer+nTotalRead-1) == cnLF) && ( *(buffer+nTotalRead-3) == cnLF)))
 			{
 				//ofstream ofs("1.data", ios::binary|ios::out);
 				//ofs.write(buffer, nTotalRead);
 				//ofs.close();
+
 				bRead = FALSE;
 				break;
 			}
@@ -70,17 +123,23 @@ int GokuSocket::read_buffer(char *buffer, int size)
 		}
 	}
 
+	StopAutoWait();
+
 	if (nTotalRead >= BUFSIZE)
 		AfxMessageBox("数据缓冲区已满!");
 	///--------------------------------------------------------
 
 	int len = nTotalRead;
+	//int len = nTotalRead - nTrimLF;
+
 	//if (len<0)		return 0; //if socket failed to logon, here will be returned -1, add this to viod crash.
 	if (nTotalRead<0)	return 0;
 	
 	WCHAR *ubuffer=new WCHAR[len];
 	ZeroMemory(ubuffer,sizeof(ubuffer));
-	util::nettolocal(ubuffer, buffer, len);
+	//util::nettolocal(ubuffer, buffer, len);
+	util::nettolocal(ubuffer, buffer, len); //Skip the cnLF character nTrimLF.
+
 	ZeroMemory(buffer, BUFSIZE);
 	int nNum = util::widechar2str(ubuffer, &buffer);
 
