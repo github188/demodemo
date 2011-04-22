@@ -132,6 +132,18 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 	if (pRunTimeWnd)
 		pRunTimeWnd->AckedWarning(m_sUUID);
 
+	//Close Current vedio
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
+	//if(bOpenRet)
+	{
+		pApp->pgkclient->Stop_Play(m_nPopIndex+cnPOP_VEDIO_INDEX);		
+
+		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
+		
+		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);	
+		
+	}
 
 	OnOK();
 }
@@ -238,11 +250,25 @@ void CWarnPopVideo::OnClose()
 	
 	ShowWindow(SW_HIDE);
 	
+
 	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pParent;
 	if (pRunTimeWnd)
 		pRunTimeWnd->DecPopVedioCount();
 
 	m_bShowing = FALSE;
+
+	//Close Current vedio
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
+	//if(bOpenRet)
+	{
+		pApp->pgkclient->Stop_Play(m_nPopIndex+cnPOP_VEDIO_INDEX);		
+
+		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
+		
+		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);	
+		
+	}
 
 	//CDialog::OnClose();
 }
@@ -268,6 +294,7 @@ void CWarnPopVideo::PlayVideo(void)
 
 	//CString host("192.168.1.200:8000");
 	//CString host("127.0.0.1:8000");	
+
 	PLAY_SetStreamOpenMode(m_nPopIndex+cnPOP_VEDIO_INDEX, STREAME_REALTIME);
 	BOOL bOpenRet = PLAY_OpenStream(m_nPopIndex+cnPOP_VEDIO_INDEX,0,0,1024*900);
 	if(bOpenRet)

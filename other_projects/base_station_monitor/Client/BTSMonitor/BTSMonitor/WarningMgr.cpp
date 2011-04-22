@@ -255,12 +255,24 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	}
 	
 	CString strStartTime, strEndTime;
+	
 	int nStartHour = m_cboStartHour.GetCurSel();
-	int nEndHour   = m_cboEndHour.GetCurSel();
-	int nStartMin  = m_cboStartMin.GetCurSel();
-	int nStartSec  = m_cboStartSec.GetCurSel();
-	int nEndMin    = m_cboEndMin.GetCurSel();
+	if (nStartHour == -1) nStartHour = 0;
+
+	int nEndHour = m_cboEndHour.GetCurSel();
+	if (nEndHour == -1)	nEndHour=0;
+
+	int nStartMin = m_cboStartMin.GetCurSel();
+	if (nStartMin == -1) nStartMin = 0;
+
+	int nEndMin = m_cboEndMin.GetCurSel();
+	if (nEndMin == -1)	nEndMin = 0;
+
+	int nStartSec = m_cboStartSec.GetCurSel();
+	if (nStartSec == -1) nStartSec = 0;
+
 	int nEndSec    = m_cboEndSec.GetCurSel();
+	if (nEndSec == -1)	nEndSec = 0;
 	
 	strStartTime.Format("%02d:%02d:%02d",nStartHour,nStartMin,nStartSec);
 	strEndTime.Format("%02d:%02d:%02d",nEndHour,nEndMin,nEndSec);
@@ -275,7 +287,8 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	//pApp->pgkclient->queryAlarmInfo(category,uuid,startDate,starttime,type,level,limit,offset,qalarmStr);
 	//m_btsMgr.buildbtsTree(pApp->btsTotalStr, &m_treeWarnMgr);
 	CString sNameItem = m_treeWarnMgr.GetItemText(m_hItemCurFind);
-	CString sUUID = m_btsMgr.GetCameraUUID(sNameItem); 
+	CString sUUID; // = m_btsMgr.GetCameraUUID(sNameItem); 
+	util::split_next(sNameItem,sUUID,'_',0);
 	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID,strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);
 	if (sQAlarmStr.IsEmpty())
 	{
@@ -284,7 +297,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	}
 
 	//显示相关告警信息在列表中
-	m_alarmMgr.getalarmList(sQAlarmStr);
+	m_alarmMgr.getalarmList(sQAlarmStr,true);
 	CString sLocation, sTemp;
 	int nCount = 0;
 	AlarmInfo* pAlarmInfo = NULL;	
