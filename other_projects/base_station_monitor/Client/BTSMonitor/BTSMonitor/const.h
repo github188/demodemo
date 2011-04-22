@@ -53,4 +53,8 @@ const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
 int play_video(int  sessionId, char * pBuffer, int  len);
 
 const int cnPOP_VEDIO_INDEX = 25;
+
+const int cnLF=0xA;
+const int cnCR=0xD;
+
 #endif //AFX_CONST_H
