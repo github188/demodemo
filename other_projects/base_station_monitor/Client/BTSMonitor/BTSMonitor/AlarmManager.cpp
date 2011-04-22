@@ -51,12 +51,47 @@ AlarmManager::~AlarmManager()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr)
+CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr, bool bAlarmQuery)
 {
 	int ipos=0;
 	int ileft=0, iright=0;
 	CString alarmline;
+	if (bAlarmQuery) //alarmMgr
+	{
+		//remove all data from the list
+		BOOL bRet = FALSE;
+		AlarmInfo*  pAlarmInfo = NULL;
+		POSITION pos = alarmList.GetHeadPosition();
+		int nAlarmCount = alarmList.GetCount();
+		for (int i=0; i<nAlarmCount; i++)
+		{
+			pAlarmInfo = alarmList.GetNext(pos);
+			if ( pAlarmInfo )
+			{
+				delete pAlarmInfo;
+				pAlarmInfo = NULL;
+			}
+		}
+		alarmList.RemoveAll();
+		//add new query alarm to the list
+		while(ipos!=1)
+		{
+			ipos=alarmStr.Find('\n', ileft);
+			if(ipos==-1)
+			{
+				break;
+			}
+			iright=ipos;
+			alarmline=alarmStr.Mid(ileft, iright-ileft+1);
+			ileft=ipos+1;
+			AlarmInfo* alarm=new AlarmInfo(alarmline);
+			alarmList.AddTail(alarm);
+		}
+		
+		return &alarmList;
+	}
 
+	//Real Alarm list
 	//clear old data
 	AlarmInfo* pAlarmTemp=NULL;
 	POSITION pos = curNewAlarmList.GetHeadPosition();
@@ -121,7 +156,6 @@ CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr)
 
 			AlarmInfo* newAlarm=new AlarmInfo(alarmline);
 			curNewAlarmList.AddTail(newAlarm);
-
 		}
 	}
 
