@@ -116,7 +116,8 @@ void CTaskMgr::OnBnClickedBtnTaskAdd()
 		return;
 	}
 
-	//..Add to the Task List
+
+	/*/..Add to the Task List
 	CTaskItem *pObjTask = NULL;
 	VERIFY(pObjTask = new CTaskItem());
 	pObjTask->sName = sTaskName;
@@ -163,6 +164,73 @@ void CTaskMgr::OnBnClickedBtnTaskAdd()
 		pObjTask->status==2 ? "Monitoring" :
 		pObjTask->status==3 ? "Finished": "Unknown";
 	m_lstTask.SetItem(0,8,LVIF_TEXT,sTemp,0,0,0,0);
+	*///-----------------------------------------------------------------------------------------
+
+
+	//...
+	//#TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>
+	//TS:1$test1$1001$1$1$0$0$0$08:30$08:32$10$1$1
+	//TS:2$test2$1002$1$1$0$0$0$08:31$08:31$10$1$2
+	//TS:3$test3$1001$2$2$0$0$1,2,3,4$08:32$11:23$3$1$1
+	CString sTaskID, sUUID, sWeek,  sStartTime, sEndTime, sMinShowTime, sShowOrder;
+	CString sTemp, sBTSName;
+	int pos = util::split_next(sDevice,sTemp,'_',0);
+	sUUID = sTemp;
+	pos= util::split_next(sDevice,sTemp,'_',pos+1);
+	sBTSName = sTemp;
+	pos= util::split_next(sCh,sTemp,':',0);
+	sCh = sTemp;
+
+	sStartTime.Format("%02d:%02d:%02d",sBeginHH,sBeginMM,sBeginSS);
+	sEndTime.Format("%02d:%02d:%02d",sEndHH,sEndMM,sEndSS);
+
+	int nStatus = 2;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if( pApp->pgkclient->saveTaskInfo(sTaskID, sTaskName, sUUID, sCh, sVV,  sWeek,  sBeginDate, sEndDate,  sStartTime, sEndTime, sMinShowTime, sShowOrder))
+	{
+
+		//sTaskID 
+		//m_lstTask.SetItem(0,0,LVIF_TEXT,sTaskID,0,0,0,0); //taskname
+
+		m_lstTask.InsertItem(0,"");
+		m_lstTask.SetItem(0,0,LVIF_TEXT,sTaskName,0,0,0,0); //taskname
+		
+		m_lstTask.SetItem(0,1,LVIF_TEXT,sDevice,0,0,0,0); //sUUID_BTSName
+
+		m_lstTask.SetItem(0,2,LVIF_TEXT,sCh,0,0,0,0); //sCH
+
+		m_lstTask.SetItem(0,3,LVIF_TEXT,sVV,0,0,0,0);//nVV, WinID
+
+		//startDate
+		m_lstTask.SetItem(0,4,LVIF_TEXT,sBeginDate,0,0,0,0);
+
+		 //endDate
+		m_lstTask.SetItem(0,5,LVIF_TEXT,sEndDate,0,0,0,0);
+
+		 //weeks
+		//m_lstTask.SetItem(0,6,LVIF_TEXT,weeks,0,0,0,0);
+
+		//starttime
+		m_lstTask.SetItem(0,6,LVIF_TEXT,sStartTime,0,0,0,0);
+
+		//endtime
+		m_lstTask.SetItem(0,7,LVIF_TEXT,sEndTime,0,0,0,0);
+
+		//minShowTime
+		//m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+
+		//showOrder
+		//m_lstTask.SetItem(0,7,LVIF_TEXT,showOrder,0,0,0,0);
+
+		//sTemp = pObjTask->status==1 ? "Waiting" :
+		//	pObjTask->status==2 ? "Monitoring" :
+		//	pObjTask->status==3 ? "Finished": "Unknown";
+		CString sStatus = nStatus==1 ? "runing" : 
+			nStatus==2 ? "idle" :
+			nStatus==9 ? "finished" : "unknown";
+		m_lstTask.SetItem(0,8,LVIF_TEXT,sStatus,0,0,0,0);
+	}
 }
 
 BOOL CTaskMgr::OnInitDialog()
@@ -266,7 +334,7 @@ void CTaskMgr::InitTaskLstView(void)
 
 	m_cboChannel.ResetContent();
 
-	//Init the listview
+	/*/Init the listview--------------------------------------------
 	CObArray* pObjArray = m_gConfigMgr.GetTaskList();
 	int nTaskCount = 0;
 	CTaskItem *pObjTask = NULL;
@@ -300,7 +368,88 @@ void CTaskMgr::InitTaskLstView(void)
 
 		}
 	}
-	
+	*///-------------------------------------------------------------
+	CString sTaskList;
+	if ( pApp->pgkclient->getTaskList(sTaskList))
+	{
+		//#TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>
+		//TS:1$test1$1001$1$1$0$0$0$08:30$08:32$10$1$1
+		//TS:2$test2$1002$1$1$0$0$0$08:31$08:31$10$1$2
+		//TS:3$test3$1001$2$2$0$0$1,2,3,4$08:32$11:23$3$1$1
+
+		//1.status＝ '1', "运行状态"，status='2', "暂停运行"
+		//2. 如果status=9, 根据taskID删除一个计划任务。   
+
+		CString temp;
+		int pos = util::split_next(sTaskList, temp, '$', 0);
+		pos = util::split_next(sTaskList, temp, '\n', pos+1);
+		int nTaskCount = atoi(temp);
+		CString sOneTask;
+		for(i=0; i<nTaskCount; i++)
+		{
+			pos = util::split_next(sTaskList, sOneTask, '\n', pos+1);
+			if (sOneTask.IsEmpty())
+				break;
+			
+			//taskID 
+			int posLine = util::split_next(sOneTask, temp, '$', 0);
+			//..
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //Name
+			m_lstTask.InsertItem(0,"");
+			m_lstTask.SetItem(0,0,LVIF_TEXT,temp,0,0,0,0);
+			
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //sUUID
+			POSITION position = pApp->pgkclient->btsmanager.btsmap.GetStartPosition();
+			int iKey;
+			BTSInfo *pBTSInfo=NULL;
+			while (position != NULL)
+			{
+				pApp->pgkclient->btsmanager.btsmap.GetNextAssoc(position, iKey, pBTSInfo);
+				if (pBTSInfo && (pBTSInfo->uuid ==temp) )
+					break;
+			}
+			m_lstTask.SetItem(0,1,LVIF_TEXT,temp +"_"+pBTSInfo->name,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //sCh
+			m_lstTask.SetItem(0,2,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //nVV, WinID
+			m_lstTask.SetItem(0,3,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //startDate
+			m_lstTask.SetItem(0,4,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //endDate
+			m_lstTask.SetItem(0,5,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //weeks
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //starttime
+			//sTemp.Format("%02d:%02d:%02d",pObjTask->nBeginHour,pObjTask->nBeginMin,pObjTask->nBeginSec);
+			m_lstTask.SetItem(0,6,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //starttime
+			//sTemp.Format("%02d:%02d:%02d",pObjTask->nEndHour,pObjTask->nEndMin,pObjTask->nEndSec);
+			m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //minShowTime
+			//m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //showOrder
+			//m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+
+			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //status
+			//sTemp = pObjTask->status==1 ? "Waiting" :
+			//	pObjTask->status==2 ? "Monitoring" :
+			//	pObjTask->status==3 ? "Finished": "Unknown";
+			int nStatus = atoi(temp);
+			CString sStatus = nStatus==1 ? "runing" : 
+				nStatus==2 ? "idle" :
+				nStatus==9 ? "finished" : "unknown";
+			m_lstTask.SetItem(0,8,LVIF_TEXT,sStatus,0,0,0,0);
+		}
+	}
+
 
 }
 

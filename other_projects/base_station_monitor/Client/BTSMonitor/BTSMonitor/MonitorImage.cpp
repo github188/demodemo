@@ -45,7 +45,7 @@ bool MonitorImage::getNextImage()
 	sCmd.Append("img>next_image?session=");
 	sCmd.Append(session);
 	if ( !mSock->SendCmdAndRecvMsg(sCmd,sMsg) )
-			return false;
+		return false;
 	CString line;
 	int ileft=0, iright=0, ipos=0;
 	ipos=sMsg.Find('\n', ileft);

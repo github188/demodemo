@@ -101,7 +101,8 @@ bool CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 	{
 		CString sError;
 		sError.Format("数据发送失败！网络可能出现问题,错误代码:%d",  GetLastError());
-		AfxMessageBox(sError);
+		//AfxMessageBox(sError);
+		//CLogFile::WriteLog(sCmd+"_"+sError);
 		return false;
 		//Need to close socket, and ReOpen(),  Close();??
 	}
