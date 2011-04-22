@@ -271,8 +271,9 @@ void CTaskMgr::InitTaskLstView(void)
 		"任务状态" //等待、执行中、完成
 	};
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
+	int nWidth[] = {88,168,28,28,168,168,128,128,58};
 	for (int i=0; i<nCnt; i++)
-		m_lstTask.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 88);
+		m_lstTask.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
 
 
 	int i=0;

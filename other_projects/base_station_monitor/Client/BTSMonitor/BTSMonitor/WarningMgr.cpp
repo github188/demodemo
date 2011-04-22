@@ -87,9 +87,10 @@ BOOL CWarningMgr::OnInitDialog()
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
+	int nWidth[] = {68,160,68,68,68,180,180,68,0};
 	int i=0;
 	for (; i<nCnt-1; i++)
-		m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 100);
+		m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
 	m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 0);
 	
 
@@ -118,13 +119,13 @@ BOOL CWarningMgr::OnInitDialog()
 	
 	//Init Warning Type
 	m_cboWarnType.ResetContent();
-	m_cboWarnType.AddString("");
 	m_cboWarnType.AddString("所有告警"); //all
-	m_cboWarnType.AddString("视频遮掩"); //1000　未定义
-	m_cboWarnType.AddString("红外");     //1001 未定义
-	m_cboWarnType.AddString("视频丢失"); //1002
-	m_cboWarnType.AddString("动态侦测"); //1003
+	m_cboWarnType.AddString("外部报警"); //1001 
+	m_cboWarnType.AddString("视频丢失"); //1002 
+	m_cboWarnType.AddString("动态检测"); //1003 
+	m_cboWarnType.AddString("硬盘错误"); //1004
 	m_cboWarnType.AddString("连接超时"); //2001
+	m_cboWarnType.AddString("图片告警"); //5001
 
 	//Init Ack type
 	m_cboWarnAckType.ResetContent();
@@ -222,11 +223,12 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	//int nWarnLevel = m_cboWarnType.GetCurSel();
 	int nCategory = m_cboWarnType.GetCurSel();
 	CString sCategory = (nCategory == 0) ? "all" :
-						(nCategory == 1) ? "1000":
-						(nCategory == 2) ? "1001":
-						(nCategory == 3) ? "1002":
-						(nCategory == 4) ? "1003":
-						(nCategory == 5) ? "2001": "all";
+						(nCategory == 1) ? "1001":
+						(nCategory == 2) ? "1002":
+						(nCategory == 3) ? "1003":
+						(nCategory == 4) ? "1004":
+						(nCategory == 5) ? "2001":
+						(nCategory == 6) ? "5001":"all";
 
 
 	int nAckType   = m_cboWarnAckType.GetCurSel();
@@ -498,14 +500,27 @@ BOOL CWarningMgr::FindNextTarget(void)
 	BOOL bRet = FALSE;
 
 	HTREEITEM hItemFind = NULL;
+	//Child's Item need to find.
 	HTREEITEM hItemChild = m_treeWarnMgr.GetChildItem(m_hItemCurFind);
-	if (hItemChild)
-		hItemFind = FindTarget(hItemChild, m_sFindStr);
-
-	if (hItemFind)
+	//if (hItemChild)
+	//	hItemFind = FindTarget(hItemChild, m_sFindStr);
+	if(hItemChild)
 	{
-		m_hItemCurFind = hItemFind;
-		return TRUE;
+		while(hItemChild)
+		{
+			hItemFind = FindTarget(hItemChild, m_sFindStr);
+
+			if (hItemFind)
+			{
+				m_hItemCurFind = hItemFind;
+
+				m_treeWarnMgr.SelectItem(m_hItemCurFind);
+				
+				return TRUE;
+			}
+
+			hItemChild = m_treeWarnMgr.GetNextSiblingItem(hItemChild);
+		}
 	}
 
 
