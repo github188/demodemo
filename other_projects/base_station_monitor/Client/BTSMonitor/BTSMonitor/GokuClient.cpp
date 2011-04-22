@@ -628,10 +628,8 @@ bool GokuClient::Stop_Play(int nVideoID)
 	return true;
 }
 
-MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
+MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno)
 {
-	MonitorImage *pImage=new MonitorImage();
-
 	//CString ip;
 	//int pos=util::split_next(binfo->route, ip, ':',0);
 	//ip.Append(":");
@@ -640,6 +638,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
 	GokuSocket *imageSock=new GokuSocket(binfo->route, binfo->route);
 	if(imageSock->connect_server()>0)
 	{
+		MonitorImage *pImage=new MonitorImage();
+		pImage->mSock=imageSock;
 		CString sCmd;
 		sCmd.Append("img>real_image?");
 		sCmd.Append("baseStation=");
@@ -651,13 +651,22 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
 		
 		CString sMsg;
 		if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-			return false;
+		{
+			delete pImage;
+			return NULL;
+		}
 		CString line;
 		int ileft=0, iright=0, ipos=0;
 		ipos=sMsg.Find('\n', ileft);
 		line=sMsg.Mid(ileft, ipos-ileft+1);
 		//get the session.
 		pImage->getSessionFromLine(line);
+		*errno=util::str2int(pImage->errcode);
+		if(*errno!=0)
+		{
+			delete pImage;
+			return NULL;
+		}
 		ileft=ipos;
 		ipos=sMsg.Find('\n', ileft+1);
 		line=sMsg.Mid(ileft+1, ipos-ileft);
@@ -669,9 +678,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo)
 	return NULL;
 }
 
-MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
+MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID, int *errno)
 {
-	MonitorImage *pImage=new MonitorImage();
 	CString ip;
 	int pos=util::split_next(host, ip, ':',0);
 	ip.Append(":");
@@ -681,6 +689,7 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 	CSimpleSocket *imageSock=new CSimpleSocketImpl(ip, ip);
 	if(imageSock->connect_server()>0)
 	{
+		MonitorImage *pImage=new MonitorImage();
 		pImage->mSock=imageSock;
 		CString sCmd;
 		sCmd.Append("img>alarm_image?");
@@ -689,16 +698,25 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID)
 		sCmd.Append("\n");
 		//sCmd.Append("&");
 		//sCmd.Append("encode=raw\n");
-		
 		CString sMsg;
 		if ( !imageSock->SendCmdAndRecvMsg(sCmd,sMsg) )
+		{
+			delete pImage;
 			return NULL;
+		}
+		
 		CString line;
 		int ileft=0, iright=0, ipos=0;
 		ipos=sMsg.Find('\n', ileft);
 		line=sMsg.Mid(ileft, ipos-ileft+1);
 		//get the session.
 		pImage->getSessionFromLine(line);
+		*errno=util::str2int(pImage->errcode);
+		if(*errno!=0)
+		{
+			delete pImage;
+			return NULL;
+		}
 		ileft=ipos;
 		ipos=sMsg.Find('\n', ileft+1);
 		line=sMsg.Mid(ileft+1, ipos-ileft);

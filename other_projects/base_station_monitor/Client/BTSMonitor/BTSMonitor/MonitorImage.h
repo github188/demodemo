@@ -17,6 +17,7 @@ class MonitorImage
 	char* data;
 
 public:
+	CString errcode;
 	CSimpleSocket *mSock;
 
 	MonitorImage()
@@ -29,6 +30,7 @@ public:
 		channel="";
 		session="";
 		status="";
+		errcode="0";
 		data=NULL;
 	}
 
@@ -52,7 +54,7 @@ public:
 	{
 		int pos=0;
 		CString tmp;
-		pos=util::split_next(line, tmp, '$', 0);
+		pos=util::split_next(line, errcode, '$', 0);
 		pos=util::split_next(line, tmp, '$', pos+1);
 		pos=util::split_next(line, session, '$', pos+1);
 	}

@@ -167,8 +167,8 @@ public:
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
-	MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo);
-	MonitorImage* getAlarmImagebyBase64(CString alarmID);
+	MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno);
+	MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
 protected:
 	int execute_command(CString &cmd);
 	CString host;
