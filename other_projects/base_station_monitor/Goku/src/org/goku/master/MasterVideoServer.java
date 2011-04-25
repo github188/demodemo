@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.RouteServer;
+import org.goku.core.model.SimpleCache;
 import org.goku.core.model.SystemLog;
 import org.goku.db.DataStorage;
 import org.goku.http.SimpleHTTPServer;
@@ -35,6 +36,11 @@ public class MasterVideoServer {
 	public RouteServerManager routeManager = null;
 	public VideoRecorderManager recordManager = null;
 	public VideoTaskManager taskManager = null;
+	/**
+	 * 基站告警屏蔽列表。把需要屏蔽告警的基站放到Cache里面，在查询实时告警时，过滤出
+	 * 在Cache里面基站相关的告警。例如Cache的超时机制实现告警的自动过期。
+	 */
+	public SimpleCache stopAlarm = new SimpleCache();
 	private boolean running = true;
 	
 	private ThreadPoolExecutor threadPool = null;

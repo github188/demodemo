@@ -18,16 +18,16 @@ public class TestImageInfo {
 		ByteBuffer buf = ByteBuffer.allocate(2);
 		info.setFameCount(10);
 		info.setDataSize(20);
-		assertArrayEquals(info.getReTryFrames(), new int[]{1,2,3,4,5,6,7,8,9,10});
+		assertArrayEquals(new int[]{1,2,3,4,5,6,7,8,9}, info.getReTryFrames());
 		
 		info.recieveData(1, buf);
 		info.recieveData(2, buf);
 		
-		info.recieveData(10, buf);		
-		assertArrayEquals(info.getReTryFrames(), new int[]{3,4,5,6,7,8,9});
+		info.recieveData(9, buf);		
+		assertArrayEquals(new int[]{3,4,5,6,7,8}, info.getReTryFrames());
 		
 		info.recieveData(5, buf);
-		assertArrayEquals(info.getReTryFrames(), new int[]{3,4,6,7,8,9});
+		assertArrayEquals(new int[]{3,4,6,7,8}, info.getReTryFrames());
 	}
 	
 	
@@ -39,8 +39,8 @@ public class TestImageInfo {
 		ImageInfo info = new ImageInfo();
 		ByteBuffer buf = ByteBuffer.allocate(2);
 		info.setFameCount(5);
-		info.setDataSize(10);		
-		assertArrayEquals(info.getReTryFrames(), new int[]{1,2,3,4,5});		
+		info.setDataSize(8);		
+		assertArrayEquals(new int[]{1,2,3,4}, info.getReTryFrames());		
 		assertEquals(info.haveMoreData(), true);
 		
 		buf.clear();buf.put(new byte[]{1,1});buf.flip();	
@@ -49,22 +49,22 @@ public class TestImageInfo {
 		buf.clear();buf.put(new byte[]{2,2});buf.flip();	
 		info.recieveData(2, buf);
 		
-		buf.clear();buf.put(new byte[]{5,5});buf.flip();		
-		info.recieveData(5, buf);
-
+		//buf.clear();buf.put(new byte[]{5,5});buf.flip();		
+		//info.recieveData(5, buf);
+		buf.clear();buf.put(new byte[]{4,4});buf.flip();		
+		info.recieveData(4, buf);
+		
 		buf.clear();buf.put(new byte[]{3,3});buf.flip();		
 		info.recieveData(3, buf);
 
-		buf.clear();buf.put(new byte[]{4,4});buf.flip();		
-		info.recieveData(4, buf);
 		
 				
 		assertEquals(info.haveMoreData(), false);
 		info.buffer.position(0);
 		
 		byte[] data = new byte[info.buffer.remaining()];
-		info.buffer.get(data);		
-		assertArrayEquals(data, new byte[]{1,1,2,2,3,3,4,4,5,5});				
+		info.buffer.get(data);
+		assertArrayEquals(new byte[]{1,1,2,2,3,3,4,4}, data);				
 	}	
 
 }

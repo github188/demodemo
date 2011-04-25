@@ -356,6 +356,10 @@ public class MasterServerServlet extends BaseRouteServlet{
 						filter.put("lastUpdateTime__>=", new Date(System.currentTimeMillis()));
 						filter.put("extra_where_1", " or (alarmStatus = 1)");
 					}
+					//如果有屏蔽告警的基站。
+					if(server.stopAlarm.keys().size() > 0){
+						filter.put("baseStation__not in", server.stopAlarm.keys());
+					}
 					
 					userObj.lastRealAlarmTime = new Date(System.currentTimeMillis());
 				}
@@ -410,6 +414,23 @@ public class MasterServerServlet extends BaseRouteServlet{
 				}
 				outputAlarmList(alarms, response.getWriter());
 			}
+		}
+	}
+	
+	public void stop_alarm(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String baseStation = this.getStringParam(request, "baseStation", null);
+		int timeout = this.getIntParam(request, "timeout", 0);
+		
+		if(baseStation == null){
+			response.getWriter().println("-2:Parameter error");
+		}else {
+			if(timeout == 0){
+				server.stopAlarm.remove(baseStation);
+			}else {
+				server.stopAlarm.set(baseStation, baseStation, timeout * 60);
+			}
+			response.getWriter().println("0:OK$" + timeout);
 		}
 	}
 	

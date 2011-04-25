@@ -64,27 +64,6 @@ public class TestASC100Client {
 	}
 	
 	/**
-	 * 测试：图片数据没有转义数据。
-	 * <cmd>:<len>:<data>:<checksum>
-	 */
-	@Test
-	public void test_ProcessSimpleClientPackageNoEscape(){
-		ByteBuffer data = ByteBuffer.allocate(100);
-		data.put(new byte[]{(byte)0xff, 0x06, 0x04, 0x00, 0x06, (byte)0xff, (byte)0xfd, (byte)0xf7, (byte)0xfd, (byte)0xff, (byte)0xfe});
-		data.flip();
-		
-		testClient.process(data);
-		
-		assertEquals("Not found processed package.", 1, packages.size());
-		assertEquals("Check package command.", 0x06, packages.get(0).cmd);
-		assertEquals("Check package data length.", 0x04, packages.get(0).len);
-		
-		byte[] readData = new byte[packages.get(0).inBuffer.remaining()];
-		packages.get(0).inBuffer.get(readData);
-		assertArrayEquals("Check data without escape.", new byte[]{0x06, (byte)0xff, (byte)0xfd, (byte)0xf7}, readData);
-	}	
-	
-	/**
 	 * 测试：错误的包格式应该可以自动修正，丢弃错误数据.
 	 * <cmd>:<len>:<data>:<checksum>
 	 */

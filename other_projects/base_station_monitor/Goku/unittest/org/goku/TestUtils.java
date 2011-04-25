@@ -7,6 +7,7 @@ import org.junit.Ignore;
 
 @Ignore
 public class TestUtils {
+
 	
 	@SuppressWarnings("rawtypes")
 	public static Object invokePrivateMethod(Object obj, String methodName, Object params[]) {
@@ -14,7 +15,10 @@ public class TestUtils {
 		for(int i = 0; i < cls.length; i++){
 			cls[i] = params[i].getClass();
 		}
-		
+		return invokePrivateMethod(obj, methodName, params, cls);
+	}
+	@SuppressWarnings("rawtypes")
+	public static Object invokePrivateMethod(Object obj, String methodName, Object params[], Class[] cls) {		
 		Method method = null;
 		Object ret = null;
 		try {

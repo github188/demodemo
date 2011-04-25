@@ -1,5 +1,7 @@
 package org.goku.core.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +38,14 @@ public class SimpleCache {
 	
 	public void remove(String key){
 		cache.remove(key);
-	}	
+	}
+	
+	public Collection<String> keys(){
+		Collection<String> ks = new ArrayList<String>();
+		cleanObject();
+		ks.addAll(cache.keySet());
+		return ks;
+	}
 	
 	private void cleanObject(){
 		Vector<String> keys = new Vector<String>();

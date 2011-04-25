@@ -61,7 +61,7 @@ public class ImageInfo {
 			ack[frame -1] = 1;
 		}
 		
-		if(frame == 1){
+		if(frame == 1 && buffer.position() > 32){
 			byte[] date = new byte[14];
 			buffer.position(0x18);
 			buffer.get(date);

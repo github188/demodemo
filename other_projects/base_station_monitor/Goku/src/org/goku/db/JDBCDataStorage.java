@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -366,6 +367,13 @@ public class JDBCDataStorage extends DataStorage {
 			String x = String.format("STR_TO_DATE('%s',", format.format((Date)val));
 			x += "'%Y-%m-%d %H:%i:%s')";
 			return x;
+		}else if(val instanceof Collection){
+			StringBuffer b = new StringBuffer();
+			for(Iterator<Object> iter = ((Collection)val).iterator(); iter.hasNext();){
+				if(b.length() > 0){b.append(",");}
+				b.append(toSQLValue(iter.next()));
+			}
+			return "(" + b.toString() + ")";
 		}else {
 			return String.format("%s", val);
 		}
