@@ -16,7 +16,7 @@ public class BaseStation  implements JSONStreamAware{
 	public static final String ORM_TABLE = "base_station";
 	public static final String[] ORM_FIELDS = new String[]{"uuid", "name", "connectionStatus",
 		"groupName", "routeServer", "locationId", 
-		"lastUpdate", "lastActive", "createDate",
+		"lastUpdate", "lastActive", "createDate", "lastDownVideo",
 		"alarmStatus",
 		"devType",
 		"channels", "btsCategory", "locationUUID", "supportAlarm"};
@@ -70,6 +70,11 @@ public class BaseStation  implements JSONStreamAware{
 	 * 基站配置信息的创建时间。
 	 */	
 	public Date createDate;
+
+	/**
+	 * 最后一次下载录像的时间。
+	 */
+	public Date lastDownVideo;
 	
 	/**
 	 * 最后活动时间，用来计算心跳时间。

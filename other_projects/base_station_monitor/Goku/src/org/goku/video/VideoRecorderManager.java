@@ -1,6 +1,9 @@
 package org.goku.video;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -17,6 +20,7 @@ import org.goku.core.model.MonitorChannel;
 import org.goku.db.DataStorage;
 import org.goku.settings.Settings;
 import org.goku.video.odip.MonitorClient;
+import org.goku.video.odip.RecordFileInfo;
 
 /**
  * 管理视频录像。
@@ -45,6 +49,51 @@ public class VideoRecorderManager implements Runnable{
 		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);
 		
 		alarmTimeOut = settings.getInt(Settings.AUTO_CONFIRM_TIME, 5);
+	}
+	
+	
+	/**
+	 * 下载告警录像
+	 * @param client
+	 * @param alarm
+	 * @return
+	 * @throws IOException 
+	 */
+	public void downloadAlarmRecord(MonitorClient client, AlarmRecord alarm, RecordFileInfo info) throws IOException{
+		Date startTime = new Date();
+		String path = getSavePath(startTime, client.info.uuid, alarm.user, alarm.alarmCode, alarm.channelId);
+		alarm.videoPath = path;
+		alarm.generatePK();
+		storage.save(alarm);
+		
+		OutputStream os = new FileOutputStream(new File(rootPath, path));
+		client.downloadByRecordFile(info, os, true);
+		os.close();		
+	}
+	
+	public AlarmRecord findAlarmByTime(String uuid, int ch, Date start, Date end){
+		/*
+		public String baseStation = "";
+		public String channelId = ""; //发生告警的通道号
+		public Date startTime = null;
+		public Date endTime = null;		
+		*/
+		String filter = "baseStation=${0} and channelId=${1} and (startTime > ${2} and startTime < ${3}) and " +
+				"(endTime > ${4} and endTime < ${5})";
+		Object[] param = new Object[6];
+		param[0] = uuid;
+		param[1] = ch;
+		param[2] = new Date(start.getTime() - 1000 * 5);
+		param[3] = new Date(start.getTime() + 1000 * 5);
+
+		param[4] = new Date(end.getTime() - 1000 * 5);
+		param[5] = new Date(end.getTime() + 1000 * 5);
+		
+		Collection xx = storage.list(AlarmRecord.class, filter, param);
+		if(xx.size() > 0){
+			return (AlarmRecord)xx.iterator().next();
+		}
+		return null;
 	}
 	
 	/**

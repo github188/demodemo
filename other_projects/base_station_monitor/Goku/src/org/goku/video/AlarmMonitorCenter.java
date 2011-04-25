@@ -1,5 +1,6 @@
 package org.goku.video;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
+import org.goku.core.model.MonitorChannel;
 import org.goku.core.model.SystemReload;
 import org.goku.db.DataStorage;
 import org.goku.settings.Settings;
@@ -20,6 +22,7 @@ import org.goku.video.odip.AbstractMonitorListener;
 import org.goku.video.odip.MonitorClient;
 import org.goku.video.odip.MonitorClientEvent;
 import org.goku.video.odip.MonitorClientListener;
+import org.goku.video.odip.RecordFileInfo;
 
 /**
  * Alarm管理中心，检测Alarm，自动收集告警录像，自动清理过期录像。
@@ -130,11 +133,78 @@ public class AlarmMonitorCenter implements Runnable{
 	}
 	
 	private MonitorClientListener alarmListener = new AbstractMonitorListener(){
+		/**
+		 * 在登录成功后，自动开始下载视频录像。
+		 */
+		public void loginOK(final MonitorClientEvent event){
+			executor.execute(new DownloadVideoHandler(event.client,
+					VideoRouteServer.getInstance().recordManager
+					));
+		}
+		
 		@Override
 		public void alarm(MonitorClientEvent event) {
 			executor.execute(new AlarmHandler(event.client, event.alarms));
 		}
 	};
+
+	class DownloadVideoHandler implements Runnable{
+		private MonitorClient client = null;
+		private VideoRecorderManager recordManager = null;
+		public DownloadVideoHandler(MonitorClient client, VideoRecorderManager rm){
+			this.client = client;
+			this.recordManager = rm;
+		}
+		
+		@Override
+		public void run() {
+			try{
+				if(client.info.lastDownVideo != null){
+					for(MonitorChannel ch: client.info.getChannels()){
+						downLoadOneChannel(ch.id, client.info.lastDownVideo);
+					}
+				}
+				client.info.lastDownVideo = new Date(System.currentTimeMillis());
+				DataStorage storage = VideoRouteServer.getInstance().storage;
+				storage.save(client.info, new String[]{"lastDownVideo"});
+			}catch(Throwable e){
+				log.error(e.toString(), e);
+			}
+		}
+		
+		public void downLoadOneChannel(int channel, Date start) throws IOException{
+			Collection<RecordFileInfo> records = client.queryRecordFile(channel, 0, start);
+			for(RecordFileInfo file: records){
+				//小于100K的视频下载了也看不见。没有用
+				if(file.fileSize < 1000 * 100) continue;
+				if(recordManager.findAlarmByTime(client.info.uuid, channel, 
+						file.startTime, file.endTime) != null) {
+					continue;
+				}
+				recordManager.downloadAlarmRecord(client, 
+						createAlarmRecord(file), file);
+			}
+		}
+		
+		public AlarmRecord createAlarmRecord(RecordFileInfo file){
+			AlarmRecord record = new AlarmRecord();
+			record.baseStation = client.info.uuid;
+			
+			record.channelId = file.channel + "";
+			record.startTime = file.startTime;
+			record.endTime = file.endTime;
+			
+			AlarmDefine alarm = AlarmDefine.alarm(AlarmDefine.AL_1001);			
+			record.alarmCode = alarm.alarmCode;
+			record.alarmCategory = alarm.alarmCategory;
+			record.alarmLevel = alarm.alarmLevel;
+			record.combineUuid = "download";
+			record.alarmStatus = "2";
+			
+			return record;
+		}
+
+	}
 	
 	class AlarmHandler implements Runnable{
 		private MonitorClient client = null;
