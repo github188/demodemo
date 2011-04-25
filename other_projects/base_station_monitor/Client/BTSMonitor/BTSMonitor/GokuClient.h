@@ -169,6 +169,8 @@ public:
 
 	MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno);
 	MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
+
+	int stop_Alarm(CString btsid, CString timeout);
 protected:
 	int execute_command(CString &cmd);
 	CString host;

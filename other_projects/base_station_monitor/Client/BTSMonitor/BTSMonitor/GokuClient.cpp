@@ -733,3 +733,27 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID, int *errno)
 	}
 	return NULL;
 }
+
+int GokuClient::stop_Alarm(CString btsid, CString timeout)
+{
+	CString sCmd;
+	sCmd.Empty();
+	sCmd.Append("cmd>stopalarm?baseStation=");
+	sCmd.Append(btsid);
+	sCmd.Append("&timeout=");
+	sCmd.Append(timeout);
+	sCmd.Append("\n");
+
+	CString sMsg;
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg))
+		return -1;
+
+	if (sMsg.IsEmpty())
+		return -3;
+
+	CString temp;
+	int pos=util::split_next(sMsg, temp, '$', 0);
+	int retval=util::str2int(temp);
+	
+	return retval;
+}
