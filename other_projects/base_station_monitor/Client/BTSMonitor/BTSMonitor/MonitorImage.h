@@ -32,6 +32,7 @@ public:
 		status="";
 		errcode="0";
 		data=NULL;
+		mSock=NULL;
 	}
 
 	~MonitorImage()
@@ -47,6 +48,10 @@ public:
 		if(data!=NULL)
 		{
 			delete[] data;
+		}
+		if(mSock!=NULL)
+		{
+			delete mSock;
 		}
 	}
 
