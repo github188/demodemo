@@ -91,3 +91,34 @@ CStringArray& BTSManager::GetChannelsByUUID(CString sUUID)
 	return sChannels;
 
 }
+
+CString BTSManager::GetRouteByUUID(CString sUUID)
+{
+	POSITION pos = btsmap.GetStartPosition();
+	int iKey;
+	BTSInfo* pBTSInfo=NULL;
+	while (pos != NULL)
+	{
+		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
+		if (pBTSInfo && pBTSInfo->uuid == sUUID)
+			return pBTSInfo->route;
+	}
+
+	return CString("");
+
+}
+
+BTSInfo* BTSManager::GetBTSInfoByUUID(CString sUUID)
+{
+	POSITION pos = btsmap.GetStartPosition();
+	int iKey;
+	BTSInfo* pBTSInfo=NULL;
+	while (pos != NULL)
+	{
+		btsmap.GetNextAssoc( pos, iKey, pBTSInfo);
+		if (pBTSInfo && pBTSInfo->uuid == sUUID)
+			return pBTSInfo;
+	}
+
+	return NULL;
+}

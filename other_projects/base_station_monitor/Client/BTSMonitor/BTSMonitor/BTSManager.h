@@ -28,6 +28,10 @@ public:
 	CString GetCameraPlace(CString sBtsID);
 	CString GetCameraUUID(CString sDevName);
 	CStringArray& GetChannelsByUUID(CString sUUID);
+	CString GetRouteByUUID(CString sUUID);
+	
+	BTSInfo* GetBTSInfoByUUID(CString sUUID);
+
 	void buildbtsTree(CString &buffer, CTreeCtrl *tree);
 	CMap<int, int, BTSInfo*, BTSInfo*> btsmap;
 

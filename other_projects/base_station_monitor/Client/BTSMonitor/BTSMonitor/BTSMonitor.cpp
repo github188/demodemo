@@ -262,6 +262,22 @@ CView *CBTSMonitorApp::GetBaseView()
 	}
 	return NULL;
 }
+void CBTSMonitorApp::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int nCategory)
+{
+	CBTSMonitorView *pView  = (CBTSMonitorView*)GetBaseView();
+
+	if (pView)
+		pView->StartMonitorBTS(nVV, sUUID, sCh,nCategory);
+}
+void CBTSMonitorApp::StopMonitorBTS(int nViewIndex)
+{
+	CBTSMonitorView *pView  = (CBTSMonitorView*)GetBaseView();
+
+	if (pView)
+		pView->StopMonitorBTS(nViewIndex);
+
+}
+
 // CBTSMonitorApp 消息处理程序
 
 

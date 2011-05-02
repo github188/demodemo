@@ -53,6 +53,9 @@ public:
 
 public:
 	CView* CBTSMonitorApp::GetBaseView();
+	void StartMonitorBTS(int nVV, CString sUUID, CString sCh,int nCategory=0);
+	void StopMonitorBTS(int nViewIndex);
+
 	virtual int ExitInstance();
 };
 
