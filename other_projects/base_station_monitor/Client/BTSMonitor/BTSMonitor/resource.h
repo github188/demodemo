@@ -124,6 +124,7 @@
 #define IDR_MENU_WARNING                321
 #define IDD_POP_VIDEO                   322
 #define IDD_WARNING_CONFIG              323
+#define IDR_HTML_DLGIMAGE               324
 #define IDD_WARNING_MGR                 325
 #define IDD_TASK_MGR                    326
 #define IDI_ICON_SETTING                327
@@ -139,6 +140,7 @@
 #define IDR_POPMENU_WARNMGR             344
 #define IDI_LEVEL_5                     345
 #define IDR_POPUP_PLAYVIEW              345
+#define IDD_DLG_IMAGE                   346
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
@@ -208,8 +210,10 @@
 #define IDC_CBO_SERVER                  1064
 #define IDC_BTN_DELETE_TASK             1064
 #define IDC_CBO_PORT                    1065
-#define IDC_COMBO1                      1065
 #define IDC_CBO_CHANNEL                 1065
+#define IDC_PAUSE_ALARM                 1067
+#define IDC_EDIT1                       1068
+#define IDC_TIMEOUT                     1068
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -243,9 +247,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        346
+#define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1066
-#define _APS_NEXT_SYMED_VALUE           314
+#define _APS_NEXT_CONTROL_VALUE         1069
+#define _APS_NEXT_SYMED_VALUE           325
 #endif
 #endif

@@ -170,6 +170,18 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 		pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
 		if (pAlarmInfo)
 		{
+			//Judge the current alarm is task or not 
+			if ( pAlarmInfo->alarmCode.Find("4002") != -1 )
+			{
+				//Stop the current vedio int the specified window, and play this windows.
+				((CBTSMonitorApp*)AfxGetApp())->StopMonitorBTS(atoi(pAlarmInfo->level));
+
+
+				((CBTSMonitorApp*)AfxGetApp())->StartMonitorBTS(atoi(pAlarmInfo->level),pAlarmInfo->BTSID, pAlarmInfo->ChannelID,atoi(pAlarmInfo->category));
+
+				continue;
+			}
+
 			int lstIdx = 0;
 			if (type == ALARM_NEW)
 			{
@@ -224,16 +236,13 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 				continue;
 
 			//.pop the warning vedio windows
-			if (m_nPopViewCount<cnMAX_POP_WINDOW && pAlarmInfo->category == "1")
+			if (m_nPopViewCount<cnMAX_POP_WINDOW && ((pAlarmInfo->category == "1") || (pAlarmInfo->category == "s") ))
 			{
 				for (int i=0; i<cnMAX_POP_WINDOW; i++)
 				{
 					if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 					{
-						//m_pPopVideoDlg[i]->SetPopVideoIndex(i);
-						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->uuid, sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime);
-						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,this);
-						//m_pPopVideoDlg[m_nPopViewCount]->Create(IDD_POP_VIDEO,AfxGetApp()->m_pMainWnd);
+						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->uuid, sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime, pAlarmInfo->category);
 						m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
 						m_pPopVideoDlg[i]->PlayVideo();
 						break;

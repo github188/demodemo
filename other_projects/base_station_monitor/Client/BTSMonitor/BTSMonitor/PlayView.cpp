@@ -6,6 +6,7 @@
 #include "PlayView.h"
 #include "const.h"
 #include "MainFrm.h"
+#include "MonitorImage.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,13 +21,24 @@ CPlayView::CPlayView()
 : m_nViewID(0)
 , m_nActiveViewID(0)
 , m_bIsVisible(false)
+, m_nImageType(0)
+, m_nIDEvent(0)
+, m_sRealImageDir(_T(""))
 {
 	m_bIsFullScreen  = FALSE;
 	m_pSaveParent = NULL;
+	m_sPicture.Empty();
+	m_pMonitorImage = NULL;
+	m_bHasImage = false;
 }
 
 CPlayView::~CPlayView()
 {
+	if (m_pMonitorImage)
+	{
+		delete m_pMonitorImage;
+		m_pMonitorImage = NULL;
+	}
 }
 
 BEGIN_MESSAGE_MAP(CPlayView, CView)
@@ -37,6 +49,7 @@ BEGIN_MESSAGE_MAP(CPlayView, CView)
 	ON_COMMAND(ID_PLAYVIEW_CLOSE, &CPlayView::OnPlayviewClose)
 	ON_COMMAND(ID_PLAYVIEW_FULLSCREEN, &CPlayView::OnPlayviewFullscreen)
 	ON_WM_ERASEBKGND()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -46,6 +59,8 @@ void CPlayView::OnDraw(CDC* pDC)
 {
 	CDocument* pDoc = GetDocument();
 	// TODO: add draw code here
+	if (m_nImageType==2)
+		ShowPicture(pDC,m_sPicture,1,1);
 }
 
 
@@ -81,6 +96,10 @@ void CPlayView::OnInitialUpdate()
 	CView::OnInitialUpdate();
 
 	// TODO: Add your specialized code here and/or call the base class
+	util::InitApp();
+	m_sRealImageDir = util::GetAppPath();
+	m_sRealImageDir +="\\RealImage";
+
 }
 
 void CPlayView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -160,6 +179,12 @@ void CPlayView::OnPaint()
 	// TODO: Add your message handler code here
 	// Do not call CView::OnPaint() for painting messages
 	
+	if (!m_sPicture.IsEmpty())
+	{
+		OnDraw(&dc);
+		return;
+	}
+
 	DrawSelectedWindow();
 }
 
@@ -232,9 +257,8 @@ void CPlayView::FullScreen(void)
 
 		//AfxGetApp()->GetMainWnd()->SendMessage(WM_NOTIFY_MESSAGE,NULL,NULL);
 	}
-}
 
-#define		VIDEO_BACK_COLOR	RGB(100,100,160)
+}
 
 BOOL CPlayView::OnEraseBkgnd(CDC* pDC)
 {
@@ -246,5 +270,177 @@ BOOL CPlayView::OnEraseBkgnd(CDC* pDC)
 	pDC->FillRect(&rt,&br);
 
 	return TRUE;
-	return CView::OnEraseBkgnd(pDC);
+
+	//return CView::OnEraseBkgnd(pDC);
+}
+
+BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHeight)
+{
+	IStream *pStm;  
+	CFileStatus fstatus;  
+	CFile file;  
+	LONG cb;  
+
+	//打开文件并检测文件的有效性
+	if (file.Open(strPicName,CFile::modeRead)&&file.GetStatus(strPicName,fstatus)&&((cb = fstatus.m_size) != -1))  
+	{  
+		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, cb);  
+		LPVOID pvData = NULL;  
+		if (hGlobal != NULL)  
+		{  
+			pvData = GlobalLock(hGlobal);
+			if (pvData != NULL)  
+			{  
+				//file.ReadHuge(pvData, cb);  //6.0中可能是用这个函数
+				file.Read(pvData, cb);  //VC2005.NET中用这个函数
+				GlobalUnlock(hGlobal);  
+				CreateStreamOnHGlobal(hGlobal, TRUE, &pStm);  
+			}
+		}
+	}
+	else
+	{
+		return false;
+	} //打开文件结束
+
+
+	//显示JPEG和GIF格式的图片，GIF只能显示一帧，还不能显示动画，
+
+	//要显示动画GIF请使用ACTIVE控件。
+
+	IPicture *pPic;
+
+	//load image from file stream
+
+	if(SUCCEEDED(OleLoadPicture(pStm,fstatus.m_size,TRUE,IID_IPicture,(LPVOID*)&pPic)))
+
+	{
+		OLE_XSIZE_HIMETRIC hmWidth;  
+		OLE_YSIZE_HIMETRIC hmHeight;  
+		pPic->get_Width(&hmWidth);  
+		pPic->get_Height(&hmHeight);  
+		double fX,fY;  
+
+		//get image height and width , Origin Size
+
+		fX = (double)pDC->GetDeviceCaps(HORZRES)*(double)hmWidth/((double)pDC->GetDeviceCaps(HORZSIZE)*100.0);  
+
+		fY = (double)pDC->GetDeviceCaps(VERTRES)*(double)hmHeight/((double)pDC->GetDeviceCaps(VERTSIZE)*100.0);  
+
+		//Show Origin Size Of Image...
+		BOOL bOrigin  = false;
+		if (bOrigin)
+		{
+			//use render function display image
+			if(FAILED(pPic->Render(*pDC,nWidth,nHeight,(DWORD)fX,(DWORD)fY,0,hmHeight,hmWidth,-hmHeight,NULL)))  
+			{
+				pPic->Release();
+				return false;
+			}
+		}
+		else
+		{
+			CRect rect; GetClientRect(&rect); 
+			if(FAILED(pPic->Render(*pDC,nWidth,nHeight,rect.Width(),rect.Height(),0,hmHeight,hmWidth,-hmHeight,NULL)))  
+			{
+				pPic->Release();
+				return false;
+			}
+		}
+		
+		pPic->Release();  
+	}  
+	else  
+	{
+		return false;  
+	}
+
+	return true;
+}
+
+void CPlayView::SetImageType(int  nImageType)
+{
+	 m_nImageType =  nImageType;
+}
+
+void CPlayView::SetImageFile(CString sPicture)
+{
+	 m_sPicture = sPicture;
+}
+
+void CPlayView::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	if (m_pMonitorImage && (m_nImageType==2))
+	{
+		//Save current alarm image to the directory.
+		CString sLine, str, sDateTime, sBts, sCh;
+		int pos=0;
+		if (m_bHasImage)
+		{
+
+			pos = util::split_next(m_pMonitorImage->datetime,str,':',0);
+			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
+			sDateTime+=str;//YY
+			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
+			sDateTime+=str;//MM
+			pos = util::split_next(m_pMonitorImage->datetime,str,' ',pos+1);
+			sDateTime+=str;//DD
+			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
+			sDateTime+=str;//hh
+			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
+			sDateTime+=str;//mm
+			//pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+			str = m_pMonitorImage->datetime.Mid(pos+1);
+			sDateTime+=str;//ss
+
+			pos = util::split_next(m_pMonitorImage->bts,str,':',0);
+			//pos = util::split_next(pMoImage->bts,str,':',pos+1);
+			m_pMonitorImage->bts.Mid(pos+1);
+			sBts+=str;
+
+			pos = util::split_next(m_pMonitorImage->channel,str,':',0);
+			//pos = util::split_next(pMoImage->channel,str,':',pos+1);
+			m_pMonitorImage->channel.Mid(pos+1);
+			sCh+=str;
+
+			m_sPicture.Format("%s%s%s_%s_%s.jpg", m_sRealImageDir,"\\", sBts, sCh, sDateTime);
+			m_pMonitorImage->savedata(m_sPicture);
+
+			Invalidate();
+		}
+
+		 m_bHasImage = m_pMonitorImage->getNextImage();
+
+	}
+
+	CView::OnTimer(nIDEvent);
+}
+
+void CPlayView::SetTimerIDEvent(int nIDEvent)
+{
+	m_nIDEvent = nIDEvent;
+}
+
+void CPlayView::StartImgMonitor(void)
+{
+	m_bHasImage = true;
+	SetTimer(m_nIDEvent,cnREAL_IMG_INTERVAL,NULL);
+}
+
+void CPlayView::StopImgMonitor(void)
+{
+	KillTimer(m_nIDEvent);
+
+	//Free current MomitorImage Object
+	if (m_pMonitorImage)
+	{
+		delete m_pMonitorImage;
+		m_pMonitorImage = NULL;
+	}
+}
+
+void CPlayView::SetMonitorImageObj(MonitorImage* pObj)
+{
+	m_pMonitorImage = pObj;
 }

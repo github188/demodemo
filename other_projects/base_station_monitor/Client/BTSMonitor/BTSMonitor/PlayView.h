@@ -2,7 +2,7 @@
 
 
 // CPlayView view
-
+class MonitorImage;
 class CPlayView : public CView
 {
 	DECLARE_DYNCREATE(CPlayView)
@@ -40,10 +40,10 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 private:
 	bool m_bIsVisible;
-
+	MonitorImage* m_pMonitorImage;
 	BOOL m_bIsFullScreen;
 	CWnd *m_pSaveParent;
-
+	CString m_sPicture;
 public:
 	void HidePlayView(void);
 	void ShowPlayView(void);
@@ -54,6 +54,24 @@ private:
 	void FullScreen(void);
 public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	BOOL  ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHeight);
+	void SetImageType(int  nImageType);
+	int  GetImageType() {return m_nImageType;};
+private:
+	int m_nImageType;
+	bool m_bHasImage;
+public:
+	void SetImageFile(CString sPicture);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	void SetTimerIDEvent(int nIDEvent);
+private:
+	int m_nIDEvent;
+public:
+	void StartImgMonitor(void);
+	void StopImgMonitor(void);
+	void SetMonitorImageObj(MonitorImage* pObj);
+private:
+	CString m_sRealImageDir;
 };
 
 

@@ -11,7 +11,7 @@
 
 UINT alarm_getRealAlarm_thread(LPVOID param);
 UINT Command_SendAndReceiveTimer(LPVOID param);
-
+UINT video_thread_control(LPVOID param);
 class GokuClient{
 	CString buffer;
 	CString cmd_msg; //last command status.
@@ -37,39 +37,73 @@ public:
 		socket = new GokuSocket(primary_server, secondary_server);
 		m_nConnectCode = socket->connect_server();
 		
+		m_pVedioCtrlThread = NULL;
 		m_pTimerThread = NULL;
+
 		if (m_nConnectCode>0)
 		{
 			m_pTimerThread = AfxBeginThread(Command_SendAndReceiveTimer, socket);
 		}
+		
+		m_hVedioCtrlExit = ::CreateEvent(NULL,FALSE,FALSE,NULL);
+		m_pVedioCtrlThread = AfxBeginThread(video_thread_control, this);
+
 		m_nSid = 0;
 	}
 
 	~GokuClient()
 	{
+		SetExitVedioThread();
+
 		int i=0;
 		for (i=0; i<cnMAX_VV; i++)
 		{
 			if (m_pArrVideoCtrl[i])
-				m_pArrVideoCtrl[i]->status = 0;
+			{
+				m_pArrVideoCtrl[i]->bIsBlocking = true; //
+				m_pArrVideoCtrl[i]->status = 0; //Thread is runing...
+				m_pArrVideoCtrl[i]->socket->CancelSocket();
+			}
 		}
 
-		
+		::Sleep(100);
+		DWORD dwRet = 0;
 		for (i=0; i<cnMAX_VV; i++)
 		{
 			if (m_pArrVideoCtrl[i]==NULL)
 				continue;
 
-			if ( m_pArrVideoCtrl[i]->status==1)
+			if ( m_pArrVideoCtrl[i]->status == -1) //Exit
 			{
-				::WaitForSingleObject(m_pPlayThread[i]->m_hThread,8000);
-				if (m_pArrVideoCtrl[i]->status != -1)
-					::AfxTermThread((HINSTANCE__*)(m_pPlayThread[i]->m_hThread));
+				m_pPlayThread[i] = NULL;
+				delete m_pArrVideoCtrl[i];
+				m_pArrVideoCtrl[i]=NULL;
+
+				continue;
 			}
 
-			m_pPlayThread[i] = NULL;
-			delete m_pArrVideoCtrl[i];
-			m_pArrVideoCtrl[i]=NULL;
+			dwRet = ::WaitForSingleObject(m_pPlayThread[i]->m_hThread,1000);
+			switch(dwRet)
+			{
+			case WAIT_OBJECT_0:
+			case WAIT_ABANDONED_0:
+			case WAIT_FAILED:
+				{
+					m_pPlayThread[i] = NULL;
+					delete m_pArrVideoCtrl[i];
+					m_pArrVideoCtrl[i]=NULL;
+				}
+				break;
+			case WAIT_TIMEOUT:
+				{
+					::AfxTermThread((HINSTANCE__*)(m_pPlayThread[i]->m_hThread));
+					m_pPlayThread[i] = NULL;
+					delete m_pArrVideoCtrl[i];
+					m_pArrVideoCtrl[i]=NULL;
+
+				}
+				break;
+			}
 
 		}
 
@@ -167,8 +201,12 @@ public:
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
-	MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno);
-	MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
+	//Modify errno is the windows reserve type
+	//MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *errno);
+	//MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
+	MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *err);
+	MonitorImage* getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute , int *err);
+	MonitorImage* getAlarmImagebyBase64(CString alarmID, int *err);
 
 	int stop_Alarm(CString btsid, CString timeout);
 protected:
@@ -178,11 +216,18 @@ protected:
 	CString m_sPassword;
 	int		m_nSid;
 	int		m_nConnectCode;
-	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV];
-	CWinThread		 *m_pPlayThread[cnMAX_VV];
-
+	CWinThread		 *m_pVedioCtrlThread; //Control GoKuSocket
 	CWinThread		 *m_pTimerThread; //Control GoKuSocket
 
 public:
+	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV];
+	CWinThread		 *m_pPlayThread[cnMAX_VV];
+
+
+public:
 	bool Stop_Play(int nVideoID);
+	HANDLE GetExitVedioThreadHandle() {return m_hVedioCtrlExit;}
+	void SetExitVedioThread() {::SetEvent(m_hVedioCtrlExit);}
+private:
+	HANDLE m_hVedioCtrlExit;
 };

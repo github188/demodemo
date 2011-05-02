@@ -563,6 +563,60 @@ UINT Command_SendAndReceiveTimer(LPVOID param)
 	return 0x11;
 }
 
+UINT video_thread_control(LPVOID param)
+{
+	return 0x12;
+
+	GokuClient *pGokuClient = (GokuClient*)param;
+	
+	if (!pGokuClient) return 0;
+
+	HANDLE hEvent = pGokuClient->GetExitVedioThreadHandle();
+	bool bRuning = true;
+	DWORD dwRet = 0;
+	while (bRuning)
+	{
+		dwRet = ::WaitForSingleObject(hEvent,10000); //10 Second
+		switch(dwRet)
+		{
+		case WAIT_OBJECT_0:
+			{
+				bRuning = false;
+			}
+			break;
+		case WAIT_ABANDONED_0:
+			break;
+		case WAIT_TIMEOUT:
+			{
+				//cancel block, continue read next...
+				int i=0;
+				for (; i<cnMAX_VV; i++)
+				{
+					//m_pPlayThread[i]=NULL;
+					if (pGokuClient->m_pArrVideoCtrl[i]==NULL)
+						continue;
+
+					if (pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking)
+					{
+						//pGokuClient->m_pArrVideoCtrl[i]->socket->CancelSocket();
+						// Notify the window "No vedio date received!"
+					}
+
+					if (pGokuClient->m_pArrVideoCtrl[i]->status != 1) //Not Exit
+						pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking = true;
+
+				}
+			}
+			break;
+		case WAIT_FAILED:
+			bRuning = false;
+			break;
+
+		}
+	}
+
+	return 0x12;
+}
 bool GokuClient::Stop_Play(int nVideoID)
 {
 	if (nVideoID<0 || nVideoID>cnMAX_VV-1)
@@ -576,7 +630,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 	if (m_pArrVideoCtrl[nVideoID]==NULL) //Unknown , needn't do futher operation...
 		return true;
 
-	if ( m_pArrVideoCtrl[nVideoID]->status != 1) //Thread is exit....
+	if ( m_pArrVideoCtrl[nVideoID]->status != 1) //Thread is exit.already...
 	{
 		delete m_pArrVideoCtrl[nVideoID];
 		m_pArrVideoCtrl[nVideoID]=NULL;
@@ -585,6 +639,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 	}
 
 
+	// Runing... = 1
 	m_pArrVideoCtrl[nVideoID]->bIsBlocking = true; //
 	m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
 
@@ -612,6 +667,22 @@ bool GokuClient::Stop_Play(int nVideoID)
 		}
 	}
 
+	/*	
+	if (m_pArrVideoCtrl[nVideoID]->status == -1) // this thread is exit alrady.
+	{
+		m_pPlayThread[nVideoID] = NULL;
+
+	#ifdef _DEBUG
+		if (m_pArrVideoCtrl[nVideoID]->status==-1)
+			TRACE("\r\nTERMINATE thread window:%d!!!", nVideoID);
+	#endif
+
+		delete m_pArrVideoCtrl[nVideoID];
+		m_pArrVideoCtrl[nVideoID]=NULL;
+
+	}
+	*/
+
 	//::CloseHandle(m_pPlayThread[nVideoID]->m_hThread);
 	//m_pPlayThread[nVideoID]->m_hThread = NULL;
 	m_pPlayThread[nVideoID] = NULL;
@@ -628,7 +699,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 	return true;
 }
 
-MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno)
+MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *err)
 {
 	//CString ip;
 	//int pos=util::split_next(binfo->route, ip, ':',0);
@@ -661,8 +732,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno)
 		line=sMsg.Mid(ileft, ipos-ileft+1);
 		//get the session.
 		pImage->getSessionFromLine(line);
-		*errno=util::str2int(pImage->errcode);
-		if(*errno!=0)
+		*err=util::str2int(pImage->errcode);
+		if(*err!=0)
 		{
 			delete pImage;
 			return NULL;
@@ -678,7 +749,53 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *errno)
 	return NULL;
 }
 
-MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID, int *errno)
+//liang add for single channel image retriving.
+MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute, int *err)
+{
+	GokuSocket *imageSock=new GokuSocket(sRoute, sRoute);
+	if(imageSock->connect_server()>0)
+	{
+		MonitorImage *pImage=new MonitorImage();
+		pImage->mSock=imageSock;
+		CString sCmd;
+		sCmd.Append("img>real_image?");
+		sCmd.Append("baseStation=");
+		sCmd.Append(sBtsUUID);
+		sCmd.Append("&");
+		sCmd.Append("channel=");
+		sCmd.Append(sCh);
+		sCmd.Append("\n");
+		
+		CString sMsg;
+		if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		{
+			delete pImage;
+			return NULL;
+		}
+		CString line;
+		int ileft=0, iright=0, ipos=0;
+		ipos=sMsg.Find('\n', ileft);
+		line=sMsg.Mid(ileft, ipos-ileft+1);
+		//get the session.
+		pImage->getSessionFromLine(line);
+		*err=util::str2int(pImage->errcode);
+		if(*err!=0)
+		{
+			delete pImage;
+			return NULL;
+		}
+		ileft=ipos;
+		ipos=sMsg.Find('\n', ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft);
+		pImage->getImageText(line);
+		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
+		pImage->decodeImageData(line);
+		return pImage;
+	}
+	return NULL;
+}
+
+MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID, int *err)
 {
 	CString ip;
 	int pos=util::split_next(host, ip, ':',0);
@@ -711,8 +828,8 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString alarmID, int *errno)
 		line=sMsg.Mid(ileft, ipos-ileft+1);
 		//get the session.
 		pImage->getSessionFromLine(line);
-		*errno=util::str2int(pImage->errcode);
-		if(*errno!=0)
+		*err=util::str2int(pImage->errcode);
+		if(*err!=0)
 		{
 			delete pImage;
 			return NULL;

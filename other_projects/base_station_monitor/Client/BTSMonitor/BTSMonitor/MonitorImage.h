@@ -6,6 +6,7 @@
 
 class MonitorImage
 {
+public:
 	CString width;
 	CString height;
 	CString datetime;
