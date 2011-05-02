@@ -74,6 +74,46 @@
     {% block footer %}<div id="footer"></div>{% endblock %}
 </div>
 <!-- END Container -->
-
+<div id='xxocx'></div>
+ <script type="text/javascript" >
+ var ocxOk = false;
+ var curIp, curPort;
+ function iniocx(){
+	ocxOk = true;
+	//alert("oxc load ok!");
+	var r = ocxtype.LoginDevice(ip, port, "admin", "12345");
+	if (r==1){
+		ocxtype.ShowDeviceConfig();
+	}	 
+ };
+ var ocxstr = "<OBJECT ID='ocxtype' WIDTH='20px' HEIGHT='20px' CLASSID='CLSID:108D3206-846A-4A93-BACB-F0572D043ED7' codebase='webrec.cab#version=2,0,9,10' onreadystatechange='iniocx()'>" +
+ "<param name='SetLangFromIP' value='127.0.0.1'>" +
+ "<param name='SetHostPort' value=9001>" +
+ "<param name='SetLanguage' value=101>" +
+ "<param name='lVideoWindNum' value=4>" +
+ "<param name='VideoWindBGColor' value='C7DDF5'>" +
+ "<param name='VideoWindBarColor' value=''>" +
+ "<param name='VideoWindTextColor' value=''>" +
+ "</OBJECT>";
+ //document.getElementById("xxocx").innerHTML=ocxstr;
+	function cfg(ip, port){
+		//alert(ip + ":" +port);
+		if(ocxOk){
+			try{
+				ocxtype.LogoutDevice();
+				var r = ocxtype.LoginDevice(ip, port, "admin", "12345");
+				if (r==1){
+					ocxtype.ShowDeviceConfig();
+				}
+			}catch(e){
+				alert("error:" + e);
+			}
+		}else {
+			curIp = ip;
+			curPort = port;
+			document.getElementById("xxocx").innerHTML=ocxstr;
+		}
+	}	
+ </script>
 </body>
 </html>

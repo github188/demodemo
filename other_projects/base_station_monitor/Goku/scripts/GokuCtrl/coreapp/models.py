@@ -68,6 +68,21 @@ class BaseStation(models.Model):
     user_groups = StationGroupFields("UserGroup", through='StationGroupRelation')
     #supportAlarm = models.ManyToManyField('sysparam.AlarmDefine', verbose_name="告警策略")
     
+    def config(self):
+        #from django.utils.safestring import mark_safe
+        if ":" in self.locationId:
+            xx = self.locationId.split(":")
+        ip = xx[0]
+        port = xx[1]
+        if self.devType == 1:
+            #output = """<a href="javascript:cfg('%s', %s);">参数配置</a>"""
+            output = u"""<a href="javascript:cfg('%s', %s);">参数配置</a>""" % (ip, port)
+        else:
+            output = ''
+        return output
+    config.allow_tags = True
+    config.verbose_name = "设备配置"
+    
     def _get_supportAlarms(self,):
         from GokuCtrl.sysparam.models import AlarmDefine
         return AlarmDefine.objects.filter(alarmCode__in = self.supportAlarm.split(","))

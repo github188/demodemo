@@ -71,7 +71,7 @@ class BaseStationAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'groupName', 'locationId', 'channels', 
               'devType', 'btsCategory', 'locationUUID', 'supportAlarm', 'user_groups']
     list_display = ('uuid', 'name', 'connectionStatus', 'locationUUID', 'routeServer', 'locationId', 
-                    'alarmStatus', 'devType', 'btsCategory', 'lastActive')
+                    'alarmStatus', 'devType', 'btsCategory', 'lastActive', 'config')
     list_filter = ['devType', 'connectionStatus', 'alarmStatus', ]
     search_fields = ['uuid', 'locationId', ]
     form = BaseStationForm
