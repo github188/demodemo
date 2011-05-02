@@ -50,7 +50,7 @@ public class RecordFileInfo {
 		int month = (int)((d >>22) & 15);
 		int year = (int)((d >>26) & 63) + 2000;
 		
-		System.out.println(String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second));
+		//System.out.println(String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second));
 		
 		Calendar time = Calendar.getInstance();
 		time.set(year, month -1, day, hour, minute, second);

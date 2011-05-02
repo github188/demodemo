@@ -87,6 +87,7 @@ public abstract class BaseRouteServlet extends HttpServlet{
 	    	}else { //在Socket, 模式不能取到OutputStream.
 	    		response.getWriter().println("Can't get OutputStream.");
 	    	}
+	    	ins.close();
 	    }
     }
     

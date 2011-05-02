@@ -76,7 +76,7 @@ public class ODIPHandler {
 	
 	private MonitorClient client = null;
 	private NIOSocketChannel socket = null;
-	public boolean isVideoChannel = false;
+	public boolean isVideoChannel = System.getenv("SVC") != null;
 	//private SelectionHandler
 	
 	//用来缓存相同消息的上次读到的时间，避免输出大量的相同消息log.

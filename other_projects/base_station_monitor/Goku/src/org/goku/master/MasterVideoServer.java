@@ -112,6 +112,12 @@ public class MasterVideoServer {
 		}else {
 			log.warn("Not found admin application, " + admin_war.getAbsolutePath());
 		}
+
+		File staticRoot = new File(settings.getString("static_root", ".")).getCanonicalFile();
+		if(staticRoot.isDirectory()){
+			log.info("Deploy static root:" + staticRoot.getAbsolutePath());
+			System.setProperty("STATIC_ROOT", staticRoot.getAbsolutePath());
+		}
 		
 		httpServer.setServlet(servelt);
 		httpServer.addStartupListener(new StartupListener(){

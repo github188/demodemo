@@ -66,6 +66,7 @@ public class VideoRecorderManager implements Runnable{
 		alarm.generatePK();
 		storage.save(alarm);
 		
+		log.info(String.format("Start download, sid:%s, path:%s", alarm.uuid, alarm.videoPath));
 		OutputStream os = new FileOutputStream(new File(rootPath, path));
 		client.downloadByRecordFile(info, os, true);
 		os.close();		
@@ -78,8 +79,9 @@ public class VideoRecorderManager implements Runnable{
 		public Date startTime = null;
 		public Date endTime = null;		
 		*/
-		String filter = "baseStation=${0} and channelId=${1} and (startTime > ${2} and startTime < ${3}) and " +
-				"(endTime > ${4} and endTime < ${5})";
+		String filter = "baseStation=${0} and channelId=${1} and (startTime > ${2} and startTime < ${3})";
+			//只判断开始时间一致就不需要重复下载视频了。
+			//	" and (endTime > ${4} and endTime < ${5})";
 		Object[] param = new Object[6];
 		param[0] = uuid;
 		param[1] = ch;

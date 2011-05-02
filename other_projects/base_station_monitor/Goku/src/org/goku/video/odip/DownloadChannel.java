@@ -31,7 +31,7 @@ public class DownloadChannel extends VideoChannel {
 	protected synchronized void initVideoAuth(){
 		this.handler.videoStreamAuth(this.file.channel, 2);
 		this.notifyAll();
-		log.info("xxxxxx:");
+		//log.info("xxxxxx:");
 	}
 	
 	/**

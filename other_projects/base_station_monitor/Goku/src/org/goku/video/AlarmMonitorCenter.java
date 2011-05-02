@@ -173,12 +173,19 @@ public class AlarmMonitorCenter implements Runnable{
 		}
 		
 		public void downLoadOneChannel(int channel, Date start) throws IOException{
-			Collection<RecordFileInfo> records = client.queryRecordFile(channel, 0, start);
+			log.debug(String.format("Auto download alarm video client:%s, ch:%s, start time:%s", client, channel, start));
+			Collection<RecordFileInfo> records = new ArrayList<RecordFileInfo>();
+			records.addAll(client.queryRecordFile(channel, 0, start));
+			log.debug(String.format("Find video on DVR, count:%s, ch:%s", records.size(), channel));
 			for(RecordFileInfo file: records){
 				//小于100K的视频下载了也看不见。没有用
-				if(file.fileSize < 1000 * 100) continue;
+				if(file.fileSize < 100) {
+					log.debug("Ignore small size video:" + file.fileSize);
+					continue;
+				}
 				if(recordManager.findAlarmByTime(client.info.uuid, channel, 
 						file.startTime, file.endTime) != null) {
+					log.debug("Aready exists alarm at time:" + file.startTime);
 					continue;
 				}
 				recordManager.downloadAlarmRecord(client, 
