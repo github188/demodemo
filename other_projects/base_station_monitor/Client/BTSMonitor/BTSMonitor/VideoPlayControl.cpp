@@ -63,13 +63,19 @@ UINT video_read_thread(LPVOID param)
 				//control->socket->connect_server();
 
 				control->status = -1;
+
+				CString sErrorInfor;
+				sErrorInfor.Format("Abnormally exit vedio thread , SessionID = %d", control->sessionId);
+				CLogFile::WriteLog(sErrorInfor);
 				
 				break;
 			}
 		}
 	}
 
-	CLogFile::WriteLog("end video read thread.");
+	CString strLog;
+	strLog.Format("Normally exit vedio thread, SessionID = %d", control->sessionId);
+	CLogFile::WriteLog(strLog);
 
 	delete[] buffer;
 

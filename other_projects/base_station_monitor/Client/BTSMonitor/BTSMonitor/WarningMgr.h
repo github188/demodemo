@@ -5,7 +5,7 @@
 #include "AlarmManager.h"
 #include "atltypes.h"
 // CWarningMgr dialog
-
+class CDlgImage;
 class CWarningMgr : public CDialog
 {
 	DECLARE_DYNAMIC(CWarningMgr)
@@ -62,6 +62,7 @@ public:
 	afx_msg void OnNMClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 private:
 	int m_nCurItem;
+	CDlgImage *pDlgImage;
 public:
 	afx_msg void OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
@@ -74,4 +75,8 @@ public:
 	afx_msg void OnUpdateWarningmgrExport(CCmdUI *pCmdUI);
 	afx_msg void OnWarningmgrSaveas();
 	afx_msg void OnUpdateWarningmgrSaveas(CCmdUI *pCmdUI);
+private:
+	CRect m_rcVedio;
+public:
+	void ShowButton(bool bShow);
 };

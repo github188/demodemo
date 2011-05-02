@@ -34,13 +34,14 @@ private:
 	bool m_bFullScreen;
 	WINDOWPLACEMENT m_struOldPlacement;
 public:
-	void SetVideoPara(CString sBtsID,CString sUUID,CString sBtsName, CString sChannel, CString sStartTime, CString sEndTime);
+	void SetVideoPara(CString sBtsID,CString sUUID,CString sBtsName, CString sChannel, CString sStartTime, CString sEndTime,CString sCategory);
 private:
 	CString m_sBtsID;
 	CString m_sUUID;
 	CString m_sChannel;
 	CString m_sStartTime;
 	CString m_sEndTime;
+	CString m_sCategory;
 public:
 	afx_msg void OnClose();
 	BOOL IsShowing(void);
@@ -50,4 +51,7 @@ private:
 	CString m_btsName;
 public:
 	afx_msg void OnBnClickedSavePassedVideo();
+	afx_msg void OnBnClickedPauseAlarm();
+private:
+	UINT m_nTimeOut;
 };

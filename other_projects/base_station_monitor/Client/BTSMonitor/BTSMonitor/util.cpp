@@ -239,3 +239,48 @@ BOOL util::FileExists(const char *filename)
    }
    return FALSE;
 }
+
+BOOL util::DeleteAllFile(CString sDirecotory)
+{
+	if(PathFileExists(sDirecotory))     
+		DeleteDirectory((LPSTR)(LPCTSTR)sDirecotory);
+	return 1;
+}
+
+BOOL util::DeleteDirectory(char* sDirName) 
+{ 
+    CFileFind tempFind; 
+    char sTempFileFind[200] ;
+    
+    sprintf_s(sTempFileFind,200,"%s\\*.*",sDirName); 
+    BOOL IsFinded = tempFind.FindFile(sTempFileFind); 
+    while (IsFinded) 
+    { 
+        IsFinded = tempFind.FindNextFile(); 
+        
+        if (!tempFind.IsDots()) 
+        { 
+            char sFoundFileName[200]; 
+            strcpy_s(sFoundFileName,200,tempFind.GetFileName().GetBuffer(200)); 
+            
+            if (tempFind.IsDirectory()) 
+            { 
+                char sTempDir[200]; 
+                sprintf_s(sTempDir,200,"%s\\%s",sDirName,sFoundFileName); 
+                DeleteDirectory(sTempDir); 
+            } 
+            else 
+            { 
+                char sTempFileName[200]; 
+                sprintf_s(sTempFileName,200,"%s\\%s",sDirName,sFoundFileName); 
+                DeleteFile(sTempFileName); 
+            } 
+        } 
+    } 
+    tempFind.Close(); 
+    if(!RemoveDirectory(sDirName)) 
+    { 
+        return FALSE; 
+    } 
+    return TRUE; 
+} 

@@ -23,6 +23,7 @@ CWarnPopVideo::CWarnPopVideo(CWnd* pParent /*=NULL*/)
 	, m_sEndTime(_T(""))
 	, m_bShowing(FALSE)
 	, m_btsName(_T(""))
+	, m_nTimeOut(0)
 {
 	m_pPopView = NULL;
 	m_pParent = pParent;
@@ -36,6 +37,7 @@ CWarnPopVideo::~CWarnPopVideo()
 void CWarnPopVideo::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_TIMEOUT, m_nTimeOut);
 }
 
 
@@ -44,6 +46,7 @@ BEGIN_MESSAGE_MAP(CWarnPopVideo, CDialog)
 	ON_BN_CLICKED(IDOK, &CWarnPopVideo::OnBnClickedOk)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_SAVE_PASSED_VIDEO, &CWarnPopVideo::OnBnClickedSavePassedVideo)
+	ON_BN_CLICKED(IDC_PAUSE_ALARM, &CWarnPopVideo::OnBnClickedPauseAlarm)
 END_MESSAGE_MAP()
 
 
@@ -132,8 +135,13 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 	if (pRunTimeWnd)
 		pRunTimeWnd->AckedWarning(m_sUUID);
 
-	//Close Current vedio
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if ( atoi(m_sCategory) == 2 )
+	{
+		//..
+	}
+	else
+	//Close Current vedio
 	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 	//if(bOpenRet)
 	{
@@ -141,8 +149,7 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 
 		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
 		
-		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);	
-		
+		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);			
 	}
 
 	OnOK();
@@ -232,7 +239,7 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 
 }
 
-void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime)
+void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime, CString sCategory)
 {
 	m_sBtsID	 = sBtsID;
 	m_sUUID		 = sUUID;
@@ -240,6 +247,7 @@ void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName,
 	m_sChannel   = sChannel;
 	m_sStartTime = sStartTime;
 	m_sEndTime   = sEndTime;
+	m_sCategory	 = sCategory;
 }
 
 void CWarnPopVideo::OnClose()
@@ -259,6 +267,13 @@ void CWarnPopVideo::OnClose()
 
 	//Close Current vedio
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if ( atoi(m_sCategory) == 2 )
+	{
+		CPopPlayView *pView = ((CPopPlayView*)m_pPopView);
+		pView->SetImageType(0); //no type
+		pView->StopImgMonitor();
+	}
+	else
 	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 	//if(bOpenRet)
 	{
@@ -266,8 +281,7 @@ void CWarnPopVideo::OnClose()
 
 		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
 		
-		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);	
-		
+		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);			
 	}
 
 	//CDialog::OnClose();
@@ -292,18 +306,33 @@ void CWarnPopVideo::PlayVideo(void)
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
-	//CString host("192.168.1.200:8000");
-	//CString host("127.0.0.1:8000");	
-
-	PLAY_SetStreamOpenMode(m_nPopIndex+cnPOP_VEDIO_INDEX, STREAME_REALTIME);
-	BOOL bOpenRet = PLAY_OpenStream(m_nPopIndex+cnPOP_VEDIO_INDEX,0,0,1024*900);
-	if(bOpenRet)
+	if (atoi(m_sCategory)==2) //picture..
 	{
-		PLAY_Play(m_nPopIndex+cnPOP_VEDIO_INDEX, m_pPopView->m_hWnd);
 
-		//Play Remote Vedio runatime			
-		pApp->pgkclient->real_play(m_sBtsID, m_sChannel, play_video, m_nPopIndex+cnPOP_VEDIO_INDEX);
-		
+		//...
+		CPopPlayView *pView = ((CPopPlayView*)m_pPopView);
+		CString sRoute = pApp->pgkclient->btsmanager.GetRouteByUUID(m_sBtsID);
+		int *err = 0;
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(m_sBtsID,m_sChannel,sRoute,err);
+		if (pMoImage)
+		{
+			pView->SetMonitorImageObj(pMoImage);
+			pView->SetImageType(2);
+			pView->SetTimerIDEvent(m_nPopIndex+ID_REAL_POP_IMG_TIMER);
+			pView->StartImgMonitor();
+		}
+	}
+	else
+	{
+		PLAY_SetStreamOpenMode(m_nPopIndex+cnPOP_VEDIO_INDEX, STREAME_REALTIME);
+		BOOL bOpenRet = PLAY_OpenStream(m_nPopIndex+cnPOP_VEDIO_INDEX,0,0,1024*900);
+		if(bOpenRet)
+		{
+			PLAY_Play(m_nPopIndex+cnPOP_VEDIO_INDEX, m_pPopView->m_hWnd);
+
+			//Play Remote Vedio runatime			
+			pApp->pgkclient->real_play(m_sBtsID, m_sChannel, play_video, m_nPopIndex+cnPOP_VEDIO_INDEX);			
+		}
 	}
 		
 }
@@ -311,4 +340,19 @@ void CWarnPopVideo::PlayVideo(void)
 void CWarnPopVideo::OnBnClickedSavePassedVideo()
 {
 	// TODO: Add your control notification handler code here
+}
+
+void CWarnPopVideo::OnBnClickedPauseAlarm()
+{
+	// TODO: Add your control notification handler code here
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	UpdateData();
+	CString sTimeOut;
+	sTimeOut.Format("%d",m_nTimeOut);
+	if ( 0==pApp->pgkclient->stop_Alarm(m_sBtsID,sTimeOut))
+		AfxMessageBox("暂停告警操作成功!");
+	else
+		AfxMessageBox("暂停告警操作失败!");
+
 }

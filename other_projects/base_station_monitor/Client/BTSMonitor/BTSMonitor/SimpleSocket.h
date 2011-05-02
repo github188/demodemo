@@ -132,17 +132,18 @@ public:
 		{
 			CString sError;
 			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
-			//CLogFile::WriteLog(sError);
+			CLogFile::WriteLog(sError);
 			//AfxMessageBox(sError);
 			return 0;
 		}
 
-		util::int2str(xx, len);
-		CLogFile::WriteLog(CString("read buffer:") + xx);
-		if(len > 0 && len < 1024){
-			buffer[len] = 0;
-			CLogFile::WriteLog((const char *)buffer);
-		}
+		//liangjl comment out following code, because there're so much log.
+		//util::int2str(xx, len);
+		//CLogFile::WriteLog(CString("read buffer:") + xx);
+		//if(len > 0 && len < 1024){
+		//	buffer[len] = 0;
+		//	CLogFile::WriteLog((const char *)buffer);
+		//}
 
 		return len;
 	}
@@ -164,6 +165,10 @@ public:
 
 	void CancelSocket() {
 		cs.CancelBlockingCall();
+	}
+
+	virtual void close() {
+		cs.Close();
 	}
 protected:
 		virtual int write_data(const char *buff, int len){

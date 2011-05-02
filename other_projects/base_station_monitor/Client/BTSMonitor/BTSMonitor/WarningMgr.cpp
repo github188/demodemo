@@ -6,6 +6,9 @@
 #include "WarningMgr.h"
 #include "include/iPlay.h"
 #include "const.h"
+#include "util.h"
+#include "DlgImage.h"
+#include "MonitorImage.h"
 // CWarningMgr dialog
 
 IMPLEMENT_DYNAMIC(CWarningMgr, CDialog)
@@ -17,12 +20,13 @@ CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
 	, m_menuPt(0)
 	, m_bPopMenu(false)
 {
-
+	VERIFY(pDlgImage = new CDlgImage());
 }
 
 CWarningMgr::~CWarningMgr()
 {
-
+	if (pDlgImage)
+		delete pDlgImage;
 }
 
 void CWarningMgr::DoDataExchange(CDataExchange* pDX)
@@ -83,11 +87,12 @@ BOOL CWarningMgr::OnInitDialog()
 		"开始时间", //start tiem
 		"结束时间", //end   time
 		"处理状态", //status
+		"图像类型", //Category 1.视频 2.图片, 3.无
 		""
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
-	int nWidth[] = {68,160,68,68,68,180,180,68,0};
+	int nWidth[] = {68,160,68,68,68,180,180,68,50,0};
 	int i=0;
 	for (; i<nCnt-1; i++)
 		m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
@@ -192,7 +197,26 @@ BOOL CWarningMgr::OnInitDialog()
 		CString sTemp = "手动确认";
 		m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,sTemp,0,0,0,0);	
 
-		m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,"uuid",0,0,0,0);	
+		m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,"图像类型",0,0,0,0);	
+
+		m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,"uuid",0,0,0,0);	
+	}
+
+	CRect rc, rect, rectTree;
+	GetClientRect(&rect);
+	m_treeWarnMgr.GetWindowRect(rectTree);
+	//m_wndWarnVedio.GetClientRect(&rc);
+	m_wndWarnVedio.GetWindowRect(&rc);
+	if (pDlgImage)
+	{
+		m_rcVedio.top    = rect.top;
+		m_rcVedio.bottom = rectTree.bottom-12;
+		m_rcVedio.left   = rectTree.right;
+		m_rcVedio.right  = rect.right;
+
+		pDlgImage->Create(IDD_DLG_IMAGE, this);
+		pDlgImage->MoveWindow(&m_rcVedio);
+		pDlgImage->ShowWindow(SW_HIDE);
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -336,14 +360,18 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 			sTemp = pAlarmInfo->status==1 ? "未处理":
 				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
 			m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,sTemp,0,0,0,0);	
-	
-			m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+
+			int nCategory = atoi(pAlarmInfo->category);
+			nCategory == 1 ? sTemp == "视频":
+				nCategory == 2 ? sTemp == "图片": "无";
+			m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,sTemp,0,0,0,0);	
+
+			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
 
 			nCount++;
 
 		}// ArmList
-	}
-	
+	}	
 }
 
 void CWarningMgr::InitVedioDeviceTree(void)
@@ -636,12 +664,14 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 	}
 
-	CString sUUID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8); 
+	CString sUUID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 9);
+	CString sCategory	= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8);
 	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 6); 
 	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
 
 
 	int nActView = 0; 
+
 	BOOL bDebug = FALSE;
 	if (bDebug)
 	{
@@ -663,10 +693,12 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 
 	}
-	else
-	{
 
-		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if (sCategory == "视频")
+	{
+		ShowButton(TRUE);			
+		pDlgImage->ShowWindow(SW_HIDE);
 
 		//Close 
 		PLAY_CloseStream(nActView);
@@ -680,7 +712,70 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			//Play Remote Vedio runatime			
 			pApp->pgkclient->replay(sUUID, play_video, nActView);
 		}
+	}
+	else if (sCategory == "图片")
+	{
+		ShowButton(FALSE);			
+		pDlgImage->ShowWindow(SW_SHOW);
 
+		int  *pError;
+		CString sDateTime, sBts, sCh;
+		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, pError);
+		if (pMoImage)
+		{
+
+			//Save Image to local Directory
+			CString sJpgName;
+			util::InitApp();
+			char *pAlarmImageDir = util::GetAppPath();
+			strcat(pAlarmImageDir,"\\AlarmImage");
+
+			//Remove all file of this directory...
+			util::DeleteAllFile(pAlarmImageDir);
+
+			//Save current alarm image to the directory.
+			CString sLine, str;
+			int pos=0;
+			do 
+			{
+				pos = util::split_next(pMoImage->datetime,str,':',0);
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//YY
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//MM
+				pos = util::split_next(pMoImage->datetime,str,' ',pos+1);
+				sDateTime+=str;//DD
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//hh
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//mm
+				//pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				str = pMoImage->datetime.Mid(pos+1);
+				sDateTime+=str;//ss
+
+				pos = util::split_next(pMoImage->bts,str,':',0);
+				//pos = util::split_next(pMoImage->bts,str,':',pos+1);
+				pMoImage->bts.Mid(pos+1);
+				sBts+=str;
+
+				pos = util::split_next(pMoImage->channel,str,':',0);
+				//pos = util::split_next(pMoImage->channel,str,':',pos+1);
+				pMoImage->channel.Mid(pos+1);
+				sCh+=str;
+
+				sJpgName.Format("%s%s%s_%s_%s.jpg", pAlarmImageDir,"\\", sBts, sCh, sDateTime);
+				pMoImage->savedata(sJpgName);
+			}
+			while ( pMoImage->getNextImage());
+
+
+			pDlgImage->Initialize(pAlarmImageDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
+		}
+
+	}
+	else
+	{
+		AfxMessageBox("无监控信息记录!");
 	}
 
 	*pResult = 0;
@@ -829,4 +924,59 @@ void CWarningMgr::OnWarningmgrSaveas()
 void CWarningMgr::OnUpdateWarningmgrSaveas(CCmdUI *pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
+}
+
+void CWarningMgr::ShowButton(bool bShow)
+{
+	if (bShow) //Show
+	{
+		CButton *pBtn = (CButton *)GetDlgItem(IDC_BTN_PAUSE);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+	
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_PLAY);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_STOP);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_FORWARD);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_BEGIN);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END2);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
+		if ( m_wndWarnVedio.m_hWnd )
+			m_wndWarnVedio.ShowWindow(SW_SHOW);
+
+
+	}
+	else
+	{
+		CButton *pBtn = (CButton *)GetDlgItem(IDC_BTN_PAUSE);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+	
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_PLAY);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_STOP);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_FORWARD);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_BEGIN);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END2);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
+		if ( m_wndWarnVedio.m_hWnd )
+			m_wndWarnVedio.ShowWindow(SW_HIDE);
+
+
+	}
+
 }

@@ -52,6 +52,7 @@
 
 #include "SkinMagicLib.h"
 #include <afx.h>
+#include <afxdhtml.h>
 #pragma comment(lib,"SkinMagic.lib")
 
 

@@ -44,6 +44,7 @@ BOOL CTimeOutSocket::OnMessagePending()
 	return CSocket::OnMessagePending();
 }
 
+/*
 int CTimeOutSocket::Receive(void* lpBuf, int nBufLen, int nFlags)
 {
 	// TODO: Add your specialized code here and/or call the base class
@@ -65,6 +66,7 @@ int CTimeOutSocket::Send(const void* lpBuf, int nBufLen, int nFlags)
 	return CSocket::Send(lpBuf, nBufLen, nFlags);
 }
 
+
 BOOL CTimeOutSocket::KillTimeOut(void)
 {
 	return KillTimer(NULL,m_nTimerID);
@@ -77,3 +79,4 @@ BOOL CTimeOutSocket::SetTimeOut(int nTimeOut)
 	return m_nTimerID;
 	//return false;
 }
+*/
