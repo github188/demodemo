@@ -24,6 +24,7 @@ typedef struct tagVV_INFO
 	BOOL   bMonitoring;
 	CString sUUID;
 	CString sCh;
+	int		nImageType; //0: unknow, 1 Video, 2 Piture
 }VV_INFO;
 typedef enum tagVV_COUNT
 {
@@ -53,7 +54,8 @@ typedef struct tagVV_CONTROL
 /////////////////////////////////////
 class CBTSMonitorView : public CView
 {
-protected: // 仅从序列化创建
+//protected: // 仅从序列化创建
+public:
 	CBTSMonitorView();
 	DECLARE_DYNCREATE(CBTSMonitorView)
 
@@ -103,7 +105,7 @@ public:
 	void SelectVideoView(int nVideoViewID);
 //	afx_msg void OnVv1();
 	void StartMonitorBTS(CString strBtsInfo);
-	void StartMonitorBTS(int nVV, CString sUUID, CString sCh);
+	void StartMonitorBTS(int nVV, CString sUUID, CString sCh, int nCategory=0);
 	void StopMonitorBTS(int nViewIndex);
 
 	//Task List

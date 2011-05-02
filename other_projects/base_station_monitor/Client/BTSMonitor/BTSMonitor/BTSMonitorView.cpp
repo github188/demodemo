@@ -28,6 +28,7 @@
 //Tasks
 #include "ConfigMgr.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -65,6 +66,8 @@ CBTSMonitorView::CBTSMonitorView()
 		m_vvControl.vvInfo[i].rc.bottom = 0;
 
 		m_vvControl.vvInfo[i].bMonitoring = FALSE;
+
+		m_vvControl.vvInfo[i].nImageType = 0;
 
 	}
 
@@ -360,6 +363,9 @@ void CBTSMonitorView::OnInitialUpdate()
 
 		//Default is the first one Video window
 		((CPlayView*)m_vvControl.vvInfo[i].vv)->SetActiveViewID(0);
+
+		//Timer ID
+		((CPlayView*)m_vvControl.vvInfo[i].vv)->SetTimerIDEvent(ID_REAL_IMG_TIMER+i);
 	}
 	
 	
@@ -561,6 +567,7 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+//Real Image/Video
 void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 {	
 	CString sVVFile;
@@ -603,87 +610,145 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 		PLAY_OpenFile(nActView, sVVFile.GetBuffer());
 	
 		PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+		return;
 	}
-	else //Play From the Server, remote Camera
-	{	
 
-		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	CString sUUID, sChannelID, sRoute;
+	int pos = util::split_next(strBtsInfo,sUUID,'$',0);
+	pos = util::split_next(strBtsInfo,sChannelID,'$',pos+1);
 
-		//GokuClient *client; //("127.0.0.1");
-		//wstring host(L"127.0.0.1:8000");
-		//CString host("192.168.1.200:8000");
-		//CString host("127.0.0.1:8000");
-		CString sUUID, sChannelID;
-		int pos = util::split_next(strBtsInfo,sUUID,'$',0);
-		pos = util::split_next(strBtsInfo,sChannelID,'$',pos+1);
-		//client = new GokuClient(host, host);
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	BTSInfo *pBtsInfo = pApp->pgkclient->btsmanager.GetBTSInfoByUUID(sUUID);
+
+	if (!pBtsInfo) return;
+
+	sRoute = pBtsInfo->route;
+
+	if (pBtsInfo->devType == 5) //PICTURE
+	{
+		//start Image Monitoring....
+		int *err=0;
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sChannelID,sRoute,err);
+		if (pMoImage)
+		{	
+			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+			pView->SetMonitorImageObj(pMoImage);
+			pView->SetImageType(2);//Picture...
+			pView->StartImgMonitor();
+
+			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+			m_vvControl.vvInfo[nActView].nImageType  = 2;
+
+		}
+		else
+		{
+			m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+			m_vvControl.vvInfo[nActView].nImageType  = 0;
+		}
 	
-		//for(int i=0;i<9;i++)
-		//{
-			PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
-			BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
-			if(bOpenRet)
+	}
+	else 
+	{
+		PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
+		BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
+		if(bOpenRet)
+		{
+			//CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
+			//pwnd->ShowWindow(SW_SHOW);
+			//HWND hwnd=pwnd->GetSafeHwnd();
+			//BOOL bPlayRet=PLAY_Play(i, hwnd);
+			PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+			//int *tmp=new int(i);
+			//util::int2str(host, nActView);
+			//client->replay(host, play_video, nActView); //Play Local Vedio
+
+			//Play Remote Vedio runatime			
+			bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
+			
+			//pApp->pgkclient->replay(host, play_video, nActView);
+			//start a thread to receive the video information.
+			//mythread = AfxBeginThread(recvThread, tmp);
+			if (bRet)
 			{
-				//CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
-				//pwnd->ShowWindow(SW_SHOW);
-				//HWND hwnd=pwnd->GetSafeHwnd();
-				//BOOL bPlayRet=PLAY_Play(i, hwnd);
-				PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
-
-				//int *tmp=new int(i);
-				//util::int2str(host, nActView);
-				//client->replay(host, play_video, nActView); //Play Local Vedio
-
-				//Play Remote Vedio runatime			
-				bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
-				
-				//pApp->pgkclient->replay(host, play_video, nActView);
-				//start a thread to receive the video information.
-				//mythread = AfxBeginThread(recvThread, tmp);
-				if (bRet)
-					m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
-				else
-					m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+				m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+				m_vvControl.vvInfo[nActView].nImageType  = 1;
 			}
-		//}
-		
-	}	
-	
+			else
+			{
+				m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+				m_vvControl.vvInfo[nActView].nImageType  = 0;
+			}
+		}
+	}
+
 
 }
 
-void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh)
+//Task Image/Video.
+void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int nCategory)
 {
 	int nActView = nVV;
 	
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	BTSInfo *pBtsInfo = pApp->pgkclient->btsmanager.GetBTSInfoByUUID(sUUID);
 
-	CString sChannelID = sCh;
-	PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
-	BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
-	if(bOpenRet)
+	if (nCategory==2) //Picture..
 	{
-		PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+		int *err=0;
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sCh,pBtsInfo->route,err);
+		if (pMoImage)
+		{	
+			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+			pView->SetMonitorImageObj(pMoImage);
+			pView->SetImageType(2);//Picture...
+			pView->StartImgMonitor();
 
-		//Play Remote Vedio runatime			
-		bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
-		
-		if (bRet)
 			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+			m_vvControl.vvInfo[nActView].nImageType  = 2;
+
+		}
 		else
+		{
 			m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+			m_vvControl.vvInfo[nActView].nImageType  = 0;
+		}
+	}
+	else
+	{
+
+		PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
+		BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
+		if(bOpenRet)
+		{
+			PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
+
+			//Play Remote Vedio runatime			
+			bool bRet = pApp->pgkclient->real_play(sUUID, sCh, play_video, nActView);
+			
+			if (bRet)
+			{
+				m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+				m_vvControl.vvInfo[nActView].nImageType  = 1;
+			}
+			else
+			{
+				m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
+				m_vvControl.vvInfo[nActView].nImageType  = 0;
+			}
+		}
 	}
 }
 int play_video(int  sessionId, char * pBuffer, int  len)
 {
-	//wstring log;
-	//log.append(L"play video session:");
-	CString sLog("play video session:");
-	util::int2str(sLog, sessionId);
-	//log.append(L" buffer len:");
-	sLog += " buffer len:";
-	util::int2str(sLog, len);
-	CLogFile::WriteLog(sLog);
+	//liangjl comment out following log, because thr're so much.
+	//CString sLog("play video session:");
+	//util::int2str(sLog, sessionId);
+	//sLog += " buffer len:";
+	//util::int2str(sLog, len);
+	//CLogFile::WriteLog(sLog);
 	while(PLAY_InputData(sessionId, (BYTE*)pBuffer, len)==FALSE)
 	{
 		::Sleep(45);
@@ -702,7 +767,17 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 	}
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	
+	CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nViewIndex].vv));
+
+	if (m_vvControl.vvInfo[nViewIndex].nImageType==2) //Picture...
+	{
+		pView->SetImageType(0); //no type
+		pView->StopImgMonitor();
+
+		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
+		m_vvControl.vvInfo[nViewIndex].nImageType  = 0;
+	}
+	else	
 	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 	//if(bOpenRet)
 	{
@@ -713,6 +788,8 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 		BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 		
 		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
+		m_vvControl.vvInfo[nViewIndex].nImageType  = 0;
+
 	}
 }
 void CBTSMonitorView::SaveTaskInfo(int nVV, CString& sUUID, CString& sCh)
@@ -818,6 +895,8 @@ void CBTSMonitorView::ProcessTask(LPVOID pv)
 									 //Stop old Ch Mornitoring
 									 if ( !pObjTask->sUUID_Old.IsEmpty()) //UUID is Empty, current playview has no channel to be mornitoring.
 										pMonitorView->StopMonitorBTS(pObjTask->nVV);
+
+									 pMonitorView->StartMonitorBTS(pObjTask->nVV,pObjTask->sUUID, pObjTask->sCh);
 
 									 //Start the current Task...
 									 pMonitorView->StartMonitorBTS(pObjTask->nVV,pObjTask->sUUID, pObjTask->sCh);
