@@ -81,7 +81,7 @@
  function iniocx(){
 	ocxOk = true;
 	//alert("oxc load ok!");
-	var r = ocxtype.LoginDevice(ip, port, "admin", "12345");
+	var r = ocxtype.LoginDevice(curIp, curPort, "admin", "12345");
 	if (r==1){
 		ocxtype.ShowDeviceConfig();
 	}	 
