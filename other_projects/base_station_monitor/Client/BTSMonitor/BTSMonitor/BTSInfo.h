@@ -8,7 +8,7 @@ private:
 
 public:
 	CString uuid;
-	CString devType;
+	CString devType; //1: ÊÓÆµ¼à¿Ø £¬2: Í¼Æ¬¼à¿Ø£¬ 3: µØÇø
 	CString route;
 	CString status;
 	CString parentuuid;

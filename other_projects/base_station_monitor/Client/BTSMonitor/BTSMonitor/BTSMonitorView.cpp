@@ -626,7 +626,7 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 	sRoute = pBtsInfo->route;
 
-	if (pBtsInfo->devType == 5) //PICTURE
+	if (pBtsInfo->devType == "2") //PICTURE
 	{
 		//start Image Monitoring....
 		int *err=0;
@@ -649,7 +649,7 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 		}
 	
 	}
-	else 
+	else if (pBtsInfo->devType == "1")
 	{
 		PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
 		BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
@@ -682,6 +682,12 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 				m_vvControl.vvInfo[nActView].nImageType  = 0;
 			}
 		}
+	}
+	else
+	{
+		CString strError;
+		strError.Format("未知的监控视频类型, DevType ceode:%s", pBtsInfo->devType);
+		AfxMessageBox(strError); 
 	}
 
 

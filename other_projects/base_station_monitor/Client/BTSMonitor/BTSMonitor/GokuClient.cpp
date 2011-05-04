@@ -701,11 +701,6 @@ bool GokuClient::Stop_Play(int nVideoID)
 
 MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *err)
 {
-	//CString ip;
-	//int pos=util::split_next(binfo->route, ip, ':',0);
-	//ip.Append(":");
-	//ip.Append(IMAGE_PORT);
-
 	GokuSocket *imageSock=new GokuSocket(binfo->route, binfo->route);
 	if(imageSock->connect_server()>0)
 	{
@@ -767,7 +762,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CSt
 		sCmd.Append("\n");
 		
 		CString sMsg;
-		if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		if (!pImage->mSock->SendCmdAndRecvMsg(sCmd,sMsg))
+		//if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 		{
 			delete pImage;
 			return NULL;
