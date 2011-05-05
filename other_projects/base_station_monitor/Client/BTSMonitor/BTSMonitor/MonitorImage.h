@@ -68,7 +68,7 @@ public:
 	void getImageText(CString &line);
 	void decodeImageData(CString &base64line);
 	void savedata(CString &filename);
-	bool getNextImage();
+	int getNextImage();
 };
 
 #endif

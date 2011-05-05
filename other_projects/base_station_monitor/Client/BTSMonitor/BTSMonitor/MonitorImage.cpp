@@ -39,7 +39,7 @@ void MonitorImage::savedata(CString &filename)
 	ofs.close();
 }
 
-bool MonitorImage::getNextImage()
+int MonitorImage::getNextImage()
 {
 	CString sCmd, sMsg;
 	sCmd.Append("img>next_image?session=");
@@ -49,13 +49,20 @@ bool MonitorImage::getNextImage()
 		return false;
 	CString line;
 	int ileft=0, iright=0, ipos=0;
-	ipos=sMsg.Find('\n', ileft);
-	line=sMsg.Mid(ileft, ipos-ileft+1);
-	ileft=ipos;
-	ipos=sMsg.Find('\n', ileft+1);
-	line=sMsg.Mid(ileft+1, ipos-ileft);
-	getImageText(line);
-	line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
-	decodeImageData(line);
-	return true;
+	ipos=sMsg.Find('$',ileft);
+	CString strnum=sMsg.Mid(ileft, ipos-ileft);
+	int num=util::str2int(strnum);
+	if(num==0)
+	{
+		ipos=sMsg.Find('\n', ileft);
+		line=sMsg.Mid(ileft, ipos-ileft+1);
+		ileft=ipos;
+		ipos=sMsg.Find('\n', ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft);
+		getImageText(line);
+		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
+		decodeImageData(line);
+	}
+	
+	return num;
 }
