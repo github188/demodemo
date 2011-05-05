@@ -629,8 +629,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 	if (pBtsInfo->devType == "2") //PICTURE
 	{
 		//start Image Monitoring....
-		int *err=0;
-		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sChannelID,sRoute,err);
+		int err=0;
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sChannelID,sRoute,&err);
 		if (pMoImage)
 		{	
 			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));

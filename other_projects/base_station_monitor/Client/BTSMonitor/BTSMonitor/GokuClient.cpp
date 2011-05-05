@@ -701,7 +701,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 
 MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *err)
 {
-	GokuSocket *imageSock=new GokuSocket(binfo->route, binfo->route);
+	GokuSocket *imageSock=new ImageSocket(binfo->route, binfo->route);
 	if(imageSock->connect_server()>0)
 	{
 		MonitorImage *pImage=new MonitorImage();
@@ -747,7 +747,7 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *err)
 //liang add for single channel image retriving.
 MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute, int *err)
 {
-	GokuSocket *imageSock=new GokuSocket(sRoute, sRoute);
+	GokuSocket *imageSock=new ImageSocket(sRoute, sRoute);
 	if(imageSock->connect_server()>0)
 	{
 		MonitorImage *pImage=new MonitorImage();

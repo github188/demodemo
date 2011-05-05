@@ -109,7 +109,6 @@ void util::TrimSpecialChar(CString& src, char ch)
 
 	src.Empty();
 	src = des;
-
 }
 
 void util::InitApp()

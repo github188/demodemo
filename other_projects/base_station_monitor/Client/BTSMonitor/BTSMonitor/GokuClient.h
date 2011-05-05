@@ -5,6 +5,7 @@
 #include "AlarmManager.h"
 #include "VideoPlayControl.h"
 #include "MonitorImage.h"
+#include "ImageSocket.h"
 
 #define IMAGE_PORT	"8003"
 

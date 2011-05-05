@@ -51,8 +51,9 @@ public:
 protected:
 	virtual int write_data(const char *buff, int len);
 
-private:
+public:
 	CSocket cs;
+private:
 	//CTimeOutSocket	cs;
 	HANDLE	m_hAutoWait;
 	HANDLE	m_hStopAutoWait;
