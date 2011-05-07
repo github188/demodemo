@@ -21,6 +21,11 @@ public class SimpleCache {
 		item.expiredTime = expired * 1000;
 		cache.put(key, item);
 	}
+	
+	public boolean hasKey(String key){
+		cleanObject();
+		return cache.containsKey(key);
+	}
 
 	public Object get(String key){
 		cleanObject();

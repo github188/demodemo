@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.MonitorChannel;
+import org.goku.core.model.SimpleCache;
 import org.goku.core.model.SystemReload;
 import org.goku.db.DataStorage;
 import org.goku.settings.Settings;
@@ -40,6 +41,7 @@ public class AlarmMonitorCenter implements Runnable{
 	private long autoConfirmTime = 5; //分钟。
 	private long lastAutoConfirmTime = 0;
 	private SystemReload reload = null;
+	private SimpleCache activeAlarm = new SimpleCache();
 	
 	public AlarmMonitorCenter(ThreadPoolExecutor executor, Settings s){
 		this.executor = executor;
@@ -246,11 +248,15 @@ public class AlarmMonitorCenter implements Runnable{
 		 */
 		private boolean preCheckAlarm(MonitorClient client, AlarmDefine alarm, AlarmRecord record){
 			boolean active = false;
+			String activeKey = record.baseStation + "_" + record.channelId + "_" + record.alarmCode;
+			//告警还在处理中，避免保存重复告警。避免每次都通过数据库查询来判断是否有告警。
+			if(activeAlarm.hasKey(activeKey))return false;
 			if(alarm.isGlobal() ||
 			   (alarm.isCustomize() && client.info.isSupport(alarm.alarmCode))
 			  ){
 				DataStorage storage = VideoRouteServer.getInstance().storage;
 				//检查最短触发时间。
+				if(alarm.reActiveTime <= 0) alarm.reActiveTime = 1; 
 				Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
 				//
 				String sql = "select count(*) as have_row from alarm_record where " +
@@ -270,6 +276,8 @@ public class AlarmMonitorCenter implements Runnable{
 				active = rowCount == 0;
 				if(!active){
 					log.debug("Duplicated alarm:"+ alarm.toString() + ", client:" + client.info.toString() + ", channel:" + record.channelId);
+				}else {
+					activeAlarm.set(activeKey, "", (int)alarm.reActiveTime * 60);
 				}
 			}else if(alarm.isCustomize()){
 				log.debug("Not support alarm:"+ alarm.toString() + ", client:" + client.info.toString());

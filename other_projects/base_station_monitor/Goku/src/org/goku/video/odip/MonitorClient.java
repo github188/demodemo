@@ -44,6 +44,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 	 */
 	//public int channelId = 0;
 	public String ipAddr = "";
+	//重连次数
 	public int retryError = 0;
 	
 	protected Log log = null;

@@ -351,13 +351,16 @@ public class VideoRouteServer {
 		@Override
 		public void disconnected(final MonitorClientEvent event) {
 			//有可能设备是从服务器，删除后在断开。
-			if(clients.get(event.client.info.uuid) != null){
-				log.info("Try to reconnect disconnected DVR:" + event.client.info.toString());
+			if(clients.get(event.client.info.uuid) != null && event.client.retryError < 5){
+				event.client.retryError++;
+				log.info("Try to reconnect disconnected DVR:" + event.client.info.toString() + ", retry:" + event.client.retryError);
 				try{
 					event.client.connect();
 				}catch(IOException e){
 					log.equals(e.toString());
 				}
+			}else if(event.client.retryError > 5) {
+				removeMonitorClient(event.client);
 			}
 		}
 		
