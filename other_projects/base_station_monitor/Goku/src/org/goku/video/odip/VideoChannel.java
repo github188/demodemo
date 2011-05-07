@@ -210,8 +210,8 @@ public class VideoChannel implements Runnable, SelectionHandler, NIOSocketChanne
 		}
 		if(this.channel != null){
 			this.channel.videoChannel = null;
+			this.client.realPlay(this.channel.id);
 		}
-		this.client.realPlay(this.channel.id);
 	}
 	
 	/**

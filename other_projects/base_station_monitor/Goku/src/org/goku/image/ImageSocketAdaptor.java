@@ -113,7 +113,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			session.nStatus = nStatus;
 			session.baseStation = baseStation;
 			sessionCache.set(sid,  session, 30);
-			outputImageFile(out, nextImage(iter), encode);
+			//outputImageFile(out, nextImage(iter), encode);
 		}else {
 			for(AlarmRecord alarm = nextImage(iter); alarm != null;){
 				outputImageFile(out, alarm, encode);
@@ -200,7 +200,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		}
 	}
 	
-	private void outputImage(OutputWriter out, ImageInfo image, String encode) throws IOException{
+	private void outputImage(OutputWriter out, ImageInfo image, String encode, String bts, String ch) throws IOException{
 		//size:245*111$start_time:2010-10-11
 		byte[] data = new byte[image.getDataSize()];
 		String size = "352*288";
@@ -210,8 +210,10 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			date = format.format(image.generateDate);
 		}
 		image.buffer.duplicate().get(data);
-		String meta = String.format("size:%s$time:%s$length:%s",
-				size, date, data.length);
+		//String meta = String.format("size:%s$time:%s$length:%s",
+		//		size, date, data.length);
+		String meta = String.format("%s$%s$%s$%s$%s$1",
+				size.replace('*', '$'), date, data.length, bts, ch);	
 		log.debug("image data:" + meta);
 		out.println(meta);
 		out.println(data, encode);		
@@ -239,7 +241,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 					out.println("3$waiting");
 				}else {
 					out.println("0$ok");
-					outputImage(out, session.image, encode);
+					outputImage(out, session.image, encode, session.baseStation, session.channel);
 				}
 			}else if(session.sessionType == SessionCache.TYPE_ALARM){
 				AlarmRecord alarm = this.nextImage(session.iter);

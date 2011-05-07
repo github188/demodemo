@@ -372,7 +372,7 @@ public class MonitorClient implements Runnable, ChannelHandler, SelectionHandler
 						this.eventProxy.connected(new MonitorClientEvent(this));
 						this.selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
 						this.selectionKey.selector().wakeup();
-						this.retryError = 0;
+						//this.retryError = 0;
 					}catch(NoRouteToHostException conn){
 						this.retryError++;
 						this.socketChannel.close();
