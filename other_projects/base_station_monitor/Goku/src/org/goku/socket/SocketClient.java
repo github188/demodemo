@@ -237,7 +237,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	}
 	
 	public void closeSocket(){
-		log.info("Close socket, " + toString());
+		log.info("Close socket, " + toString() + ", write queue:" + this.writeQueue.size());
 		this.writeQueue.clear();
 		if(this.selectionKey != null){
 			this.selectionKey.cancel();
