@@ -369,7 +369,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(bsId != null && !"".equals(bsId) && !"all".equals(bsId)){
 					filter.put("baseStation__=", bsId);
 				}
-				
+				//基站通道
+				String ch = this.getStringParam(request, "ch", null);
+				if(ch != null && !"".equals(ch) && !"all".equals(ch)){
+					filter.put("channelId__=", ch);
+				}
 				//状态过滤
 				String status = this.getStringParam(request, "status", null);
 				if(status != null && !"".equals(status) && !"all".equals(status)){

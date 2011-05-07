@@ -13,7 +13,7 @@ public class FileReplayController {
 	private FileChannel channel = null;
 	private MappedByteBuffer buffer = null;
 	private int fileSize = 0;
-	private int frameSize = 1024 * 100;
+	private int frameSize = 1024 * 16;
 	private File path = null;
 	
 	public FileReplayController(SocketClient client, File path){

@@ -359,18 +359,19 @@ public class ASC100MX implements Runnable{
 		public Map<Integer, ByteBuffer> queue = new HashMap<Integer, ByteBuffer>();
 		
 		public void put(int order, ByteBuffer data){
-			queue.put(order, data);
 			if(next_index == -1 || 
 			   (next_index > order && order != 0) ||
-			   order - next_index > 100 //如果已经累计超过100个包没有处理，从最新一个包开始处理。
+			   order - next_index > 15 //如果已经累计超过15个包没有处理，从最新一个包开始处理。
 			   ){
 				next_index = order;
 				size = 0;
+				queue.clear();
 			}
 			size++;
 			/*避免长时间没有收到数据包，中间突然来了一个间隔的包，作为超时读取处理。
 			 */
 			last_get_time = System.currentTimeMillis();
+			queue.put(order, data);
 		}
 		
 		public ByteBuffer getNext(){

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,7 +21,8 @@ import org.goku.settings.Settings;
 public class AlarmMonitorCenter implements Runnable {
 	private Log log = LogFactory.getLog("image.alarm");
 	//private VideoRouteServer server = null;
-	private Collection<ASC100Client> clients = Collections.synchronizedCollection(new ArrayList<ASC100Client>());
+	public Map<String, ASC100Client> clients = Collections.synchronizedMap(new HashMap<String, ASC100Client>());
+	//private Collection<ASC100Client> clients = Collections.synchronizedCollection(new ArrayList<ASC100Client>());
 	private ThreadPoolExecutor executor = null;
 	private Timer timer = new Timer();
 	private boolean isRunning = false;
@@ -42,7 +45,7 @@ public class AlarmMonitorCenter implements Runnable {
 	public void checkAllClient(){
 		synchronized(clients){
 			log.info("Check all image alarm, client size:" + clients.size());
-			for(ASC100Client c: clients){
+			for(ASC100Client c: clients.values()){
 				c.getAlarmImage();
 			}
 		}
@@ -70,16 +73,17 @@ public class AlarmMonitorCenter implements Runnable {
 	}
 	
 	public void addClient(ASC100Client client){
-		if(!clients.contains(client)){
-			clients.add(client);
-			client.addListener(alarmListener);
+		//this.clientTable.put(client.getClientId(), client);
+		synchronized(clients){
+			clients.put(client.info.uuid, client);
+			client.addListener(this.alarmListener);
 		}
 	}
 	
 	public void removeClient(ASC100Client client){
-		if(clients.contains(client)){
-			clients.remove(client);
-			client.removeListener(alarmListener);
+		synchronized(clients){
+			clients.remove(client.info.uuid);
+			client.removeListener(this.alarmListener);
 		}
 	}
 	

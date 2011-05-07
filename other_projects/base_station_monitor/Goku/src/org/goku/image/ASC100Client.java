@@ -356,7 +356,7 @@ public class ASC100Client {
 				int[] retry = image.getReTryFrames();
 				image.waitingFrames = retry.length;			
 				if(retry == null || retry.length == 0){
-					log.debug("recevieImageOK..");
+					//log.debug("recevieImageOK..");
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
 					ImageClientEvent event = new ImageClientEvent(this);
@@ -524,6 +524,7 @@ public class ASC100Client {
 		public void recevieImageOK(ImageClientEvent event) {
 			//在Listener处理过程中，可能需要修改Listener
 			Collection<ImageClientListener> lss = new ArrayList<ImageClientListener>();
+			log.debug("recevieImageOK, listener count:" + ls.size());
 			lss.addAll(ls);
 			for(ImageClientListener l: lss){
 				l.recevieImageOK(event);
