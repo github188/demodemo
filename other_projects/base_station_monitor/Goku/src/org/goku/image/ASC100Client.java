@@ -356,7 +356,7 @@ public class ASC100Client {
 				int[] retry = image.getReTryFrames();
 				image.waitingFrames = retry.length;			
 				if(retry == null || retry.length == 0){
-					//log.debug("recevieImageOK..");
+					log.debug("recevieImageOK..");
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
 					ImageClientEvent event = new ImageClientEvent(this);
