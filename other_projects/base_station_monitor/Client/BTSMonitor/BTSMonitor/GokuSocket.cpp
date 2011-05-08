@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 int GokuSocket::read_buffer(char *buffer, int size)
 {
-	StartAutoWait(5); //5 second
+	StartAutoWait(8); //5 second
 
 	//char szBuffer[BUFSIZE];   
 	//ZeroMemory(szBuffer,sizeof(szBuffer)); 
@@ -208,7 +208,8 @@ int GokuSocket::connect_server()
 			CString strError;
 			strError.Format("Create Socket error, Error Code: %d",GetLastError()); 
 			CLogFile::WriteLog(strError);
-
+	
+			SetConnectStatus(false);
 			return -1;
 		}
 
@@ -228,8 +229,10 @@ int GokuSocket::connect_server()
 		CString strError;
 		strError.Format("Connect Socket error, Error Code: %d",GetLastError()); 
 		CLogFile::WriteLog(strError);
-
+		SetConnectStatus(false);
 		return -1;
 	}
+
+	SetConnectStatus(true);
 	return 1;
 }

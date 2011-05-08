@@ -7,9 +7,6 @@
 #include "MonitorImage.h"
 #include "ImageSocket.h"
 
-#define IMAGE_PORT	"8003"
-
-
 UINT alarm_getRealAlarm_thread(LPVOID param);
 UINT Command_SendAndReceiveTimer(LPVOID param);
 UINT video_thread_control(LPVOID param);
@@ -18,6 +15,8 @@ class GokuClient{
 	CString cmd_msg; //last command status.
 
 public:
+	MonitorImage *m_pMoImage;
+
 	GokuSocket *socket;
 	BTSManager btsmanager;
 	AlarmManager alarmmanager;
@@ -34,6 +33,8 @@ public:
 			m_pPlayThread[i]=NULL;
 			m_pArrVideoCtrl[i]=NULL;
 		}
+		m_pAlarmVideoCtrl = NULL;
+		m_pAlarmVideoThread = NULL;
 
 		socket = new GokuSocket(primary_server, secondary_server);
 		m_nConnectCode = socket->connect_server();
@@ -50,6 +51,8 @@ public:
 		m_pVedioCtrlThread = AfxBeginThread(video_thread_control, this);
 
 		m_nSid = 0;
+
+		m_pMoImage = NULL;
 	}
 
 	~GokuClient()
@@ -65,6 +68,13 @@ public:
 				m_pArrVideoCtrl[i]->status = 0; //Thread is runing...
 				m_pArrVideoCtrl[i]->socket->CancelSocket();
 			}
+		}
+
+		if (m_pAlarmVideoCtrl) //Alarm Query Thread
+		{
+			m_pAlarmVideoCtrl->bIsBlocking = true;
+			m_pAlarmVideoCtrl->status = 0;
+			m_pAlarmVideoCtrl->socket->CancelSocket();
 		}
 
 		::Sleep(100);
@@ -164,6 +174,15 @@ public:
 		socket->ExitAutoWait();
 
 		delete socket;
+
+		if ( m_pMoImage) 
+		{
+			delete m_pMoImage;
+			m_pMoImage = NULL;
+		}
+
+		if (m_pAlarmVideoCtrl)
+			delete m_pAlarmVideoCtrl;
 	}
 
 	/**
@@ -176,7 +195,7 @@ public:
 
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
-	void queryAlarmInfo(CString category, CString uuid, CString startDate, CString startTime,
+	void queryAlarmInfo(CString category, CString uuid, CString sCh,CString startDate, CString startTime,
 				CString type, CString level, CString limit, CString offset, CString &qalarmStr);
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
@@ -198,7 +217,10 @@ public:
 
 	//VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
-	VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
+
+	//VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
+	bool replay(CString &videoId, DataCallBack callback, int session=0);
+
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
@@ -207,9 +229,11 @@ public:
 	//MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
 	MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *err);
 	MonitorImage* getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute , int *err);
-	MonitorImage* getAlarmImagebyBase64(CString alarmID, int *err);
+	//MonitorImage* getAlarmImagebyBase64(CString alarmID, int *err);
+	MonitorImage* getAlarmImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute,CString alarmID, int *err);
 
 	int stop_Alarm(CString btsid, CString timeout);
+	bool StopAlamVideoPlay();
 protected:
 	int execute_command(CString &cmd);
 	CString host;
@@ -221,8 +245,11 @@ protected:
 	CWinThread		 *m_pTimerThread; //Control GoKuSocket
 
 public:
-	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV];
-	CWinThread		 *m_pPlayThread[cnMAX_VV];
+	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV]; //Real Play
+	VideoPlayControl *m_pAlarmVideoCtrl;         //Replay Alarm Vedio
+
+	CWinThread		 *m_pPlayThread[cnMAX_VV];   //Real Play thread handle
+	CWinThread		 *m_pAlarmVideoThread;       //Alarm Video thread
 
 
 public:

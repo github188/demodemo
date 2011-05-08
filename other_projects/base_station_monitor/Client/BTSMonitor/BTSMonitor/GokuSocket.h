@@ -12,8 +12,8 @@ public:
 		
 		m_lWaitTime = INFINITE;
 		m_hEvent[0] = m_hAutoWait;
-		m_hEvent[0] = m_hStopAutoWait;
-		m_hEvent[1] = m_hExitTimerThread;
+		m_hEvent[1] = m_hStopAutoWait;
+		m_hEvent[2] = m_hExitTimerThread;
 	}
 
 	~GokuSocket(){
