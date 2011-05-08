@@ -281,9 +281,6 @@ void CBTSMonitorApp::StopMonitorBTS(int nViewIndex)
 // CBTSMonitorApp 消息处理程序
 
 
-
-
-
 int CBTSMonitorApp::ExitInstance()
 {
 	// TODO: Add your specialized code here and/or call the base class

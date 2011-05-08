@@ -630,11 +630,49 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 	{
 		//start Image Monitoring....
 		int err=0;
+		CString sError;
 		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sChannelID,sRoute,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				AfxMessageBox("基站未找到!");
+			}
+            break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				AfxMessageBox("未知的错误类型!");
+			}
+
+		}
+		if (err) return;
+
 		if (pMoImage)
 		{	
+
 			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
-			pView->SetMonitorImageObj(pMoImage);
+
+			pView->SetRealImagePara(pMoImage ,sUUID,sChannelID,sRoute);
 			pView->SetImageType(2);//Picture...
 			pView->StartImgMonitor();
 
@@ -708,7 +746,7 @@ void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int n
 		if (pMoImage)
 		{	
 			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
-			pView->SetMonitorImageObj(pMoImage);
+			pView->SetRealImagePara(pMoImage,sUUID,sCh,pBtsInfo->route);
 			pView->SetImageType(2);//Picture...
 			pView->StartImgMonitor();
 
