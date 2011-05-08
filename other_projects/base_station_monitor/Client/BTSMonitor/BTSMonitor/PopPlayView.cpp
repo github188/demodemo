@@ -75,7 +75,7 @@ void CPopPlayView::OnInitialUpdate()
 	// TODO: Add your specialized code here and/or call the base class
 	util::InitApp();
 	m_sRealImageDir = util::GetAppPath();
-	m_sRealImageDir +="\\RealImage";
+	m_sRealImageDir +="RealImage";
 
 }
 
@@ -209,6 +209,8 @@ void CPopPlayView::OnTimer(UINT_PTR nIDEvent)
 		//Save current alarm image to the directory.
 		CString sLine, str, sDateTime, sBts, sCh;
 		int pos=0;
+		int err;
+		m_bHasImage = m_pMonitorImage->getNextImage(&err);
 		if (m_bHasImage)
 		{
 
@@ -243,7 +245,6 @@ void CPopPlayView::OnTimer(UINT_PTR nIDEvent)
 			Invalidate();
 		}
 
-		 m_bHasImage = m_pMonitorImage->getNextImage();
 	}
 	CView::OnTimer(nIDEvent);
 }

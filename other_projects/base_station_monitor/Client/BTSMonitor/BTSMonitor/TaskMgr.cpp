@@ -512,6 +512,8 @@ void CTaskMgr::OnBnClickedBtnDeleteTask()
 				for(int i=0; i<nTaskCount; i++)
 				{
 					VERIFY(pObjTask = (CTaskItem*)pObjArray->GetAt(i));
+					if (!pObjTask) continue;
+
 					if (pObjTask->sName == sTaskName)
 					{
 						pObjTask->status = 4;

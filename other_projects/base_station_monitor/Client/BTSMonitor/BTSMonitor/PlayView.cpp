@@ -98,7 +98,7 @@ void CPlayView::OnInitialUpdate()
 	// TODO: Add your specialized code here and/or call the base class
 	util::InitApp();
 	m_sRealImageDir = util::GetAppPath();
-	m_sRealImageDir +="\\RealImage";
+	m_sRealImageDir +="RealImage";
 
 }
 
@@ -284,6 +284,9 @@ BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHei
 	//打开文件并检测文件的有效性
 	if (file.Open(strPicName,CFile::modeRead)&&file.GetStatus(strPicName,fstatus)&&((cb = fstatus.m_size) != -1))  
 	{  
+		if (cb == 0)
+			return false;
+
 		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, cb);  
 		LPVOID pvData = NULL;  
 		if (hGlobal != NULL)  
@@ -376,6 +379,8 @@ void CPlayView::OnTimer(UINT_PTR nIDEvent)
 		//Save current alarm image to the directory.
 		CString sLine, str, sDateTime, sBts, sCh;
 		int pos=0;
+		int err;
+		 m_bHasImage = m_pMonitorImage->getNextImage(&err);
 		if (m_bHasImage)
 		{
 
@@ -406,11 +411,29 @@ void CPlayView::OnTimer(UINT_PTR nIDEvent)
 
 			m_sPicture.Format("%s%s%s_%s_%s.jpg", m_sRealImageDir,"\\", sBts, sCh, sDateTime);
 			m_pMonitorImage->savedata(m_sPicture);
+			
+			StopImgMonitor();
 
 			Invalidate();
 		}
+		else
+		{
+			CString strError;
+			if (1 == err) //current expired
+			{
+				if ( m_pMonitorImage->getNextImageSession(m_sUUID, m_sChannelID,&err) )
+				{
+					strError.Format("获取图片SessionID失败 BTSID=%s, ChannelID=%s .ErrorCode=%d", m_sUUID, m_sChannelID,err);
+					CLogFile::WriteLog(strError);
+				}
+			}
+			else
+			{
+				strError.Format("getNextImage()失败 BTSID=%s, ChannelID=%s .ErrorCode=%d", m_sUUID, m_sChannelID,err);
+				CLogFile::WriteLog(strError);
+			}
 
-		 m_bHasImage = m_pMonitorImage->getNextImage();
+		}
 
 	}
 
@@ -433,14 +456,17 @@ void CPlayView::StopImgMonitor(void)
 	KillTimer(m_nIDEvent);
 
 	//Free current MomitorImage Object
-	if (m_pMonitorImage)
-	{
-		delete m_pMonitorImage;
-		m_pMonitorImage = NULL;
-	}
+	//if (m_pMonitorImage)
+	//{
+	//	delete m_pMonitorImage;
+	//	m_pMonitorImage = NULL;
+	//}
 }
 
-void CPlayView::SetMonitorImageObj(MonitorImage* pObj)
+void CPlayView::SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChannelID, CString sRoute)
 {
+	m_sUUID			= sUUID;
+	m_sChannelID	= sChannelID;
+	m_sRoute		= sRoute;
 	m_pMonitorImage = pObj;
 }

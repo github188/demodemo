@@ -55,8 +55,6 @@ private:
 public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	BOOL  ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHeight);
-	void SetImageType(int  nImageType);
-	int  GetImageType() {return m_nImageType;};
 private:
 	int m_nImageType;
 	bool m_bHasImage;
@@ -69,9 +67,13 @@ private:
 public:
 	void StartImgMonitor(void);
 	void StopImgMonitor(void);
-	void SetMonitorImageObj(MonitorImage* pObj);
+	void SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChannelID, CString sRoute);
+	void SetImageType(int  nImageType);
+	int  GetImageType() {return m_nImageType;};
+
 private:
 	CString m_sRealImageDir;
+	CString m_sUUID, m_sChannelID, m_sRoute;
 };
 
 
