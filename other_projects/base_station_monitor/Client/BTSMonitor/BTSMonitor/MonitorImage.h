@@ -68,7 +68,14 @@ public:
 	void getImageText(CString &line);
 	void decodeImageData(CString &base64line);
 	void savedata(CString &filename);
+<<<<<<< .mine
+	bool getNextImage(int *err);
+
+	//Retrive imagin session ID again, once the image is time expired.
+	bool getNextImageSession(CString sBtsUUID, CString sCh, int *err);
+=======
 	int getNextImage();
+>>>>>>> .r813
 };
 
 #endif

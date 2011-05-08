@@ -39,16 +39,85 @@ void MonitorImage::savedata(CString &filename)
 	ofs.close();
 }
 
+<<<<<<< .mine
+bool MonitorImage::getNextImage(int *err)
+=======
 int MonitorImage::getNextImage()
+>>>>>>> .r813
 {
 	CString sCmd, sMsg;
 	sCmd.Append("img>next_image?session=");
 	sCmd.Append(session);
 	sCmd.Append("\n");
 	if ( !mSock->SendCmdAndRecvMsg(sCmd,sMsg) )
+	{
+		*err = 0xFF;
 		return false;
+	}
+
+	
+	if ( sMsg.IsEmpty() ) 
+	{
+		*err = 0xFF;
+		return false;
+	}
+
 	CString line;
 	int ileft=0, iright=0, ipos=0;
+<<<<<<< .mine
+	//Get First Line, retrieve the Image Stauts
+	ipos=sMsg.Find('\n', ileft);
+	*err = atoi(sMsg.Left(1));
+	if (*err == 0)
+	{
+		line=sMsg.Mid(ileft, ipos-ileft+1);
+		ileft=ipos;
+		ipos=sMsg.Find('\n', ileft+1);
+		line=sMsg.Mid(ileft+1, ipos-ileft);
+		if (line.IsEmpty())
+		{
+			*err = 0xFF;
+			return false;
+		}
+
+		getImageText(line);
+		line=sMsg.Mid(ipos+1, sMsg.GetLength()-ipos);
+		decodeImageData(line);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool MonitorImage::getNextImageSession(CString sBtsUUID, CString sCh, int *err)
+{
+	CString sCmd;
+	sCmd.Append("img>real_image?");
+	sCmd.Append("baseStation=");
+	sCmd.Append(sBtsUUID);
+	sCmd.Append("&");
+	sCmd.Append("channel=");
+	sCmd.Append(sCh);
+	sCmd.Append("\n");
+	
+	CString sMsg;
+	if (!mSock->SendCmdAndRecvMsg(sCmd,sMsg))
+		return false;
+
+	CString line;
+	int ileft=0, iright=0, ipos=0;
+	ipos=sMsg.Find('\n', ileft);
+	line=sMsg.Mid(ileft, ipos-ileft+1);
+
+	//get the session.
+	getSessionFromLine(line);
+	*err=util::str2int(errcode);
+	if(*err!=0)
+		return false;
+
+	return true;
+=======
 	ipos=sMsg.Find('$',ileft);
 	CString strnum=sMsg.Mid(ileft, ipos-ileft);
 	int num=util::str2int(strnum);
@@ -65,4 +134,6 @@ int MonitorImage::getNextImage()
 	}
 	
 	return num;
+>>>>>>> .r813
+
 }
