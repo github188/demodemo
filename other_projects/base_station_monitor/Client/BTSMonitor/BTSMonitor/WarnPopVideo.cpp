@@ -136,9 +136,12 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 		pRunTimeWnd->AckedWarning(m_sUUID);
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	if ( atoi(m_sCategory) == 2 )
+	if ( atoi(m_sCategory) == 2 ) //Piture...
 	{
-		//..
+		//Retrive this picutre, and show it.
+		//pApp->pgkclient->getAlarmImagebyBase64(this->m_sBtsID,this->m_sChannel,this->m_sRoute,
+		return;
+
 	}
 	else
 	//Close Current vedio

@@ -239,19 +239,19 @@ BOOL util::FileExists(const char *filename)
    return FALSE;
 }
 
-BOOL util::DeleteAllFile(CString sDirecotory)
+BOOL util::DeleteAllFile(CString sDirecotory,BOOL bIncludeDirectory)
 {
 	if(PathFileExists(sDirecotory))     
-		DeleteDirectory((LPSTR)(LPCTSTR)sDirecotory);
+		DeleteDirectory((LPSTR)(LPCTSTR)sDirecotory, bIncludeDirectory);
 	return 1;
 }
 
-BOOL util::DeleteDirectory(char* sDirName) 
+BOOL util::DeleteDirectory(char* sDirName, BOOL bIncludeDirectory) 
 { 
     CFileFind tempFind; 
-    char sTempFileFind[200] ;
+    char sTempFileFind[512] ;
     
-    sprintf_s(sTempFileFind,200,"%s\\*.*",sDirName); 
+    sprintf_s(sTempFileFind,512,"%s\\*.*",sDirName); 
     BOOL IsFinded = tempFind.FindFile(sTempFileFind); 
     while (IsFinded) 
     { 
@@ -259,27 +259,30 @@ BOOL util::DeleteDirectory(char* sDirName)
         
         if (!tempFind.IsDots()) 
         { 
-            char sFoundFileName[200]; 
+            char sFoundFileName[512]; 
             strcpy_s(sFoundFileName,200,tempFind.GetFileName().GetBuffer(200)); 
             
             if (tempFind.IsDirectory()) 
             { 
-                char sTempDir[200]; 
-                sprintf_s(sTempDir,200,"%s\\%s",sDirName,sFoundFileName); 
-                DeleteDirectory(sTempDir); 
+                char sTempDir[512]; 
+                sprintf_s(sTempDir,512,"%s\\%s",sDirName,sFoundFileName); 
+                DeleteDirectory(sTempDir,bIncludeDirectory); 
             } 
             else 
             { 
-                char sTempFileName[200]; 
-                sprintf_s(sTempFileName,200,"%s\\%s",sDirName,sFoundFileName); 
+                char sTempFileName[512]; 
+                sprintf_s(sTempFileName,512,"%s\\%s",sDirName,sFoundFileName); 
                 DeleteFile(sTempFileName); 
             } 
         } 
     } 
-    tempFind.Close(); 
-    if(!RemoveDirectory(sDirName)) 
-    { 
-        return FALSE; 
-    } 
+    tempFind.Close();
+
+	if (bIncludeDirectory)
+	{
+		if(!RemoveDirectory(sDirName)) 
+			return FALSE; 
+	}
+
     return TRUE; 
 } 

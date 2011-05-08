@@ -11,6 +11,8 @@
 #include "MonitorImage.h"
 // CWarningMgr dialog
 
+const int cnWARNING_IMAGE = 100;
+const int cnWARNING_VEDIO = 99;
 IMPLEMENT_DYNAMIC(CWarningMgr, CDialog)
 
 CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
@@ -84,6 +86,7 @@ BOOL CWarningMgr::OnInitDialog()
 		"端局类型", //BTSType
 		"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;　2:历史告警记录
 		"基站",		//BTSID
+		"通道号",	//ChannelID
 		"开始时间", //start tiem
 		"结束时间", //end   time
 		"处理状态", //status
@@ -92,7 +95,7 @@ BOOL CWarningMgr::OnInitDialog()
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
-	int nWidth[] = {68,160,68,68,68,180,180,68,50,0};
+	int nWidth[] = {68,160,68,68,68,60,180,180,68,50,0};
 	int i=0;
 	for (; i<nCnt-1; i++)
 		m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
@@ -313,9 +316,35 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	//pApp->pgkclient->queryAlarmInfo(category,uuid,startDate,starttime,type,level,limit,offset,qalarmStr);
 	//m_btsMgr.buildbtsTree(pApp->btsTotalStr, &m_treeWarnMgr);
 	CString sNameItem = m_treeWarnMgr.GetItemText(m_hItemCurFind);
+	
 	CString sUUID; // = m_btsMgr.GetCameraUUID(sNameItem); 
-	util::split_next(sNameItem,sUUID,'_',0);
-	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID,strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);
+	CString sCh;
+
+	if (sNameItem.Find(':') !=-1) //Channel...
+	{
+		util::split_next(sNameItem, sCh,':',0);
+		HTREEITEM hBtsItem = m_treeWarnMgr.GetParentItem(m_hItemCurFind);
+		CString strText = m_treeWarnMgr.GetItemText(hBtsItem);
+		if ( strText.Find('_') != -1 )
+			util::split_next(strText,sUUID,'_',0);
+		else
+		{
+			AfxMessageBox("基站命名方式出错,不能继续查询!");
+			return;
+		}
+
+	}
+	else if (sNameItem.Find('_') != -1 ) //Bts
+	{
+		util::split_next(sNameItem,sUUID,'_',0);
+	}
+	else
+	{
+		AfxMessageBox("请选择基站或者通道进行查询!");
+		return ;
+	}
+
+	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID, sCh, strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);
 	if (sQAlarmStr.IsEmpty())
 	{
 		AfxMessageBox("没有相关告警!");
@@ -352,21 +381,25 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 			
 			//"基站",		//BTSID
 			m_lstFindWarnResult.SetItem(nCount,4,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
+
+			//Channel,		
+			m_lstFindWarnResult.SetItem(nCount,5,LVIF_TEXT,pAlarmInfo->ChannelID,0,0,0,0);
+
 			//"开始时间", //start tiem
-			m_lstFindWarnResult.SetItem(nCount,5,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
+			m_lstFindWarnResult.SetItem(nCount,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
 			//"结束时间", //end   time
-			m_lstFindWarnResult.SetItem(nCount,6,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
+			m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
 			//"处理状态" //status
 			sTemp = pAlarmInfo->status==1 ? "未处理":
 				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
-			m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,sTemp,0,0,0,0);	
-
-			int nCategory = atoi(pAlarmInfo->category);
-			nCategory == 1 ? sTemp == "视频":
-				nCategory == 2 ? sTemp == "图片": "无";
 			m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,sTemp,0,0,0,0);	
 
-			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+			int nCategory = atoi(pAlarmInfo->category);
+			sTemp = nCategory == 1 ?  "视频":
+					nCategory == 2 ?  "图片": "无";
+			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,sTemp,0,0,0,0);	
+
+			m_lstFindWarnResult.SetItem(nCount,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
 
 			nCount++;
 
@@ -662,20 +695,19 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		*pResult = 0;
 		return;
-	}
+	}	
+	CString sBTSID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 4);			
+	CString sCh			= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 5);			
+	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
+	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8); 
+	CString sCategory	= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 9);
+	CString AlarmID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 10);
 
-	CString sUUID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 9);
-	CString sCategory	= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8);
-	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 6); 
-	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
-
-
-	int nActView = 0; 
 
 	BOOL bDebug = FALSE;
 	if (bDebug)
 	{
-		PLAY_CloseFile(nActView);
+		PLAY_CloseFile(cnWARNING_VEDIO);
 
 		CString sVVFile;
 		CString path="F:\\Projects\\Video\\BTSMonitor\\test\\";
@@ -687,10 +719,12 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		BOOL bPlayFile = TRUE;
 		if (bPlayFile)
 		{
-			PLAY_OpenFile(nActView, sVVFile.GetBuffer());
+			PLAY_OpenFile(cnWARNING_VEDIO, sVVFile.GetBuffer());
 		
-			PLAY_Play(nActView, m_wndWarnVedio.m_hWnd);
+			PLAY_Play(cnWARNING_VEDIO, m_wndWarnVedio.m_hWnd);
 		}
+
+		return;
 
 	}
 
@@ -700,27 +734,33 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		ShowButton(TRUE);			
 		pDlgImage->ShowWindow(SW_HIDE);
 
-		//Close 
-		PLAY_CloseStream(nActView);
+		//Stop Vedio Thread...
+		pApp->pgkclient->StopAlamVideoPlay();
+		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 
-		//Open New 
-		PLAY_SetStreamOpenMode(nActView, STREAME_REALTIME);
-		BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
+
+		//Open New ---------------------------------------------
+		PLAY_SetStreamOpenMode(cnWARNING_VEDIO, STREAME_REALTIME);
+		bOpenRet = PLAY_OpenStream(cnWARNING_VEDIO,0,0,1024*900);
 		if(bOpenRet)
 		{
-			PLAY_Play(nActView, m_wndWarnVedio.m_hWnd);
+			PLAY_Play(cnWARNING_VEDIO, m_wndWarnVedio.m_hWnd);
 			//Play Remote Vedio runatime			
-			pApp->pgkclient->replay(sUUID, play_video, nActView);
+			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
 		}
+
 	}
 	else if (sCategory == "图片")
 	{
 		ShowButton(FALSE);			
 		pDlgImage->ShowWindow(SW_SHOW);
 
-		int  *pError;
+		int  err;
 		CString sDateTime, sBts, sCh;
-		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, pError);
+		CString sRoute		= pApp->pgkclient->btsmanager.GetRouteByUUID(sBTSID);
+		//MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, &err);
+		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sBTSID, "", sRoute, AlarmID,&err);
 		if (pMoImage)
 		{
 
@@ -728,17 +768,19 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			CString sJpgName;
 			util::InitApp();
 			char *pAlarmImageDir = util::GetAppPath();
-			strcat(pAlarmImageDir,"\\AlarmImage");
+			strcat(pAlarmImageDir,"AlarmImage");
 
 			//Remove all file of this directory...
-			util::DeleteAllFile(pAlarmImageDir);
+			//util::DeleteAllFile(pAlarmImageDir);
 
 			//Save current alarm image to the directory.
 			CString sLine, str;
 			int pos=0;
-			do 
+			int err=0;
+			while ( pMoImage->getNextImage(&err))
 			{
-				pos = util::split_next(pMoImage->datetime,str,':',0);
+				//pos = util::split_next(pMoImage->datetime,str,'-',0);
+				//sDateTime+=str;//YY
 				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
 				sDateTime+=str;//YY
 				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
@@ -766,7 +808,6 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 				sJpgName.Format("%s%s%s_%s_%s.jpg", pAlarmImageDir,"\\", sBts, sCh, sDateTime);
 				pMoImage->savedata(sJpgName);
 			}
-			while ( pMoImage->getNextImage());
 
 
 			pDlgImage->Initialize(pAlarmImageDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
@@ -889,19 +930,23 @@ void CWarningMgr::OnWarningmgrExport()
 		strTemp = m_lstFindWarnResult.GetItemText(i,4) + "\t";
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
-		//"开始时间", //start tiem
+		//Channel,		
 		strTemp = m_lstFindWarnResult.GetItemText(i,5) + "\t";
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
-		//"结束时间", //end   time
+		//"开始时间", //start tiem
 		strTemp = m_lstFindWarnResult.GetItemText(i,6) + "\t";
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
-		//"处理状态" //status	sTemp = pAlarmInfo->status==1 ? "未处理":pAlarmInfo->status==2 ? "超时自动处理":"手动确认";	
+		//"结束时间", //end   time
 		strTemp = m_lstFindWarnResult.GetItemText(i,7) + "\t";
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
-		strTemp = m_lstFindWarnResult.GetItemText(i,8) + "\r\n";	
+		//"处理状态" //status	sTemp = pAlarmInfo->status==1 ? "未处理":pAlarmInfo->status==2 ? "超时自动处理":"手动确认";	
+		strTemp = m_lstFindWarnResult.GetItemText(i,8) + "\t";
+		fVideoInfo.Write(strTemp, strTemp.GetLength());
+
+		strTemp = m_lstFindWarnResult.GetItemText(i,9) + "\r\n";	
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 	}
 
@@ -917,7 +962,6 @@ void CWarningMgr::OnUpdateWarningmgrExport(CCmdUI *pCmdUI)
 void CWarningMgr::OnWarningmgrSaveas()
 {
 	// TODO: Add your command handler code here
-
 
 }
 
@@ -975,7 +1019,6 @@ void CWarningMgr::ShowButton(bool bShow)
 
 		if ( m_wndWarnVedio.m_hWnd )
 			m_wndWarnVedio.ShowWindow(SW_HIDE);
-
 
 	}
 

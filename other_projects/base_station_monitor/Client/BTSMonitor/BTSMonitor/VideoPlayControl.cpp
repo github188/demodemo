@@ -25,6 +25,8 @@ void VideoPlayControl::replay(CString &uuid)
 	vedio_command_list.push_back(cmd);
 }
 
+//static UINT nRead = 0;
+
 UINT video_read_thread(LPVOID param)
 {
 	VideoPlayControl *control = (VideoPlayControl *)param;
@@ -37,7 +39,7 @@ UINT video_read_thread(LPVOID param)
 
 	CLogFile::WriteLog("start video read thread");
 
-
+	CString slog;
 	//if (control->socket->connect_server() > 0)
 	if (control->socket->SocketAttach())
 	{
@@ -57,6 +59,9 @@ UINT video_read_thread(LPVOID param)
 			if(ret > 0){
 				control->callback(control->sessionId, buffer, ret);
 				control->socket->write_wstring(ack);
+				//slog.Format("%d",nRead+=ret);
+				//CLogFile::WriteLog(slog);
+				
 			}else {
 				
 				//Need to reconnect the socket.

@@ -32,8 +32,8 @@ public:
 	static BOOL CharInString(char ch,const char *s);
 	static int  LastDelimiter(const char *Delimiters,const char *s);
 
-	static BOOL DeleteAllFile(CString sDirecotory);
-	static BOOL DeleteDirectory(char* sDirName);
+	static BOOL DeleteAllFile(CString sDirecotory, BOOL bIncludeDirectory=FALSE);
+	static BOOL DeleteDirectory(char* sDirName,BOOL bIncludeDirectory);
 };
 
 #endif
