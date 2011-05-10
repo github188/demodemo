@@ -9,7 +9,6 @@ using namespace std;
 typedef int(*DataCallBack)(int sessionId, char *pBuffer, int len);
 
 UINT video_read_thread(LPVOID param);
-
 class VideoPlayControl{
 public:
 	DataCallBack callback;
@@ -17,16 +16,22 @@ public:
 	int sessionId;
 	int status;  //0 not start, -1 end, 1 running, -2 start error
 	bool bIsBlocking; //just for judge whether the socket blocked or not
+	bool m_bSave;
+	CString m_sFileName;
 
 	//不能在界面线程调用socket，发送和接受方法。其他线程把需要发送的命令保存到list,由socket线程统一发送。
 	vector<CString> vedio_command_list;
 
-	VideoPlayControl(CSimpleSocket *sc, DataCallBack handle, int sid){
+	VideoPlayControl(CSimpleSocket *sc, DataCallBack handle, int sid, CString sFile="", bool bSave=false){
 		socket = sc;
 		callback = handle;
 		sessionId = sid;
 		status = 0;
 		bIsBlocking = true;
+
+		m_sFileName = sFile;
+
+		m_bSave = bSave;
 	}
 
 	~VideoPlayControl(){
@@ -35,6 +40,7 @@ public:
 
 	void real_play(CString &uuid, CString &channel);
 	void replay(CString &uuid);
+	bool VideoPlayControl::SaveWarnVideo();
 
 	void seek(int pos){
 	}

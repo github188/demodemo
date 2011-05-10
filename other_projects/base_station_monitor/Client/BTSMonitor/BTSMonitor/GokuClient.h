@@ -219,7 +219,7 @@ public:
 	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 
 	//VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
-	bool replay(CString &videoId, DataCallBack callback, int session=0);
+	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false);
 
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}

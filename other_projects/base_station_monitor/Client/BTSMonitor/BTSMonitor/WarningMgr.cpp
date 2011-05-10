@@ -29,6 +29,13 @@ CWarningMgr::~CWarningMgr()
 {
 	if (pDlgImage)
 		delete pDlgImage;
+
+	//Need free Memory...
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	pApp->pgkclient->StopAlamVideoPlay();
+
+	//
+
 }
 
 void CWarningMgr::DoDataExchange(CDataExchange* pDX)
@@ -696,10 +703,13 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		*pResult = 0;
 		return;
 	}	
+
+	m_nCurItem = pNMItemActivate->iItem;
+
 	CString sBTSID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 4);			
 	CString sCh			= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 5);			
-	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
-	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 8); 
+	CString sStartTime  = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 6); 
+	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
 	CString sCategory	= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 9);
 	CString AlarmID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 10);
 
@@ -748,6 +758,8 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			PLAY_Play(cnWARNING_VEDIO, m_wndWarnVedio.m_hWnd);
 			//Play Remote Vedio runatime			
 			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
+
+			//Reload first, then play the video.
 		}
 
 	}
@@ -874,6 +886,8 @@ void CWarningMgr::OnWarningmgrExport()
 		//if(!FileExists(m_strMapPath))
 		//	return;
 	}
+	else
+		return;
 
 	//save listview info to the file
 	CFileException error;
@@ -896,7 +910,7 @@ void CWarningMgr::OnWarningmgrExport()
 	//File Title
 	char lpBuf[MAX_PATH];
 	memset(lpBuf,0,MAX_PATH);
-	char *pTitle = "告警级别\t位置\t端局类型\t告警类型\t基站\t开始时间\t结束时间\t处理状态";
+	char *pTitle = "告警级别\t位置\t端局类型\t告警类型\t基站\t通道号\t开始时间\t结束时间\t处理状态\t图像类型";
 	sprintf_s(lpBuf,MAX_PATH, "%s\r\n", pTitle);
 	fVideoInfo.Write(lpBuf,strlen(lpBuf));
 	
@@ -946,7 +960,11 @@ void CWarningMgr::OnWarningmgrExport()
 		strTemp = m_lstFindWarnResult.GetItemText(i,8) + "\t";
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
+		//图像类型
 		strTemp = m_lstFindWarnResult.GetItemText(i,9) + "\r\n";	
+		fVideoInfo.Write(strTemp, strTemp.GetLength());
+
+		strTemp = m_lstFindWarnResult.GetItemText(i,10) + "\r\n";	
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 	}
 
@@ -962,6 +980,69 @@ void CWarningMgr::OnUpdateWarningmgrExport(CCmdUI *pCmdUI)
 void CWarningMgr::OnWarningmgrSaveas()
 {
 	// TODO: Add your command handler code here
+	//保存视频 或者图片
+
+	//Get Current Item Type...
+	if (m_nCurItem<0)  return;
+
+	CString sTime,strTemp,sVideoName, sBTSID, sCh, sStartTime, sEndTime, sCategory, AlarmID;
+	sBTSID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 4);			
+	sCh			= m_lstFindWarnResult.GetItemText(m_nCurItem, 5);			
+	sStartTime  = m_lstFindWarnResult.GetItemText(m_nCurItem, 6); 
+	sEndTime    = m_lstFindWarnResult.GetItemText(m_nCurItem, 7); 
+	sCategory	= m_lstFindWarnResult.GetItemText(m_nCurItem, 9);
+	AlarmID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 10);
+
+	int pos = 0;
+	pos = util::split_next(sStartTime,	strTemp,'-',pos);
+	sTime+=strTemp;//YY
+	pos = util::split_next(sStartTime,		strTemp,'-',pos+1);
+	sTime+=strTemp;//MM
+	pos = util::split_next(sStartTime,		strTemp,' ',pos+1);
+	sTime+=strTemp;//DD
+	pos = util::split_next(sStartTime,		strTemp,':',pos+1);
+	sTime+=strTemp;//hh
+	pos = util::split_next(sStartTime,		strTemp,':',pos+1);
+	sTime+=strTemp;//mm
+	strTemp = sStartTime.Mid(pos+1);
+	sTime+=strTemp;//ss
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if (sCategory=="视频")
+	{
+		sVideoName.Format("%s_%s_%s.h264", sBTSID,sCh,sTime);
+
+		CString sWarnVideoName;
+		util::InitApp();
+		char *pAlarmImageDir = util::GetAppPath();
+		strcat(pAlarmImageDir,"AlarmVideo");
+		sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
+
+		pApp->pgkclient->StopAlamVideoPlay();
+
+		pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO,sWarnVideoName,true);
+
+	}
+	else
+		sVideoName.Format("%s_%s_%s.jpg", sBTSID,sCh,sTime);
+
+	/*
+	CFileDialog FileDlg(TRUE,_T(""),sVideoName,OFN_HIDEREADONLY|OFN_PATHMUSTEXIST,NULL,NULL);
+	FileDlg.m_ofn.lpstrTitle = "";
+	char sDir[_MAX_PATH];
+	GetCurrentDirectory(_MAX_PATH,sDir);
+	FileDlg.m_ofn.lpstrInitialDir = sDir;
+	CString strMapPath;
+	if(FileDlg.DoModal()==IDOK)
+	{
+		strMapPath = FileDlg.GetPathName();
+		//if(!FileExists(m_strMapPath))
+		//	return;
+		int i=0;
+	}
+	else
+		return;
+	*/
 
 }
 

@@ -19,7 +19,7 @@ IMPLEMENT_DYNAMIC(CCriticalWarning, CPropertyPage)
 
 CCriticalWarning::CCriticalWarning()
 	: CPropertyPage(CCriticalWarning::IDD)
-	, m_nCurItem(0)
+	, m_nCurItem(-1)
 	, m_alarmIndex(0)
 	,m_bOnScroll(false)
 {

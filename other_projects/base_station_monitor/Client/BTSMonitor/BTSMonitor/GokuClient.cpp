@@ -494,7 +494,7 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 }
 
 //VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, int session)
-bool GokuClient::replay(CString &videoId, DataCallBack callback, int session)
+bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CString sAlarmVideoName, bool bSave)
 {
 	CString master_server = socket->ipaddr + ":";
 	util::int2str(master_server, socket->port);
@@ -502,7 +502,7 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session)
 	//CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
 	CSimpleSocket * masterSocket = new CSimpleSocketImpl(master_server, master_server);
 
-	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session);
+	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session, sAlarmVideoName,bSave);
 
 	if (control==NULL) return false;
 
