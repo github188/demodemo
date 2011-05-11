@@ -28,7 +28,7 @@ public:
 	{
 		int i=0;
 		host=primary_server;
-		for (; i<cnMAX_VV; i++)
+		for (; i<cnTOTAL_VV_CNT/*cnMAX_VV*/; i++)
 		{
 			m_pPlayThread[i]=NULL;
 			m_pArrVideoCtrl[i]=NULL;
@@ -60,7 +60,7 @@ public:
 		SetExitVedioThread();
 
 		int i=0;
-		for (i=0; i<cnMAX_VV; i++)
+		for (i=0; i<cnTOTAL_VV_CNT/*cnMAX_VV*/; i++)
 		{
 			if (m_pArrVideoCtrl[i])
 			{
@@ -79,7 +79,7 @@ public:
 
 		::Sleep(100);
 		DWORD dwRet = 0;
-		for (i=0; i<cnMAX_VV; i++)
+		for (i=0; i<cnTOTAL_VV_CNT/*cnMAX_VV*/; i++)
 		{
 			if (m_pArrVideoCtrl[i]==NULL)
 				continue;
@@ -245,10 +245,10 @@ protected:
 	CWinThread		 *m_pTimerThread; //Control GoKuSocket
 
 public:
-	VideoPlayControl *m_pArrVideoCtrl[cnMAX_VV]; //Real Play
+	VideoPlayControl *m_pArrVideoCtrl[cnTOTAL_VV_CNT]; //[cnMAX_VV]; //Real Play
 	VideoPlayControl *m_pAlarmVideoCtrl;         //Replay Alarm Vedio
 
-	CWinThread		 *m_pPlayThread[cnMAX_VV];   //Real Play thread handle
+	CWinThread		 *m_pPlayThread[cnTOTAL_VV_CNT]; //[cnMAX_VV];   //Real Play thread handle
 	CWinThread		 *m_pAlarmVideoThread;       //Alarm Video thread
 
 

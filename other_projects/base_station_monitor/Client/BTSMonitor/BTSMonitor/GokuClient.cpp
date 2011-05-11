@@ -506,7 +506,8 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 
 	if (control==NULL) return false;
 
-	m_pAlarmVideoCtrl = control;
+	//m_pAlarmVideoCtrl = control;
+	m_pArrVideoCtrl[session] = control;
 
 	if ( control->socket->connect_server() > 0 )
 	{
@@ -517,7 +518,8 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 		if ( control->socket->SocketDetach() )
 		{
 			//playThread=AfxBeginThread(video_read_thread, control);
-			m_pAlarmVideoThread = AfxBeginThread(video_read_thread, control);
+			//m_pAlarmVideoThread = AfxBeginThread(video_read_thread, control);
+			m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
 		}
 		else
 		{
@@ -526,10 +528,13 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 			//CString strError;
 			//strError.Format("播放失败%d",session);
 			//AfxMessageBox(strError);
-			delete m_pAlarmVideoCtrl;
-
-			m_pAlarmVideoCtrl = NULL;
 			
+			//delete m_pAlarmVideoCtrl;
+			//m_pAlarmVideoCtrl = NULL;			
+			//return false;
+			
+			delete m_pArrVideoCtrl[session];
+			m_pArrVideoCtrl[session] = NULL;
 			return false;
 
 		}
@@ -729,7 +734,8 @@ UINT video_thread_control(LPVOID param)
 }
 bool GokuClient::Stop_Play(int nVideoID)
 {
-	if (nVideoID<0 || nVideoID>cnMAX_VV-1)
+	//if (nVideoID<0 || nVideoID>cnMAX_VV-1)
+	if (nVideoID<0 || nVideoID>cnTOTAL_VV_CNT-1)
 	{
 		CString sErrInfo;
 		sErrInfo.Format("监控视窗不在范围内:%d", nVideoID);

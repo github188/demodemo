@@ -54,9 +54,12 @@ typedef enum tagALARM_COMING_TYPE
 	ALARM_REFRESH
 }ALARM_COMING_TYPE;
 
-const int cnMAX_VV = 25;
+const int cnMAX_VV = 25;		//up to 25 play window...
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
-
+const int cnALARM_VIDEO_VV = 2; //up to 2 alarm play view..
+const int cnWARNING_IMAGE = 100;
+const int cnWARNING_VEDIO = cnMAX_VV + cnMAX_POP_WINDOW;
+const int cnTOTAL_VV_CNT  = cnMAX_VV + cnMAX_POP_WINDOW + cnALARM_VIDEO_VV;
 
 int play_video(int  sessionId, char * pBuffer, int  len);
 
