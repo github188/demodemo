@@ -11,8 +11,6 @@
 #include "MonitorImage.h"
 // CWarningMgr dialog
 
-const int cnWARNING_IMAGE = 100;
-const int cnWARNING_VEDIO = 99;
 IMPLEMENT_DYNAMIC(CWarningMgr, CDialog)
 
 CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
@@ -32,9 +30,12 @@ CWarningMgr::~CWarningMgr()
 
 	//Need free Memory...
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	pApp->pgkclient->StopAlamVideoPlay();
-
-	//
+	//pApp->pgkclient->StopAlamVideoPlay();
+	{
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
+	}
 
 }
 
@@ -745,7 +746,8 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		pDlgImage->ShowWindow(SW_HIDE);
 
 		//Stop Vedio Thread...
-		pApp->pgkclient->StopAlamVideoPlay();
+		//pApp->pgkclient->StopAlamVideoPlay();
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
 		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 
@@ -759,7 +761,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			//Play Remote Vedio runatime			
 			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
 
-			//Reload first, then play the video.
+			//Reload first, then play the video.????
 		}
 
 	}

@@ -236,7 +236,7 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 				continue;
 
 			//.pop the warning vedio windows
-			if (m_nPopViewCount<cnMAX_POP_WINDOW && ((pAlarmInfo->category == "1") || (pAlarmInfo->category == "s") ))
+			if (m_nPopViewCount<cnMAX_POP_WINDOW && ((pAlarmInfo->category == "1") || (pAlarmInfo->category == "2") ))
 			{
 				for (int i=0; i<cnMAX_POP_WINDOW; i++)
 				{

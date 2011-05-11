@@ -242,6 +242,8 @@ void CPopPlayView::OnTimer(UINT_PTR nIDEvent)
 			m_sPicture.Format("%s%s%s_%s_%s.jpg", m_sRealImageDir,"\\", sBts, sCh, sDateTime);
 			m_pMonitorImage->savedata(m_sPicture);
 
+			//StopImgMonitor();
+
 			Invalidate();
 		}
 
@@ -260,11 +262,11 @@ void CPopPlayView::StopImgMonitor(void)
 	KillTimer(m_nIDEvent);
 
 	//Free current MomitorImage Object
-	if (m_pMonitorImage)
-	{
-		delete m_pMonitorImage;
-		m_pMonitorImage = NULL;
-	}
+	//if (m_pMonitorImage)
+	//{
+	//	delete m_pMonitorImage;
+	//	m_pMonitorImage = NULL;
+	//}
 }
 
 void CPopPlayView::SetMonitorImageObj(MonitorImage* pObj)
