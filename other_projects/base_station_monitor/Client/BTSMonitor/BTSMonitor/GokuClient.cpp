@@ -463,7 +463,9 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 		
 		if (control==NULL)
 			return false;
-		
+
+		m_pReplayControl=control;
+
 		m_pArrVideoCtrl[session] = control;
 
 		if ( control->socket->connect_server() > 0 )
@@ -500,11 +502,13 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 	util::int2str(master_server, socket->port);
 	
 	//CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
-	CSimpleSocket * masterSocket = new CSimpleSocketImpl(master_server, master_server);
+	CSimpleSocketImpl * masterSocket = new CSimpleSocketImpl(master_server, master_server);
 
 	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session, sAlarmVideoName,bSave);
 
 	if (control==NULL) return false;
+
+	m_pRealPlayControl=control;
 
 	//m_pAlarmVideoCtrl = control;
 	m_pArrVideoCtrl[session] = control;
@@ -519,7 +523,7 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 		{
 			//playThread=AfxBeginThread(video_read_thread, control);
 			//m_pAlarmVideoThread = AfxBeginThread(video_read_thread, control);
-			m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
+			playThread=m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
 		}
 		else
 		{
@@ -535,6 +539,7 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 			
 			delete m_pArrVideoCtrl[session];
 			m_pArrVideoCtrl[session] = NULL;
+			playThread=NULL;
 			return false;
 
 		}
@@ -980,4 +985,22 @@ int GokuClient::stop_Alarm(CString btsid, CString timeout)
 	int retval=util::str2int(temp);
 	
 	return retval;
+}
+
+void GokuClient::ReplayjumpToPos(CString pos)
+{
+	CString sCmd;
+	sCmd.Empty();
+	sCmd.Append("video>seek?pos=");
+	sCmd.Append(pos);
+	sCmd.Append("\n");
+
+	CString sMsg;
+	if(!this->m_pReplayControl->socket->SendCmdAndRecvMsg(sCmd, sMsg))
+		return;
+	//this->m_pReplayControl->status=2;
+	if(playThread)
+	{
+		PostThreadMessage(playThread->m_nThreadID, JUMPPOS, 0,0);
+	}
 }

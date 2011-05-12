@@ -55,7 +55,7 @@
 #include <afxdhtml.h>
 #pragma comment(lib,"SkinMagic.lib")
 
-
+#define JUMPPOS		WM_USER+100
 
 #ifdef _UNICODE
 #if defined _M_IX86

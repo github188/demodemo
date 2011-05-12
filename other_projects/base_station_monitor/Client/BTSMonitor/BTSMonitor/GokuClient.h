@@ -16,6 +16,8 @@ class GokuClient{
 
 public:
 	MonitorImage *m_pMoImage;
+	VideoPlayControl *m_pRealPlayControl;
+	VideoPlayControl *m_pReplayControl;
 
 	GokuSocket *socket;
 	BTSManager btsmanager;
@@ -53,6 +55,8 @@ public:
 		m_nSid = 0;
 
 		m_pMoImage = NULL;
+		m_pRealPlayControl=NULL;
+		m_pReplayControl=NULL;
 	}
 
 	~GokuClient()
@@ -220,6 +224,7 @@ public:
 
 	//VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
 	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false);
+	void ReplayjumpToPos(CString pos);
 
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
 	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}

@@ -98,6 +98,8 @@ UINT video_read_thread(LPVOID param)
 {
 
 	VideoPlayControl *control = (VideoPlayControl *)param;
+	MSG msg;
+	::PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
 	
 	if (!control) return 0x11;
 	CFile fVideo;
@@ -135,9 +137,11 @@ UINT video_read_thread(LPVOID param)
 	{
 		control->status = 1;
 		//while(1){
-		while(control->status == 1){
+		while(control->status == 1)
+		{
 			control->bIsBlocking = false;
-			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
+			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++)
+			{
 					control->socket->write_wstring(control->vedio_command_list[i]);
 			}
 			//for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
@@ -146,7 +150,8 @@ UINT video_read_thread(LPVOID param)
 			control->vedio_command_list.clear();
 
 			ret = control->socket->read_buffer(buffer, bufferLen);
-			if(ret > 0){
+			if(ret > 0)
+			{
 
 				if (control->m_bSave)
 					fVideo.Write(buffer,ret); //Save Video
@@ -155,7 +160,9 @@ UINT video_read_thread(LPVOID param)
 
 				control->socket->write_wstring(ack);
 				
-			}else {
+			}
+			else 
+			{
 				
 				//Need to reconnect the socket.
 				//control->socket->connect_server();
@@ -180,7 +187,10 @@ UINT video_read_thread(LPVOID param)
 	control->status = -1;
 	control->close();
 
-	fVideo.Close();
+	if(control->m_bSave)
+	{
+		fVideo.Close();
+	}
 
 	return 0;
 }

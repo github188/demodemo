@@ -14,7 +14,7 @@ public:
 	DataCallBack callback;
 	CSimpleSocket *socket;
 	int sessionId;
-	int status;  //0 not start, -1 end, 1 running, -2 start error
+	int status;  //0 not start, -1 end, 1 running, -2 start error, 2 jump to the play position.
 	bool bIsBlocking; //just for judge whether the socket blocked or not
 	bool m_bSave;
 	CString m_sFileName;
