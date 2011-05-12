@@ -1,0 +1,4 @@
+default	test1	hzluming.3322.org	8000
+user	admin	test1
+server	hzluming.3322.org
+port	8000

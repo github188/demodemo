@@ -1,0 +1,934 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\BTSMonitor.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""          // 标准组件\r\n"
+    "#include ""l.CHS\\afxprint.rc""        // 打印/打印预览资源\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""l.CHS\\afxribbon.rc""               // MFC 功能区和控件条资源\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_WARNING_VIEW_HC     ICON                    "res\\icon2.ico"
+IDR_MAINFRAME           ICON                    "res\\BTSMonitor.ico"
+IDR_BTSMonitorTYPE      ICON                    "res\\BTSMonitorDoc.ico"
+IDI_FILE_VIEW           ICON                    "res\\file_view.ico"
+IDI_FILE_VIEW_HC        ICON                    "res\\file_view_hc.ico"
+IDI_CLASS_VIEW          ICON                    "res\\class_view.ico"
+IDI_CLASS_VIEW_HC       ICON                    "res\\class_view_hc.ico"
+IDI_WARNING_VIEW        ICON                    "res\\icon1.ico"
+IDI_UNKNOWN             ICON                    "res\\ico00001.ico"
+IDI_UNACK               ICON                    "res\\ico00002.ico"
+IDI_ACK                 ICON                    "res\\ico00003.ico"
+IDI_ICON_SETTING        ICON                    "res\\setting3.ico"
+IDI_LOGON               ICON                    "res\\LogOn.ico"
+IDI_LEVEL_2             ICON                    "res\\ico00004.ico"
+IDI_LEVEL_1             ICON                    "res\\icon3.ico"
+IDI_LEVEL_3             ICON                    "res\\icon4.ico"
+IDI_LEVEL_4             ICON                    "res\\icon5.ico"
+IDI_LEVEL_5             ICON                    "res\\ico00005.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
+IDB_MAIN                BITMAP                  "res\\main.bmp"
+IDB_FILELARGE           BITMAP                  "res\\filelarge.bmp"
+IDB_FILESMALL           BITMAP                  "res\\filesmall.bmp"
+IDB_WRITELARGE          BITMAP                  "res\\writelarge.bmp"
+IDB_WRITESMALL          BITMAP                  "res\\writesmall.bmp"
+IDB_BUTTONS             BITMAP                  "res\\buttons.bmp"
+IDR_SORT                BITMAP                  "res\\sort.bmp"
+IDB_SORT_24             BITMAP                  "res\\sort_hc.bmp"
+IDB_FILE_VIEW           BITMAP                  "res\\fileview.bmp"
+IDB_FILE_VIEW_24        BITMAP                  "res\\fileview_hc.bmp"
+IDB_CLASS_VIEW          BITMAP                  "res\\classview.bmp"
+IDB_CLASS_VIEW_24       BITMAP                  "res\\classview_hc.bmp"
+IDR_EXPLORER            BITMAP                  "res\\explorer.bmp"
+IDB_EXPLORER_24         BITMAP                  "res\\explorer_hc.bmp"
+IDR_MENU_IMAGES         BITMAP                  "res\\menuimages.bmp"
+IDB_MENU_IMAGES_24      BITMAP                  "res\\menuimages_hc.bmp"
+IDB_CAMERA_VIEW         BITMAP                  "res\\file_vie.bmp"
+IDB_SYSTEMLARGE         BITMAP                  "res\\filelarg.bmp"
+IDB_SYSTEMSMALL         BITMAP                  "res\\filesmal.bmp"
+IDB_MONITOR_LARGE       BITMAP                  "res\\writelar.bmp"
+IDB_MONITOR_SMALL       BITMAP                  "res\\writesma.bmp"
+IDB_DGM_LOGO            BITMAP                  "res\\DGM_log2.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_MAINFRAME_256 TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_SORT TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_SORT_MENU
+    BUTTON      ID_NEW_FOLDER
+END
+
+IDR_EXPLORER TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_PROPERTIES
+END
+
+IDR_MENU_IMAGES TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_WINDOW_MANAGER
+    SEPARATOR
+    BUTTON      ID_WINDOW_CASCADE
+    BUTTON      ID_WINDOW_TILE_HORZ
+    BUTTON      ID_TOOLS_MACRO
+    BUTTON      ID_SORTING_SORTALPHABETIC
+    BUTTON      ID_SORTING_SORTBYTYPE
+    BUTTON      ID_SORTING_SORTBYACCESS
+    BUTTON      ID_SORTING_GROUPBYTYPE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "系统(&S)"
+    BEGIN
+        MENUITEM "系统配置",                        ID_SYSTEM_CONFIG
+        MENUITEM "告警管理",                        ID_WARNING_MGR
+        MENUITEM "任务管理",                        ID_TASK_MGR
+        MENUITEM "用户管理",                        ID_USER_MGR
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",                      ID_APP_EXIT
+    END
+    POPUP "监控(&M)"
+    BEGIN
+        MENUITEM "单视图",                         ID_VV1
+        MENUITEM "四视图",                         ID_VV4
+        MENUITEM "六视图",                         ID_VV6
+        MENUITEM "八视图",                         ID_VV8
+        MENUITEM "九视图",                         ID_VV9
+        MENUITEM "十六视图",                        ID_VV16
+        MENUITEM "二十五视图",                       ID_VV25
+    END
+    POPUP "视图(&V)"
+    BEGIN
+        MENUITEM "查找(&F)",                      ID_FIND_CAMERA
+        MENUITEM SEPARATOR
+        MENUITEM "状态栏(&S)",                     ID_VIEW_STATUS_BAR
+        POPUP "应用程序外观(&A)"
+        BEGIN
+            MENUITEM "Windows 2000(&2)",            ID_VIEW_APPLOOK_WIN_2000
+            MENUITEM "Office XP(&X)",               ID_VIEW_APPLOOK_OFF_XP
+            MENUITEM "Windows XP(&W)",              ID_VIEW_APPLOOK_WIN_XP
+            MENUITEM "Office 2003(&3)",             ID_VIEW_APPLOOK_OFF_2003
+            MENUITEM "Visual Studio.NET 2005(&5)",  ID_VIEW_APPLOOK_VS_2005
+            POPUP "Office 2007(&7)"
+            BEGIN
+                MENUITEM "蓝色样式(&B)",                    ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "黑色样式(&L)",                    ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "银色样式(&S)",                    ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "水绿色样式(&A)",                   ID_VIEW_APPLOOK_OFF_2007_AQUA
+            END
+        END
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "关于 BTSMonitor(&A)...",        ID_APP_ABOUT
+    END
+END
+
+IDR_POPUP_EDIT MENU 
+BEGIN
+    POPUP "编辑"
+    BEGIN
+        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
+    END
+END
+
+IDR_WINDOWS_MENU MENU 
+BEGIN
+    MENUITEM "新建窗口(&N)",                    ID_WINDOW_NEW
+END
+
+IDR_POPUP_SORT MENU 
+BEGIN
+    POPUP "排序"
+    BEGIN
+        MENUITEM "按字母顺序排序(&S)",                 ID_SORTING_SORTALPHABETIC
+        MENUITEM "按类型排序(&T)",                   ID_SORTING_SORTBYTYPE
+        MENUITEM "按访问排序(&E)",                   ID_SORTING_SORTBYACCESS
+        MENUITEM "按类型分组(&Y)",                   ID_SORTING_GROUPBYTYPE
+    END
+END
+
+IDR_POPUP_EXPLORER MENU 
+BEGIN
+    POPUP "资源管理器"
+    BEGIN
+        MENUITEM "打开(&O)",                      ID_OPEN
+        MENUITEM "打开方式(&W)....",                ID_OPEN_WITH
+        MENUITEM SEPARATOR
+        MENUITEM "编译(&C)",                      ID_DUMMY_COMPILE
+        MENUITEM SEPARATOR
+        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "删除(&R)",                      ID_EDIT_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "属性(&P)...",                   ID_PROPERTIES
+    END
+END
+
+IDR_THEME_MENU MENU 
+BEGIN
+    MENUITEM "蓝色海洋主题",                      ID_VIEW_APPLOOK_OFF_2007_BLUE
+    MENUITEM "黑色宇宙主题",                      ID_VIEW_APPLOOK_OFF_2007_BLACK
+    MENUITEM "银色飞船主题",                      ID_VIEW_APPLOOK_OFF_2007_SILVER
+    MENUITEM "水绿色主题",                       ID_VIEW_APPLOOK_OFF_2007_AQUA
+END
+
+IDR_MENU_WARNING MENU 
+BEGIN
+    POPUP "WARNING"
+    BEGIN
+        MENUITEM "确认告警",                        ID_WARNING_ACK
+        MENUITEM SEPARATOR
+        MENUITEM "实时滚动",                        ID_WARNING_SCROOLING_ON
+        MENUITEM "停止滚动",                        ID_WARNING_SCROOLING_OFF
+    END
+END
+
+IDR_POPMENU_WARNMGR MENU 
+BEGIN
+    POPUP "WarningMgr"
+    BEGIN
+        MENUITEM "导出告警信息",                      ID_WARNINGMGR_EXPORT
+        MENUITEM "另存告警视频",                      ID_WARNINGMGR_SAVEAS
+    END
+END
+
+IDR_POPUP_PLAYVIEW MENU 
+BEGIN
+    POPUP "PlAYVIEW"
+    BEGIN
+        MENUITEM "关闭视频",                        ID_PLAYVIEW_CLOSE
+        MENUITEM "全屏切换",                        ID_PLAYVIEW_FULLSCREEN
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 162, 64
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 BTSMonitor"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CONTROL         339,IDC_DGM_LOGO,"Static",SS_BITMAP,7,17,66,26
+    LTEXT           "BTSMonitor，1.0 版",IDC_STATIC,82,11,65,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2011",IDC_STATIC,82,23,65,8
+    DEFPUSHBUTTON   "确定",IDOK,82,43,50,14,WS_GROUP
+END
+
+IDD_RUNTIME_WARNING DIALOGEX 0, 0, 115, 63
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LST_RUNTIME_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,71,37
+END
+
+IDD_CRITICAL_WARNING DIALOGEX 0, 0, 105, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LIST_CRITICAL_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,60,50
+END
+
+IDD_GENERAL_WARNING DIALOGEX 0, 0, 94, 56
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LIST_GENERAL_WARNING,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,53,30
+END
+
+IDD_DLG_FIND DIALOGEX 0, 0, 252, 105
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "查找"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,195,11,50,14
+    PUSHBUTTON      "取消",IDCANCEL,195,34,50,14
+    LTEXT           "查找目标",IDC_STATIC,8,13,35,9
+    EDITTEXT        IDC_FINDSTR,41,11,150,14,ES_AUTOHSCROLL
+    GROUPBOX        "搜索条件",IDC_STATIC,7,33,181,51
+END
+
+IDD_DLG_LOGIN DIALOGEX 0, 0, 192, 121
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "中国移动基站监控系统"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_CBO_USER,60,21,98,53,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_PWD,60,40,98,14,ES_PASSWORD | ES_AUTOHSCROLL
+    COMBOBOX        IDC_CBO_SERVER,60,61,98,53,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_PORT,60,80,98,50,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "登录",IDOK,27,100,50,14
+    PUSHBUTTON      "取消",IDCANCEL,107,100,50,14
+    LTEXT           "用户名",IDC_STATIC,28,23,25,8
+    LTEXT           "密　码",IDC_STATIC,28,43,25,8
+    LTEXT           "服务器",IDC_STATIC,28,63,25,8
+    LTEXT           "端口号",IDC_STATIC,28,83,25,8
+    ICON            "",IDC_OGON_PIC,0,0,20,20
+END
+
+IDD_POP_VIDEO DIALOGEX 0, 0, 195, 163
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "告警视频"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确认",IDOK,158,150,36,12
+    PUSHBUTTON      "保存",IDC_SAVE_PASSED_VIDEO,109,150,36,12
+    PUSHBUTTON      "暂停",IDC_PAUSE_ALARM,0,150,36,12
+    EDITTEXT        IDC_TIMEOUT,37,150,29,12,ES_AUTOHSCROLL
+    LTEXT           "分钟",IDC_STATIC,67,153,17,8
+END
+
+IDD_WARNING_CONFIG DIALOGEX 0, 0, 288, 110
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "配置"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "保存",IDOK,248,89,33,14
+    CONTROL         "关闭告警",IDC_CHK_NO_WARNING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,133,16,48,10
+    COMBOBOX        IDC_CMB_POPWND_COUNT,175,32,33,44,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "弹出视窗数",IDC_STATIC,133,35,41,8
+    LTEXT           "告警声音",IDC_STATIC,7,67,33,8
+    EDITTEXT        IDC_WARNING_WAVE,41,65,218,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_WAVE_BROWSE,260,65,19,14
+    COMBOBOX        IDC_CMB_PICTURE_WINDOW,61,15,30,44,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "图片视窗",IDC_STATIC,13,17,33,8
+    COMBOBOX        IDC_CMB_PICTURE_PLAY_INTERVAL,61,32,30,44,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "单张播放周期",IDC_STATIC,11,33,49,8
+    GROUPBOX        "图片类型",IDC_STATIC,7,7,89,42
+END
+
+IDD_WARNING_MGR DIALOGEX 0, 0, 562, 322
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "告警管理"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT_DEVICE_FIND,36,5,54,12,ES_AUTOHSCROLL
+    LTEXT           "设备查找",IDC_STATIC,2,7,33,8
+    PUSHBUTTON      "查找",IDC_BTN_WARN_MGR_DEVICE_FIND,92,5,39,14
+    GROUPBOX        "",IDC_STATIC,1,0,135,194
+    CONTROL         "",IDC_TREE_WARN_MGR_DEVICE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,3,20,130,170
+    LTEXT           "告警类型",IDC_STATIC,4,207,33,8
+    COMBOBOX        IDC_CBO_WARN_TYPE,40,206,91,63,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_DATE_BEGIN,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,40,239,91,12
+    LTEXT           "开始日期",IDC_STATIC,4,241,33,8
+    CONTROL         "",IDC_DATE_END,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,40,254,91,12
+    LTEXT           "结束日期",IDC_STATIC,4,256,33,8
+    LTEXT           "开始时间",IDC_STATIC,3,271,33,8
+    COMBOBOX        IDC_CBO_START_HOUR,39,269,25,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "结束时间",IDC_STATIC,3,285,33,8
+    COMBOBOX        IDC_CBO_END_HOUR,39,284,25,54,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "H",IDC_STATIC,65,272,8,8
+    LTEXT           "H",IDC_STATIC,65,285,8,8
+    COMBOBOX        IDC_CBO_START_MINUTE,71,269,25,64,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "M",IDC_STATIC,97,272,8,8
+    COMBOBOX        IDC_CBO_START_SECOND,105,269,25,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "S",IDC_STATIC,131,272,8,8
+    COMBOBOX        IDC_CBO_END_MINUTE,71,284,25,57,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "M",IDC_STATIC,97,285,8,8
+    COMBOBOX        IDC_CBO_END_SECOND,105,284,25,57,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "S",IDC_STATIC,131,284,8,8
+    GROUPBOX        "告警查询条件",IDC_STATIC,1,197,135,123
+    CONTROL         "",IDC_LST_TARGET_WARNING,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,140,215,419,103
+    GROUPBOX        "",IDC_STATIC,140,191,419,21
+    PUSHBUTTON      "||",IDC_BTN_PAUSE,254,196,19,14,WS_DISABLED
+    PUSHBUTTON      "口",IDC_BTN_STOP,294,197,19,14,WS_DISABLED
+    PUSHBUTTON      ">",IDC_BTN_PLAY,274,197,19,14
+    PUSHBUTTON      ">>",IDC_BTN_FAST_FORWARD,313,197,19,14,WS_DISABLED
+    PUSHBUTTON      "|<",IDC_BTN_GOTO_BEGIN,333,197,19,14,WS_DISABLED
+    PUSHBUTTON      ">|",IDC_BTN_GOTO_END2,353,197,19,14,WS_DISABLED
+    LTEXT           "确认类型",IDC_STATIC,4,224,33,8
+    COMBOBOX        IDC_CBO_WARN_ACK_TYPE,40,223,91,65,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME | WS_DISABLED | WS_BORDER,2,301,132,1
+    PUSHBUTTON      "查找",IDC_FIND_TARGET_WARNING,43,304,50,14
+    CONTROL         "",IDC_WINDOW_VEDIO,"Static",SS_BLACKRECT | SS_CENTERIMAGE | SS_REALSIZEIMAGE,139,0,422,192
+END
+
+IDD_TASK_MGR DIALOGEX 0, 0, 494, 262
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "任务管理"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT_TASK_NAME,48,11,98,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_CBO_DEVICE_ID,223,10,99,54,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_CHANNEL,392,11,48,51,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_DATETIME_START,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,48,31,97,12
+    CONTROL         "",IDC_DATETIME_END,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,223,30,100,12
+    COMBOBOX        IDC_CBO_TARGET_WINDOW,391,28,48,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_START_HOUR,48,48,25,46,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_START_MINUTE,84,48,25,46,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_START_SECOND,118,48,25,46,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_END_HOUR,223,47,25,43,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_END_MINUTE,257,47,25,43,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CBO_END_SECOND,292,47,25,45,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "删除任务",IDC_BTN_DELETE_TASK,441,65,50,14
+    PUSHBUTTON      "添加任务",IDC_BTN_TASK_ADD,387,65,50,14
+    CONTROL         "",IDC_LST_TASK,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,82,491,173
+    LTEXT           "H",IDC_STATIC,76,51,8,8
+    LTEXT           "M",IDC_STATIC,110,51,8,8
+    LTEXT           "H",IDC_STATIC,249,50,8,8
+    LTEXT           "任务名称",IDC_STATIC,12,15,33,8
+    LTEXT           "执行窗口",IDC_STATIC,352,31,33,8
+    LTEXT           "开始日期",IDC_STATIC,12,33,33,8
+    LTEXT           "结束日期",IDC_STATIC,187,32,33,8
+    LTEXT           "开始时间",IDC_STATIC,12,50,33,8
+    LTEXT           "结束时间",IDC_STATIC,187,49,33,8
+    LTEXT           "S",IDC_STATIC,144,51,8,8
+    LTEXT           "M",IDC_STATIC,284,50,8,8
+    LTEXT           "S",IDC_STATIC,319,50,8,8
+    GROUPBOX        "任务配置",IDC_STATIC,0,3,491,60
+    LTEXT           "监控基站",IDC_STATIC,187,13,33,8
+    LTEXT           "监控通道",IDC_STATIC,352,12,33,8
+END
+
+IDD_USER_MGR DIALOGEX 0, 0, 147, 137
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "密码修改"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "用户名",IDC_STATIC,7,10,25,8
+    EDITTEXT        IDC_EDT_USER,42,7,98,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "老密码",IDC_STATIC,7,33,25,8
+    EDITTEXT        IDC_EDT_PASSWORD,42,31,98,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "重新输入",IDC_STATIC,7,81,33,8
+    EDITTEXT        IDC_EDT_NEW_PW2,42,79,98,14,ES_PASSWORD | ES_AUTOHSCROLL
+    PUSHBUTTON      "确认",IDC_BTN_MOD,45,116,50,14
+    LTEXT           "新密码",IDC_STATIC,7,58,25,8
+    EDITTEXT        IDC_EDT_NEW_PW,42,55,98,14,ES_PASSWORD | ES_AUTOHSCROLL
+END
+
+IDD_DLG_IMAGE DIALOGEX 0, 0, 317, 183
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "BTSMonitor.exe"
+            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "OriginalFilename", "BTSMonitor.exe"
+            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 155
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
+
+    IDD_RUNTIME_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 108
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_CRITICAL_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 98
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+    END
+
+    IDD_GENERAL_WARNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 87
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 49
+    END
+
+    IDD_DLG_FIND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DLG_LOGIN, DIALOG
+    BEGIN
+        RIGHTMARGIN, 185
+        BOTTOMMARGIN, 114
+    END
+
+    IDD_POP_VIDEO, DIALOG
+    BEGIN
+        RIGHTMARGIN, 194
+    END
+
+    IDD_WARNING_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 281
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 103
+    END
+
+    IDD_TASK_MGR, DIALOG
+    BEGIN
+        RIGHTMARGIN, 491
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 255
+    END
+
+    IDD_USER_MGR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 140
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 130
+    END
+
+    IDD_DLG_IMAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 176
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// SKINMAGIC
+//
+
+CORONA                  SKINMAGIC               "res\\corona.smf"
+DEVIOR                  SKINMAGIC               "res\\Devior.smf"
+FUTUREIII               SKINMAGIC               "res\\futuraIII.smf"
+KROMO                   SKINMAGIC               "res\\Kromo.smf"
+KROMOBLUE               SKINMAGIC               "res\\KromoBlue.smf"
+TUSK                    SKINMAGIC               "res\\Tusk.smf"
+XPBLUE                  SKINMAGIC               "res\\xpblue.smf"
+XPGREAN                 SKINMAGIC               "res\\xpgrean.smf"
+XPLUS                   SKINMAGIC               "res\\x-plus.smf"
+XPSTEEL                 SKINMAGIC               "res\\xpsteel.smf"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_WARNING_CONFIG DLGINIT
+BEGIN
+    IDC_CMB_POPWND_COUNT, 0x403, 2, 0
+0x0031, 
+    IDC_CMB_PICTURE_WINDOW, 0x403, 2, 0
+0x0031, 
+    IDC_CMB_PICTURE_PLAY_INTERVAL, 0x403, 2, 0
+0x0031, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// HTML
+//
+
+IDR_HTML_DLGIMAGE       HTML                    "DlgImage.htm"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDP_OLE_INIT_FAILED     "OLE 初始化失败。请确保 OLE 库是正确的版本。"
+    IDS_FIND_CAMERA         "查找"
+    IDS_RIBBON_FIND_CAMERA  "查找(&F)"
+    IDS_WARNING             "WARNING"
+    IDP_SOCKETS_INIT_FAILED "Windows 套接字初始化失败。"
+END
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "基站视频监控系统\n\nBTSMonitor\n\n\nBTSMonitor.Document\nBTSMonitor.Document"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "中国移动基站监控系统"
+    AFX_IDS_IDLEMESSAGE     "就绪"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_NEW             "创建新文档\n新建"
+    ID_FILE_OPEN            "打开现有文档\n打开"
+    ID_FILE_CLOSE           "关闭活动文档\n关闭"
+    ID_FILE_SAVE            "保存活动文档\n保存"
+    ID_FILE_SAVE_AS         "用新名称保存活动文档\n另存为"
+    ID_FILE_PAGE_SETUP      "更改打印选项\n页面设置"
+    ID_FILE_PRINT_SETUP     "更改打印机选项和打印选项\n打印设置"
+    ID_FILE_PRINT           "打印活动文档\n打印"
+    ID_FILE_PRINT_DIRECT    "使用当前选项打印活动文档\n快速打印"
+    ID_FILE_PRINT_PREVIEW   "显示整页\n打印预览"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "显示程序信息、版本号和版权\n关于"
+    ID_APP_EXIT             "退出应用程序；提示保存文档\n退出"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "打开此文档"
+    ID_FILE_MRU_FILE2       "打开此文档"
+    ID_FILE_MRU_FILE3       "打开此文档"
+    ID_FILE_MRU_FILE4       "打开此文档"
+    ID_FILE_MRU_FILE5       "打开此文档"
+    ID_FILE_MRU_FILE6       "打开此文档"
+    ID_FILE_MRU_FILE7       "打开此文档"
+    ID_FILE_MRU_FILE8       "打开此文档"
+    ID_FILE_MRU_FILE9       "打开此文档"
+    ID_FILE_MRU_FILE10      "打开此文档"
+    ID_FILE_MRU_FILE11      "打开此文档"
+    ID_FILE_MRU_FILE12      "打开此文档"
+    ID_FILE_MRU_FILE13      "打开此文档"
+    ID_FILE_MRU_FILE14      "打开此文档"
+    ID_FILE_MRU_FILE15      "打开此文档"
+    ID_FILE_MRU_FILE16      "打开此文档"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEXT_PANE            "切换到下一个窗格\n下一窗格"
+    ID_PREV_PANE            "切换回上一个窗格\n上一窗格"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "将活动窗口拆分为多个窗格\n拆分"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_CLEAR           "清除选定内容\n清除"
+    ID_EDIT_CLEAR_ALL       "清除全部内容\n全部清除"
+    ID_EDIT_COPY            "复制选定内容并将其放到剪贴板上\n复制"
+    ID_EDIT_CUT             "剪切选定内容并将其放到剪贴板上\n剪切"
+    ID_EDIT_FIND            "查找指定的文本\n查找"
+    ID_EDIT_PASTE           "插入剪贴板内容\n粘贴"
+    ID_EDIT_REPEAT          "重复上一操作\n重复"
+    ID_EDIT_REPLACE         "用其他文本替换特定的文本\n替换"
+    ID_EDIT_SELECT_ALL      "选定整个文档\n全选"
+    ID_EDIT_UNDO            "撤消上一操作\n撤消"
+    ID_EDIT_REDO            "恢复上次撤消的操作\n重做"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "显示或隐藏工具栏\n切换工具栏"
+    ID_VIEW_STATUS_BAR      "显示或隐藏状态栏\n切换状态栏"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "更改窗口大小"
+    AFX_IDS_SCMOVE          "更改窗口位置"
+    AFX_IDS_SCMINIMIZE      "将窗口缩小为图标"
+    AFX_IDS_SCMAXIMIZE      "使窗口最大化显示"
+    AFX_IDS_SCNEXTWINDOW    "切换到下一个文档窗口"
+    AFX_IDS_SCPREVWINDOW    "切换到前一个文档窗口"
+    AFX_IDS_SCCLOSE         "关闭活动窗口并提示保存文档"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "将窗口恢复到正常大小"
+    AFX_IDS_SCTASKLIST      "激活任务列表"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "关闭打印预览模式\n取消预览"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_STATUS_PANE1        "窗格 1"
+    IDS_STATUS_PANE2        "窗格 2"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FILE_VIEW           "监控视图"
+    IDS_CLASS_VIEW          "警报视图"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EXPLORER            "资源管理器"
+    IDS_EDIT_MENU           "编辑"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RIBBON_FILE         "文件"
+    IDS_RIBBON_NEW          "新建(&N)"
+    IDS_RIBBON_OPEN         "打开(&O)..."
+    IDS_RIBBON_SAVE         "保存(&S)"
+    IDS_RIBBON_SAVEAS       "另存为(&A)..."
+    IDS_RIBBON_PRINT        "打印"
+    IDS_RIBBON_PRINT_LABEL  "预览并打印文档"
+    IDS_RIBBON_PRINT_QUICK  "快速打印(&Q)"
+    IDS_RIBBON_PRINT_PREVIEW "打印预览(&V)"
+    IDS_RIBBON_PRINT_SETUP  "打印设置(&U)"
+    IDS_RIBBON_CLOSE        "关闭(&C)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RIBBON_RECENT_DOCS  "最近使用的文档"
+    IDS_RIBBON_EXIT         "退出(&X)"
+    IDS_RIBBON_HOME         "主页(&H)"
+    IDS_RIBBON_CLIPBOARD    "剪贴板\nD"
+    IDS_RIBBON_PASTE        "粘贴\nV"
+    IDS_RIBBON_CUT          "剪切\nX"
+    IDS_RIBBON_COPY         "复制\nC"
+    IDS_RIBBON_SELECTALL    "全选\nA"
+    IDS_RIBBON_WINDOW       "窗口\nW"
+    IDS_RIBBON_WINDOWS      "窗口\nI"
+    IDS_RIBBON_STYLE        "主题"
+    IDS_RIBBON_STYLE_TIP    "修改视觉样式"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RIBBON_STYLE_DESC   "选择一个主题"
+    IDS_RIBBON_STATUSBAR    "状态栏"
+    IDS_RIBBON_VIEW         "视图"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WARNING_ACK          "对未确认的告警进行确认操作"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\BTSMonitor.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "l.CHS\afxres.rc"          // 标准组件
+#include "l.CHS\afxprint.rc"        // 打印/打印预览资源
+#if !defined(_AFXDLL)
+#include "l.CHS\afxribbon.rc"               // MFC 功能区和控件条资源
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

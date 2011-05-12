@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BTSMonitor", "BTSMonitor\BTSMonitor.vcproj", "{FC950FBA-3BF8-44B5-B8CB-D902C7CD5FDA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simulator", "..\..\..\Install_File\StartServer\Simulator\Simulator.vcproj", "{10D1D931-C189-4C8B-B1E0-6934A70D1241}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC950FBA-3BF8-44B5-B8CB-D902C7CD5FDA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FC950FBA-3BF8-44B5-B8CB-D902C7CD5FDA}.Debug|Win32.Build.0 = Debug|Win32
+		{FC950FBA-3BF8-44B5-B8CB-D902C7CD5FDA}.Release|Win32.ActiveCfg = Release|Win32
+		{FC950FBA-3BF8-44B5-B8CB-D902C7CD5FDA}.Release|Win32.Build.0 = Release|Win32
+		{10D1D931-C189-4C8B-B1E0-6934A70D1241}.Debug|Win32.ActiveCfg = Debug|Win32
+		{10D1D931-C189-4C8B-B1E0-6934A70D1241}.Debug|Win32.Build.0 = Debug|Win32
+		{10D1D931-C189-4C8B-B1E0-6934A70D1241}.Release|Win32.ActiveCfg = Release|Win32
+		{10D1D931-C189-4C8B-B1E0-6934A70D1241}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
