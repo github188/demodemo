@@ -18,6 +18,9 @@ public:
 	bool bIsBlocking; //just for judge whether the socket blocked or not
 	bool m_bSave;
 	CString m_sFileName;
+	bool bPause;
+	bool bFastForward;
+	CString pos;
 
 	//不能在界面线程调用socket，发送和接受方法。其他线程把需要发送的命令保存到list,由socket线程统一发送。
 	vector<CString> vedio_command_list;
@@ -32,6 +35,10 @@ public:
 		m_sFileName = sFile;
 
 		m_bSave = bSave;
+
+		bPause=false;
+		bFastForward=false;
+		pos="0";
 	}
 
 	~VideoPlayControl(){

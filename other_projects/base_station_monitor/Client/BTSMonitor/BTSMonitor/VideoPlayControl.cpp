@@ -158,8 +158,28 @@ UINT video_read_thread(LPVOID param)
 				else
 					control->callback(control->sessionId, buffer, ret); //Play Video
 
-				control->socket->write_wstring(ack);
-				
+				if(control->bPause)
+				{
+					::Sleep(300);
+				}
+				else
+				{
+					if(control->bFastForward)
+					{
+						CString sCmd;
+						CString sMsg;
+						sCmd.Empty();
+						sCmd.Append("video>seek?pos=");
+						sCmd.Append(control->pos);
+						sCmd.Append("\n");
+						control->socket->SendCmdAndRecvMsg(sCmd, sMsg);
+						control->bFastForward=false;
+					}
+					else
+					{
+						control->socket->write_wstring(ack);
+					}
+				}
 			}
 			else 
 			{
