@@ -9,5 +9,4 @@ except ImportError:
 
 if __name__ == "__main__":
     import sys
-    sys.path.append('../libs/IpaTA_tools_library-1_0_0-py2.6.egg')
     execute_manager(settings)

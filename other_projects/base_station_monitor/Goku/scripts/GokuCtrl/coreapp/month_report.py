@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from ipa4django.db import QueryUtils
-from ipa4django.views import TableView, CellRender
+from GokuCtrl.ipa4django.db import QueryUtils
+from GokuCtrl.ipa4django.views import TableView, CellRender
 import logging
 from django.shortcuts import render_to_response
 from django import template
