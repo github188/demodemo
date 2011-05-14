@@ -17,6 +17,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/(.*)', admin.site.root),
-    (r'^show_cfg', "GokuCtrl.coreapp.views.dev_cfg"),
+    (r'^month_report', "GokuCtrl.coreapp.views.month_report"),
     (r'^(.*)', "GokuCtrl.coreapp.views.index"),
 )
