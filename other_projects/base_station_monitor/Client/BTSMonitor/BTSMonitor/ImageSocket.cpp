@@ -58,7 +58,8 @@ int ImageSocket::read_buffer(char *buffer, int size)
 		{
 			CString sError;
 			sError.Format("数据接收失败！发送的数据，或者网络可能出现问题,错误代码:%d",  GetLastError());
-			AfxMessageBox(sError);
+			//AfxMessageBox(sError);
+			CLogFile::WriteLog(sError);
 			bRead = FALSE;
 
 			StopAutoWait();
