@@ -214,10 +214,12 @@ int GokuSocket::connect_server()
 		}
 
 		int timelen=5000;
-		if(cs.SetSockOpt(SO_RCVTIMEO, &timelen, sizeof(int))==0)
+		if(cs.SetSockOpt(SO_RCVTIMEO|SO_SNDTIMEO, &timelen, sizeof(int))==0)
 		{
-			int errorno=cs.GetLastError();
-			::MessageBox(NULL, "error", "setsockopt", MB_OK);
+			CString strError;
+			strError.Format("%SetSockOpt Error %d:", cs.GetLastError());
+			CLogFile::WriteLog(strError);
+			//::MessageBox(NULL, "error", "setsockopt", MB_OK);
 		}
 	}
 

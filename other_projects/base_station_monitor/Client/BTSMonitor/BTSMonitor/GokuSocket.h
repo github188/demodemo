@@ -18,6 +18,7 @@ public:
 
 	~GokuSocket(){
 		::SetEvent(m_hExitTimerThread);
+		::Sleep(100);
 		if (m_hAutoWait)	CloseHandle(m_hAutoWait);
 		if (m_hStopAutoWait)	CloseHandle(m_hStopAutoWait);
 		if (m_hExitTimerThread)	CloseHandle(m_hExitTimerThread);
