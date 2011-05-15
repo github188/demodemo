@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
+import org.goku.core.model.SimpleCache;
 import org.goku.db.DataStorage;
 import org.goku.db.QueryParameter;
 import org.goku.db.QueryResult;
@@ -31,6 +32,7 @@ public class FileManager {
 	private File rootPath = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
+	private SimpleCache activeAlarm = new SimpleCache();
 	
 	//单位秒。
 	private long alarmTimeOut = 5;
@@ -54,17 +56,25 @@ public class FileManager {
 		//检查最短触发时间。
 		Date checkTime = new Date(image.generateDate.getTime() - alarm.reActiveTime * 1000 * 60);
 		//
-		String sql = "select combineUuid from alarm_record where " +
-						"startTime > ${0} and startTime <= ${4} and baseStation = ${1} and channelId= ${2} " +
-						"and alarmCode = ${3} limit 1";
-		Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
-				client.info.uuid,
-				image.channel,
-				alarm.alarmCode,
-				image.generateDate});
 		String combineUuid = null;
-		if(xx.size() > 0){
-			combineUuid = (String)xx.iterator().next().get("combineUuid");
+		String cacheKey = client.info.uuid + "_" + image.channel + "_" + alarm.alarmCode;
+		if(activeAlarm.get(cacheKey, false) != null){
+			combineUuid = (String)activeAlarm.get(cacheKey, false);
+		}
+		
+		if(combineUuid == null){
+			String sql = "select combineUuid from alarm_record where " +
+							"startTime > ${0} and startTime <= ${4} and baseStation = ${1} and channelId= ${2} " +
+							"and alarmCode = ${3} limit 1";
+			Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
+					client.info.uuid,
+					image.channel,
+					alarm.alarmCode,
+					image.generateDate});
+			if(xx.size() > 0){
+				combineUuid = (String)xx.iterator().next().get("combineUuid");
+				activeAlarm.set(cacheKey, combineUuid, (int)alarm.reActiveTime * 60);
+			}
 		}
 		
 		AlarmRecord rec = new AlarmRecord();
@@ -84,6 +94,7 @@ public class FileManager {
 		}else {
 			rec.alarmCategory = alarm.alarmCategory;
 			rec.combineUuid = rec.uuid;
+			activeAlarm.set(cacheKey, rec.uuid, (int)alarm.reActiveTime * 60);
 		}
 		storage.save(rec);
 		log.debug(String.format("image alarm uuid:%s, combinedUUID:%s, path:%s", rec.uuid, rec.combineUuid, rec.videoPath));

@@ -28,11 +28,16 @@ public class SimpleCache {
 	}
 
 	public Object get(String key){
+		return get(key, true);
+	}
+	public Object get(String key, boolean update){
 		cleanObject();
 		CacheItem item = cache.get(key); 
 		if(item != null){
 			if(System.currentTimeMillis() - item.lastAccess < item.expiredTime){
-				item.lastAccess = System.currentTimeMillis();
+				if(update){
+					item.lastAccess = System.currentTimeMillis();
+				}
 				return item.obj;
 			}else {
 				cache.remove(key);
