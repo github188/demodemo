@@ -29,12 +29,12 @@ import org.goku.video.odip.RecordFileInfo;
 public class VideoRecorderManager implements Runnable{
 	public String pattern = null;
 
+	public File rootPath = null;
 	private static final String DEFAULT = "${yyyy}-${mm}/" +
 			"${UUID}-${ALARM_TYPE}-" +
 			"${USER}-${mm}${dd}-" +
 			"${HH}${MM}${SS}.${SSS}.h264";
 	private Log log = LogFactory.getLog("video.recorder");
-	private File rootPath = null;
 	private DataStorage storage = null;
 	private Timer timer = new Timer();
 	

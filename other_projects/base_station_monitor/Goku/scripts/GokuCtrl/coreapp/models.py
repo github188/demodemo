@@ -236,8 +236,8 @@ class AlarmRecord(models.Model):
         path = os.environ.get("DATA_ROOT", ".")
         abs_path = os.path.join(path, self.videoPath)
         if self.videoPath and os.path.isfile(abs_path):
-            fsize = os.stat(abs_path).st_size
             if self.alarmCategory == '1':
+                fsize = os.stat(abs_path).st_size
                 return u"<a href='/?q=replay&id=%s'>下载视频 (%0.2d Kb)</a>" % (self.uuid, fsize / 1024.0)
             elif self.alarmCategory == '2':
                 return u"<a target='_blank' href='/?q=image_alarm&id=%s'>浏览图片</a>" % self.uuid
