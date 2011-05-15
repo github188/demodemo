@@ -88,6 +88,7 @@ void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		CView *pView = ( (CBTSMonitorApp*)AfxGetApp() )->GetBaseView();
 		if (pView && pView->m_hWnd)
 			::SendMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,MSG_SELECT_CAMERA_DEVICE,((LPARAM)sInfo.GetBuffer(sInfo.GetLength())));
+			//::PostMessage(pView->m_hWnd,WM_PLAYVIEW_SELECTED,MSG_SELECT_CAMERA_DEVICE,((LPARAM)sInfo.GetBuffer(sInfo.GetLength())));
 	}
 
 	*pResult = 0;

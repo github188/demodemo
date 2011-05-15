@@ -138,18 +138,18 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 		return; //the BTS Device listview is still not built.
 
 
-#ifdef _DEBUG	
+//#ifdef _DEBUG	
 	
 //	pApp->pgkclient->getAlarmStr(pApp->alarmStr);
 //	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 
-#else
+//#else
 
 	CString alarmStr;
 	pApp->pgkclient->getRealTimeAlarmStr(alarmStr);
 	pApp->pgkclient->alarmmanager.getalarmList(alarmStr);
 
-#endif
+//#endif
 
 	if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
 	{

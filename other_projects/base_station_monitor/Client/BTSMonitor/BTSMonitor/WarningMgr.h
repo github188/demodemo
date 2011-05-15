@@ -77,6 +77,10 @@ public:
 	afx_msg void OnUpdateWarningmgrSaveas(CCmdUI *pCmdUI);
 private:
 	CRect m_rcVedio;
+	int	  m_nAlarmVideoSaveCnt;		//Saving Video.
+	bool  m_bSaving[cnALARM_VIDEO_VV];
+	bool  m_bIsSaving;
 public:
 	void ShowButton(bool bShow);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

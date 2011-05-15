@@ -66,9 +66,16 @@ BOOL CWarnPopVideo::OnInitDialog()
 	m_pPopView = (CPopPlayView*)RUNTIME_CLASS(CPopPlayView)->CreateObject();
 	// AFX_WS_DEFAULT_VIEW代表(WS_BORDER | WS_VISIBLE | WS_CHILD)
 	//m_vvControl.vvInfo[i].vv->Create(NULL, NULL, AFX_WS_DEFAULT_VIEW, rect, this, 1000+i);
-	m_pPopView->Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rect, this, ID_POPVIDEO_VIEW+m_nPopIndex);
+	
+	DWORD dwStyle = AFX_WS_DEFAULT_VIEW;
+	//if   (afxData.bWin4)
+	//	dwStyle   &=   ~WS_BORDER; 
+	
+	m_pPopView->Create(NULL, NULL, dwStyle/*S_VISIBLE | WS_CHILD*/, rect, this, ID_POPVIDEO_VIEW+m_nPopIndex);
 
 	m_pPopView->ShowWindow(SW_SHOW);
+
+	m_pPopView->SendMessage(WM_INITIALUPDATE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -96,9 +103,12 @@ void CWarnPopVideo::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
+//Video Ctrl ID...
 void CWarnPopVideo::SetPopVideoIndex(int nIndex)
 {
 	m_nPopIndex = nIndex;
+	CWarnPopVideo *pView = (CWarnPopVideo *)m_pPopView;
+	if (pView) pView->SetPopVideoIndex(nIndex);
 }
 
 int CWarnPopVideo::GetPopVideoIndex(void)
@@ -280,7 +290,9 @@ void CWarnPopVideo::OnClose()
 	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 	//if(bOpenRet)
 	{
+		pApp->pgkclient->PauseVedioThread();
 		pApp->pgkclient->Stop_Play(m_nPopIndex+cnPOP_VEDIO_INDEX);		
+		pApp->pgkclient->ContinueVedioThread();
 
 		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
 		
@@ -309,18 +321,76 @@ void CWarnPopVideo::PlayVideo(void)
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
-	if (atoi(m_sCategory)==2) //picture..
+	CPopPlayView *pView = (CPopPlayView*)m_pPopView;
+	if (m_sCategory=="2") //picture..
 	{
-
-		//...
-		CPopPlayView *pView = ((CPopPlayView*)m_pPopView);
 		CString sRoute = pApp->pgkclient->btsmanager.GetRouteByUUID(m_sBtsID);
-		int *err = 0;
-		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(m_sBtsID,m_sChannel,sRoute,err);
+		//start Image Monitoring....
+		int err=0;
+		CString sError;		
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(m_sBtsID,m_sChannel,sRoute,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s-%s:%d",m_sBtsID, m_sChannel,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			sError = "Image Receiving...";
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s-%s:%d",m_sBtsID, m_sChannel,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("基站未找到!");
+			}
+            break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s-%s:%d",m_sBtsID, m_sChannel,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		case 0xFF:
+			{
+				//Socket Error , Receive or Write failed...
+				//Need to Re connect socket.
+				sError.Format("%s-%s-%s:%d",m_sBtsID, m_sChannel,"图片获取指令发送失败！", err);
+				CLogFile::WriteLog(sError);
+
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("未知的错误类型!");
+			}
+		}
+
+		if (err) 
+		{
+			//Only Show Message To user...
+
+			//pView->SetRealImagePara(pMoImage ,sUUID,sChannelID,sRoute);
+			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			//pView->StartImgMonitor();
+			pView->SetImageStatus(sError);
+
+			return;
+		}
+		//.................
 		if (pMoImage)
 		{
-			pView->SetMonitorImageObj(pMoImage);
-			pView->SetImageType(2);
+			pView->SetRealImagePara(pMoImage ,m_sBtsID,m_sChannel,sRoute);
+			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			pView->SetImageStatus("Image Receiving...");
 			pView->SetTimerIDEvent(m_nPopIndex+ID_REAL_POP_IMG_TIMER);
 			pView->StartImgMonitor();
 		}

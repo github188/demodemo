@@ -19,8 +19,14 @@ CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
 	, m_nCurItem(0)
 	, m_menuPt(0)
 	, m_bPopMenu(false)
+	,m_nAlarmVideoSaveCnt(0)
+	,m_bIsSaving(false)
 {
 	VERIFY(pDlgImage = new CDlgImage());
+
+	for(int i=0; i<cnALARM_VIDEO_VV; i++)
+		m_bSaving[i] = false;
+
 }
 
 CWarningMgr::~CWarningMgr()
@@ -72,6 +78,7 @@ BEGIN_MESSAGE_MAP(CWarningMgr, CDialog)
 	ON_UPDATE_COMMAND_UI(ID_WARNINGMGR_EXPORT, &CWarningMgr::OnUpdateWarningmgrExport)
 	ON_COMMAND(ID_WARNINGMGR_SAVEAS, &CWarningMgr::OnWarningmgrSaveas)
 	ON_UPDATE_COMMAND_UI(ID_WARNINGMGR_SAVEAS, &CWarningMgr::OnUpdateWarningmgrSaveas)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -718,6 +725,9 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 	BOOL bDebug = FALSE;
 	if (bDebug)
 	{
+		ShowButton(TRUE);			
+		pDlgImage->ShowWindow(SW_HIDE);
+
 		PLAY_CloseFile(cnWARNING_VEDIO);
 
 		CString sVVFile;
@@ -726,6 +736,9 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 
 		
 		sVVFile = path + sVideo[1];
+
+		sVVFile = "F:\\Projects\\Video\\BTSMonitor\\BTS Dev\\Client\\BTSMonitor\\Debug\AlarmVideo\\123546_1_20110427095538.h264";
+		sVVFile = "F:\\123546_1_20110427095538.h264";
 		
 		BOOL bPlayFile = TRUE;
 		if (bPlayFile)
@@ -748,6 +761,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		//Stop Vedio Thread...
 		//pApp->pgkclient->StopAlamVideoPlay();
 		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
 		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 
@@ -787,15 +801,29 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			//Remove all file of this directory...
 			//util::DeleteAllFile(pAlarmImageDir);
 
+			CTime tmCur = CTime::GetCurrentTime();
+			CString sSaveDir;
+			sSaveDir.Format("%s%s%s",pAlarmImageDir,"\\",tmCur.Format("%Y%m%d_%H%M%S"));
+			BOOL bOK = ::CreateDirectory(sSaveDir,NULL);
+			if (!bOK)
+			{
+				CString sError;
+				sError.Format("failed to create Image Display File: %s", sSaveDir);
+				CLogFile::WriteLog(sError);
+				return;
+			}
+
 			//Save current alarm image to the directory.
 			CString sLine, str;
 			int pos=0;
 			int err=0;
 			while ( pMoImage->getNextImage(&err))
 			{
+				sDateTime.Empty(); sBts.Empty(); sCh.Empty();
+
 				//pos = util::split_next(pMoImage->datetime,str,'-',0);
 				//sDateTime+=str;//YY
-				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				pos = util::split_next(pMoImage->datetime,str,'-',0);
 				sDateTime+=str;//YY
 				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
 				sDateTime+=str;//MM
@@ -819,12 +847,13 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 				pMoImage->channel.Mid(pos+1);
 				sCh+=str;
 
-				sJpgName.Format("%s%s%s_%s_%s.jpg", pAlarmImageDir,"\\", sBts, sCh, sDateTime);
+				//sJpgName.Format("%s%s%s_%s_%s.jpg", pAlarmImageDir,"\\", sBts, sCh, sDateTime);
+				sJpgName.Format("%s%s%s_%s_%s.jpg", sSaveDir,"\\", sBts, sCh, sDateTime);
 				pMoImage->savedata(sJpgName);
 			}
 
-
-			pDlgImage->Initialize(pAlarmImageDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
+			//pDlgImage->Initialize(pAlarmImageDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
+			pDlgImage->Initialize(sSaveDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
 		}
 
 	}
@@ -966,8 +995,9 @@ void CWarningMgr::OnWarningmgrExport()
 		strTemp = m_lstFindWarnResult.GetItemText(i,9) + "\r\n";	
 		fVideoInfo.Write(strTemp, strTemp.GetLength());
 
-		strTemp = m_lstFindWarnResult.GetItemText(i,10) + "\r\n";	
-		fVideoInfo.Write(strTemp, strTemp.GetLength());
+		//Hide this infomation..
+		//strTemp = m_lstFindWarnResult.GetItemText(i,10) + "\r\n";	
+		//fVideoInfo.Write(strTemp, strTemp.GetLength());
 	}
 
 	//..
@@ -986,6 +1016,20 @@ void CWarningMgr::OnWarningmgrSaveas()
 
 	//Get Current Item Type...
 	if (m_nCurItem<0)  return;
+
+	//if (m_nAlarmVideoSaveCnt > cnALARM_VIDEO_VV -1 )
+	//{
+	//	CString strError;
+	//	strError.Format("超过最大下载数量%d,需要等待下载完成后下载!",cnALARM_VIDEO_VV);
+	//	AfxMessageBox(strError);
+	//}
+
+	//if (m_bIsSaving)
+	//{
+	//	CString strError;
+	//	strError.Format("正在下载!");
+	//	AfxMessageBox(strError);
+	//}
 
 	CString sTime,strTemp,sVideoName, sBTSID, sCh, sStartTime, sEndTime, sCategory, AlarmID;
 	sBTSID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 4);			
@@ -1020,9 +1064,11 @@ void CWarningMgr::OnWarningmgrSaveas()
 		strcat(pAlarmImageDir,"AlarmVideo");
 		sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
 
-		pApp->pgkclient->StopAlamVideoPlay();
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO); //StopAlamVideoPlay();
 
 		pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO,sWarnVideoName,true);
+
+		//m_bIsSaving　= true;
 
 	}
 	else
@@ -1105,4 +1151,42 @@ void CWarningMgr::ShowButton(bool bShow)
 
 	}
 
+}
+
+BOOL CWarningMgr::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+	if (m_wndWarnVedio.m_hWnd)
+	{
+		CDC* pdc= m_wndWarnVedio.GetDC();
+		CRect rt;
+		GetClientRect(&rt);
+		CBrush br;
+		br.CreateSolidBrush(VIDEO_BACK_COLOR);
+		pdc->FillRect(&rt,&br);
+
+
+		CString strShowMsg;
+		int nStatus;
+		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+		if ( pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO] )
+		{
+			 //-1 end, 0 not start, 1 running, -2 start error
+			nStatus = pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->status;
+			if (nStatus==-1 || nStatus==0)
+				strShowMsg = "No Video";
+			else if (nStatus== 1)
+				strShowMsg = "Playing Video";
+			else if (nStatus== 2)
+				strShowMsg = "Video Data Error!";
+
+		}
+		else
+			strShowMsg = "No Video";
+
+		pdc->SetBkColor(VIDEO_BACK_COLOR);
+		pdc->TextOut(rt.Width()/2, rt.Height()/2, strShowMsg);
+	}
+
+	return CDialog::OnEraseBkgnd(pDC);
 }
