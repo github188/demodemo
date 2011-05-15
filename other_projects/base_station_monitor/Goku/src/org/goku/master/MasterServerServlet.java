@@ -111,6 +111,35 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}
 		}
 	}
+
+	public void st(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String name = request.getParameter("name");
+		if(name == null){
+			response.getWriter().write("Parameter list 'name=<PK>', 'mime=image/jpeg'");
+		}else {
+			File img = new File(System.getProperty("STATIC_ROOT", "."), name);			
+			if(img != null && img.exists()){
+			    response.setContentType("application/octet-stream");
+			    response.setCharacterEncoding("utf-8");
+			    InputStream ins = new FileInputStream(img);
+			    byte[] buffer = new byte[64 * 1024];
+		    	if(response.getOutputStream() != null){
+			    	for(int len = ins.read(buffer); len > 0; ){
+			    		response.getOutputStream().write(buffer, 0, len);
+			    		len = ins.read(buffer);
+			    	}
+		    	}else { //在Socket, 模式不能取到OutputStream.
+		    		response.getWriter().println("Can't get OutputStream.");
+		    	}
+		    	ins.close();
+			}else if(img != null){
+				response.getWriter().write("Not found file:" + img.getAbsolutePath());
+			}else {
+				response.getWriter().write("Not found file by id " + name);
+			}
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void image_alarm(HttpServletRequest request,
@@ -433,7 +462,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 						extraAL = server.taskManager.getVideoEvents(userObj.name, userObj.lastRealAlarmTime.getTime());
 					}else {
 						filter.put("lastUpdateTime__>=", new Date(System.currentTimeMillis()));
-						filter.put("extra_where_1", " or (alarmStatus = 1)");
+						filter.put("extra_where_1", " or (alarmStatus = 1 and alarmCategory <> 4)");
 					}
 					//如果有屏蔽告警的基站。
 					if(server.stopAlarm.keys().size() > 0){
