@@ -44,18 +44,24 @@ bool MonitorImage::getNextImage(int *err)
 {
 	CString sCmd, sMsg;
 	sCmd.Append("img>next_image?session=");
+	if (session.IsEmpty()) 
+	{
+		CLogFile::WriteLog("Session is Empty");
+		*err = 0xE1;
+		return false;
+	}
 	sCmd.Append(session);
 	sCmd.Append("\n");
 	if ( !mSock->SendCmdAndRecvMsg(sCmd,sMsg) )
 	{
-		*err = 0xFF;
+		*err = 0xE2;
 		return false;
 	}
 
 	
 	if ( sMsg.IsEmpty() ) 
 	{
-		*err = 0xFF;
+		*err = 0xE3;
 		return false;
 	}
 
@@ -73,7 +79,7 @@ bool MonitorImage::getNextImage(int *err)
 		line=sMsg.Mid(ileft+1, ipos-ileft);
 		if (line.IsEmpty())
 		{
-			*err = 0xFF;
+			*err = 0xE4;
 			return false;
 		}
 
@@ -114,4 +120,58 @@ bool MonitorImage::getNextImageSession(CString sBtsUUID, CString sCh, int *err)
 		return false;
 
 	return true;
+}
+
+UINT Cmd_SendAndReceiveTimer(LPVOID param)
+{
+	GokuSocket *socket = (GokuSocket *)param;
+
+	if (!socket)		
+	{
+		return 0;
+	}
+
+	bool bAutoWaiting = false;
+
+	bool bRuning = true;
+	while(bRuning)
+	{
+		DWORD dwRet = ::WaitForMultipleObjects(2, socket->m_hEvent, false, socket->GetWaitTime());
+		switch(dwRet)
+		{
+		case WAIT_OBJECT_0: //SetAutoWait....that mean's begin to counting...
+			{
+				bAutoWaiting = true;
+			}
+			break;
+		case WAIT_OBJECT_0+1:
+			{
+				bAutoWaiting = false;
+			}
+			break;
+		case WAIT_OBJECT_0+2:
+			bRuning = false;
+			break;
+		case WAIT_ABANDONED_0:
+			break;
+		case WAIT_ABANDONED_0+1:
+			break;
+		case WAIT_ABANDONED_0+2:
+			break;
+		case WAIT_TIMEOUT:
+			{
+				socket->CancelSocket();
+			}
+			break;
+		case WAIT_FAILED:
+			{
+				DWORD dwError = GetLastError();
+				bRuning = false;
+
+			}
+			break;
+		}
+	}//...while...
+
+	return 0x13;
 }

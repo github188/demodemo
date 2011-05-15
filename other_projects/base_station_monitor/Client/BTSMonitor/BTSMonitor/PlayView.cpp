@@ -24,21 +24,24 @@ CPlayView::CPlayView()
 , m_nImageType(0)
 , m_nIDEvent(0)
 , m_sRealImageDir(_T(""))
+, m_sImageStatus(_T(""))
+, m_nStatus(0)
 {
 	m_bIsFullScreen  = FALSE;
 	m_pSaveParent = NULL;
 	m_sPicture.Empty();
 	m_pMonitorImage = NULL;
 	m_bHasImage = false;
+	m_strShowMsg = "No Video";
 }
 
 CPlayView::~CPlayView()
 {
-	if (m_pMonitorImage)
-	{
-		delete m_pMonitorImage;
-		m_pMonitorImage = NULL;
-	}
+//	if (m_pMonitorImage)
+//	{
+//		delete m_pMonitorImage;
+//		m_pMonitorImage = NULL;
+//	}
 }
 
 BEGIN_MESSAGE_MAP(CPlayView, CView)
@@ -61,6 +64,10 @@ void CPlayView::OnDraw(CDC* pDC)
 	// TODO: add draw code here
 	if (m_nImageType==2)
 		ShowPicture(pDC,m_sPicture,1,1);
+	else
+	{
+
+	}
 }
 
 
@@ -178,14 +185,27 @@ void CPlayView::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CView::OnPaint() for painting messages
-	
+
 	if (!m_sPicture.IsEmpty())
 	{
 		OnDraw(&dc);
 		return;
 	}
+	else
+	{
+		CRect rt;
+		GetClientRect(&rt);
+
+		if ( !m_strShowMsg.IsEmpty() )
+		{
+			dc.SetBkColor(VIDEO_BACK_COLOR);
+			dc.TextOut(rt.Width()/3, rt.Height()/2, m_strShowMsg);
+		}
+
+	}
 
 	DrawSelectedWindow();
+
 }
 
 void CPlayView::OnLButtonDblClk(UINT nFlags, CPoint point)
@@ -224,7 +244,9 @@ void CPlayView::OnPlayviewClose()
 	// TODO: Add your command handler code here
 	CWnd *pWnd = GetParent();
 	if (pWnd && pWnd->m_hWnd)
-		::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_UNSELECT_CAMERA_DEVICE,NULL);
+		::SendMessage(pWnd->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_UNSELECT_CAMERA_DEVICE,m_nViewID);
+
+	Invalidate();
 
 }
 
@@ -268,7 +290,7 @@ BOOL CPlayView::OnEraseBkgnd(CDC* pDC)
 	CBrush br;
 	br.CreateSolidBrush(VIDEO_BACK_COLOR);
 	pDC->FillRect(&rt,&br);
-
+	
 	return TRUE;
 
 	//return CView::OnEraseBkgnd(pDC);
@@ -369,6 +391,12 @@ void CPlayView::SetImageType(int  nImageType)
 void CPlayView::SetImageFile(CString sPicture)
 {
 	 m_sPicture = sPicture;
+	 Invalidate();
+}
+void CPlayView::SetImageStatus (CString sInfo) 
+{
+	m_strShowMsg = sInfo;
+	Invalidate();
 }
 
 void CPlayView::OnTimer(UINT_PTR nIDEvent)
@@ -380,12 +408,12 @@ void CPlayView::OnTimer(UINT_PTR nIDEvent)
 		CString sLine, str, sDateTime, sBts, sCh;
 		int pos=0;
 		int err;
-		 m_bHasImage = m_pMonitorImage->getNextImage(&err);
+		m_bHasImage = m_pMonitorImage->getNextImage(&err);
 		if (m_bHasImage)
 		{
 
-			pos = util::split_next(m_pMonitorImage->datetime,str,':',0);
-			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
+			//pos = util::split_next(m_pMonitorImage->datetime,str,'-',0);
+			pos = util::split_next(m_pMonitorImage->datetime,str,'-',0);
 			sDateTime+=str;//YY
 			pos = util::split_next(m_pMonitorImage->datetime,str,'-',pos+1);
 			sDateTime+=str;//MM
@@ -414,24 +442,48 @@ void CPlayView::OnTimer(UINT_PTR nIDEvent)
 			
 			StopImgMonitor();
 
-			Invalidate();
+			RefreshPlayView();
 		}
 		else
 		{
 			CString strError;
-			if (1 == err) //current expired
+			if (-2 == err)
 			{
+				m_sImageStatus = "参数错误";
+				StopImgMonitor();
+
+			}
+			else if (1 == err) //current expired
+			{
+				m_sImageStatus = "Timeout! Retrieving...";
 				if ( m_pMonitorImage->getNextImageSession(m_sUUID, m_sChannelID,&err) )
 				{
 					strError.Format("获取图片SessionID失败 BTSID=%s, ChannelID=%s .ErrorCode=%d", m_sUUID, m_sChannelID,err);
 					CLogFile::WriteLog(strError);
 				}
 			}
-			else
+			else if (2 == err) //顺序复位--不属于错误，告警查询时表示轮询结束
 			{
+				m_sImageStatus = "Polling Over!"; //Only Warning Mgr...
 				strError.Format("getNextImage()失败 BTSID=%s, ChannelID=%s .ErrorCode=%d", m_sUUID, m_sChannelID,err);
 				CLogFile::WriteLog(strError);
 			}
+			else if (3 == err)
+			{
+				m_sImageStatus = "Waiting...";
+			}
+			else if (4 == err) //数据结束--告警查询时，已没有满足条件的图片
+			{
+				m_sImageStatus = "Condition is not satisfied!";
+			}
+			else
+			{
+				m_sImageStatus = "Unknown error!"; //Only Warning Mgr...
+				strError.Format("getNextImage()失败 BTSID=%s, ChannelID=%s .未知的错误代码=%d", m_sUUID, m_sChannelID,err);
+				CLogFile::WriteLog(strError);
+			}
+
+			RefreshPlayView();
 
 		}
 
@@ -469,4 +521,81 @@ void CPlayView::SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChan
 	m_sChannelID	= sChannelID;
 	m_sRoute		= sRoute;
 	m_pMonitorImage = pObj;
+}
+
+void CPlayView::RefreshPlayView(int status)
+{
+	CString strShowMsg;
+
+	if (m_nImageType == 2)
+	{
+		strShowMsg = m_sImageStatus;
+	}
+	else
+	{
+		if (status == 0)
+		{
+			CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+			if ( pApp->pgkclient->m_pArrVideoCtrl[m_nViewID] )
+			{
+				 //-1 end, 0 not start, 1 running, -2 start error, 2 Time out
+				m_nStatus = pApp->pgkclient->m_pArrVideoCtrl[m_nViewID]->status;
+				switch(m_nStatus)
+				{
+				case -1:
+				case 0:
+					strShowMsg = "No Video";
+					break;
+				case 1:
+					{
+						if (pApp->pgkclient->m_pArrVideoCtrl[m_nViewID]->bIsBlocking)
+							strShowMsg = "Data Receiving..."; //"Playing Video";
+						else
+							strShowMsg = "Playing Video";
+					}
+					break;
+				case 2:
+					strShowMsg = "Timeout,Connection is disconnected!";
+					break;
+				case 3:
+					strShowMsg = "Connecting... please wait...";
+					break;
+				default:
+					strShowMsg = "No Video";
+					break;
+				}
+			}
+			else
+				strShowMsg = "No Video";
+		}
+		else if (status==2)
+		{
+			strShowMsg = "Timeout,Connection is disconnected!";
+		}
+		else if (status==3)
+		{
+			strShowMsg = "Re Connect Server... please wait!";
+		}
+		else if(status==4)
+		{
+			strShowMsg = "Data Receiving..."; //"Playing Video";
+		}
+		else if (status==5)
+		{
+			strShowMsg = "Connect to Server..."; 
+		}
+		else if (status==6)
+		{
+			strShowMsg = "Faild to Connect Server!"; 
+		}
+
+	} 
+
+	//if (m_strShowMsg != strShowMsg)
+	{
+		m_strShowMsg = strShowMsg;
+		Invalidate();
+
+		::Sleep(369);
+	}
 }

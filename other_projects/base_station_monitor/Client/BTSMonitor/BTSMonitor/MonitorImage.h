@@ -2,7 +2,10 @@
 #define MONITOR_IMAGE_H
 
 #include "util.h"
-#include "SimpleSocket.h"
+//#include "SimpleSocket.h"
+#include "GokuSocket.h"
+
+UINT Cmd_SendAndReceiveTimer(LPVOID param);
 
 class MonitorImage
 {
@@ -17,11 +20,16 @@ public:
 	CString status;
 	char* data;
 
+	int   errCode;
+
+	CWinThread *m_pTimerImageThread;
+
 public:
 	CString errcode;
-	CSimpleSocket *mSock;
+	//CSimpleSocket *mSock;
+	GokuSocket *mSock;
 
-	MonitorImage()
+	MonitorImage(GokuSocket *pSocket=NULL)
 	{
 		width="";
 		height="";
@@ -33,7 +41,15 @@ public:
 		status="";
 		errcode="0";
 		data=NULL;
-		mSock=NULL;
+		//mSock=NULL;
+		mSock = pSocket;
+
+		if (mSock)
+		{
+			m_pTimerImageThread = AfxBeginThread(Cmd_SendAndReceiveTimer, mSock);
+		}
+
+		errCode = 0;
 	}
 
 	~MonitorImage()

@@ -70,10 +70,13 @@ public:
 	void SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChannelID, CString sRoute);
 	void SetImageType(int  nImageType);
 	int  GetImageType() {return m_nImageType;};
-
+	void SetImageStatus (CString sInfo);
+	void SetVideoStatus(int nStatus) {m_nStatus=nStatus;};
+	void RefreshPlayView(int status=0);
 private:
-	CString m_sRealImageDir;
+	CString m_sRealImageDir, m_sImageStatus,m_strShowMsg;
 	CString m_sUUID, m_sChannelID, m_sRoute;
+	int		m_nStatus;
 };
 
 
