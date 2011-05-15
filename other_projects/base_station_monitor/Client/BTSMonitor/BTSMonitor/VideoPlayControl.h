@@ -14,27 +14,42 @@ public:
 	DataCallBack callback;
 	CSimpleSocket *socket;
 	int sessionId;
-	int status;  //0 not start, -1 end, 1 running, -2 start error, 2 jump to the play position.
+	int status;  // -1 end, 0 not start/Normal Close, 1 running, -2 start error; 2 Need Reconnect
+	//int status;  //0 not start, -1 end, 1 running, -2 start error, 2 jump to the play position.
+
 	bool bIsBlocking; //just for judge whether the socket blocked or not
 	bool m_bSave;
 	CString m_sFileName;
+	HWND m_hWnd;
+
 	bool bPause;
 	bool bFastForward;
 	CString pos;
 
+	int m_nConnectTimeOut; //Control Connect Time out..
+	//CString m_sVideoPlayStauts; //Only Show Msg to user, let's know the current status.
+	CString m_sUUID;
+	CString m_sCh;
+
 	//不能在界面线程调用socket，发送和接受方法。其他线程把需要发送的命令保存到list,由socket线程统一发送。
 	vector<CString> vedio_command_list;
 
-	VideoPlayControl(CSimpleSocket *sc, DataCallBack handle, int sid, CString sFile="", bool bSave=false){
+	VideoPlayControl(CSimpleSocket *sc, DataCallBack handle, int sid, CString sUUID="", CString sCh="", CString sFile="", bool bSave=false, HWND hWnd=NULL){
 		socket = sc;
 		callback = handle;
 		sessionId = sid;
+		m_sUUID = sUUID;
+		m_sCh = sCh;
 		status = 0;
 		bIsBlocking = true;
 
 		m_sFileName = sFile;
 
 		m_bSave = bSave;
+
+		m_hWnd = hWnd;
+
+		m_nConnectTimeOut = 0;
 
 		bPause=false;
 		bFastForward=false;

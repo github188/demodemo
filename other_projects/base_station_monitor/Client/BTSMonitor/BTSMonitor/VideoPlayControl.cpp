@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "VideoPlayControl.h"
+#include "const.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -91,6 +92,8 @@ bool VideoPlayControl::SaveWarnVideo()
 
 	status = -1;
 	close();
+
+	return true;
 }
 //static UINT nRead = 0;
 
@@ -102,11 +105,12 @@ UINT video_read_thread(LPVOID param)
 	::PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
 	
 	if (!control) return 0x11;
+
 	CFile fVideo;
 	if (control->m_bSave)
 	{
 		CFileException error;
-		if (fVideo.Open(control->m_sFileName,CFile::modeCreate|CFile::modeWrite, &error))
+		if (!fVideo.Open(control->m_sFileName,CFile::modeCreate|CFile::modeWrite, &error))
 		{
 			char   szCause[255];
 			CString strFormatted;
@@ -187,10 +191,15 @@ UINT video_read_thread(LPVOID param)
 				//Need to reconnect the socket.
 				//control->socket->connect_server();
 
-				control->status = -1;
-
 				CString sErrorInfor;
-				sErrorInfor.Format("Abnormally exit vedio thread , SessionID = %d", control->sessionId);
+				if (control->status == 0) //Forced exit by user --- pop menu.or switch vedio.)
+					sErrorInfor.Format("Normally exit vedio thread , SessionID = %d , ErrorCode:%d", control->sessionId, GetLastError());
+				else if (control->status == 1)//Time out, Need Reconnect...
+				{
+					sErrorInfor.Format("Normally(TimeOut) exit vedio thread , SessionID = %d , ErrorCode:%d", control->sessionId, GetLastError());
+					control->status = 2; 
+				}
+
 				CLogFile::WriteLog(sErrorInfor);
 				
 				break;
@@ -198,19 +207,45 @@ UINT video_read_thread(LPVOID param)
 		}
 	}
 
-	CString strLog;
-	strLog.Format("Normally exit vedio thread, SessionID = %d", control->sessionId);
-	CLogFile::WriteLog(strLog);
-
 	delete[] buffer;
 
-	control->status = -1;
-	control->close();
-
-	if(control->m_bSave)
+	if (control->status==1) //maybe never come into this condition. (no use anymore..)
 	{
-		fVideo.Close();
+		CString strLog;
+		strLog.Format("Normally exit vedio thread, SessionID = %d", control->sessionId);
+		CLogFile::WriteLog(strLog);
+		control->status = -1;
 	}
+
+	control->close();
+	
+	if (control->m_bSave)
+		fVideo.Close();
+
+	//Need Refresh the PlayView
+	if (control->m_hWnd && control->status==2)
+	{
+		int nSessionID = control->sessionId;
+		CString sUUID = control->m_sUUID;
+		CString sCh   = control->m_sCh;
+		HWND hWnd	  = control->m_hWnd;	
+
+		//Stop View..
+		LPARAM lpara = MAKELPARAM(control->sessionId, control->status);
+		::SendMessage(control->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_UNSELECT_CAMERA_DEVICE,lpara);
+
+		//Start View, must use postmessage, so we can exit the current thread.
+		CString strData;
+		strData.Format("%s:%s:%d:%d", sUUID, sCh, nSessionID,1);
+		int nLen = strData.GetLength();
+
+		char *pData = new char[nLen+1];
+		memset(pData,0,nLen+1);
+		strcpy_s(pData,nLen+1,strData.GetBuffer(nLen));
+
+		::PostMessage(hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_RECONNECT_CAMERA,(LPARAM)pData);
+	}
+
 
 	return 0;
 }
