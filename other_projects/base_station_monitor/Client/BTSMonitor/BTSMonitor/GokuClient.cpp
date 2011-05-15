@@ -420,7 +420,7 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 {
 	//save_task?taskID=1&name=test&uuid=1004&channel=1&windowID=1&weeks=1,2,3,4&startTime=18:11&endTime=20:11&minShowTime=10&showOrder=10
 	CString sCmd;
-	sCmd.Format("save_task?taskID=%s&name=%s&uuid=%s&channel=%s&windowID=%s&weeks=%s&startDate=%s&endDate=%s&startTime=%s&endTime=%s&minShowTime=%s&showOrder=%s",
+	sCmd.Format("cmd>save_task?taskID=%s&name=%s&uuid=%s&channel=%s&windowID=%s&weeks=%s&startDate=%s&endDate=%s&startTime=%s&endTime=%s&minShowTime=%s&showOrder=%s",
 		sTaskID,
 		sName,
 		sUUID,
@@ -437,7 +437,16 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-		return false;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return false;
+		}
+		else
+			return false;
+	}
 
 	if (sMsg.IsEmpty())
 		return false;
@@ -451,7 +460,7 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 	return false;
 }
 //VideoPlayControl* GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
-bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session)
+bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callback, int session,HWND hWnd)
 {
 	VideoPlayControl *control;
 	BTSInfo* bsinfo = this->btsmanager.btsmap[util::str2int(uuid)];
@@ -459,7 +468,7 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 		//CSimpleSocket *masterSocket = new CSimpleSocket(bsinfo->route, bsinfo->route);
 		CSimpleSocketImpl *masterSocket = new CSimpleSocketImpl(bsinfo->route, bsinfo->route);
 
-		control = new VideoPlayControl(masterSocket, callback, session);
+		control = new VideoPlayControl(masterSocket, callback, session,uuid,channel,"", false, hWnd);
 		
 		if (control==NULL)
 			return false;
@@ -467,6 +476,8 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 		m_pReplayControl=control;
 
 		m_pArrVideoCtrl[session] = control;
+
+		m_pArrVideoCtrl[session]->m_nConnectTimeOut = 0; //
 
 		if ( control->socket->connect_server() > 0 )
 		{
@@ -482,13 +493,22 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 				//CString strError;
 				//strError.Format("²¥·ÅÊ§°Ü%d",session);
 				//AfxMessageBox(strError);
+				PauseVedioThread();
 				delete m_pArrVideoCtrl[session];
 				m_pArrVideoCtrl[session] = NULL;
+				ContinueVedioThread();
 				return false;
 			}
 		}
-		else
+		else //Cannot connect ...
+		{
+			PauseVedioThread();
+			delete m_pArrVideoCtrl[session];
+			m_pArrVideoCtrl[session] = NULL;
+			ContinueVedioThread();
 			return false;
+		}
+
 	}
 
 	//return control;
@@ -504,18 +524,17 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 	//CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
 	CSimpleSocketImpl * masterSocket = new CSimpleSocketImpl(master_server, master_server);
 
-	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session, sAlarmVideoName,bSave);
+	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session,videoId,"", sAlarmVideoName,bSave);
 
 	if (control==NULL) return false;
 
-	m_pRealPlayControl=control;
+	m_pRealPlayControl=control; //quyao add... I think this should be replayControl...???
 
 	//m_pAlarmVideoCtrl = control;
 	m_pArrVideoCtrl[session] = control;
 
 	if ( control->socket->connect_server() > 0 )
 	{
-
 		control->replay(videoId);
 
 		//Socket Detach 
@@ -634,7 +653,6 @@ UINT Command_SendAndReceiveTimer(LPVOID param)
 
 	if (!socket)		
 	{
-	
 		return 0;
 	}
 
@@ -685,23 +703,27 @@ UINT Command_SendAndReceiveTimer(LPVOID param)
 
 UINT video_thread_control(LPVOID param)
 {
-	return 0x12;
+	//return 0x12;
 
 	GokuClient *pGokuClient = (GokuClient*)param;
 	
 	if (!pGokuClient) return 0;
 
-	HANDLE hEvent = pGokuClient->GetExitVedioThreadHandle();
 	bool bRuning = true;
 	DWORD dwRet = 0;
 	while (bRuning)
 	{
-		dwRet = ::WaitForSingleObject(hEvent,10000); //10 Second
+		dwRet = ::WaitForMultipleObjects(2,pGokuClient->m_hEventVideoCtrl,false,pGokuClient->GetWaitTime()); //10 Second
 		switch(dwRet)
 		{
-		case WAIT_OBJECT_0:
+		case WAIT_OBJECT_0: //Exit
 			{
 				bRuning = false;
+			}
+			break;
+		case WAIT_OBJECT_0+1: // pause / continue
+			{
+
 			}
 			break;
 		case WAIT_ABANDONED_0:
@@ -710,20 +732,53 @@ UINT video_thread_control(LPVOID param)
 			{
 				//cancel block, continue read next...
 				int i=0;
-				for (; i<cnMAX_VV; i++)
+				for (; i<cnREAL_MAX_VV/*cnMAX_VV*/; i++)
 				{
 					//m_pPlayThread[i]=NULL;
 					if (pGokuClient->m_pArrVideoCtrl[i]==NULL)
 						continue;
 
-					if (pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking)
+					/*
+					//CSocket Connect function TimeOut Control..................................
+					//if (pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking)
+					if ( pGokuClient->m_pArrVideoCtrl[i]->m_nConnectTimeOut < 2 )
 					{
-						//pGokuClient->m_pArrVideoCtrl[i]->socket->CancelSocket();
+						if ( pGokuClient->m_pArrVideoCtrl[i]->socket->IsConnectStatus() == false)
+							pGokuClient->m_pArrVideoCtrl[i]->m_nConnectTimeOut ++;
+						else
+							pGokuClient->m_pArrVideoCtrl[i]->m_nConnectTimeOut =0;
+					}
+					else //Connect Time Out...
+					{
+						pGokuClient->m_pArrVideoCtrl[i]->m_nConnectTimeOut = 0;
+
+						//pGokuClient->m_pArrVideoCtrl[i]->socket->CancelSocket(); //Maybe ,this will cause connect crash :10004
+						
 						// Notify the window "No vedio date received!"
 					}
+					*/
+					if ( pGokuClient->m_pArrVideoCtrl[i]->socket->IsConnectStatus() == false)
+					{
+						int nViewID = pGokuClient->m_pArrVideoCtrl[i]->sessionId;
+						LPARAM lPara = MAKELPARAM( nViewID, 5); //4 Blocking..
+						::SendMessage(pGokuClient->m_pArrVideoCtrl[i]->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_REFRESH_PLAYVIEW,lPara);
 
-					if (pGokuClient->m_pArrVideoCtrl[i]->status != 1) //Not Exit
+					}
+					
+
+					//Blocking Control............................................................
+					if (pGokuClient->m_pArrVideoCtrl[i]->status == 1) //running...
+					{
+						if (pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking)
+						//if (pGokuClient->m_pArrVideoCtrl[i]->socket->IsConnectBlocking() )
+						{
+							int nViewID = pGokuClient->m_pArrVideoCtrl[i]->sessionId;
+							LPARAM lPara = MAKELPARAM( nViewID, 4); //4 Blocking..
+							::SendMessage(pGokuClient->m_pArrVideoCtrl[i]->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_REFRESH_PLAYVIEW,lPara);
+						}
+
 						pGokuClient->m_pArrVideoCtrl[i]->bIsBlocking = true;
+					}
 
 				}
 			}
@@ -737,8 +792,14 @@ UINT video_thread_control(LPVOID param)
 
 	return 0x12;
 }
-bool GokuClient::Stop_Play(int nVideoID)
+bool GokuClient::Stop_Play(int nVideoID ,int nStopType)
 {
+	if (nStopType==1)
+	{
+		AfxMessageBox("Stop Playing Type == 1!");
+		return false;
+	}
+		
 	//if (nVideoID<0 || nVideoID>cnMAX_VV-1)
 	if (nVideoID<0 || nVideoID>cnTOTAL_VV_CNT-1)
 	{
@@ -762,7 +823,7 @@ bool GokuClient::Stop_Play(int nVideoID)
 
 	// Runing... = 1
 	m_pArrVideoCtrl[nVideoID]->bIsBlocking = true; //
-	m_pArrVideoCtrl[nVideoID]->status = 0; //Thread is runing...
+	m_pArrVideoCtrl[nVideoID]->status = nStopType; //0; //Thread is runing...
 
 	DWORD dwRet = ::WaitForSingleObject(m_pPlayThread[nVideoID]->m_hThread,2000);
 	if (dwRet == WAIT_TIMEOUT)
@@ -857,8 +918,9 @@ MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CSt
 		imageSock->connect_server();
 		if ( imageSock->IsConnectStatus() )
 		{
-			m_pMoImage = new MonitorImage();
-			m_pMoImage->mSock=imageSock;
+			//m_pMoImage = new MonitorImage();
+			//m_pMoImage->mSock=imageSock;
+			m_pMoImage = new MonitorImage(imageSock);
 		}
 		else
 		{
@@ -885,6 +947,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CSt
 	{
 		delete m_pMoImage;
 		m_pMoImage = NULL;
+		*err = 0xFF;
+		
 		return NULL;
 	}
 	CString line;
@@ -896,8 +960,8 @@ MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CSt
 	*err=util::str2int(m_pMoImage->errcode);
 	if(*err!=0)
 	{
-		delete m_pMoImage;
-		m_pMoImage = NULL;
+		//delete m_pMoImage;
+		//m_pMoImage = NULL;
 		return NULL;
 	}
 
@@ -914,8 +978,9 @@ MonitorImage* GokuClient::getAlarmImagebyBase64(CString sBtsUUID,CString sCh, CS
 		imageSock->connect_server();
 		if ( imageSock->IsConnectStatus() )
 		{
-			m_pMoImage = new MonitorImage();
-			m_pMoImage->mSock=imageSock;
+			//m_pMoImage = new MonitorImage();
+			//m_pMoImage->mSock=imageSock;
+			m_pMoImage = new MonitorImage(imageSock);
 		}
 		else
 		{

@@ -49,20 +49,36 @@ public:
 			m_pTimerThread = AfxBeginThread(Command_SendAndReceiveTimer, socket);
 		}
 		
-		m_hVedioCtrlExit = ::CreateEvent(NULL,FALSE,FALSE,NULL);
+		m_hEventVideoCtrl[0] = ::CreateEvent(NULL,FALSE,FALSE,NULL); //Exit Video Ctrl
+		m_hEventVideoCtrl[1] = ::CreateEvent(NULL,FALSE,FALSE,NULL); //Stop Time out...wait for other function over...
+
 		m_pVedioCtrlThread = AfxBeginThread(video_thread_control, this);
 
 		m_nSid = 0;
 
 		m_pMoImage = NULL;
+		m_lWaitTime = cnWAIT_TIME;
+
 		m_pRealPlayControl=NULL;
 		m_pReplayControl=NULL;
+
 	}
 
 	~GokuClient()
 	{
+		//Exit Video Thread Control....
 		SetExitVedioThread();
+		DWORD dwRet = ::WaitForSingleObject(m_pVedioCtrlThread->m_hThread,1000);
+		if ( dwRet = WAIT_TIMEOUT)
+		{
+			::AfxTermThread((HINSTANCE__*)(m_pVedioCtrlThread->m_hThread));
+			m_pVedioCtrlThread = NULL;
+		}
+		CloseHandle(m_hEventVideoCtrl[0]); m_hEventVideoCtrl[0] = NULL;
+		CloseHandle(m_hEventVideoCtrl[1]); m_hEventVideoCtrl[1] = NULL;
 
+
+		//Exit Video play thread Control...
 		int i=0;
 		for (i=0; i<cnTOTAL_VV_CNT/*cnMAX_VV*/; i++)
 		{
@@ -82,7 +98,7 @@ public:
 		}
 
 		::Sleep(100);
-		DWORD dwRet = 0;
+		dwRet = 0;
 		for (i=0; i<cnTOTAL_VV_CNT/*cnMAX_VV*/; i++)
 		{
 			if (m_pArrVideoCtrl[i]==NULL)
@@ -220,7 +236,7 @@ public:
 		CString sShowOrder);
 
 	//VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
-	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
+	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session, HWND hWnd=NULL);
 
 	//VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
 	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false);
@@ -258,9 +274,27 @@ public:
 
 
 public:
-	bool Stop_Play(int nVideoID);
-	HANDLE GetExitVedioThreadHandle() {return m_hVedioCtrlExit;}
-	void SetExitVedioThread() {::SetEvent(m_hVedioCtrlExit);}
+	bool Stop_Play(int nVideoID, int nStopType=0); //nStopType same to status : 0 normal exit, 2: Timeout & Reconnect
+	void SetExitVedioThread() {::SetEvent(m_hEventVideoCtrl[0]);}
+	void PauseVedioThread() {
+		m_lWaitTime = INFINITE;
+		::SetEvent(m_hEventVideoCtrl[1]);
+	}
+	//When Stop real Video play, the VideoCtrl Object maybe null some time, Thread maybe cause crash...
+	//So, during stop video , we pause the thread for a while...
+	void ContinueVedioThread() {
+		m_lWaitTime = cnWAIT_TIME;
+		::SetEvent(m_hEventVideoCtrl[1]);
+	}
+	long GetWaitTime() {return m_lWaitTime;}; 
+
+	//Alarm Saving count...
+	void SetAlarmVideoSavingCount(int nCount) {m_nAlarmVideoSaveCount = nCount;}
+	int  GetAlarmVideoSavingCount( ) {return m_nAlarmVideoSaveCount;}
+	
+	HANDLE m_hEventVideoCtrl[2];
+
 private:
-	HANDLE m_hVedioCtrlExit;
+	long	m_lWaitTime;
+	int	   m_nAlarmVideoSaveCount;
 };
