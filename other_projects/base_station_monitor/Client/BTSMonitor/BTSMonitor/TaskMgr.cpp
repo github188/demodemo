@@ -181,8 +181,8 @@ void CTaskMgr::OnBnClickedBtnTaskAdd()
 	pos= util::split_next(sCh,sTemp,':',0);
 	sCh = sTemp;
 
-	sStartTime.Format("%02d:%02d:%02d",sBeginHH,sBeginMM,sBeginSS);
-	sEndTime.Format("%02d:%02d:%02d",sEndHH,sEndMM,sEndSS);
+	sStartTime.Format("%02d:%02d:%02d",atoi(sBeginHH),atoi(sBeginMM),atoi(sBeginSS));
+	sEndTime.Format("%02d:%02d:%02d",atoi(sEndHH),atoi(sEndMM),atoi(sEndSS));
 
 	int nStatus = 2;
 
@@ -231,6 +231,10 @@ void CTaskMgr::OnBnClickedBtnTaskAdd()
 			nStatus==9 ? "finished" : "unknown";
 		m_lstTask.SetItem(0,8,LVIF_TEXT,sStatus,0,0,0,0);
 	}
+	else
+	{
+		AfxMessageBox("添加失败！");
+	}
 }
 
 BOOL CTaskMgr::OnInitDialog()
@@ -258,6 +262,7 @@ void CTaskMgr::InitTaskLstView(void)
 	DWORD styles = LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES;
 	ListView_SetExtendedListViewStyleEx(m_lstTask.m_hWnd, styles, styles );
 
+	//#TS:<taskID>$<name>$<uuid>$<channel>$<windowID>$<startDate>$<endDate>$<weeks>$<startTime>$<endTime>$<minShowTime>$<showOrder>$<status>
 	CString strHeader[] = 
 	{
 		"任务名称", //
@@ -268,10 +273,12 @@ void CTaskMgr::InitTaskLstView(void)
 		"结束日期",
 		"开始时间",
 		"结束时间",
+		"监控时间",
+		"监控顺序",
 		"任务状态" //等待、执行中、完成
 	};
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
-	int nWidth[] = {88,168,28,28,168,168,128,128,58};
+	int nWidth[] = {88,168,56,56,68,68,68,68,68,68,58};
 	for (int i=0; i<nCnt; i++)
 		m_lstTask.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
 
@@ -434,10 +441,10 @@ void CTaskMgr::InitTaskLstView(void)
 			m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
 
 			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //minShowTime
-			//m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+			m_lstTask.SetItem(0,8,LVIF_TEXT,temp,0,0,0,0);
 
 			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //showOrder
-			//m_lstTask.SetItem(0,7,LVIF_TEXT,temp,0,0,0,0);
+			m_lstTask.SetItem(0,9,LVIF_TEXT,temp,0,0,0,0);
 
 			posLine = util::split_next(sOneTask, temp, '$', posLine+1); //status
 			//sTemp = pObjTask->status==1 ? "Waiting" :
@@ -447,7 +454,7 @@ void CTaskMgr::InitTaskLstView(void)
 			CString sStatus = nStatus==1 ? "runing" : 
 				nStatus==2 ? "idle" :
 				nStatus==9 ? "finished" : "unknown";
-			m_lstTask.SetItem(0,8,LVIF_TEXT,sStatus,0,0,0,0);
+			m_lstTask.SetItem(0,10,LVIF_TEXT,sStatus,0,0,0,0);
 		}
 	}
 

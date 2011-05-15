@@ -34,18 +34,23 @@ public:
 	void SetTimerIDEvent(int nIDEvent);
 	void StartImgMonitor(void);
 	void StopImgMonitor(void);
-	void SetMonitorImageObj(MonitorImage* pObj);
+	void SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChannelID, CString sRoute);
 	void SetImageType(int  nImageType);
 	int  GetImageType() {return m_nImageType;};
 	void SetImageFile(CString sPicture);
+	void RefreshPlayView(int status=0);
+	void SetPopViewIdx(int nIdx);
+	void SetImageStatus (CString sInfo);
 
 private:
-	CString m_sPicture;
-	int		m_nImageType;
 	MonitorImage *m_pMonitorImage;
 	BOOL	m_bHasImage;
-	UINT	m_nIDEvent;
-	CString m_sRealImageDir;
+	UINT	m_nIDEvent, m_nViewID;
+
+	CString m_sRealImageDir,m_sPicture, m_sImageStatus,m_strShowMsg;
+	CString m_sUUID, m_sChannelID, m_sRoute;
+	int		m_nStatus, m_nImageType;
+
 };
 
 

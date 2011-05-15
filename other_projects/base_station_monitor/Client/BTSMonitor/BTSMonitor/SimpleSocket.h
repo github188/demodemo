@@ -77,6 +77,8 @@ public:
 
 	virtual BOOL SocketDetach() {return FALSE;};
 	virtual BOOL SocketAttach() {return FALSE;};
+
+	virtual BOOL IsConnectBlocking() {return FALSE;};
 };
 
 //Add this for 
@@ -170,6 +172,11 @@ public:
 	virtual void close() {
 		cs.Close();
 	}
+
+	virtual BOOL IsConnectBlocking() {
+		return cs.IsBlocking();
+	};
+
 protected:
 		virtual int write_data(const char *buff, int len){
 		//char sendcmd_startch[200];
