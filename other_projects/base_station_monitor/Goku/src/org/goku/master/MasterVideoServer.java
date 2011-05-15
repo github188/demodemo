@@ -118,6 +118,7 @@ public class MasterVideoServer {
 			log.info("Deploy static root:" + staticRoot.getAbsolutePath());
 			System.setProperty("STATIC_ROOT", staticRoot.getAbsolutePath());
 		}
+		System.setProperty("DATA_ROOT", settings.getString(Settings.FILE_ROOT_PATH, "data"));
 		
 		httpServer.setServlet(servelt);
 		httpServer.addStartupListener(new StartupListener(){

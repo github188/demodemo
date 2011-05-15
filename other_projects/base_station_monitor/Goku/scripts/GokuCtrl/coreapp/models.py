@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+import os
 
 class StationGroupFields(models.ManyToManyField):
     def save_form_data(self, instance, groups):
@@ -230,6 +231,25 @@ class AlarmRecord(models.Model):
     
     def __unicode__(self):
         return "%s-%s" % (self.base_station.uuid, self.alarmCode)
+    
+    def download(self, ):
+        path = os.environ.get("DATA_ROOT", ".")
+        abs_path = os.path.join(path, self.videoPath)
+        if self.videoPath and os.path.isfile(abs_path):
+            fsize = os.stat(abs_path).st_size
+            if self.alarmCategory == '1':
+                return u"<a href='/?q=replay&id=%s'>下载视频 (%0.2d Kb)</a>" % (self.uuid, fsize / 1024.0)
+            elif self.alarmCategory == '2':
+                return u"<a target='_blank' href='/?q=image_alarm&id=%s'>浏览图片</a>" % self.uuid
+            elif self.alarmCategory == '4':
+                path_link = u"<a target='_blank' href='/?q=img&id=%s'>单张</a>" % self.uuid
+                path_link += u"&nbsp;<a target='_blank' href='/?q=image_alarm&id=%s'>浏览</a>" % self.combineUuid
+                return path_link
+        elif self.videoPath:
+            return self.videoPath
+        return u"没有文件"
+    download.allow_tags = True
+    download.verbose_name = "文件下载"    
                 
 class SystemLog(models.Model):
     class Meta:
