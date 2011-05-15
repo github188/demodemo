@@ -535,14 +535,64 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 		break;
 	case	MSG_UNSELECT_CAMERA_DEVICE: //Stop Playing
 		{
-			int nActView = m_vvControl.vvStatus.activeid;
+			//int nActView = m_vvControl.vvStatus.activeid;
+			int nStatus = HIWORD(lParam);
+			int nViewID = LOWORD(lParam);
 
-			if (m_vvControl.vvInfo[nActView].bMonitoring == FALSE)
+			if (nStatus==2) //Reconnect ....
+			{
+				//Update The View
+				CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nViewID].vv));
+				if (pView)
+					pView->RefreshPlayView(nStatus);
+			} //
+			else //Normally Closed the current View  nStatus=0;
+			{
+				//...
+			}
+
+			if (m_vvControl.vvInfo[nViewID].bMonitoring == FALSE)
 				break;
 
 			//char* p = (char*)lParam;
 			//CString strCamera(p);
-			StopMonitorBTS(nActView);
+			StopMonitorBTS(nViewID,nStatus);
+		}
+		break;
+	case MSG_RECONNECT_CAMERA:
+		{
+			char* p = (char*)lParam;
+			CString sUUID, sCh, sVV, sCatagory;
+			int		nVV, nCatagory;
+			if (p)
+			{
+				CString sInfo = p;
+				int pos=0; 
+				pos = util::split_next(sInfo,sUUID,	':',	0);
+				pos = util::split_next(sInfo,sCh,	':',	pos+1);
+				pos = util::split_next(sInfo,sVV,	':',	pos+1);
+				//pos = util::split_next(strBtsInfo,sCatagory,':',pos+1);
+				sCatagory = sInfo.Mid(pos+1);
+
+				nVV = atoi(sVV);
+				nCatagory = atoi(sCatagory);
+
+				delete[] p;
+			}
+
+			if (nVV<0 || nVV > cnMAX_VV-1)
+			{
+				CLogFile::WriteLog("Exceed the rang View index! ");
+				return 0;
+			}
+			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nVV].vv));
+			if (pView)
+			{
+				//pView->SetVideoStatus(3);
+				pView->RefreshPlayView(3); //Reconnect Status...
+			}
+
+			StartMonitorBTS(nVV, sUUID, sCh, nCatagory);		
 		}
 		break;
 	case MSG_RESTORE_VIEW:
@@ -550,6 +600,20 @@ LRESULT CBTSMonitorView::OnPlayviewSelected(WPARAM wParam, LPARAM lParam)
 			CRect rect;
 			GetClientRect(&rect);
 			OnSize(0,rect.right,rect.bottom);
+		}
+		break;
+	case MSG_REFRESH_PLAYVIEW: //No Use any more...
+		{
+			int nStatus = HIWORD(lParam);
+			int nActView = LOWORD(lParam);
+
+			if (nActView>=0 || nActView < cnMAX_VV-1) //If Pop View?
+			{
+				CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+				if (pView)
+					pView->RefreshPlayView(nStatus);
+			}
+
 		}
 		break;
 	default:;
@@ -626,6 +690,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 
 	sRoute = pBtsInfo->route;
 
+	CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+
 	if (pBtsInfo->devType == "2") //PICTURE
 	{
 		//start Image Monitoring....
@@ -638,42 +704,66 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 			{
 				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"参数错误", err);
 				CLogFile::WriteLog(sError);
-				AfxMessageBox("参数错误!");
+				//AfxMessageBox("参数错误!");
 			}
 			break;
 		case 0:
+			sError = "Image Receiving...";
 			break;
 		case 1://基站未找到
 			{
 				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"基站未找到", err);
 				CLogFile::WriteLog(sError);
-				AfxMessageBox("基站未找到!");
+				//AfxMessageBox("基站未找到!");
 			}
             break;
 		case 2://正在传输其他图片  <--------需要界面提示
 			{
 				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"正在传输其他图片", err);
 				CLogFile::WriteLog(sError);
-				AfxMessageBox("正在传输其他图片!");
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		case 0xFF:
+			{
+				//Socket Error , Receive or Write failed...
+				//Need to Re connect socket.
+				sError.Format("%s-%s-%s:%d",sUUID, sChannelID,"图片获取指令发送失败！", err);
+				CLogFile::WriteLog(sError);
+
 			}
 			break;
 		default:
 			{
 				sError.Format("%s:%d","未知的错误类型", err);
 				CLogFile::WriteLog(sError);
-				AfxMessageBox("未知的错误类型!");
+				//AfxMessageBox("未知的错误类型!");
 			}
 
 		}
-		if (err) return;
+		if (err) 
+		{
+			//Only Show Message To user...
+
+			//pView->SetRealImagePara(pMoImage ,sUUID,sChannelID,sRoute);
+			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			//pView->StartImgMonitor();
+			pView->SetImageStatus(sError);
+
+			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+			m_vvControl.vvInfo[nActView].nImageType  = 2;
+
+			return;
+		}
 
 		if (pMoImage)
 		{	
 
-			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
-
 			pView->SetRealImagePara(pMoImage ,sUUID,sChannelID,sRoute);
 			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			pView->SetImageStatus("Image Receiving...");
 			pView->StartImgMonitor();
 
 			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
@@ -693,6 +783,8 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 		BOOL bOpenRet = PLAY_OpenStream(nActView,0,0,1024*900);
 		if(bOpenRet)
 		{
+			if (pView) 		pView->RefreshPlayView(5); //Begin to connect to server
+
 			//CPlayWnd *pwnd=(CPlayWnd *)playwndList.GetAt(playwndList.FindIndex(i));
 			//pwnd->ShowWindow(SW_SHOW);
 			//HWND hwnd=pwnd->GetSafeHwnd();
@@ -704,7 +796,7 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 			//client->replay(host, play_video, nActView); //Play Local Vedio
 
 			//Play Remote Vedio runatime			
-			bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView);
+			bool bRet = pApp->pgkclient->real_play(sUUID, sChannelID, play_video, nActView,this->m_hWnd);
 			
 			//pApp->pgkclient->replay(host, play_video, nActView);
 			//start a thread to receive the video information.
@@ -718,6 +810,9 @@ void CBTSMonitorView::StartMonitorBTS(CString strBtsInfo)
 			{
 				m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
 				m_vvControl.vvInfo[nActView].nImageType  = 0;
+
+				if (pView) 		pView->RefreshPlayView(6);
+
 			}
 		}
 	}
@@ -741,13 +836,71 @@ void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int n
 
 	if (nCategory==2) //Picture..
 	{
-		int *err=0;
-		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sCh,pBtsInfo->route,err);
+		int err=0;
+		CString sError;
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(sUUID,sCh,pBtsInfo->route,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sCh,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			{
+				//..
+				sError = "Image Receiving";
+			}
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sCh,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("基站未找到!");
+			}
+            break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s-%s:%d",sUUID, sCh,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("未知的错误类型!");
+			}
+
+		}
+		if (err) 
+		{
+			//Only Show Message To user...
+			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+
+			//pView->SetRealImagePara(pMoImage ,sUUID,sChannelID,sRoute);
+			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			//pView->StartImgMonitor();
+			pView->SetImageStatus(sError);
+
+			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
+			m_vvControl.vvInfo[nActView].nImageType  = 2;
+
+			return;
+		}		
+
+
 		if (pMoImage)
 		{	
 			CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
 			pView->SetRealImagePara(pMoImage,sUUID,sCh,pBtsInfo->route);
 			pView->SetImageType(2);//Picture...
+			pView->SetImageFile(""); 
+			pView->SetImageStatus("Image Receving...");
 			pView->StartImgMonitor();
 
 			m_vvControl.vvInfo[nActView].bMonitoring = TRUE;
@@ -758,6 +911,7 @@ void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int n
 		{
 			m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
 			m_vvControl.vvInfo[nActView].nImageType  = 0;
+
 		}
 	}
 	else
@@ -770,7 +924,7 @@ void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int n
 			PLAY_Play(nActView, m_vvControl.vvInfo[nActView].vv->m_hWnd);
 
 			//Play Remote Vedio runatime			
-			bool bRet = pApp->pgkclient->real_play(sUUID, sCh, play_video, nActView);
+			bool bRet = pApp->pgkclient->real_play(sUUID, sCh, play_video, nActView,this->m_hWnd);
 			
 			if (bRet)
 			{
@@ -781,6 +935,11 @@ void CBTSMonitorView::StartMonitorBTS(int nVV, CString sUUID, CString sCh, int n
 			{
 				m_vvControl.vvInfo[nActView].bMonitoring = FALSE;
 				m_vvControl.vvInfo[nActView].nImageType  = 0;
+
+				CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nActView].vv));
+				if (pView)
+					pView->RefreshPlayView(6);
+
 			}
 		}
 	}
@@ -800,7 +959,7 @@ int play_video(int  sessionId, char * pBuffer, int  len)
 	return 1;
 }
 
-void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
+void CBTSMonitorView::StopMonitorBTS(int nViewIndex,int status)
 {
 	if (nViewIndex<0 || nViewIndex > cnMAX_VV-1)
 	{
@@ -810,12 +969,14 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 		return ;
 	}
 
+
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	CPlayView *pView = ((CPlayView*)(m_vvControl.vvInfo[nViewIndex].vv));
 
 	if (m_vvControl.vvInfo[nViewIndex].nImageType==2) //Picture...
 	{
 		pView->SetImageType(0); //no type
+		pView->SetImageFile("");
 		pView->StopImgMonitor();
 
 		m_vvControl.vvInfo[nViewIndex].bMonitoring = FALSE;
@@ -825,7 +986,9 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
 	//if(bOpenRet)
 	{
-		pApp->pgkclient->Stop_Play(nViewIndex);		
+		pApp->pgkclient->PauseVedioThread();
+		pApp->pgkclient->Stop_Play(nViewIndex,status);		
+		pApp->pgkclient->ContinueVedioThread();
 
 		BOOL bPlay = PLAY_Stop(nViewIndex);
 		
@@ -835,6 +998,10 @@ void CBTSMonitorView::StopMonitorBTS(int nViewIndex)
 		m_vvControl.vvInfo[nViewIndex].nImageType  = 0;
 
 	}
+
+	//Update The View
+	pView->RefreshPlayView(status);
+
 }
 void CBTSMonitorView::SaveTaskInfo(int nVV, CString& sUUID, CString& sCh)
 {

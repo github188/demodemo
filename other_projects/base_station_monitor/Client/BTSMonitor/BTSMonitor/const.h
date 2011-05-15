@@ -20,7 +20,8 @@
 #define MSG_SELECT_CAMERA_DEVICE	0xa
 #define MSG_UNSELECT_CAMERA_DEVICE	0xb
 #define MSG_RESTORE_VIEW		0xc
-
+#define MSG_REFRESH_PLAYVIEW    0xd //Refresh Play View...
+#define MSG_RECONNECT_CAMERA    0xe //Refresh Play View...
 
 #define ID_PLAYVIDEO_VIEW			2000			
 #define ID_POPVIDEO_VIEW			2100	
@@ -40,6 +41,7 @@
 
 #define	VIDEO_BACK_COLOR	RGB(100,100,160)
 
+const int cnWAIT_TIME	=  3000;
 //Warning Ack...
 typedef enum tagWARNING_STATUS
 {
@@ -56,10 +58,11 @@ typedef enum tagALARM_COMING_TYPE
 
 const int cnMAX_VV = 25;		//up to 25 play window...
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
-const int cnALARM_VIDEO_VV = 2; //up to 2 alarm play view..
+const int cnALARM_VIDEO_VV = 10; //up to 10 alarm play view..
 const int cnWARNING_IMAGE = 100;
 const int cnWARNING_VEDIO = cnMAX_VV + cnMAX_POP_WINDOW;
 const int cnTOTAL_VV_CNT  = cnMAX_VV + cnMAX_POP_WINDOW + cnALARM_VIDEO_VV;
+const int cnREAL_MAX_VV = cnMAX_VV+cnMAX_POP_WINDOW;
 
 int play_video(int  sessionId, char * pBuffer, int  len);
 

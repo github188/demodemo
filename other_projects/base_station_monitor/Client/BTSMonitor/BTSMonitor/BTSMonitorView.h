@@ -106,7 +106,7 @@ public:
 //	afx_msg void OnVv1();
 	void StartMonitorBTS(CString strBtsInfo);
 	void StartMonitorBTS(int nVV, CString sUUID, CString sCh, int nCategory=0);
-	void StopMonitorBTS(int nViewIndex);
+	void StopMonitorBTS(int nViewIndex, int status=0);
 
 	//Task List
 	static void ProcessTask(LPVOID pv);
