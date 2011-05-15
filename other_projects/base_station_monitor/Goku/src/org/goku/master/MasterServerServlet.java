@@ -3,6 +3,7 @@ package org.goku.master;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
@@ -68,14 +69,92 @@ public class MasterServerServlet extends BaseRouteServlet{
 			response.getWriter().write("Parameter list 'id=<PK>', 'mime=text/plain'");
 		}else {
 			String file = server.settings.getString(id, null);
+			if (file == null && server.recordManager.getAlarmRecordFile(id) != null){
+				file = server.recordManager.getAlarmRecordFile(id).getAbsolutePath();
+			}
+			
 			if(file != null && new File(file).exists() ){
-				_play(file, request, response);		
+				_play(file, request, response);	
 			}else if(file != null){
 				response.getWriter().write("Not found file:" + file);
 			}else {
 				response.getWriter().write("Not found file by id " + id);
 			}
 		}		
+	}
+	
+	public void img(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String id = request.getParameter("id");
+		if(id == null){
+			response.getWriter().write("Parameter list 'id=<PK>', 'mime=image/jpeg'");
+		}else {
+			File img = server.recordManager.getAlarmRecordFile(id);			
+			if(img != null && img.exists()){
+			    response.setContentType("image/jpeg");
+			    response.setCharacterEncoding("utf-8");
+			    InputStream ins = new FileInputStream(img);
+			    byte[] buffer = new byte[64 * 1024];
+		    	if(response.getOutputStream() != null){
+			    	for(int len = ins.read(buffer); len > 0; ){
+			    		response.getOutputStream().write(buffer, 0, len);
+			    		len = ins.read(buffer);
+			    	}
+		    	}else { //在Socket, 模式不能取到OutputStream.
+		    		response.getWriter().println("Can't get OutputStream.");
+		    	}
+		    	ins.close();
+			}else if(img != null){
+				response.getWriter().write("Not found file:" + img.getAbsolutePath());
+			}else {
+				response.getWriter().write("Not found file by id " + id);
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void image_alarm(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException{
+		String id = request.getParameter("id");
+		if(id == null){
+			response.getWriter().write("Parameter list 'id=<PK>', 'mime=image/jpeg'");
+		}else {
+		    response.setContentType("text/html");
+		    response.setCharacterEncoding("utf-8");
+			
+			Map<String, Object> filter = new HashMap<String, Object>();
+			QueryParameter param = new QueryParameter();
+			param.qsid = null;
+			param.limit = 500;
+			param.offset = 0;
+			param.order = "-startTime";
+			filter.put("combineUuid__=", id);
+			param.param = filter;
+			QueryResult alarms = server.storage.queryData(AlarmRecord.class, param);
+			response.getWriter().write("<html><head>\n");
+			response.getWriter().write("<title>告警图片列表--" + id + "</title>\n");
+			response.getWriter().write("</head><body>");
+			response.getWriter().write("<h1>告警图片列表--" + id + "</h1>\n");
+			
+			AlarmRecord alarm = null;
+			if(alarms.data.size() > 0){
+				for(Iterator<AlarmRecord> iter = alarms.data.iterator(); iter.hasNext();){
+					alarm = iter.next();
+					response.getWriter().write(String.format("<div style='float:left;margin:4px;'><img src='/?q=img&id=%s'/><div>%s</div></div>", alarm.uuid, alarm.videoPath));
+				}
+			}else {
+				alarm = (AlarmRecord)server.storage.load(AlarmRecord.class, id);
+				if (alarm != null){
+					if(alarm.combineUuid != null && alarm.alarmCategory.equals("4")){
+						response.getWriter().write(String.format("<div>没有找到图片列表，相关的主图片ID, <a href='/?q=image_alarm&id=%s'>%s</a>", alarm.combineUuid, alarm.combineUuid));
+					}else if(alarm.alarmCategory.equals("1")){
+						response.getWriter().write(String.format("<div>不是图片告警, <a href='/?q=replay&id=%s'>下载视频告警</a>.", id));
+					}
+				}
+			}
+			
+			response.getWriter().write("</body><html>");
+		}
 	}
 	
 	private void _play(String file, HttpServletRequest request, 

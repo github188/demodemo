@@ -11,6 +11,7 @@
 <a href="?q=help_doc">系统调用接口文档</a><br/>
 <a href="?q=settings_doc">系统配置参数文档</a><br/>
 <a href="GokuCtrl/admin">后台配置入口</a><br/>
+<a href="GokuCtrl/month_report">每月告警数量报表</a><br/>
 <br/>
 ---下列功能只用于开发调试---<br/>
 
