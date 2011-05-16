@@ -5,7 +5,10 @@
 class BTSManager
 {
 public:
-	BTSManager(){};
+	BTSManager()
+	{
+		//btsmap.InitHashTable(257);
+	};
 	~BTSManager() //Free Memory. liang add.
 	{
 		POSITION pos = btsmap.GetStartPosition();

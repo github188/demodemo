@@ -226,8 +226,8 @@ public:
 	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false);
 	void ReplayjumpToPos(CString pos);
 
-	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
-	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
+//	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
+//	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
 
 	//Modify errno is the windows reserve type
 	//MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *errno);

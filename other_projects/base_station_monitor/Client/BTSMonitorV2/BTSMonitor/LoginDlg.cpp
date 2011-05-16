@@ -95,6 +95,15 @@ void CLoginDlg::OnBnClickedOk()
 	pinfo->password=password;
 	pinfo->servIP=host;
 	pinfo->servPort=port;
+
+	CString hhost;
+	hhost.Append(":");
+	hhost.Append(port);
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if (pApp->pgkclient == NULL)
+	{
+		pApp->pgkclient =new GokuClient(hhost, hhost);
+	}
 	//pinfo->hThreadId=::GetCurrentThreadId();
 	pinfo->UIhwnd=this->m_hWnd;
 	loginThread=::AfxBeginThread(loginProc, pinfo);
