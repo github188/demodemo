@@ -73,4 +73,6 @@ const int cnCR=0xD;
 
 const int cnREAL_IMG_INTERVAL = 5000; // 5 sec..
 
+const long cnPLAY_VIDEO_STEP = 760000; //10 sec video...
+
 #endif //AFX_CONST_H

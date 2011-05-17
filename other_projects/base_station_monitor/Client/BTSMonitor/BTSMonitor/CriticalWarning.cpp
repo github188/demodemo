@@ -269,6 +269,9 @@ void CCriticalWarning::OnWarningScroolingOn()
 
 bool CCriticalWarning::DeleteItemByUUID(CString sUUID)
 {
+	if (!m_lstCriticalWarning.m_hWnd)
+		return false;
+
 	int i=0;
 	CString curUUID;
 	bool bRet = false;

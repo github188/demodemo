@@ -81,6 +81,7 @@ private:
 	int	  m_nAlarmVideoSaveCnt;		//Saving Video.
 	bool  m_bSaving[cnALARM_VIDEO_VV];
 	bool  m_bIsSaving;
+	int  m_nPlayingStatus; //0 No playing, 1 playing, 2 pause, 3 gotoBegin, 4 gotoEnd, 5 goForward,6 goBackword, 
 public:
 	void ShowButton(bool bShow);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

@@ -529,7 +529,7 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 
 	if (control==NULL) return false;
 
-	m_pRealPlayControl=control; //quyao add... I think this should be replayControl...???
+	//m_pRealPlayControl=control; //quyao add... I think this should be replayControl...???
 
 	//m_pAlarmVideoCtrl = control;
 	m_pArrVideoCtrl[session] = control;
@@ -1062,11 +1062,19 @@ void GokuClient::ReplayjumpToPos(CString pos)
 	sCmd.Append("\n");
 
 	CString sMsg;
-	if(!this->m_pReplayControl->socket->SendCmdAndRecvMsg(sCmd, sMsg))
-		return;
-	//this->m_pReplayControl->status=2;
-	if(playThread)
-	{
-		PostThreadMessage(playThread->m_nThreadID, WM_JUMPPOS, 0,0);
+
+	//if(!this->m_pReplayControl->socket->SendCmdAndRecvMsg(sCmd, sMsg))
+	//	return;
+	if (m_pArrVideoCtrl[cnWARNING_VEDIO]) {
+		if (m_pArrVideoCtrl[cnWARNING_VEDIO]->socket->SendCmdAndRecvMsg(sCmd, sMsg)) {
+			return;
+		}
 	}
+
+	//this->m_pReplayControl->status=2;
+	//if(playThread)
+	//	PostThreadMessage(playThread->m_nThreadID, WM_JUMPPOS, 0,0);
+
+	if (m_pPlayThread[cnWARNING_VEDIO])
+		PostThreadMessage(m_pPlayThread[cnWARNING_VEDIO]->m_nThreadID, WM_JUMPPOS, 0,0);
 }

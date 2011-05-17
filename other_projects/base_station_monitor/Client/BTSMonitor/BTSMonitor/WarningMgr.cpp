@@ -21,6 +21,7 @@ CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
 	, m_bPopMenu(false)
 	,m_nAlarmVideoSaveCnt(0)
 	,m_bIsSaving(false)
+	,m_nPlayingStatus(0)
 {
 	VERIFY(pDlgImage = new CDlgImage());
 
@@ -42,7 +43,8 @@ CWarningMgr::~CWarningMgr()
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
 		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 	}
-
+	
+	m_nPlayingStatus = 0;
 }
 
 void CWarningMgr::DoDataExchange(CDataExchange* pDX)
@@ -717,8 +719,11 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		*pResult = 0;
 		return;
 	}	
+	
 
-	m_nCurItem = pNMItemActivate->iItem;
+	int nItem  = pNMItemActivate->iItem;
+	
+	if ( nItem < 0 ) return;
 
 	CString sBTSID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 4);			
 	CString sCh			= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 5);			
@@ -726,6 +731,57 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 	CString sEndTime    = m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 7); 
 	CString sCategory	= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 9);
 	CString AlarmID		= m_lstFindWarnResult.GetItemText(pNMItemActivate->iItem, 10);
+
+	bool bPlayNewItem = false;
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	switch(m_nPlayingStatus)
+	{
+	case 2: //pause...
+		{
+			if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+			{
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+			}
+
+			bPlayNewItem = false;
+		}
+		break;
+	case 0:
+		bPlayNewItem = true;
+		break;
+	default:
+		bPlayNewItem = false;
+		break;
+	}
+
+	if (!bPlayNewItem)
+	{
+		if (sCategory=="视频")
+			return;
+		else
+		{
+			//the thread shouldn't be in the pause status...
+			if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+			{
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+			}
+
+			//Close Video, begin to play Image...
+			//Stop Vedio Thread...
+			pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+
+			BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+			BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
+
+			m_nPlayingStatus = 0;
+		}
+	}
+
+	m_nCurItem = nItem;
 
 
 	BOOL bDebug = FALSE;
@@ -758,7 +814,6 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 
 	}
 
-	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	if (sCategory == "视频")
 	{
 		ShowButton(TRUE);			
@@ -782,6 +837,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
 
 			//Reload first, then play the video.????
+			m_nPlayingStatus = 1;
 		}
 
 	}
@@ -790,11 +846,62 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		ShowButton(FALSE);			
 		pDlgImage->ShowWindow(SW_SHOW);
 
-		int  err;
+		int err=0;
+		CString sError;
 		CString sDateTime, sBts, sCh;
 		CString sRoute		= pApp->pgkclient->btsmanager.GetRouteByUUID(sBTSID);
 		//MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, &err);
 		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sBTSID, "", sRoute, AlarmID,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s:%d",sBTSID,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			sError = "Image Receiving...";
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s:%d",sBTSID,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("基站未找到!");
+			}
+            break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s:%d",sBTSID,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		case 0xFF:
+			{
+				//Socket Error , Receive or Write failed...
+				//Need to Re connect socket.
+				sError.Format("%s-%s:%d",sBTSID,"图片获取指令发送失败！", err);
+				CLogFile::WriteLog(sError);
+
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("未知的错误类型!");
+			}
+
+		}
+		if (err) 
+		{
+			//Only Show Message To user...
+			AfxMessageBox("未知的错误类型!");
+			return;
+		}
+
 		if (pMoImage)
 		{
 
@@ -1130,7 +1237,6 @@ void CWarningMgr::ShowButton(bool bShow)
 		if (m_alarmVideoCtrl.m_hWnd)
 			m_alarmVideoCtrl.ShowWindow(SW_SHOW);
 
-
 	}
 	else
 	{
@@ -1201,8 +1307,34 @@ BOOL CWarningMgr::OnEraseBkgnd(CDC* pDC)
 void CWarningMgr::OnBnClickedBtnPlay()
 {
 	// TODO: Add your control notification handler code here
-	 
+
 	if (m_nCurItem < 0) return; 
+
+	bool bPlayNewItem = false;
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	switch(m_nPlayingStatus)
+	{
+	case 2: //pause...
+		{
+			if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+			{
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+
+				m_nPlayingStatus = 1;
+			}
+
+			bPlayNewItem = false;
+		}
+		break;
+	case 0:
+		bPlayNewItem = true;
+		break;
+	default:
+		bPlayNewItem = false;
+		break;
+	}
 
 	CString sBTSID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 4);			
 	CString sCh			= m_lstFindWarnResult.GetItemText(m_nCurItem, 5);			
@@ -1211,7 +1343,30 @@ void CWarningMgr::OnBnClickedBtnPlay()
 	CString sCategory	= m_lstFindWarnResult.GetItemText(m_nCurItem, 9);
 	CString AlarmID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 10);
 
-	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if (!bPlayNewItem)
+	{
+		if (sCategory == "视频")
+			return;
+		else //Show Image...
+		{
+			//the thread shouldn't be in the pause status...
+			if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+			{
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = false;
+				pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+			}
+
+			//Stop Vedio Thread...
+			pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+
+			BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+			BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
+
+			m_nPlayingStatus = 0;
+		}
+	}
+
 	if (sCategory == "视频")
 	{
 		ShowButton(TRUE);			
@@ -1222,8 +1377,8 @@ void CWarningMgr::OnBnClickedBtnPlay()
 		m_alarmVideoCtrl.SetWindowText(strShowInfo);
 		//m_wndWarnVedio.UpdateWindow();
 		//m_wndWarnVedio.Invalidate();
-		m_alarmVideoCtrl.Invalidate();
-		Invalidate();
+		//m_alarmVideoCtrl.Invalidate();
+		//Invalidate();
 
 		//return;
 
@@ -1245,6 +1400,7 @@ void CWarningMgr::OnBnClickedBtnPlay()
 			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
 
 			//Reload first, then play the video.????
+			m_nPlayingStatus = 1;
 		}
 
 	}
@@ -1254,10 +1410,61 @@ void CWarningMgr::OnBnClickedBtnPlay()
 		pDlgImage->ShowWindow(SW_SHOW);
 
 		int  err;
+		CString sError;
 		CString sDateTime, sBts, sCh;
 		CString sRoute		= pApp->pgkclient->btsmanager.GetRouteByUUID(sBTSID);
 		//MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, &err);
 		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sBTSID, "", sRoute, AlarmID,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s:%d",sBTSID,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			sError = "Image Receiving...";
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s:%d",sBTSID,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("基站未找到!");
+			}
+            break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s:%d",sBTSID,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		case 0xFF:
+			{
+				//Socket Error , Receive or Write failed...
+				//Need to Re connect socket.
+				sError.Format("%s-%s:%d",sBTSID,"图片获取指令发送失败！", err);
+				CLogFile::WriteLog(sError);
+
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("未知的错误类型!");
+			}
+
+		}
+		if (err) 
+		{
+			//Only Show Message To user...
+			AfxMessageBox("未知的错误类型!");
+			return;
+		}
+
 		if (pMoImage)
 		{
 
@@ -1336,35 +1543,114 @@ void CWarningMgr::OnBnClickedBtnPlay()
 void CWarningMgr::OnBnClickedBtnPause()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnPause");
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//Pause
+	if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+	{
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = true;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = false;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+
+		m_nPlayingStatus = 2;
+
+	}
 }
 
 void CWarningMgr::OnBnClickedBtnStop()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnStop");
+
+	//Stop Vedio Thread...
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+	BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+	BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);		
+
+	CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+	strShowInfo+="No Video...";
+	m_alarmVideoCtrl.SetWindowText(strShowInfo);
+	//m_wndWarnVedio.UpdateWindow();
+	//m_wndWarnVedio.Invalidate();
+	//m_alarmVideoCtrl.Invalidate();
+	//Invalidate();
+
+	m_nPlayingStatus = 0;
+
 }
 
 void CWarningMgr::OnBnClickedBtnFastBackward()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnFastBackward");
+	AfxMessageBox("No definition!");
+	return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//Pause
+	if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+	{
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
+		CString sStep;
+		sStep.Format("-%d", cnPLAY_VIDEO_STEP);
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = sStep;
+
+		m_nPlayingStatus = 6;
+	}
 }
 
 void CWarningMgr::OnBnClickedBtnFastForward()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnFastForward");
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//Pause
+	if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+	{
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
+		CString sStep;
+		sStep.Format("%d", cnPLAY_VIDEO_STEP);
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = sStep;
+
+		m_nPlayingStatus = 5;
+
+	}
 }
 
 void CWarningMgr::OnBnClickedBtnGotoBegin()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnGotoBegin");
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//Pause
+	if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+	{
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "0";
+
+		m_nPlayingStatus = 3;
+
+	}
 }
 
 void CWarningMgr::OnBnClickedBtnGotoEnd()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("OnBnClickedBtnGotoEnd");
+	AfxMessageBox("No definition!");
+	return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	//Pause
+	if (pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO])
+	{
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
+		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "-1";
+
+		m_nPlayingStatus = 4;
+	}
 }

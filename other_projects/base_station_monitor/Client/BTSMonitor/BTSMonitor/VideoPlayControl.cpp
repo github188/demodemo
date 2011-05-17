@@ -101,6 +101,7 @@ UINT video_read_thread(LPVOID param)
 {
 
 	VideoPlayControl *control = (VideoPlayControl *)param;
+	
 	MSG msg;
 	::PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
 	
@@ -164,7 +165,8 @@ UINT video_read_thread(LPVOID param)
 
 				if(control->bPause)
 				{
-					::Sleep(300);
+					while (control->bPause) //just wait...
+						::Sleep(300);
 				}
 				else
 				{

@@ -267,7 +267,7 @@ protected:
 
 public:
 	VideoPlayControl *m_pArrVideoCtrl[cnTOTAL_VV_CNT]; //[cnMAX_VV]; //Real Play
-	VideoPlayControl *m_pAlarmVideoCtrl;         //Replay Alarm Vedio
+	VideoPlayControl *m_pAlarmVideoCtrl;			  //Replay Alarm Vedio
 
 	CWinThread		 *m_pPlayThread[cnTOTAL_VV_CNT]; //[cnMAX_VV];   //Real Play thread handle
 	CWinThread		 *m_pAlarmVideoThread;       //Alarm Video thread
