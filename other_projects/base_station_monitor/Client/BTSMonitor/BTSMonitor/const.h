@@ -5,7 +5,7 @@
 #define WM_PLAYVIEW_SELECTED	WM_USER + 2
 #define WM_RUNTIME_TIMER		WM_USER + 3
 #define WM_WARNING_TIMER		WM_USER + 4
-
+#define WM_JUMPPOS				WM_USER + 5
 
 //WM_PLAYVIEW_SELECTED---------------------------------------------
 #define MSG_SELECT_VIDEO		0x1	//Select the target play windows

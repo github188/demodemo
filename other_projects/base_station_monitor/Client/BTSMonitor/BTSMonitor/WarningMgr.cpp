@@ -61,7 +61,7 @@ void CWarningMgr::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CBO_END_MINUTE, m_cboEndMin);
 	DDX_Control(pDX, IDC_CBO_START_SECOND, m_cboStartSec);
 	DDX_Control(pDX, IDC_CBO_END_SECOND, m_cboEndSec);
-	DDX_Control(pDX, IDC_WINDOW_VEDIO, m_wndWarnVedio);
+	DDX_Control(pDX, IDC_ALARM_VIDEO, m_alarmVideoCtrl);
 }
 
 
@@ -79,6 +79,13 @@ BEGIN_MESSAGE_MAP(CWarningMgr, CDialog)
 	ON_COMMAND(ID_WARNINGMGR_SAVEAS, &CWarningMgr::OnWarningmgrSaveas)
 	ON_UPDATE_COMMAND_UI(ID_WARNINGMGR_SAVEAS, &CWarningMgr::OnUpdateWarningmgrSaveas)
 	ON_WM_ERASEBKGND()
+	ON_BN_CLICKED(IDC_BTN_PLAY, &CWarningMgr::OnBnClickedBtnPlay)
+	ON_BN_CLICKED(IDC_BTN_PAUSE, &CWarningMgr::OnBnClickedBtnPause)
+	ON_BN_CLICKED(IDC_BTN_STOP, &CWarningMgr::OnBnClickedBtnStop)
+	ON_BN_CLICKED(IDC_BTN_FAST_BACKWARD, &CWarningMgr::OnBnClickedBtnFastBackward)
+	ON_BN_CLICKED(IDC_BTN_FAST_FORWARD, &CWarningMgr::OnBnClickedBtnFastForward)
+	ON_BN_CLICKED(IDC_BTN_GOTO_BEGIN, &CWarningMgr::OnBnClickedBtnGotoBegin)
+	ON_BN_CLICKED(IDC_BTN_GOTO_END, &CWarningMgr::OnBnClickedBtnGotoEnd)
 END_MESSAGE_MAP()
 
 
@@ -223,8 +230,7 @@ BOOL CWarningMgr::OnInitDialog()
 	CRect rc, rect, rectTree;
 	GetClientRect(&rect);
 	m_treeWarnMgr.GetWindowRect(rectTree);
-	//m_wndWarnVedio.GetClientRect(&rc);
-	m_wndWarnVedio.GetWindowRect(&rc);
+	m_alarmVideoCtrl.GetWindowRect(&rc);
 	if (pDlgImage)
 	{
 		m_rcVedio.top    = rect.top;
@@ -737,15 +743,15 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		
 		sVVFile = path + sVideo[1];
 
-		sVVFile = "F:\\Projects\\Video\\BTSMonitor\\BTS Dev\\Client\\BTSMonitor\\Debug\AlarmVideo\\123546_1_20110427095538.h264";
-		sVVFile = "F:\\123546_1_20110427095538.h264";
+		sVVFile = _T("F:\\Projects\\Video\\BTSMonitor\\BTS Dev\\Client\\BTSMonitor\\Debug\\AlarmVideo\\123546_1_20110427095538.h264");
+		sVVFile = _T("F:\\123546_1_20110427095538.h264");
 		
 		BOOL bPlayFile = TRUE;
 		if (bPlayFile)
 		{
 			PLAY_OpenFile(cnWARNING_VEDIO, sVVFile.GetBuffer());
 		
-			PLAY_Play(cnWARNING_VEDIO, m_wndWarnVedio.m_hWnd);
+			PLAY_Play(cnWARNING_VEDIO, m_alarmVideoCtrl.m_hWnd); 
 		}
 
 		return;
@@ -771,7 +777,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		bOpenRet = PLAY_OpenStream(cnWARNING_VEDIO,0,0,1024*900);
 		if(bOpenRet)
 		{
-			PLAY_Play(cnWARNING_VEDIO, m_wndWarnVedio.m_hWnd);
+			PLAY_Play(cnWARNING_VEDIO, m_alarmVideoCtrl.m_hWnd); 
 			//Play Remote Vedio runatime			
 			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
 
@@ -1118,11 +1124,11 @@ void CWarningMgr::ShowButton(bool bShow)
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_BEGIN);
 		if (pBtn) pBtn->ShowWindow(SW_SHOW);
 
-		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END2);
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END);
 		if (pBtn) pBtn->ShowWindow(SW_SHOW);
-
-		if ( m_wndWarnVedio.m_hWnd )
-			m_wndWarnVedio.ShowWindow(SW_SHOW);
+		
+		if (m_alarmVideoCtrl.m_hWnd)
+			m_alarmVideoCtrl.ShowWindow(SW_SHOW);
 
 
 	}
@@ -1143,11 +1149,12 @@ void CWarningMgr::ShowButton(bool bShow)
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_BEGIN);
 		if (pBtn) pBtn->ShowWindow(SW_HIDE);
 
-		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END2);
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END);
 		if (pBtn) pBtn->ShowWindow(SW_HIDE);
 
-		if ( m_wndWarnVedio.m_hWnd )
-			m_wndWarnVedio.ShowWindow(SW_HIDE);
+
+		if (m_alarmVideoCtrl.m_hWnd)
+			m_alarmVideoCtrl.ShowWindow(SW_HIDE);
 
 	}
 
@@ -1156,9 +1163,9 @@ void CWarningMgr::ShowButton(bool bShow)
 BOOL CWarningMgr::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO: Add your message handler code here and/or call default
-	if (m_wndWarnVedio.m_hWnd)
+	if (m_alarmVideoCtrl.m_hWnd)
 	{
-		CDC* pdc= m_wndWarnVedio.GetDC();
+		CDC *pdc = m_alarmVideoCtrl.GetDC();
 		CRect rt;
 		GetClientRect(&rt);
 		CBrush br;
@@ -1189,4 +1196,175 @@ BOOL CWarningMgr::OnEraseBkgnd(CDC* pDC)
 	}
 
 	return CDialog::OnEraseBkgnd(pDC);
+}
+
+void CWarningMgr::OnBnClickedBtnPlay()
+{
+	// TODO: Add your control notification handler code here
+	 
+	if (m_nCurItem < 0) return; 
+
+	CString sBTSID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 4);			
+	CString sCh			= m_lstFindWarnResult.GetItemText(m_nCurItem, 5);			
+	CString sStartTime  = m_lstFindWarnResult.GetItemText(m_nCurItem, 6); 
+	CString sEndTime    = m_lstFindWarnResult.GetItemText(m_nCurItem, 7); 
+	CString sCategory	= m_lstFindWarnResult.GetItemText(m_nCurItem, 9);
+	CString AlarmID		= m_lstFindWarnResult.GetItemText(m_nCurItem, 10);
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	if (sCategory == "视频")
+	{
+		ShowButton(TRUE);			
+		pDlgImage->ShowWindow(SW_HIDE);
+
+		CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+		strShowInfo+="Connect to server...";
+		m_alarmVideoCtrl.SetWindowText(strShowInfo);
+		//m_wndWarnVedio.UpdateWindow();
+		//m_wndWarnVedio.Invalidate();
+		m_alarmVideoCtrl.Invalidate();
+		Invalidate();
+
+		//return;
+
+		//Stop Vedio Thread...
+		//pApp->pgkclient->StopAlamVideoPlay();
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
+
+		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
+		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
+
+
+		//Open New ---------------------------------------------
+		PLAY_SetStreamOpenMode(cnWARNING_VEDIO, STREAME_REALTIME);
+		bOpenRet = PLAY_OpenStream(cnWARNING_VEDIO,0,0,1024*900);
+		if(bOpenRet)
+		{
+			PLAY_Play(cnWARNING_VEDIO,m_alarmVideoCtrl.m_hWnd);
+			//Play Remote Vedio runatime			
+			pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO);
+
+			//Reload first, then play the video.????
+		}
+
+	}
+	else if (sCategory == "图片")
+	{
+		ShowButton(FALSE);			
+		pDlgImage->ShowWindow(SW_SHOW);
+
+		int  err;
+		CString sDateTime, sBts, sCh;
+		CString sRoute		= pApp->pgkclient->btsmanager.GetRouteByUUID(sBTSID);
+		//MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, &err);
+		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sBTSID, "", sRoute, AlarmID,&err);
+		if (pMoImage)
+		{
+
+			//Save Image to local Directory
+			CString sJpgName;
+			util::InitApp();
+			char *pAlarmImageDir = util::GetAppPath();
+			strcat(pAlarmImageDir,"AlarmImage");
+
+			//Remove all file of this directory...
+			//util::DeleteAllFile(pAlarmImageDir);
+
+			CTime tmCur = CTime::GetCurrentTime();
+			CString sSaveDir;
+			sSaveDir.Format("%s%s%s",pAlarmImageDir,"\\",tmCur.Format("%Y%m%d_%H%M%S"));
+			BOOL bOK = ::CreateDirectory(sSaveDir,NULL);
+			if (!bOK)
+			{
+				CString sError;
+				sError.Format("failed to create Image Display File: %s", sSaveDir);
+				CLogFile::WriteLog(sError);
+				return;
+			}
+
+			//Save current alarm image to the directory.
+			CString sLine, str;
+			int pos=0;
+			int err=0;
+			while ( pMoImage->getNextImage(&err))
+			{
+				sDateTime.Empty(); sBts.Empty(); sCh.Empty();
+
+				//pos = util::split_next(pMoImage->datetime,str,'-',0);
+				//sDateTime+=str;//YY
+				pos = util::split_next(pMoImage->datetime,str,'-',0);
+				sDateTime+=str;//YY
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//MM
+				pos = util::split_next(pMoImage->datetime,str,' ',pos+1);
+				sDateTime+=str;//DD
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//hh
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//mm
+				//pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				str = pMoImage->datetime.Mid(pos+1);
+				sDateTime+=str;//ss
+
+				pos = util::split_next(pMoImage->bts,str,':',0);
+				//pos = util::split_next(pMoImage->bts,str,':',pos+1);
+				pMoImage->bts.Mid(pos+1);
+				sBts+=str;
+
+				pos = util::split_next(pMoImage->channel,str,':',0);
+				//pos = util::split_next(pMoImage->channel,str,':',pos+1);
+				pMoImage->channel.Mid(pos+1);
+				sCh+=str;
+
+				//sJpgName.Format("%s%s%s_%s_%s.jpg", pAlarmImageDir,"\\", sBts, sCh, sDateTime);
+				sJpgName.Format("%s%s%s_%s_%s.jpg", sSaveDir,"\\", sBts, sCh, sDateTime);
+				pMoImage->savedata(sJpgName);
+			}
+
+			//pDlgImage->Initialize(pAlarmImageDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
+			pDlgImage->Initialize(sSaveDir,2,m_rcVedio.Width()/2-1, m_rcVedio.Height()/2-1);
+		}
+
+	}
+	else
+	{
+		AfxMessageBox("无监控信息记录!");
+	}
+
+}
+
+void CWarningMgr::OnBnClickedBtnPause()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnPause");
+}
+
+void CWarningMgr::OnBnClickedBtnStop()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnStop");
+}
+
+void CWarningMgr::OnBnClickedBtnFastBackward()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnFastBackward");
+}
+
+void CWarningMgr::OnBnClickedBtnFastForward()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnFastForward");
+}
+
+void CWarningMgr::OnBnClickedBtnGotoBegin()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnGotoBegin");
+}
+
+void CWarningMgr::OnBnClickedBtnGotoEnd()
+{
+	// TODO: Add your control notification handler code here
+	AfxMessageBox("OnBnClickedBtnGotoEnd");
 }

@@ -26,8 +26,8 @@ public:
 	afx_msg void OnBnClickedBtnWarnMgrDeviceFind();
 	afx_msg void OnBnClickedFindTargetWarning();
 private:
-	CString m_sFilter;
-	CString m_sFindStr;
+	CString	  m_sFilter;
+	CString	  m_sFindStr;
 	CTreeCtrl m_treeWarnMgr;
 	CListCtrl m_lstFindWarnResult;
 	CComboBox m_cboWarnType;
@@ -40,7 +40,8 @@ private:
 	CComboBox m_cboEndMin;
 	CComboBox m_cboStartSec;
 	CComboBox m_cboEndSec;
-	CStatic m_wndWarnVedio;
+	CStatic m_alarmVideoCtrl;
+
 	CImageList m_imagelist;
 	CImageList m_treeImages;
 	BTSManager m_btsMgr;
@@ -83,4 +84,11 @@ private:
 public:
 	void ShowButton(bool bShow);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnBnClickedBtnPlay();
+	afx_msg void OnBnClickedBtnPause();
+	afx_msg void OnBnClickedBtnStop();
+	afx_msg void OnBnClickedBtnFastBackward();
+	afx_msg void OnBnClickedBtnFastForward();
+	afx_msg void OnBnClickedBtnGotoBegin();
+	afx_msg void OnBnClickedBtnGotoEnd();
 };

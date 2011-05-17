@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "util.h"
 #include "GokuClient.h"
+#include "const.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1066,6 +1067,6 @@ void GokuClient::ReplayjumpToPos(CString pos)
 	//this->m_pReplayControl->status=2;
 	if(playThread)
 	{
-		PostThreadMessage(playThread->m_nThreadID, JUMPPOS, 0,0);
+		PostThreadMessage(playThread->m_nThreadID, WM_JUMPPOS, 0,0);
 	}
 }

@@ -107,8 +107,8 @@ void CWarnPopVideo::OnSize(UINT nType, int cx, int cy)
 void CWarnPopVideo::SetPopVideoIndex(int nIndex)
 {
 	m_nPopIndex = nIndex;
-	CWarnPopVideo *pView = (CWarnPopVideo *)m_pPopView;
-	if (pView) pView->SetPopVideoIndex(nIndex);
+	CPopPlayView *pView = (CPopPlayView *)m_pPopView;
+	if (pView) pView->SetPopViewIdx(nIndex);
 }
 
 int CWarnPopVideo::GetPopVideoIndex(void)

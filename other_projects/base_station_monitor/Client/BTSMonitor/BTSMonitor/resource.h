@@ -185,7 +185,6 @@
 #define IDC_BTN_SNAP                    1032
 #define IDC_BTN_GOTO_BEGIN              1033
 #define IDC_BTN_GOTO_END                1034
-#define IDC_BTN_GOTO_END2               1035
 #define IDC_CHK_SOUND                   1036
 #define IDC_SLD_SOUND_CTRL              1037
 #define IDC_EDIT_TASK_NAME              1038
@@ -205,15 +204,16 @@
 #define IDC_BTN_MOD                     1053
 #define IDC_SAVE_PASSED_VIDEO           1055
 #define IDC_FIND_TARGET_WARNING         1060
-#define IDC_WINDOW_VEDIO                1061
 #define IDC_CBO_USER                    1063
 #define IDC_CBO_SERVER                  1064
 #define IDC_BTN_DELETE_TASK             1064
 #define IDC_CBO_PORT                    1065
 #define IDC_CBO_CHANNEL                 1065
 #define IDC_PAUSE_ALARM                 1067
-#define IDC_EDIT1                       1068
 #define IDC_TIMEOUT                     1068
+#define IDC_BUTTON1                     1069
+#define IDC_BTN_FAST_BACKWARD           1069
+#define IDC_ALARM_VIDEO                 1070
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -249,7 +249,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1069
+#define _APS_NEXT_CONTROL_VALUE         1071
 #define _APS_NEXT_SYMED_VALUE           325
 #endif
 #endif

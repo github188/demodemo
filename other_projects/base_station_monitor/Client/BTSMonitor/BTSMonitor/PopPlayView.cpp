@@ -349,7 +349,7 @@ void CPopPlayView::SetImageFile(CString sPicture)
 }
 void CPopPlayView::SetPopViewIdx(int nIdx)
 {
-	m_nViewID = nIdx ;
+	m_nViewID = nIdx + cnPOP_VEDIO_INDEX;
 }
 void CPopPlayView::SetRealImagePara(MonitorImage* pObj, CString sUUID,CString sChannelID, CString sRoute)
 {

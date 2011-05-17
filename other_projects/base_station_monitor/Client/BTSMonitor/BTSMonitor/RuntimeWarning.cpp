@@ -124,7 +124,7 @@ BOOL CRuntimeWarning::OnInitDialog()
 	for (; i<cnMAX_POP_WINDOW; i++)
 	{
 		VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(this) );
-		m_pPopVideoDlg[i]->SetPopVideoIndex(i+cnMAX_VV);
+		m_pPopVideoDlg[i]->SetPopVideoIndex(i);
 		m_pPopVideoDlg[i]->Create(IDD_POP_VIDEO);//(IDD_POP_VIDEO,this); //AfxGetApp()->m_pMainWnd);
 		m_pPopVideoDlg[i]->ShowWindow(SW_HIDE);
 
