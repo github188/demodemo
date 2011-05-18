@@ -116,13 +116,24 @@ public class SocketVideoAdapter implements SocketAdaptor{
 	
 	protected void doSeek(SocketClient client, String pos) throws IOException{
 		int posLong = 0;
+		boolean relative = false;
+		if(pos.charAt(0) == '+' || pos.charAt(0) == '-'){
+			relative = true;
+			if(pos.charAt(0) == '+'){
+				pos = pos.substring(1);
+			}
+		}
 		try{
 			posLong = Integer.parseInt(pos);
 		}catch(Throwable e){
 			log.error("doSeek error, err:" + e.toString(), e);
 		}
 		if(client.replay != null){
-			client.replay.seekPos(posLong);
+			if(posLong == -1){
+				client.replay.seekLast(100 * 1024);
+			}else {
+				client.replay.seekPos(posLong, relative);
+			}
 			client.replay.nextFrame();
 		}
 	}
