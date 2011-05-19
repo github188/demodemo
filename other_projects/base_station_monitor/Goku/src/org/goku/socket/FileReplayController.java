@@ -48,6 +48,9 @@ public class FileReplayController {
 		if (relative) pos = buffer.position() + pos;
 		pos = Math.min(pos, fileSize);
 		if(pos < 0)pos = 0;
+		
+		int nextPos = Math.min(pos + frameSize, fileSize);
+		buffer.limit(nextPos);
 		buffer.position(pos);
 	}
 	
