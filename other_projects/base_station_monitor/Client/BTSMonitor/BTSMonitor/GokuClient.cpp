@@ -25,8 +25,15 @@ int GokuClient::execute_command(CString &cmd)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
-				return -1;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
+					return -1;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return -1;
@@ -118,8 +125,14 @@ void GokuClient::listbtstree(CString &str)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return ;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
 		}
 		else
 			return ;
@@ -178,8 +191,15 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return ;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return ;
@@ -342,8 +362,15 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return ;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return ;
@@ -400,8 +427,15 @@ bool GokuClient::confirmAlarm(CString uuid)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return false;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return false;
@@ -436,8 +470,15 @@ bool GokuClient::getTaskList(CString& sTaskList)
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return false;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return false;
@@ -498,8 +539,15 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 		ReConnectServer();
 		if ( IsConnected() )
 		{
-			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-				return false;
+			//LogIn by Saving User & Password
+			if(pApp->pgkclient->login(username, password)==0)
+			{
+				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+					return ;
+			}
+			else
+				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+
 		}
 		else
 			return false;
