@@ -653,6 +653,22 @@ public class MasterServerServlet extends BaseRouteServlet{
 		}
 	}
 	
+	public void login_session(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String sid = this.getStringParam(request, "sid", null);
+		
+		if(sid == null){
+			response.getWriter().println("-2:Parameter error, 'sid' is required.");
+		}else {
+			User userObj = (User)cache.get(sid);
+			if(userObj == null){
+				response.getWriter().println("1:Session is expired or logout");
+			}else {
+				response.getWriter().println("0:login ok$" + sid + "$" + userObj.name);
+			}
+		}
+	}
+	
 	public void logout(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sid = this.getStringParam(request, "sid", null);

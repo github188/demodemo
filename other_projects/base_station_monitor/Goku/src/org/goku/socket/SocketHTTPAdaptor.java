@@ -39,6 +39,8 @@ public class SocketHTTPAdaptor implements SocketAdaptor{
 		Map<String, String> param = parseCommand(command);
 		if(client.sessionId != null){
 			param.put("sid", client.sessionId);
+		}else if(param.containsKey("sid")) {
+			client.sessionId = param.get("sid");
 		}
 		param.put("mode", "socket");
 		

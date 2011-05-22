@@ -128,6 +128,7 @@ public class SocketVideoAdapter implements SocketAdaptor{
 		}catch(Throwable e){
 			log.error("doSeek error, err:" + e.toString(), e);
 		}
+		client.writeQueue.clear();
 		if(client.replay != null){
 			if(posLong == -1){
 				client.replay.seekLast(100 * 1024);
