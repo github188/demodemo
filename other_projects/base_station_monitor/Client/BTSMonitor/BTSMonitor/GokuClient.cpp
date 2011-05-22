@@ -26,7 +26,7 @@ int GokuClient::execute_command(CString &cmd)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
 					return -1;
@@ -126,7 +126,7 @@ void GokuClient::listbtstree(CString &str)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 					return ;
@@ -192,7 +192,7 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 					return ;
@@ -363,7 +363,7 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 					return ;
@@ -428,10 +428,10 @@ bool GokuClient::confirmAlarm(CString uuid)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-					return ;
+					return false;
 			}
 			else
 				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
@@ -471,10 +471,10 @@ bool GokuClient::getTaskList(CString& sTaskList)
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-					return ;
+					return false;
 			}
 			else
 				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
@@ -540,10 +540,10 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 		if ( IsConnected() )
 		{
 			//LogIn by Saving User & Password
-			if(pApp->pgkclient->login(username, password)==0)
+			if(login(m_sUserName, m_sPassword)==0)
 			{
 				if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-					return ;
+					return false;
 			}
 			else
 				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
