@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 from GokuCtrl.ipa4django.db import QueryUtils
 from GokuCtrl.ipa4django.views import TableView, CellRender
 import logging
 from django.shortcuts import render_to_response
 from django import template
+from django.http import HttpResponse
 
 class MonthReportRender(CellRender):
     def __init__(self, ):
@@ -34,7 +35,7 @@ class MonthReportRender(CellRender):
     
     def row_no(self, e):
         self.row_number += 1        
-        return str(self.row_number)
+        return unicode(self.row_number)
         
     def start_tbody(self, e):
         self.row_number = 0
@@ -46,7 +47,7 @@ class MonthReportRender(CellRender):
             a = u"%0.0d" % a        
         return a
 
-def month_report(r ):
+def month_report(r, isExcel=False):
     query = QueryUtils(logging.getLogger('db'))
     month_report_sql = """
 select (YEAR(startTime)*100 + month(startTime)) as report_month, 
@@ -66,10 +67,14 @@ from alarm_record group by report_month order by report_month desc
     table.attr = {"class": "report", 'id': 'month_report',}
     table.group_by(['row_no', ])
     table.update_view(r)
-    table.as_table()
-    #table.no_paging()
-        
-    return render_to_response("month_report.html", {"table": table,
-                                                    },
+    if isExcel:
+        data = table.as_excel_data(u'month report')
+        return HttpResponse(data, mimetype='application/ms-excel')
+    else:
+        table.as_table()
+        #table.no_paging()
+            
+        return render_to_response("month_report.html", {"table": table,
+                                                        },
                                     context_instance=template.RequestContext(r)
                               )

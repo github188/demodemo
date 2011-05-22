@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 import types
 import logging
 from paging import Paging
@@ -140,6 +140,37 @@ class TableView(object):
             self.__as_talbe = mark_safe(output)
             
         return self.__as_talbe
+    
+    def as_excel_data(self, sheet_name):
+        from pyExcelerator import Workbook
+        from excel import ExcelColumn, ExcelSheet
+        import tempfile, os
+        logger = logging.getLogger("report.excel")
+        if self.paging_controller:
+            self.paging_controller.update_view_size(self.data_count)
+            data, cols = self.paging_controller.data_view(self.data, self.cells)
+        else:
+            data, cols = self.data, self.cells.cols
+        
+        temp_file = tempfile.NamedTemporaryFile(suffix='.xls', dir=tempfile.tempdir)
+        logger.debug("exported tmp excel name: %s" % temp_file.name)
+        temp_file.close()
+                
+        work_book = Workbook()
+        
+        log_colums = [ ExcelColumn(e, e) for e in cols if e != 'row_no']
+        
+        sheet = ExcelSheet(sheet_name, log_colums)
+        sheet.init_sheet(work_book, data)
+        sheet.export_header(data)
+        sheet.export_data(data)
+        
+        work_book.save(temp_file.name)
+
+        data = open(temp_file.name, "rb").read()
+        logger.debug("done to export excel, data length: %s" % len(data))
+        os.remove(temp_file.name)        
+        return data
     
     def render_header(self, cols):
         data = u"<thead><tr>"
@@ -308,4 +339,3 @@ class PagingController(object):
         params = [ e for e in query.split("&") if e.split("=")[0] not in exclude ]
         
         return "&".join(params)
-    
