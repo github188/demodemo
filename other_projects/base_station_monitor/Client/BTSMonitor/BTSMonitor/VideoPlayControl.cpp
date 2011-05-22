@@ -177,11 +177,12 @@ UINT video_read_thread(LPVOID param)
 						sCmd.Empty();
 						sCmd.Append("video>seek?pos=");
 						sCmd.Append(control->pos);
-						sCmd.Append("\n");
-						control->socket->SendCmdAndRecvMsg(sCmd, sMsg);
+						//sCmd.Append("\n");
+						//control->socket->SendCmdAndRecvMsg(sCmd, sMsg);
+						control->socket->write_wstring(sCmd);
 						control->bFastForward=false;
 					}
-					else
+					//else
 					{
 						control->socket->write_wstring(ack);
 					}

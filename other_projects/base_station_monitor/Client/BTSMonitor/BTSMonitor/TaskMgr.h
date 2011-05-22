@@ -38,8 +38,20 @@ private:
 	CListCtrl m_lstTask;
 public:
 	void InitTaskLstView(void);
+	bool ModifyTask();
 	CComboBox m_cboDeviceID;
 	CComboBox m_cboChannel;
 	afx_msg void OnCbnSelchangeCboDeviceId();
 	afx_msg void OnBnClickedBtnDeleteTask();
+	afx_msg void OnBnClickedBtnModSaveTask();
+	enum TASK_MODIFY_SAVE{ 
+		T_NONE = 1,
+		T_MODIFY, 
+		T_SAVE
+	}m_enumTASK_MODIFY;
+	afx_msg void OnBnClickedBtnCancelModify();
+private:
+	CString m_sTaskID;
+	int m_nItem;
+	CString m_sStatus;
 };

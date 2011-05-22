@@ -213,7 +213,10 @@
 #define IDC_TIMEOUT                     1068
 #define IDC_BUTTON1                     1069
 #define IDC_BTN_FAST_BACKWARD           1069
+#define IDC_BTN_MOD_SAVE_TASK           1069
 #define IDC_ALARM_VIDEO                 1070
+#define IDC_BUTTON2                     1071
+#define IDC_BTN_CANCEL_MODIFY           1071
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -249,7 +252,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1071
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           325
 #endif
 #endif

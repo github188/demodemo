@@ -1582,9 +1582,6 @@ void CWarningMgr::OnBnClickedBtnStop()
 void CWarningMgr::OnBnClickedBtnFastBackward()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("No definition!");
-	return;
-
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
 	//Pause
@@ -1611,7 +1608,7 @@ void CWarningMgr::OnBnClickedBtnFastForward()
 		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bPause = false;
 		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
 		CString sStep;
-		sStep.Format("%d", cnPLAY_VIDEO_STEP);
+		sStep.Format("+%d", cnPLAY_VIDEO_STEP);
 		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = sStep;
 
 		m_nPlayingStatus = 5;
@@ -1639,9 +1636,6 @@ void CWarningMgr::OnBnClickedBtnGotoBegin()
 void CWarningMgr::OnBnClickedBtnGotoEnd()
 {
 	// TODO: Add your control notification handler code here
-	AfxMessageBox("No definition!");
-	return;
-
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 
 	//Pause
@@ -1651,6 +1645,11 @@ void CWarningMgr::OnBnClickedBtnGotoEnd()
 		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->bFastForward = true;
 		pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->pos = "-1";
 
-		m_nPlayingStatus = 4;
+
+		CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+		strShowInfo+="Play End...";
+		m_alarmVideoCtrl.SetWindowText(strShowInfo);
+
+		m_nPlayingStatus = 0;
 	}
 }

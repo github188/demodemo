@@ -21,7 +21,16 @@ int GokuClient::execute_command(CString &cmd)
 	*///------------Modify above code----------------
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
-		return -1; 
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
+				return -1;
+		}
+		else
+			return -1;
+	}
 
 	util::split_next(sMsg, code, ':', 0);
 	///----by-liang----------------------------------
@@ -105,7 +114,16 @@ void GokuClient::listbtstree(CString &str)
 	sCmd.Append("\n");
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-		return;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return ;
+		}
+		else
+			return ;
+	}
 
 	if (sMsg.IsEmpty())
 		return;
@@ -156,7 +174,16 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-		return;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return ;
+		}
+		else
+			return ;
+	}
 
 	if (sMsg.IsEmpty())
 		return;
@@ -311,7 +338,16 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg))
-		return;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return ;
+		}
+		else
+			return ;
+	}
 
 	if (sMsg.IsEmpty())
 		return;
@@ -360,7 +396,16 @@ bool GokuClient::confirmAlarm(CString uuid)
 
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-		return false;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return false;
+		}
+		else
+			return false;
+	}
 
 	if (sMsg.IsEmpty())
 		return false;
@@ -387,7 +432,16 @@ bool GokuClient::getTaskList(CString& sTaskList)
 
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
-		return false;
+	{
+		ReConnectServer();
+		if ( IsConnected() )
+		{
+			if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+				return false;
+		}
+		else
+			return false;
+	}
 
 	if (sMsg.IsEmpty())
 		return false;
@@ -416,12 +470,13 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 		CString sStartTime,
 		CString sEndTime,
 		CString sMinShowTime,
-		CString sShowOrder)
+		CString sShowOrder,
+		CString sStatus)
 
 {
 	//save_task?taskID=1&name=test&uuid=1004&channel=1&windowID=1&weeks=1,2,3,4&startTime=18:11&endTime=20:11&minShowTime=10&showOrder=10
 	CString sCmd;
-	sCmd.Format("cmd>save_task?taskID=%s&name=%s&uuid=%s&channel=%s&windowID=%s&weeks=%s&startDate=%s&endDate=%s&startTime=%s&endTime=%s&minShowTime=%s&showOrder=%s",
+	sCmd.Format("cmd>save_task?taskID=%s&name=%s&uuid=%s&channel=%s&windowID=%s&weeks=%s&startDate=%s&endDate=%s&startTime=%s&endTime=%s&minShowTime=%s&showOrder=%s&status=%s",
 		sTaskID,
 		sName,
 		sUUID,
@@ -433,7 +488,8 @@ bool GokuClient::saveTaskInfo(CString sTaskID,
 		sStartTime,
 		sEndTime,
 		sMinShowTime,
-		sShowOrder);
+		sShowOrder,
+		sStatus);
 	sCmd.Append("\n");
 
 	CString sMsg;

@@ -233,7 +233,8 @@ public:
 		CString sStartTime,
 		CString sEndTime,
 		CString sMinShowTime,
-		CString sShowOrder);
+		CString sShowOrder,
+		CString sStatus);
 
 	//VideoPlayControl* real_play(CString &uuid, CString &channel, DataCallBack callback, int session=0);
 	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session, HWND hWnd=NULL);
@@ -243,7 +244,10 @@ public:
 	void ReplayjumpToPos(CString pos);
 
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
-	void ReConnectServer() 	{		m_nConnectCode = socket->connect_server(); 	}
+	void ReConnectServer() 	{		
+		socket->cs.Close();
+		m_nConnectCode = socket->connect_server(); 	
+	}
 
 	//Modify errno is the windows reserve type
 	//MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *errno);
