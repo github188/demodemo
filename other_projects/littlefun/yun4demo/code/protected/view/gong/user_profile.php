@@ -17,14 +17,25 @@
     <div id="header">
        <img src="/gong/images/logo.png" />
 
-       <a href="<?=$aurl?>"><img src="/gong/images/weibo_login.gif" /></a>
+       <img src="/gong/images/weibo_login.gif" />
     </div>
     <div id="content">
         <table>
             <tr>
             	<td style="width:200px;vertical-align: top;">
             	
-            	<div style="border:1px solid #000;">
+        	<div id="ads_main">
+    		<img src="/gong/images/u20_original.png" />
+	</div>
+
+    	<div id="gong_intr">
+    		<img src="/gong/images/u15_original.jpg" />
+	</div>
+            	    	   
+            	</td>
+            	<td style="vertical-align: top;">
+      	
+	        	<div style="border:1px solid #000;">
     	   
     	   <span style="font-family:Heiti SC;font-size:13px;font-weight:normal;font-style:normal;text-decoration:none;color:#333333;">看看名人的后宫</span>
     	   <div>
@@ -51,17 +62,6 @@
     	     
     	   </div>
             	<div>
-            	    	   
-            	</td>
-            	<td>
-      	
-      	<div id="ads_main">
-    		<img src="/gong/images/u20_original.png" />
-	</div>
-
-    	<div id="gong_intr">
-    		<img src="/gong/images/u15_original.jpg" />
-	</div>
             	
             	</td>
             </tr>
@@ -73,5 +73,4 @@
 </div>
 </body>
 </html>
-
 
