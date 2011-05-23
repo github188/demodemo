@@ -34,7 +34,9 @@
             	    	   
             	</td>
             	<td style="vertical-align: top;">
-      	
+      		<h1><?=$me['screen_name'] ?>-</h1>
+      		<img src='<?=$me['profile_image_url'] ?>' />
+      		<br/><br/>
 	        	<div style="border:1px solid #000;">
     	   
     	   <span style="font-family:Heiti SC;font-size:13px;font-weight:normal;font-style:normal;text-decoration:none;color:#333333;">看看名人的后宫</span>

@@ -22,24 +22,39 @@
             if( $_SERVER['SERVER_PORT'] != 80 ) $port = ':'.$_SERVER['SERVER_PORT']; 
 
             $keys = $o->getRequestToken(); 
-            $aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://'. $_SERVER['HTTP_APPNAME'] . '.sinaapp.com' . $port . '/gong/u/'); 
+            $aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://'. $_SERVER['HTTP_APPNAME'] . '.sinaapp.com' . $port . '/gong/callback/'); 
             $_SESSION['keys'] = $keys; 
              
             $this->assign('aurl',$aurl); 
             
             $this->display('gong/index.php');
         }
+
+        public function callback(){
+            $o = new SaeTOAuth(WB_AKEY, WB_SKEY, 
+                               $_SESSION['keys']['oauth_token'] , 
+                               $_SESSION['keys']['oauth_token_secret']); 
+            
+            $last_key = $o->getAccessToken($_REQUEST['oauth_verifier']) ; 
+            $_SESSION['last_key'] = $last_key;                  
+            $c = new SaeTClient(WB_AKEY, WB_SKEY, 
+                                $last_key['oauth_token'], 
+                                $last_key['oauth_token_secret']); 
+            $me = $c->verify_credentials(); 
+            $_SESSION['cur_user'] = array('id'=>$me['id'],
+                    'gender'=>$me['gender'],
+                    'screen_name'=>$me['screen_name'],
+                    'profile_image_url'=>$me['profile_image_url'],
+                    'friends_count'=>$me['friends_count'],
+                    'followers_count'=>$me['followers_count'],
+                    );
+            #echo $me['id'];
+            header("location: /gong/u/". $me['id']);
+            exit();
+        }
         
         public function u($uid){
-            $o = new SaeTOAuth( WB_AKEY , WB_SKEY  ); 
-            if( $_SERVER['SERVER_PORT'] != 80 ) $port = ':'.$_SERVER['SERVER_PORT']; 
-
-            #$keys = $o->getRequestToken(); 
-            #$aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://'. $_SERVER['HTTP_APPNAME'] . '.sinaapp.com' . $port . '/cross/weibolist/'); 
-            #$_SESSION['keys'] = $keys; 
-             
-            #$this->assign('aurl',$aurl); 
-            
+            $this->assign('me', $_SESSION['cur_user']); 
             $this->display('gong/user_profile.php');
         }  
 
@@ -51,13 +66,28 @@
             }
             //用户还没有登录，在系统找不到用户信息。
             if(!$profile){
-                return false;
+                #return false;
+                $profile = $_SESSION['cur_user'];
+                $uid = $profile['id'];
             }
             $role_list = $this->_get_user_role_list($uid, $profile['gender']);
-            $m_friends = this->_get_friend_list($uid, 'm');
-            $f_friends = this->_get_friend_list($uid, 'f');
-            $this->_full_roles_with_friends($role_list, $m_friends, $f_friends);
-            $gong = array(user_profile => $profile, role_list=>$role_list);            
+            $m_friends = $this->_get_friend_list($uid, 'm');
+            $f_friends = $this->_get_friend_list($uid, 'f');           
+            
+            print("=====================><br/>");
+            print_r($role_list);
+            
+            $role_list = $this->_full_roles_with_friends($role_list, $m_friends, $f_friends);
+            print("-------------------------><br/>");      
+            
+            foreach($role_list as $role){
+            	print_r($role['gender'] . '--->' . $role['name'] . " --> ". $role['user']['screen_name'] . "--->" . $role['user']['gender'] . "<br/>");
+            }   
+            
+            print_r($role_list);
+            exit();
+            
+            $gong = array(user_profile => $profile, role_list=>$role_list); 
             
             return $friends;            
         }
@@ -69,14 +99,22 @@
             $m_role = array_filter($role_list, 
                 function ($e){ return ($e['gender'] == 'm'); } 
             );
-            $f_role_result = array_rand($f_friends, count($f_role));
-            $m_role_result = array_rand($m_friends, count($m_role));            
+    	    
+    	    #返回一个key的list.
+            $f_role_result = array_rand($f_friends, count($f_role));                        
+            $m_role_result = array_rand($m_friends, count($m_role));
             
-            for($i = 0; $i < count($f_role); $i++){
-                 $f_role['user'] = $f_role_result[$i];
+            #取到所有女性角色的index.
+            $role_index_list = array_keys($f_role);
+            foreach($f_role_result as $f_index){
+            	$role_index = array_shift($role_index_list);
+            	$role_list[$role_index]['user'] = $f_friends[$f_index];
             }
-            for($i = 0; $i < count($m_role); $i++){
-                 $m_role['user'] = $m_role_result[$i];
+
+            $role_index_list = array_keys($m_role);
+            foreach($m_role_result as $m_index){
+            	$role_index = array_shift($role_index_list);
+            	$role_list[$role_index]['user'] = $m_friends[$m_index];
             }
 
             return $role_list;
@@ -106,10 +144,25 @@
                 $new_friends = $friends;
             }
 
-            return $friends;
+            return $new_friends;
         }
 
         private function _get_friend_list_from_remote($uid){
+            $c = new SaeTClient(WB_AKEY, WB_SKEY , $_SESSION['last_key']['oauth_token'], 
+                                $_SESSION['last_key']['oauth_token_secret']); 
+	        $friends = $c->friends(-1, 100, $uid);
+    	    $friends = $friends['users'];
+            $ret_friends = array();
+            foreach($friends as $p){
+                array_push($ret_friends, array('id'=>$p['id'],
+                    'gender'=>$p['gender'],
+                    'screen_name'=>$p['screen_name'],
+                    'profile_image_url'=>$p['profile_image_url'],
+                    'friends_count'=>$p['friends_count'],
+                    'followers_count'=>$p['followers_count'],
+                    ));
+            }
+            return $ret_friends;
         }
         
         /**
@@ -137,7 +190,7 @@
                     array(gender=>'m', name=>'御医'),
                     array(gender=>'f', name=>'尚宫'),
                 ),
-            )
+            );
             return $app_config[$gender];
         }
              
