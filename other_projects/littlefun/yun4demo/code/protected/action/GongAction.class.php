@@ -85,11 +85,23 @@
             }   
             
             print_r($role_list);
-            exit();
             
             $gong = array(user_profile => $profile, role_list=>$role_list); 
+    	    $this->model('Gong');
+    	    $cm = new GongModel();
+            $cm->saveGongInfo($uid, $gong);
+            exit();            
+            return $gong;            
+        }
+
+        public function get_gong($uid){
+    	    $this->model('Gong');
+    	    $cm = new GongModel();
+            $gong = $cm->getGongInfo($uid);
             
-            return $friends;            
+            print_r($gong);
+            exit();
+            return $gong;          
         }
         
         private function _full_roles_with_friends($role_list, $m_friends, $f_friends){

@@ -77,7 +77,11 @@
 			$values = '';
 			foreach ($data as $k => $v){
 				$keys .=" `$k` ,";
-				$values .= " '$v' ,";		
+				if($k == 'update_time'){
+					$values .= " FROM_UNIXTIME($v) ,";
+				}else {
+					$values .= " '$v' ,";
+				}
 			}
 			$keys = substr($keys,0,-1);
 			$values = substr($values,0,-1);
