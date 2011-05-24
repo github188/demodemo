@@ -49,14 +49,34 @@
                     'followers_count'=>$me['followers_count'],
                     );
             #echo $me['id'];
-            header("location: /gong/u/". $me['id']);
+            header("location: /gong/u/");
             exit();
         }
         
         public function u($uid){
-            $this->assign('me', $_SESSION['cur_user']); 
+            #没有登录，返回登录页面。
+            if(!isset()){
+                header("location: /gong/index/");
+                return;
+            }
+            #当前用户
+            $cur_id = $_SESSION['cur_user']['id'];
+            $friends = $this->_get_friend_list($cur_id);
+
+            $this->assign('friends', $friends);
+            $this->assign('me', $_SESSION['cur_user']);
+            if($uid){
+                $this->assign('gong', $this->get_gong($uid));
+            }else {
+                $this->assign('gong', $this->default_gong());
+            }
+ 
             $this->display('gong/user_profile.php');
         }  
+        
+        #返回默认的宫信息。
+        private function default_gong(){
+        }
 
         public function create_gong($uid){
             $mmc = memcache_init();

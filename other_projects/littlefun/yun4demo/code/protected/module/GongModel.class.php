@@ -41,8 +41,7 @@
         
         public function getHaveGong($user_list){
        	   $sql = 'select uid from ' . $this->table . ' where uid in (' . join(',', $user_list) . ')';
-
-           print_r("$sql");       	          	   
+   	          	   
        	   $cross = $this->db->getData($sql);
            if($this->db->errno() != 0 && DEBUG){
                throw new Exception("Sql Error ==> $sql");
