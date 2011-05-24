@@ -64,6 +64,7 @@
             if($mmc){
                 $profile = memcache_get($mmc, $cache_key);
             }
+            
             //用户还没有登录，在系统找不到用户信息。
             if(!$profile){
                 #return false;
@@ -81,7 +82,7 @@
             print("-------------------------><br/>");      
             
             foreach($role_list as $role){
-            	print_r($role['gender'] . '--->' . $role['name'] . " --> ". $role['user']['screen_name'] . "--->" . $role['user']['gender'] . "<br/>");
+            	print_r($role['gender'] . '--->' . $role['name'] . " --> ". $role['user']['screen_name'] . "--->" . $role['user']['id'] . "<br/>");
             }   
             
             print_r($role_list);
@@ -158,12 +159,21 @@
 
             return $new_friends;
         }
+        
+	public function get_friend_list_from_remote($uid){
+		$ret = $this->_get_friend_list_from_remote($uid);
+		print_r($ret);
+		exit();
+	}
 
         private function _get_friend_list_from_remote($uid){
             $c = new SaeTClient(WB_AKEY, WB_SKEY , $_SESSION['last_key']['oauth_token'], 
                                 $_SESSION['last_key']['oauth_token_secret']); 
 	        $friends = $c->friends(-1, 100, $uid);
     	    $friends = $friends['users'];
+            
+            #用来判断用户是否有宫信息。
+            $user_id_list = array();
             $ret_friends = array();
             foreach($friends as $p){
                 array_push($ret_friends, array('id'=>$p['id'],
@@ -173,7 +183,26 @@
                     'friends_count'=>$p['friends_count'],
                     'followers_count'=>$p['followers_count'],
                     ));
+                array_push($user_id_list, $p['id']);                
             }
+            
+    	    $this->model('Gong');
+    	    $cm = new GongModel();
+    	    
+    	    #有宫信息的用户列表。
+            $user_id_have_gong = $cm->getHaveGong($user_id_list);
+                        
+            #判断当前好友信息是否有后宫。
+            for($i = count($ret_friends) - 1; $i >= 0; $i--){
+            	$ret_friends[$i]['have_gong'] = in_array($ret_friends[$i]['id'], $user_id_have_gong);
+            }
+            
+    	    $mmc = memcache_init();
+            foreach($ret_friends as $p){
+                $cache_key = $p['id'] . '_profile';
+                $profile = memcache_set($mmc, $cache_key, $p, 5 * 60);
+            }            
+            
             return $ret_friends;
         }
         

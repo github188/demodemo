@@ -22,9 +22,10 @@
             if( $_SERVER['SERVER_PORT'] != 80 ) $port = ':'.$_SERVER['SERVER_PORT']; 
 
             $keys = $o->getRequestToken(); 
-            $aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://'. $_SERVER['HTTP_APPNAME'] . '.sinaapp.com' . $port . '/cross/weibolist/'); 
+            
+            $aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://'. $_SERVER['HTTP_APPNAME'] . '.sinaapp.com' . $port . '/cross/callback/'); 
             $_SESSION['keys'] = $keys; 
-             
+            
             $this->assign('aurl',$aurl); 
             
             $this->display('cross/index.php');         
@@ -34,10 +35,17 @@
             $o = new SaeTOAuth( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  ); 
             $last_key = $o->getAccessToken(  $_REQUEST['oauth_verifier'] ) ; 
             $_SESSION['last_key'] = $last_key; 
-            
-            $c = new SaeTClient( WB_AKEY , WB_SKEY , $last_key['oauth_token'] , $last_key['oauth_token_secret']  ); 
+
+	    print_r($last_key);
+	    print_r("=======================<br/>");
+	    	    	                
+            $c = new SaeTClient( WB_AKEY , WB_SKEY , $last_key['oauth_token'] , $last_key['oauth_token_secret']); 
             $me = $c->verify_credentials(); 
-                                 
+            
+
+	    print_r($me);
+	    exit();
+	                                     
             if($last_key){ 
                 echo "<a href='/cross/weibolist'>用新浪微博登陆成功，我的首页</a>" . $me['name']. '....'; 
                 foreach($me as $e){
@@ -105,6 +113,35 @@
             header("Content-type: text/html; charset=utf-8"); 
             highlight_file(DIR_ACTION.'WeiboAction.class.php'); 
         } 
-         
+        
+        public function cross_img($uid){
+       	    $this->model('Cross');
+       	    $cm = new CrossModel();
+       	    $info = $cm->getCrossByUid($uid);
+       	    #echo "uid:". $uid . "<br/>";   	    
+       	    #echo "img:". $info['img'] . "<br/>";
+       	    #echo "time:". $info['time'] . "<br/>";
+       	    #echo "name:". $info['name'] . "<br/>";
+       	    #echo "event:". $info['event'] . "<br/>";      
+       	    #header ('CONTENT-TYPE: image/jpg;CHARTSET:UTF-8;');
+
+            $bgImage = SITE_ROOT . "images/cybg_03.jpg"; 
+            $bgData = file_get_contents($bgImage);
+
+            $userImageData = file_get_contents($info['img']);
+
+            $img = new SaeImage();
+
+            $img->setData( array(
+            	array($bgDate, 0, 0, 1, SAE_TOP_LEFT),
+            	array($userImageDate, 150, 145, 1, SAE_TOP_LEFT),
+            ));
+
+            $img->composite(440, 480);
+            $img->resize(200);
+            $outData = $img->exec('jpg', true);
+	    if ($outData === false) var_dump($img->errno(), $img->errmsg());            
+            #e        
+         }
     } 
 ?>
