@@ -55,7 +55,7 @@
         
         public function u($uid){
             #没有登录，返回登录页面。
-            if(!isset()){
+            if(!isset($_SESSION['cur_user'])){
                 header("location: /gong/index/");
                 return;
             }
@@ -63,7 +63,7 @@
             $cur_id = $_SESSION['cur_user']['id'];
             $friends = $this->_get_friend_list($cur_id);
 
-            $this->assign('friends', $friends);
+            $this->assign('friendList', $friends);
             $this->assign('me', $_SESSION['cur_user']);
             if($uid){
                 $this->assign('gong', $this->get_gong($uid));
@@ -79,6 +79,11 @@
         }
 
         public function create_gong($uid){
+            #没有登录，返回登录页面。
+            if(!isset($_SESSION['cur_user'])){
+                header("location: /gong/index/");
+                return;
+            }
             $mmc = memcache_init();
             $cache_key = $uid . '_profile';
             if($mmc){
@@ -95,24 +100,82 @@
             $m_friends = $this->_get_friend_list($uid, 'm');
             $f_friends = $this->_get_friend_list($uid, 'f');           
             
-            print("=====================><br/>");
-            print_r($role_list);
+            #print("=====================><br/>");
+            #print_r($role_list);
             
             $role_list = $this->_full_roles_with_friends($role_list, $m_friends, $f_friends);
-            print("-------------------------><br/>");      
-            
-            foreach($role_list as $role){
-            	print_r($role['gender'] . '--->' . $role['name'] . " --> ". $role['user']['screen_name'] . "--->" . $role['user']['id'] . "<br/>");
-            }   
-            
-            print_r($role_list);
+            #print("-------------------------><br/>");      
+            #print_r($role_list);
             
             $gong = array(user_profile => $profile, role_list=>$role_list); 
     	    $this->model('Gong');
     	    $cm = new GongModel();
             $cm->saveGongInfo($uid, $gong);
-            exit();            
+            
+            $_image_info = $this->_generate_image_info($gong);
+	    print_r($_image_info);
+            $json_text = json_encode($_image_info);
+            print($json_text);
+            $image_url = $this->_create_image_file($uid, $json_text);
+
+            print($image_url);
+	    exit();
             return $gong;            
+        }
+
+        private function _generate_image_info($gong){
+            $image = array();
+            $image['base_image'] = 'http://yun4demo.sinaapp.com/images/cybg_03.png';
+            
+            $combine_text = array();
+            $combine_image = array();
+            
+            $col = 0;
+            $count = 0;
+            $row = -1;
+            foreach($gong['role_list'] as $role){
+                $col = $count % 3;
+                if($col == 0)$row += 1;
+                $count++;
+
+                $text = $role['name'] . "-->\n". $role['user']['screen_name'];
+                array_push($combine_text, array('text'=> $text, 
+                                          'x'=>20 + (95 * $col), 
+                                          'y'=>20 + (95 * $row), 
+                                          'color'=>'#123456'));
+
+                array_push($combine_image, array('image'=> $role['user']['profile_image_url'], 
+                                          'x'=>20 + (95 * $col), 
+                                          'y'=>40 + (95 * $row), 
+                                          'color'=>'#123456'));
+
+            }
+            $image['combine_text'] = $combine_text;
+            $image['combine_image'] = $combine_image;
+            return $image;
+        }
+
+        private function _create_image_file($uid, $data){
+	    $ch = curl_init();
+            curl_setopt_array($ch,
+               array(
+                  CURLOPT_URL=>'http://www.pindic.com/gen_img.php',
+                  CURLOPT_RETURNTRANSFER=>true,
+                  CURLOPT_POST=>true,
+                  CURLOPT_POSTFIELDS=>'image_data=' . urlencode($data),
+               )
+            );
+                
+            $s = new SaeStorage();
+            $content = curl_exec($ch);
+            if(curl_errno($ch)){
+               $content = curl_error($ch);
+            }
+            curl_close($ch);
+            
+            $fn = $s->write("gong", "pic" . $uid . ".jpg", $content);
+
+            return $fn;
         }
 
         public function get_gong($uid){

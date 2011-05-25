@@ -29,7 +29,9 @@
 	</div>
 
     	<div id="gong_intr">
-    		<img src="/gong/images/u15_original.jpg" />
+    		<button name=''>生成我的后宫</button> &nbsp;&nbsp; 
+    		<button name=''>发送测试结果到围脖</button> <br/>
+    		<img src="http://yun4demo-gong.stor.sinaapp.com/pic1929306733.jpg" />    		    		
 	</div>
             	    	   
             	</td>
@@ -40,27 +42,8 @@
 	        	<div style="border:1px solid #000;">
     	   
     	   <span style="font-family:Heiti SC;font-size:13px;font-weight:normal;font-style:normal;text-decoration:none;color:#333333;">看看名人的后宫</span>
-    	   <div>
-    	   
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div> <br/>
-    	   </div>  
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div>   <br/>
-    	   </div>  
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div>   <br/>
-    	   </div>  
-    	     
+    	   <div>    	   
+    	   <?php include(DOCROOT . '/view/gong/friend_list.php'); ?>    	     
     	     
     	   </div>
             	<div>

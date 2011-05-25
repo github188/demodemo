@@ -20,6 +20,7 @@
 	define('WEBROOT',realpath(dirname(__FILE__)));
 	define('YUNPHP',WEBROOT.'/'.$dir_yunphp.'/');
 	define('DOCROOT',WEBROOT.'/'.$dir_protected.'/');
+	define('SITE_ROOT',realpath(dirname(__FILE__)).'/');
 	
 	
 	define('RUNTIME','saemc:/');
