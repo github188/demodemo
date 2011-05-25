@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.goku.core.model.BaseStation;
 import org.goku.core.model.RouteServer;
+import org.goku.core.model.SimpleCache;
 import org.goku.core.model.User;
 import org.goku.core.model.VideoTask;
 import org.goku.settings.Settings;
@@ -36,6 +37,8 @@ public class JDBCDataStorage extends DataStorage {
 	private Log log = LogFactory.getLog("db");
 	private int wokingDB = 0;
 	private String[][] config = new String[2][3];
+	private SimpleCache sessionCache = new SimpleCache();
+	private long nextSession = 0;
 	
 	private ArrayList<Connection> connPool = new ArrayList<Connection>();
 	
@@ -561,54 +564,71 @@ public class JDBCDataStorage extends DataStorage {
 		this.execute_sql(cleanRoute, new Object[]{route.ipAddress});
 	}	
 	
-	public QueryResult queryData(Class obj, QueryParameter param){		
-		String countSQL = "select count(*) as have_row from " + this.getTableName(obj);
-		String filter = "1=1";
+	public QueryResult queryData(Class obj, QueryParameter param){	
 		
-		String field, op;
-		String extra_where = "";
-		String extra_join = "";
-		for(String k: param.param.keySet()){
-			if(k.startsWith("extra_where_")){
-				extra_where += param.param.get(k);
-				continue;
+		String countSQL = null;
+		String filter = null;
+		
+		if(param.qsid != null && !"".equals(param.qsid)){
+			filter = (String)sessionCache.get(param.qsid); 
+		}else {
+			param.qsid = "" + (nextSession++ % 10000000);
+			countSQL = "select count(*) as have_row from " + this.getTableName(obj);
+			filter = "1=1";
+			
+			String field, op;
+			String extra_where = "";
+			String extra_join = "";
+			for(String k: param.param.keySet()){
+				if(k.startsWith("extra_where_")){
+					extra_where += param.param.get(k);
+					continue;
+				}
+				if(k.startsWith("extra_join_")){
+					extra_join += param.param.get(k);
+					continue;
+				}
+				
+				if(k.indexOf("__") > 0){
+					field = k.replaceAll("__", " ");
+				}else {
+					field = k + " ="; 
+				}
+				if(filter.length() > 0){
+					filter += " and ";
+				}
+				filter += field + toSQLValue(param.param.get(k));
 			}
-			if(k.startsWith("extra_join_")){
-				extra_join += param.param.get(k);
-				continue;
+			if (extra_where.trim().length() > 0){
+				filter = "(" + filter + ")" + extra_where;
+			}
+			countSQL += " " + extra_join + " where " + filter;
+			
+			if(param.order != null){
+				filter += " order by " + toOrderBy(param.order);
 			}
 			
-			if(k.indexOf("__") > 0){
-				field = k.replaceAll("__", " ");
-			}else {
-				field = k + " ="; 
+			filter += String.format(" LIMIT ${0}, ${1}");
+			
+			//如果有额外的连接查询，拼装一个完整的SQL到查询。
+			if(extra_join.length() > 0){
+				filter = buildSelectSql(obj) + " " + extra_join + " where " + filter;
 			}
-			if(filter.length() > 0){
-				filter += " and ";
-			}
-			filter += field + toSQLValue(param.param.get(k));
-		}
-		if (extra_where.trim().length() > 0){
-			filter = "(" + filter + ")" + extra_where;
-		}
-		countSQL += " " + extra_join + " where " + filter;
-		
-		if(param.order != null){
-			filter += " order by " + toOrderBy(param.order);
-		}
-		
-		filter += String.format(" LIMIT %s, %s", param.offset, param.limit);
-		
-		//如果有额外的连接查询，拼装一个完整的SQL到查询。
-		if(extra_join.length() > 0){
-			filter = buildSelectSql(obj) + " " + extra_join + " where " + filter;
 		}
 		
 		QueryResult result = new QueryResult();
-		result.sessionId = "";
-		Collection<Map<String, Object>> xx = query(countSQL, new Object[]{});
-		result.count = (Integer)xx.iterator().next().get("have_row");		
-		result.data = this.list(obj, filter, new Object[]{});
+		result.sessionId = param.qsid;
+		if(countSQL != null){
+			Collection<Map<String, Object>> xx = query(countSQL, new Object[]{});
+			result.count = (Integer)xx.iterator().next().get("have_row");
+		}else {
+			result.count = -1;
+		}
+		if(filter != null){
+			result.data = this.list(obj, filter, new Object[]{param.offset, param.limit});
+		}else {
+			result.data = new ArrayList();
+		}
 		
 		return result;
 	}

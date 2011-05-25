@@ -14,6 +14,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -448,7 +449,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 				param.qsid = this.getStringParam(request, "qsid", null);
 				param.limit = this.getIntParam(request, "limit", 100);
 				param.offset = this.getIntParam(request, "offset", 0);
-				param.order = this.getStringParam(request, "order", null);
+				param.order = this.getStringParam(request, "order", "-startTime");
 				
 				Collection<AlarmRecord> extraAL = null;
 				int category = this.getIntParam(request, "c", 2);
@@ -504,9 +505,22 @@ public class MasterServerServlet extends BaseRouteServlet{
 				String startTime = this.getStringParam(request, "startTime", null);
 				if(type != null && !"".equals(type) && !"all".equals(type)){
 					log.info("Start time:" + startTime);
-					//filter.put("startTime__>=", type);
+					try {
+						filter.put("startTime__>=", format.parse(startTime));
+					} catch (ParseException e) {
+						log.error(e.toString(), e);
+					}
 				}
 				
+				String endTime = this.getStringParam(request, "endTime", null);
+				if(type != null && !"".equals(type) && !"all".equals(type)){
+					log.info("end time:" + startTime);
+					try {
+						filter.put("startTime_<=", format.parse(endTime));
+					} catch (ParseException e) {
+						log.error(e.toString(), e);
+					}
+				}				
 				//加入用户组限制，避免取道没有权限的基站信息。
 				if(!userObj.isAdmin){
 					filter.put("extra_join_1",
