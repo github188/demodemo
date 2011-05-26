@@ -61,6 +61,8 @@
 
     	<div id="gong_intr">
     		<img src="/gong/images/u15_original.jpg" />
+    		<br/>
+    		<a href="http://sae.sina.com.cn" target="_blank"><img src="http://static.sae.sina.com.cn/image/poweredby/poweredby.png" title="Powered by Sina App Engine" /></a>
 	</div>
             	
             	</td>

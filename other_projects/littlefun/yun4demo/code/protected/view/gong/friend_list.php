@@ -17,7 +17,13 @@
                                                 <img src="<?=$su["profile_image_url"] ?>" width="60" height="60" class="imgbox" />
                                         </a>
                                 </td>
-                                <td height="35" valign="top" style="color: #666;"><a href="http://weibo.com/<?=$su["id"] ?>" target="_blank" style="color: #666;text-decoration: none;"><?=$su["screen_name"] ?></a></td>
+                                <td height="35" valign="top" style="color: #666;"><a href="http://weibo.com/<?=$su["id"] ?>" target="_blank" style="color: #666;text-decoration: none;"><?=$su["screen_name"] ?></a>
+	                        <?php if($su['have_gong']){ ?> 
+	                        	<a href='/gong/u/<?=$su["id"] ?>'>查看他的后宫</> 	                        	
+	                        <?php }else { ?>
+	                        	<a href='/gong/u/<?=$su["id"] ?>/?gender=<?=$su["gender"] ?>&create=Y'>帮他生成后宫</> 
+	                        <?php } ?>
+                                </td>
                         </tr>
                         <tr>
                                 <td valign="top"></td>
