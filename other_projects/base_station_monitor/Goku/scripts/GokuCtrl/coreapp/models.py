@@ -78,8 +78,11 @@ class BaseStation(models.Model):
         if self.devType == 1:
             #output = """<a href="javascript:cfg('%s', %s);">参数配置</a>"""
             output = u"""<a href="javascript:cfg('%s', %s);">参数配置</a>""" % (ip, port)
-        else:
-            output = ''
+        elif self.devType == 2:
+            if os.environ.get('STATIC_ROOT', None):
+                output = u"""<a href="/GokuCtrl/img_config/%s;">参数配置</a>""" % (self.uuid)
+            else:
+                output = u"""<a href="/img_config/%s;">参数配置</a>""" % (self.uuid)
         return output
     config.allow_tags = True
     config.verbose_name = "设备配置"

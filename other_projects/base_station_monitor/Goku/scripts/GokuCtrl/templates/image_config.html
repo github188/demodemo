@@ -1,0 +1,109 @@
+{% extends "admin/base_site.html" %}
+
+
+{% block title %}图片设备参数配置{% endblock title %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="/media/css/changelists.css" /> 
+<script src="/media/js/jquery-1.2.6.min.js"></script> 
+<style>
+#month_report{
+	width:90%;
+}
+
+#month_report td.row_no{
+	width:40px;
+}
+
+</style>
+<div style="margin-bottom:4px;">
+	<span style="font-size:24px;">图片设备参数配置...</span>&nbsp;&nbsp;
+	<div><b>设备编号：</b>{{bs}}</div>
+	<div><b>设备名称：</b>{{bs.name}}</div>
+	<div><b>连接地址：</b>{{bs.locationId}}</div>
+</div><br/>
+<script language='javascript'>
+$(document).ready(function(){
+	
+});
+</script>
+
+<div>
+	<h3>设备操作</h3>
+	<input type='submit' name='submit' value='读取设备参数' />&nbsp;&nbsp;		
+	<input type='submit' name='submit' value='系统重启' />&nbsp;&nbsp;	
+	<input type='submit' name='submit' value='视频通道恢复默认设置' />&nbsp;&nbsp;
+	
+	<input type='submit' name='submit' value='读取设备状态' />&nbsp;&nbsp;				
+	<br/> 
+</div>
+
+<div>
+	<h3>1. 视频通道模式</h3>
+	<span>通道一:<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>通道二:<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>通道三:<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>通道四:<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<br/> 
+	<div>0x00-关闭模式,   0x01-图像侦测模式, 0x02-红外模式,  0x03-红外和图像侦测双检模式</div>
+</div>
+
+<div>
+	<h3>2. 视频通道亮度、对比度、饱和度、色调设置</h3>
+	<span>亮度(x):<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>对比度(y):<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>饱和度(z):<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<span>色调(a):<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<br/> 
+	<div>视频通道参数范围：0<= X、Y、Z <=255，0<=A<128</div>
+</div>
+
+<div>
+	<h3>3. 视频通道敏感度设置</h3>
+	<span>敏感度:<input size='4' type='text' id='dateTime' name='dateTime' value='50' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<br/> 
+	<div>默认值为50</div>
+</div>
+
+<div>
+	<h3>4. 视频通道图像颜色设置</h3>
+	<span>敏感度:<input size='4' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<br/> 
+	<div>0x00-黑白,   0x01-彩色</div>
+</div>
+
+<div>
+	<h3>5. 视频通道图像压缩比设置</h3>
+	<span>压缩比:<input size='4' type='text' id='dateTime' name='dateTime' value='100' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<br/> 
+	<div>默认值为100</div>
+</div>
+
+<div>
+	<h3>6. 设置设备时钟</h3>
+	<span>时间:<input size='16' type='text' id='dateTime' name='dateTime' value='2011-05-11 01:01' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<input type='submit' name='submit' value='读取设备时间' />&nbsp;&nbsp;	
+	<br/> 
+</div>
+
+<div>
+	<h3>7. 分辨率设置</h3>
+	<span>分辨率:<input size='16' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<div>X＝0（704x576），1（352x288）</div>	
+	<br/> 
+</div>
+<div>
+	<h3>8. 门禁联动开关设置</h3>
+	<span>是否联动:<input size='16' type='text' id='dateTime' name='dateTime' value='0' /></span>
+	<input type='submit' name='submit' value='保存到设备' />&nbsp;&nbsp; 
+	<div>如果为1表示开“门禁联动”，如果为0表示关“门禁联动”</div>	
+	<br/> 
+</div>
+
+{% endblock content %}

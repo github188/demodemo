@@ -271,10 +271,9 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			out.println("-2$param error");
 		}else {
 			ASC100Client ascClient = server.getMonitorClient(baseStation);
-			if(client == null){
+			if(ascClient == null){
 				out.println("1$Not found base station");
-			}else {
-				
+			}else {				
 				final String[] result = new String[]{"2$timeout"};
 				ImageClientListener l = new AbstractImageListener() {
 					public void message(ImageClientEvent event){
@@ -356,7 +355,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 			out.println("-2$param error");
 		}else {
 			ASC100Client ascClient = server.getMonitorClient(baseStation);
-			if(client == null){
+			if(ascClient == null){
 				out.println("1$Not found base station");
 			}else {
 				final String[] result = new String[]{"2$timeout"};

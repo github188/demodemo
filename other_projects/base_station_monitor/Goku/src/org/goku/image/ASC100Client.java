@@ -434,6 +434,43 @@ public class ASC100Client {
 		this.image = null;
 	}
 	
+	public boolean saveParam(byte[] data){
+		if(this.image != null) {
+			//如果图片传输时间超过1分钟。取消传输的图片。
+			if(System.currentTimeMillis() - this.image.startDate.getTime() > 60 * 1000){
+				this.image = null;
+			}else {
+				return false;
+			}
+		}
+		try {
+			sendCommand((byte)0x01, data);
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
+		return true;
+	}	
+	
+	/**
+	 * 读取设备参数
+	 */
+	public boolean readParam(){
+		if(this.image != null) {
+			//如果图片传输时间超过1分钟。取消传输的图片。
+			if(System.currentTimeMillis() - this.image.startDate.getTime() > 60 * 1000){
+				this.image = null;
+			}else {
+				return false;
+			}
+		}
+		try {
+			sendCommand((byte)0x02, new byte[]{04});
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
+		return true;
+	}	
+	
 	/**
 	 * 点播实时图片。
 	 */
