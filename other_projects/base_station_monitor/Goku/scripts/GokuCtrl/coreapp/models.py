@@ -79,7 +79,8 @@ class BaseStation(models.Model):
             #output = """<a href="javascript:cfg('%s', %s);">参数配置</a>"""
             output = u"""<a href="javascript:cfg('%s', %s);">参数配置</a>""" % (ip, port)
         elif self.devType == 2:
-            if os.environ.get('STATIC_ROOT', None):
+            from java.lang import System
+            if System.getProperty("STATIC_ROOT", None):
                 output = u"""<a href="/GokuCtrl/img_config/%s;">参数配置</a>""" % (self.uuid)
             else:
                 output = u"""<a href="/img_config/%s;">参数配置</a>""" % (self.uuid)

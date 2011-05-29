@@ -776,6 +776,31 @@ public class MasterServerServlet extends BaseRouteServlet{
 		
 	}
 	
+	public void img_read_param(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("read_param", request, response, false);
+	}
+	
+	public void img_save_param(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("save_param", request, response, false);
+	}		
+	
+	public void img_restart(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("restart", request, response, false);
+	}
+	
+	public void img_set_date(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("set_date", request, response, false);
+	}
+	
+	public void img_get_date(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("get_date", request, response, false);
+	}
+		
 	public void rpc_list_bts(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException{
 		response.setContentType("application/octet-stream");
@@ -826,12 +851,16 @@ public class MasterServerServlet extends BaseRouteServlet{
 		JSONValue.writeJSONString(data, response.getWriter());
 	}	
 
+	protected void forwardToRoute(String action, HttpServletRequest request,
+			HttpServletResponse response)throws ServletException, IOException {
+		forwardToRoute(action, request, response, true);
+	}
 	/**
 	 * 将请求转发到视频转发服务器。
 	 */	
 	@SuppressWarnings("unchecked")
 	protected void forwardToRoute(String action, HttpServletRequest request,
-			HttpServletResponse response)throws ServletException, IOException {
+			HttpServletResponse response, boolean auth)throws ServletException, IOException {
 		String uuid = this.getStringParam(request, "uuid", null);
 		String sid = this.getStringParam(request, "sid", null);
 		if(uuid == null){
@@ -842,7 +871,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 				response.getWriter().println("1:BTS not found");
 			}else {
 				User userObj = (User)cache.get(sid);
-				if(userObj == null){
+				if(userObj == null && auth){
 					response.getWriter().println("1:Session is expired or logout");
 				}else{
 					if(info.routeServer != null && !info.equals("")){
@@ -855,7 +884,10 @@ public class MasterServerServlet extends BaseRouteServlet{
 							name = enums.nextElement();
 							param.put(name, request.getParameter(name));
 						}
-						param.put("user", userObj.name);
+						if(userObj != null){
+							param.put("user", userObj.name);
+						}
+						param.put("q", action);
 						
 						HttpResponse resp = http.post("/", param);
 						response.getWriter().println(resp.getResponseMessage());

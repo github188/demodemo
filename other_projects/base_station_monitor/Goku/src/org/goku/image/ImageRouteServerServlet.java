@@ -143,7 +143,8 @@ public class ImageRouteServerServlet extends BaseRouteServlet {
 						if(event.data.len == 8){
 							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
 							if(b.get() == 2 && b.get() == 1){
-								result.put("date", String.format("%02x-%02x-%02x %02x:%02x:%02x",
+								result.put("status", "ok");
+								result.put("date", String.format("20%02x-%02x-%02x %02x:%02x:%02x",
 										b.get(), b.get(), b.get(), 
 										b.get(), b.get(), b.get()));
 								synchronized(this){
@@ -200,7 +201,7 @@ public class ImageRouteServerServlet extends BaseRouteServlet {
 					};
 				};
 				ascClient.addListener(l);
-				ascClient.setDateTime(date.replaceAll("[^0-9]+", ""));
+				ascClient.setDateTime(date.replaceAll("[^0-9]+", "").substring(2));
 				try {
 					synchronized(l){
 						l.wait(1000 * 10);
