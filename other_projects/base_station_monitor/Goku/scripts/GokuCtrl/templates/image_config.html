@@ -34,12 +34,15 @@ $(document).ready(function(){
 	});
 	$('#btn_restart').click(restart);
 	$('#btn_save_mode').click(function(e){
-		save_param('0,' + $('#mode_ch1').val() + "," + $('#mode_ch2').val());
+		save_param('1,' + $('#mode_ch1').val() + "," + $('#mode_ch2').val());
+	});
+
+	$('#btn_save_mode2').click(function(e){
 		save_param('16,' + $('#mode_ch3').val() + "," + $('#mode_ch4').val());
 	});
 	
 	$('#btn_save_color').click(function(e){
-		save_param('2,' + $('#color_x').val() + "," + $('#color_x').val() + "," + $('#color_z').val() + "," + $('#color_a').val());
+		save_param('2,' + $('#color_x').val() + "," + $('#color_y').val() + "," + $('#color_z').val() + "," + $('#color_a').val());
 	});
 
 	$('#btn_mg_ch').click(function(e){
@@ -197,9 +200,13 @@ function save_param(param){
 	<h3>1. 视频通道模式</h3>
 	<span>通道一:<input size='4' type='text' id='mode_ch1' name='mode_ch1' value='0' /></span>
 	<span>通道二:<input size='4' type='text' id='mode_ch2' name='mode_ch2' value='0' /></span>
+	<input type='submit' name='submit' id='btn_save_mode' value='保存到设备' />&nbsp;&nbsp; 
+	
+	<br/>
 	<span>通道三:<input size='4' type='text' id='mode_ch3' name='mode_ch3' value='0' /></span>
 	<span>通道四:<input size='4' type='text' id='mode_ch4' name='mode_ch4' value='0' /></span>
-	<input type='submit' name='submit' id='btn_save_mode' value='保存到设备' />&nbsp;&nbsp; 
+	<input type='submit' name='submit' id='btn_save_mode2' value='保存到设备' />&nbsp;&nbsp;
+		
 	<br/> 
 	<div>0x00-关闭模式,   0x01-图像侦测模式, 0x02-红外模式,  0x03-红外和图像侦测双检模式</div>
 </div>
