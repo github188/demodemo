@@ -201,7 +201,9 @@ public class ImageRouteServerServlet extends BaseRouteServlet {
 					};
 				};
 				ascClient.addListener(l);
-				ascClient.setDateTime(date.replaceAll("[^0-9]+", "").substring(2));
+				date = date.replaceAll("[^0-9]+", "").substring(2);
+				log.debug("set date:" + date);
+				ascClient.setDateTime(date);
 				try {
 					synchronized(l){
 						l.wait(1000 * 10);
@@ -242,13 +244,14 @@ public class ImageRouteServerServlet extends BaseRouteServlet {
 								result.put("status", "ok");
 								synchronized(this){
 									this.notifyAll();
-								}								
+								}
 							}
 						}
 					};
 				};
 				ascClient.addListener(l);		
 				try {
+					this.log.debug(String.format("Set image param:%s", param));
 					if(ascClient.saveParam(bParam)){
 						synchronized(l){
 							l.wait(1000 * 10);
@@ -297,19 +300,28 @@ L(串口流控参数(L1，L2)，(T1，T2))，M(错误机制设置(T1，T2)，(Cn
 							result.put("mode_ch1", String.format("%x", b.get()));
 							result.put("mode_ch2", String.format("%x", b.get()));
 							
-							result.put("color_x", String.format("%x", b.get()));
-							result.put("color_y", String.format("%x", b.get()));
-							result.put("color_z", String.format("%x", b.get()));
-							result.put("color_a", String.format("%x", b.get()));
+							int d = b.get();
+							result.put("color_x", (d < 0 ? d + 256 : d) + "");
+							d = b.get();
+							result.put("color_y", (d < 0 ? d + 256 : d) + "");
+							d = b.get();
+							result.put("color_z", (d < 0 ? d + 256 : d) + "");
+							d = b.get();
+							result.put("color_a", (d < 0 ? d + 256 : d) + "");
 							
-							result.put("mg_ch", String.format("%x", b.get()));
-							result.put("zip_rate", String.format("%x", b.get()));
+							d = b.get();
+							result.put("mg_ch", (d < 0 ? d + 256 : d) + "");
+							d = b.get();
+							result.put("zip_rate", (d < 0 ? d + 256 : d) + "");
 							//分辨率
-							result.put("fbl", String.format("%x", b.get()));
+							d = b.get();
+							result.put("fbl", (d < 0 ? d + 256 : d) + "");
 							
-							result.put("image_count", String.format("%x", b.get()));
+							d = b.get();
+							result.put("image_count", (d < 0 ? d + 256 : d) + "");
 							//门禁联动
-							result.put("mjld", String.format("%x", b.get()));
+							d = b.get();
+							result.put("mjld", (d < 0 ? d + 256 : d) + "");
 							b.get();
 							b.get();
 							b.get();
