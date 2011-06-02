@@ -6,27 +6,20 @@
 <link href="/apps/statics/gong/style.css" rel="stylesheet" type="text/css" />
 <script src="/apps/statics/jquery.min.js" type="text/javascript"></script>
 <script src="/apps/statics/jquery.jcarousellite.min.js" type="text/javascript"></script>
+<script src="http://littlefun.sinaapp.com/js/gong_jsonp.js" type="text/javascript"></script>
+<!--
 <script src="/apps/statics/gong/hougong.js" type="text/javascript"></script>
+-->
 </head>
+<script > 
+   var user_id = '';
+   var action='index';
+</script>
 
 <body>
 <div class="header">
 	<div class="logo"><a href="http://www.littlefun.net" target="_blank"><img src="/apps/statics/gong/logo_02.jpg" /></a></div>
-	<div class="dongtai">
-		<div class="dongtai_scroll">
-			<ul>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-			</ul>
-		</div>
-	</div>
+ <?php include('header_scroll.php'); ?> 
   <div class="userinfo">
   	<a href="http://littlefun.sinaapp.com/gong/sina_ouath/"><img src="/apps/statics/gong/wb_login.gif" /></a>
   </div>

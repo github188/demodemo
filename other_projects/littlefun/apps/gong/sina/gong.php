@@ -13,6 +13,7 @@
 <script src="http://littlefun.sinaapp.com/js/gong_jsonp.js" type="text/javascript"></script>
 <script >
    var user_id = '<?=$user ?>';
+   var action='';
 </script>
 </head>
 <body>
@@ -30,31 +31,18 @@
     <tr>
     <td>
 {{if have_gong }}
-<a href="javascript:void(0);"  class="test" onclick="test_huogong()">看他后宫</a>
+<a href="${id}.html"  class="test" onclick="test_huogong()">看他后宫</a>
 {{else}}
-<a href="javascript:void(0);"  class="test" onclick="test_huogong()">帮他生成后宫</a>
+<a href="http://littlefun.sinaapp.com/gong/out_create_gong/${id}/?gender=${gender}"  class="test" onclick="test_huogong()">帮他生成后宫</a>
 {{/if}}
 </td> 
     </tr>
   </table>
 </script>
 <div class="header">
-	<div class="logo"><a href="http://www.littlefun.net" target="_blank"><img src="/apps/statics/gong/logo_02.jpg" /></a></div>
-	<div class="dongtai">
-		<div class="dongtai_scroll">
-			<ul>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-				<li>
-					<span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span><span><strong>金烂烂 生成了他的后宫图</strong><br/>3秒前</span>
-				</li>
-			</ul>
-		</div>
-	</div>
+	<div class="logo"><a href="http://www.littlefun.net" target="_blank"><img src="/apps/statics/gong/logo_02.jpg" /></a>
+</div>
+ <?php include('header_scroll.php'); ?> 
 	<div class="userinfo">
 		<table width="70%" border="0" cellspacing="0" cellpadding="0" style="float:right;">
 		  <tr>
@@ -101,7 +89,7 @@
 			<div class="box" style="padding:6px 0px 6px 30px; "><input name="" type="hidden" value="" id="myselft" /><a href="javascript:void(0);" class="schg" onclick="test_huogong()"></a><a href="javascript:void(0);" class="send" onclick="weibo_Submit()"></a></div>
 		</div>
 		<div class="mainc_imgbox">
-			<div class="box" id="testimg"><img src="/apps/statics/gong/img_03.jpg" /></div>
+			<div class="box" id="testimg"><img id='gongImg' src="/apps/statics/gong/img_03.jpg" /></div>
 		</div>
 		<div class="mainc_textarea" id="send_textbox" style="display:none;">
 			<div class="box">
