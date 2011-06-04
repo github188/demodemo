@@ -2,10 +2,10 @@
         session_start();
 	$begin_time = microtime();
 	define('DEBUG',TRUE);
-	sae_set_display_errors(FALSE);
+	sae_set_display_errors(True);
 	
 	//xhprof —— facebook 搞的一个测试php性能的扩展
-	define('XHPROF',FALSE);
+	define('XHPROF',False);
 	if(XHPROF){
 		sae_xhprof_start();
 	}

@@ -18,6 +18,7 @@
         }
  
         public function index(){
+           #	throw new Exception("xxx");
             $o = new SaeTOAuth( WB_AKEY , WB_SKEY  ); 
             if( $_SERVER['SERVER_PORT'] != 80 ) $port = ':'.$_SERVER['SERVER_PORT']; 
 

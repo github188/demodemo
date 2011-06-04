@@ -15,6 +15,7 @@
 	define('DIR_MODULE',DOCROOT.'module/');
 	define('DIR_VIEW',DOCROOT.'view/');
 	
+	
 	set_exception_handler('my_exception_handler');
 	
 	Configure::load('config');
@@ -32,6 +33,7 @@
 
 	if(!class_exists($action)){
 		throw new Exception("404 $action not exist!");
+		#echo "not found $action";
 	}
 	
 	$app = new $action();

@@ -6,7 +6,7 @@
 //HelpAction.class.php 帮助文档的控制器 
     require_once "weibooauth.php";
     
-    class GongAction extends Action { 
+    class BaguaAction extends Action { 
          
         public function __construct(){ 
             #include_once( 'saet.ex.class.php' ); 

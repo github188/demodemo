@@ -32,12 +32,14 @@ function import_class($class){
  * 分两种模板来处理
  *
  */
-function my_exception_handler($e){
+function my_exception_handler($e){     
         if (DEBUG == TRUE) {
         	$file = $e->getFile();
         	$line = $e->getLine();
         	$message = "<b>YunPHP error:   </b>".$e->getMessage();
         	
+        	#echo "xxxx";
+        	#exit();
         	Log::write_log('ERROR',"$message  $file $line ");
         	ob_start();
         	include_once DOCROOT.'errors/debug_error.php';

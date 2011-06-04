@@ -5,59 +5,41 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta http-equiv="imagetoolbar" content="no">
 <link href="/gong/css/jquery-ui-themes.css" type="text/css" rel="stylesheet">
-<!--[if IE 6]>
-<link href="Home_files/axurerp_pagespecificstyles_ie6.css" type="text/css" rel="stylesheet">
-<![endif]-->
 <script src="/gong/scripts/jquery-1.4.2.min.js"></script>
 <script src="/gong/scripts/jquery-ui-1.8.10.custom.min.js"></script>
 </head>
 <body>
-<div class="main_container">
+<style>
+ *{ padding:0; margin:0 auto;}
+body{ font-family:"宋体"; font-size:14px; padding:0; margin:0; repeat-y center 0;}
+body a{outline:none;blr:expression(this.onFocus=this.blur());}
+img{border:0;}
+ul{ list-style:none; padding:0; margin:0;}
+.container{ width:962px; overflow:hidden; clear:both; padding-bottom:10px; position:relative; z-index:1;}
+
+</style>
+<div class="container">
 
     <div id="header">
        <img src="/gong/images/logo.png" />
-
+       <span style="font-size:20px;">查看你的后宫都是谁？</span>
        <a href="<?=$aurl?>"><img src="/gong/images/weibo_login.gif" /></a>
     </div>
     <div id="content">
-        <table>
+        <table style="width:100%;">
             <tr>
             	<td style="width:200px;vertical-align: top;">
+            	<h1>查看你的后宫都是谁？</h1>
+            	<p>
+            	不要羡慕别人家财万贯金玉满堂,不要羡慕别人家前呼后拥。
+            	</p>
+            	<p>
+            	也许你也曾后宫佳丽三千. 看看今天你的后宫都有些谁？
+            	</p>
             	
-            	<div style="border:1px solid #000;">
-    	   
-    	   <span style="font-family:Heiti SC;font-size:13px;font-weight:normal;font-style:normal;text-decoration:none;color:#333333;">看看名人的后宫</span>
-    	   <div>
-    	   
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div> <br/>
-    	   </div>  
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div>   <br/>
-    	   </div>  
-    	   <div class='starlist' style="display:block;clear:both; margin-top:4px;">
-	       <img src="/gong/images/u24_original.jpg" style="float:left;" />
-	       四无浪子－的后宫
-	       <button>查看他后宫</button>    	   
-	       <div style='clear:both;'></div>   <br/>
-    	   </div>  
-    	     
-    	     
-    	   </div>
-            	<div>
-            	    	   
+            	<a href="<?=$aurl?>"><img src="/gong/images/weibo_login.gif" /></a>
             	</td>
             	<td>
-      	
-      	<div id="ads_main">
-    		<img src="/gong/images/u20_original.png" />
-	</div>
 
     	<div id="gong_intr">
     		<img src="/gong/images/u15_original.jpg" />

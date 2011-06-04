@@ -37,7 +37,7 @@
 	 * 如果是存放在sae中，请在后台查看
 	 * $config['log_place']='mysql','sae';
 	 */
-	$config['log_place'] = 'mysql';
+	$config['log_place'] = 'sae';
 	$config['log_table'] = 'logs';
 	
 	/**

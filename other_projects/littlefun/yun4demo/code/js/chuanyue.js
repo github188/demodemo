@@ -35,12 +35,12 @@ $(function(){
 		//按钮等待
 		$(".mainra a").unbind();
 		$(".mainra img").css("height","25px");
-		$(".mainra img").attr("src","/cross/images/change_load.gif");
+		$(".mainra img").attr("src","/images/change_load.gif");
 		
 		var uid = $("#myself").val();
-		var url =  "friends_list.php";
+		//var url =  "friends_list.php";
 		var param = {"uid":uid,"refresh":1};
-		$.post(url,param,function(result){
+		$.post(refresh_friend_url,param,function(result){
 			$(".gz_scroll").html(result);
 			$(".gz_scroll").jCarouselLite({
 				btnNext: ".more",
@@ -55,7 +55,7 @@ $(function(){
 				}
 				//按钮可点
 			});
-			$(".mainra img").attr("src","../images/change_03.gif");
+			$(".mainra img").attr("src","/images/change_03.gif");
 		});
 	}
 
@@ -108,18 +108,18 @@ function weibo_Submit(weiboName){
 		}
 		weiboName=username; 
 	}
-	$("#send_Other img").attr("src","../images/"+platForm+"_send_load.gif");
+	$("#send_Other img").attr("src","/images/"+platForm+"_send_load.gif");
 	if(content!='' && imgurl!=''){	
-		var url="sendweibo.php";
+		//var url="sendweibo.php";
 		var param={
 			"weiboName":weiboName,
 			"content":content,
 			"imgurl":imgurl
 		};
-		$.post(url,param,function(result){
+		$.post(send_weibo_url,param,function(result){
 			if(result.error){
 				tishi("发微博失败，您可能重复发送了！");
-				$("#send_Other img").attr("src","../images/"+platForm+"_send_03.gif");
+				$("#send_Other img").attr("src","/images/"+platForm+"_send_03.gif");
 				return false;
 			}else{
 				if(result=="repeat"){
@@ -127,12 +127,12 @@ function weibo_Submit(weiboName){
 				}else{
 					tishi_success("发微博成功！");
 				}
-				$("#send_Other img").attr("src","../images/"+platForm+"_send_03.gif");
+				$("#send_Other img").attr("src","/images/"+platForm+"_send_03.gif");
 			}
 		});
 	}else{
 		tishi("请输入微博内容！");
-		$("#send_Other img").attr("src","../images/"+platForm+"_send_03.gif");
+		$("#send_Other img").attr("src","/images/"+platForm+"_send_03.gif");
 	}
 }
 
