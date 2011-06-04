@@ -6,6 +6,7 @@
 <link href="/apps/statics/gong/style.css" rel="stylesheet" type="text/css" />
 <script src="/apps/statics/jquery.min.js" type="text/javascript"></script>
 <script src="/apps/statics/jquery.jcarousellite.min.js" type="text/javascript"></script>
+<script src="/apps/statics/jquery.tmpl.min.js" type="text/javascript"></script>
 <script src="http://littlefun.sinaapp.com/js/gong_jsonp.js" type="text/javascript"></script>
 <!--
 <script src="/apps/statics/gong/hougong.js" type="text/javascript"></script>
@@ -37,72 +38,36 @@
 					  </tr>
 					</table>
 				</div>
-			<div class="fans_list">
-				<table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test" onclick="test_huogong()">看他后宫</a></td>
-							  </tr>
-			  </table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
-							  <tr>
-								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
-								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
-							  </tr>
-							  <tr>
-								<td><a href="javascript:void(0);"  class="test">看他后宫</a></td>
-							  </tr>
-							</table><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<script>
+$(document).ready(function(){
+    $("#user_info").template( "user_info" );
+    jQuery.getJSON("http://littlefun.sinaapp.com/gong/last_hot_jsonp/?limit=12&callback=?",
+    function(data){
+        $("#hot_gong_list table").remove();
+        $.tmpl("user_info", data).appendTo('#hot_gong_list');
+    },
+    'json');
+});
+</script>
+<script id="user_info" type="text/x-jquery-tmpl">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	    <tr>
+	       <td width="32%" rowspan="2">
+             <a href="http://weibo.com/${id}" target="_blank">
+                <img src="${profile_image_url}" />
+             </a>
+           </td>
+	       <td width="68%" height="20">&nbsp;&nbsp;<span class="color_fff"><strong>${name}</strong></span>
+</td>
+	    </tr>
+	    <tr>
+	       <td><a href="http://littlefun.sinaapp.com/gong/sina_ouath/"  class="test" onclick="test_huogong()">看他后宫</a></td>
+	    </tr>
+    </table>
+</script>
+			<div id="hot_gong_list" class="fans_list">
+				
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
 							  <tr>
 								<td width="32%" rowspan="2"><a href="#" target="_blank"><img src="/apps/statics/gong/main_03.jpg" wid /></a></td>
 								<td width="68%" height="20"><span class="color_fff"><strong>用户名用户名用户名</strong></span></td>
@@ -126,13 +91,6 @@
 		</div>
 	</div>
 </div>
-<div class="footer">
-    Copyright &copy; 2009 <a href='http://www.littlefun.net/'>LittleFun.net</a>| 浙ICP备11025245号
-    
-    <a href="http://sae.sina.com.cn" target="_blank"> 
-    	<img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine" /> 
-    </a> 
-</a>
-</div>
+ <?php include('inc_footer.php'); ?> 
 </body>
 </html>

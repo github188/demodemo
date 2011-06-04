@@ -21,7 +21,7 @@
   <table width="100%" border="0" cellspacing="0" cellpadding="0"> 
     <tr> 
     <td width="32%" rowspan="2">
-    <a href="#" target="_blank">
+    <a href="http://weibo.com/${id}" target="_blank">
     <img src="${profile_image_url}" /></a>
     </td>
     <td width="68%" height="20">
@@ -65,13 +65,13 @@
 					<table width="100%" border="0" cellspacing="0" cellpadding="0">
 					  <tr>
 						<td width="44%">我的粉丝 </td>
-						<td width="10%"><input type="checkbox" name="fans" value=""/></td>
+						<td width="10%"><input type="checkbox" id='have_gong_fans' name="fans" value=""/></td>
 						<td width="46%">只显示有后宫的</td>
 					  </tr>
 					</table>
 				</div>
 			<div class="fans_list">
-				<div class="fans_scroll" id="fans_scroll">
+				<div class="fans_scroll" id="my_fans">
 					<ul>
 						<li>
 							
@@ -79,14 +79,14 @@
 					</ul>
 				</div>
 				<div class="change">
-					<a class="more" id="gzmore" href="javascript:void(0);"><strong>换一换</strong></a>				
+					<a class="more" id="my_fans_more" href="javascript:void(0);"><strong>换一换</strong></a>				
                 </div>
 			</div>
 		</div>
 	</div>
 	<div class="mainc">
 		<div class="mainc_send">
-			<div class="box" style="padding:6px 0px 6px 30px; "><input name="" type="hidden" value="" id="myselft" /><a href="javascript:void(0);" class="schg" onclick="test_huogong()"></a><a href="javascript:void(0);" class="send" onclick="weibo_Submit()"></a></div>
+			<div class="box" style="padding:6px 0px 6px 30px; "><input name="" type="hidden" value="" id="myselft" /><a href="javascript:void(0);" class="schg" id="create_my_gong"></a><a href="javascript:void(0);" class="send" onclick="weibo_Submit()"></a></div>
 		</div>
 		<div class="mainc_imgbox">
 			<div class="box" id="testimg"><img id='gongImg' src="/apps/statics/gong/img_03.jpg" /></div>
@@ -130,13 +130,7 @@
 <div class="we_send">
 	<a href="javascript:void(0);" class="send" style="margin-left:0;"  onclick="weibo_Submit()"></a>
 </div>
-<div class="footer">
-    Copyright © 2009 <a href='http://www.littlefun.net/'>LittleFun.net</a>| 浙ICP备11025245号
-    
-    <a href="http://sae.sina.com.cn" target="_blank"> 
-    	<img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine" /> 
-    </a> 
-</div>
+ <?php include('inc_footer.php'); ?> 
 
 
 </body>

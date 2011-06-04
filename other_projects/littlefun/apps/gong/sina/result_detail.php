@@ -17,8 +17,13 @@
    var action='create_gong';
 </script>
 </head>
-
 <body>
+<script id="user_info" type="text/x-jquery-tmpl">
+<li><a href="${id}.html"><img src="${profile_image_url}" width="75" height="75" /></a>
+    <a href="http://weibo.com/${id}" style='color:#fff' target="_blank"><p>${name}</p></a>
+</li>
+</script>
+
 <div class="header">
 	<div class="logo"><a href="http://www.littlefun.net" target="_blank"><img src="/apps/statics/gong/logo_02.jpg" /></a>
 </div>
@@ -31,10 +36,12 @@
 <div class="main">
 	<div class="mainc" style="margin-left:0px;">
 		<div class="mainc_send">
-			<div class="box" style="padding:6px 0px 6px 30px; "><a href="javascript:void(0);" class="btn_com" onclick="test_huogong()">我也去试试</a><a href="javascript:void(0);" class="btn_com" onclick="weibo_Submit()">发送到微博</a></div>
+			<div class="box" style="padding:6px 0px 6px 30px; "><a id="create_my_gong" href="javascript:void(0);" class="btn_com" >我也去试试</a><a href="javascript:void(0);" class="btn_com" onclick="weibo_Submit()">发送到微博</a></div>
 		</div>
 		<div class="mainc_imgbox">
-			<div class="box" ><img id="test_Img" src="/apps/statics/gong/img_03.jpg" /></div>
+			<div class="box" style="background-image:url('/apps/statics/gong/img_03.jpg');height:646px;">                 
+                <img id="test_Img" src="http://littlefun.sinaapp.com/images/loading66.gif" />
+            </div>
 		</div>
 		<div class="mainc_textarea" id="send_textbox" style="display:none;">
 			<div class="box">
@@ -55,11 +62,11 @@
 					  <tr>
 						<td width="44%">看看名人的后宫 </td>
 						<td width="33%">&nbsp;</td>
-						<td width="23%"><a href="#" class="a_link">更多&gt;&gt;</a></td>
+						<td width="23%"><a href="http://littlefun.sinaapp.com/gong/more_gong/" class="a_link">更多&gt;&gt;</a></td>
 					  </tr>
 					</table>
 				</div>
-				<div class="de_hglist">
+				<div class="de_hglist" id='hot_list'>
 					<ul>
 						<li><a href="#" target="_blank"><img src="/apps/statics/gong/in_img.jpg" width="75" height="75" /></a><p>用户名用户名</p></li>
 						<li><a href="#" target="_blank"><img src="/apps/statics/gong/in_img.jpg" width="75" height="75" /></a><p>用户名用户名</p></li>
@@ -79,11 +86,11 @@
 					  <tr>
 						<td width="44%">最近生成后宫的人 </td>
 						<td width="33%">&nbsp;</td>
-						<td width="23%"><a href="#" class="a_link">更多&gt;&gt;</a></td>
+						<td width="23%"><a href="http://littlefun.sinaapp.com/gong/more_gong/" class="a_link">更多&gt;&gt;</a></td>
 					  </tr>
 					</table>
 				</div>
-				<div class="de_hglist">
+				<div class="de_hglist" id='recent_list'>
 					<ul>
 						<li><a href="#" target="_blank"><img src="/apps/statics/gong/in_img.jpg" width="75" height="75" /></a><p>用户名用户名</p></li>
 						<li><a href="#" target="_blank"><img src="/apps/statics/gong/in_img.jpg" width="75" height="75" /></a><p>用户名用户名</p></li>
@@ -97,12 +104,6 @@
 		</div>
 	</div>
 </div>
-<div class="footer">
-    Copyright © 2009 <a href='http://www.littlefun.net/'>LittleFun.net</a>| 浙ICP备11025245号
-    
-    <a href="http://sae.sina.com.cn" target="_blank"> 
-    	<img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine" /> 
-    </a> 
-</div>
+ <?php include('inc_footer.php'); ?> 
 </body>
 </html>
