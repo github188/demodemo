@@ -59,6 +59,8 @@ BEGIN_MESSAGE_MAP(CRuntimeWarning, CPropertyPage)
 	ON_COMMAND(ID_WARNING_SCROOLING_ON, &CRuntimeWarning::OnWarningScroolingOn)
 //	ON_NOTIFY(HDN_ITEMDBLCLICK, 0, &CRuntimeWarning::OnHdnItemdblclickLstRuntimeWarning)
 	ON_NOTIFY(NM_DBLCLK, IDC_LST_RUNTIME_WARNING, &CRuntimeWarning::OnNMDblclkLstRuntimeWarning)
+	ON_COMMAND(ID_WARNING_PLAY, &CRuntimeWarning::OnWarningPlay)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LST_RUNTIME_WARNING, &CRuntimeWarning::OnNMCustomdrawLstRuntimeWarning)
 END_MESSAGE_MAP()
 
 
@@ -89,16 +91,19 @@ BOOL CRuntimeWarning::OnInitDialog()
 		"端局类型", //BTSType
 		"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
 		"基站",		//BTSID
+		"通道号",	//ChannelID
 		"开始时间", //start tiem
 		"结束时间", //end   time
 		"处理状态", //status
+		"图像类型", //Category 1.视频 2.图片, 3.无
 		""			//UUID
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
+	int nWidth[] = {68,160,68,68,68,60,180,180,68,50,0};
 	int i=0;
 	for (; i<nCnt-1; i++)
-		m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 120);
+		m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);
 	m_lstRuntimeWarning.InsertColumn(i,strHeader[i],LVCFMT_CENTER, 0);
 	
 
@@ -117,8 +122,9 @@ BOOL CRuntimeWarning::OnInitDialog()
 	hIcon = pApp->LoadIconA(IDI_LEVEL_5);
 	if (hIcon)		m_imagelist.Add(hIcon);
 
-
-	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
+#ifdef _DEBUG
+	SetTimer(WM_RUNTIME_TIMER,1000,NULL);
+#endif
 
 	i=0;
 	for (; i<cnMAX_POP_WINDOW; i++)
@@ -219,17 +225,30 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 			
 			//"基站",		//BTSID
 			m_lstRuntimeWarning.SetItem(m_alarmIndex,4,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
+
+			//通道,		CH
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,5,LVIF_TEXT,pAlarmInfo->ChannelID,0,0,0,0);
+
 			//"开始时间", //start tiem
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,5,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
 			//"结束时间", //end   time
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,6,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
 			//"处理状态" //status
 			sTemp = 	pAlarmInfo->status==2 ? "超时自动处理":
 						pAlarmInfo->status==3 ? "手动确认":"未处理";
 				;
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,sTemp,0,0,0,0);	
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,sTemp,0,0,0,0);	
 	
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+			if (pAlarmInfo->category == "1")
+				m_lstRuntimeWarning.SetItem(m_alarmIndex,9,LVIF_TEXT,"视频",0,0,0,0);	
+			else if ( pAlarmInfo->category == "2")
+				m_lstRuntimeWarning.SetItem(m_alarmIndex,9,LVIF_TEXT,"图片",0,0,0,0);	
+
+			else
+				m_lstRuntimeWarning.SetItem(m_alarmIndex,9,LVIF_TEXT,"未知",0,0,0,0);	
+
+
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
 
 			//if no BTSID, then continue;
 			if ( pAlarmInfo->BTSID.IsEmpty() )
@@ -446,9 +465,9 @@ void CRuntimeWarning::OnNMDblclkLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResul
 		//lvitem.iSubItem = 1; //UUID
 		//lvitem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM;
 		//m_lstRuntimeWarning.GetItem(&...)
-		CString sUUID = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 1); 
-		CString sStartTime = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 6); 
-		CString sEndTime   = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 7); 
+		CString sUUID = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 10); 
+		CString sStartTime = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 7); 
+		CString sEndTime   = m_lstRuntimeWarning.GetItemText(pNMItemActivate->iItem, 8); 
 
 		//通过UUID播放历史视频
 		//ReplayWarningVideo(sUUID, sStartTime,sEndTIme);
@@ -527,5 +546,105 @@ bool CRuntimeWarning::DeleteItemByUUID(CString sUUID)
 	}
 
 	return bRet;
+
+}
+
+void CRuntimeWarning::OnWarningPlay()
+{
+	// TODO: Add your command handler code here
+	if ( m_nCurItem<0 )
+		return;
+
+	//CString sUUID = m_lstRuntimeWarning.GetItemText(i,0);
+	CString sLocation	= m_lstRuntimeWarning.GetItemText(m_nCurItem,1);
+	CString sBtsType	= m_lstRuntimeWarning.GetItemText(m_nCurItem,2);
+	CString sWarnType	= m_lstRuntimeWarning.GetItemText(m_nCurItem,3);
+	CString sBtsID		= m_lstRuntimeWarning.GetItemText(m_nCurItem,4);
+	CString sCh			= m_lstRuntimeWarning.GetItemText(m_nCurItem,5);
+	CString sBeginTime	= m_lstRuntimeWarning.GetItemText(m_nCurItem,6);
+	CString sEndTime	= m_lstRuntimeWarning.GetItemText(m_nCurItem,7);
+	CString sAckType	= m_lstRuntimeWarning.GetItemText(m_nCurItem,8);
+	CString sCategory	= m_lstRuntimeWarning.GetItemText(m_nCurItem,9);
+	CString sUUID		= m_lstRuntimeWarning.GetItemText(m_nCurItem,10);
+
+
+	//.pop the warning vedio windows
+	CString sType;
+	if (sCategory == "视频")
+		sType = "1";
+	else if (sCategory == "图片")
+		sType = "2";
+	else
+		return;
+	int i=0;
+	bool bNeedCloseCurrentPlayingWindow = true;
+	if (m_nPopViewCount<cnMAX_POP_WINDOW && ((sCategory == "视频") || (sCategory == "图片") ))
+	{
+		for (i=0; i<cnMAX_POP_WINDOW; i++)
+		{
+			if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
+			{
+				m_pPopVideoDlg[i]->SetVideoPara(sBtsID,sUUID, sLocation,sCh,sBeginTime, sEndTime, sType);
+				m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
+				m_pPopVideoDlg[i]->PlayVideo();
+
+				bNeedCloseCurrentPlayingWindow = false;
+
+				break;
+			}
+		}
+	}
+	
+	if (bNeedCloseCurrentPlayingWindow)
+		AfxMessageBox("实时告警窗口已达最大,请关闭当前窗口,再进行播放操作!");
+
+}
+
+void CRuntimeWarning::OnNMCustomdrawLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	//LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
+/*
+	COLORREF colRow1 = RGB(240,247,249);
+	COLORREF colRow2 = RGB(229,232,239);
+
+	int iRow = lplvcd->nmcd.dwItemSpec;
+	switch(lplvcd->nmcd.dwDrawStage)
+	{
+	case CDDS_PREPAINT :
+		{
+			*pResult = CDRF_NOTIFYITEMDRAW;
+			return;
+		}
+
+		// Modify item text and or background
+	case CDDS_ITEMPREPAINT:
+		{
+			lplvcd->clrText = RGB(0,0,0);
+			// If you want the sub items the same as the item,
+			// set *pResult to CDRF_NEWFONT
+			*pResult = CDRF_NOTIFYSUBITEMDRAW;
+			return;
+		}
+
+		// Modify sub item text and/or background
+	case CDDS_SUBITEM | CDDS_PREPAINT | CDDS_ITEM:
+		{
+
+			if(iRow%2){
+				lplvcd->clrTextBk = colRow2;
+			}
+			else{
+				lplvcd->clrTextBk = colRow1;
+			}
+
+
+			*pResult = CDRF_DODEFAULT;
+			return;
+		}
+	}
+	*/
 
 }

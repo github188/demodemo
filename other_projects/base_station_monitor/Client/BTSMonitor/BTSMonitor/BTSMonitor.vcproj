@@ -225,6 +225,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ColoredListCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ConfigMgr.cpp"
 				>
 			</File>
@@ -400,6 +404,10 @@
 			</File>
 			<File
 				RelativePath=".\CameraView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ColoredListCtrl.h"
 				>
 			</File>
 			<File
@@ -593,11 +601,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\DGM_log2.bmp"
+				RelativePath=".\res\cmcc.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\cmcc.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\BTS_Doc\ICO\DGM_log2.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\DGM_log2.bmp"
 				>
 			</File>
 			<File
@@ -693,15 +709,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\LogOn.ico"
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\main.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\main.png"
 				>
 			</File>
 			<File
@@ -717,11 +737,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\setting3.ico"
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
+				RelativePath=".\res\setting3.ico"
 				>
 			</File>
 			<File

@@ -10,12 +10,15 @@
 UINT alarm_getRealAlarm_thread(LPVOID param);
 UINT Command_SendAndReceiveTimer(LPVOID param);
 UINT video_thread_control(LPVOID param);
+UINT Goku_Funtion_Control(LPVOID param); //Let all command run in a thread.
+
 class GokuClient{
 	CString buffer;
 	CString cmd_msg; //last command status.
 
 public:
 	MonitorImage *m_pMoImage;
+
 	VideoPlayControl *m_pRealPlayControl;
 	VideoPlayControl *m_pReplayControl;
 
@@ -62,10 +65,15 @@ public:
 		m_pRealPlayControl=NULL;
 		m_pReplayControl=NULL;
 
+		for (i=0; i<GOKU_FUNC_END; i++)
+			m_hFuncEvent[i] = ::CreateEvent(NULL,FALSE,FALSE,NULL);
+		m_bRealAlarmStrReturn = false;
+
 	}
 
 	~GokuClient()
 	{
+
 		//Exit Video Thread Control....
 		SetExitVedioThread();
 		DWORD dwRet = ::WaitForSingleObject(m_pVedioCtrlThread->m_hThread,1000);
@@ -203,6 +211,13 @@ public:
 
 		if (m_pAlarmVideoCtrl)
 			delete m_pAlarmVideoCtrl;
+
+		//Exit Function Thread
+		::SetEvent(m_hFuncEvent[GOKU_FUNC_NONE]);
+		::Sleep(50);
+		for (i=0; i<GOKU_FUNC_END; i++)
+			::CloseHandle(m_hFuncEvent[i]);
+
 	}
 
 	/**
@@ -216,7 +231,7 @@ public:
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
 	void queryAlarmInfo(CString category, CString uuid, CString sCh,CString startDate, CString startTime,
-				CString type, CString level, CString limit, CString offset, CString &qalarmStr);
+				CString type, CString level, CString limit, CString offset, CString &qalarmStr,int& nTotal, int& nCount);
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
 	
@@ -276,6 +291,8 @@ public:
 	CWinThread		 *m_pPlayThread[cnTOTAL_VV_CNT]; //[cnMAX_VV];   //Real Play thread handle
 	CWinThread		 *m_pAlarmVideoThread;       //Alarm Video thread
 
+	//CMap<UINT,UINT,VideoPlayControl*,VideoPlayControl*> m_mapVideoPlayCtrl;
+	//CMap<UINT,UINT,MonitorImage*,MonitorImage*> m_mapImagePlayCtrl;
 
 public:
 	bool Stop_Play(int nVideoID, int nStopType=0); //nStopType same to status : 0 normal exit, 2: Timeout & Reconnect
@@ -298,7 +315,14 @@ public:
 	
 	HANDLE m_hEventVideoCtrl[2];
 
+	//Func Tread
+	HANDLE m_hFuncEvent[GOKU_FUNC_END];
+	void   StartFuncThread();
+	bool   IsRealAlarmReturn() {return m_bRealAlarmStrReturn;};
+	void   SetRealAlarm(bool bHasAlarm) {m_bRealAlarmStrReturn = bHasAlarm;};
+	bool   GetRealAlarmInfo();   
 private:
 	long	m_lWaitTime;
 	int	   m_nAlarmVideoSaveCount;
+	bool	m_bRealAlarmStrReturn;
 };

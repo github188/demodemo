@@ -78,6 +78,9 @@ void CLoginDlg::OnBnClickedOk()
 			pApp->alarmStr.Empty();
 			pApp->pgkclient->listbtstree(pApp->btsTotalStr);
 
+			//Begin Thread....
+			pApp->pgkclient->StartFuncThread();
+
 			//Save default data
 			CFileException error;
 			if ( ! m_fSaveInfo.Open("LogOnInfo.txt", CFile::modeCreate | CFile::modeReadWrite, &error) )

@@ -126,36 +126,6 @@ int ImageSocket::read_buffer(char *buffer, int size)
 	
 	int nNum=len;
 
-	/*/--------------------------------------------------
-	if (len%2)
-	{
-		CString str;
-		str.Format("Odd %d", len);
-		AfxMessageBox(str);
-	}
-
-	int nBytes = len/2;
-	u_short *ps=NULL;
-	ps=(u_short *)&szBuffer;
-	if ( (*ps) == 0xFFFE )
-	{
-		ps=(u_short *)(szBuffer+2);
-		nBytes = len/2-1;
-	}
-
-	//u_short pconvs;
-	for(int i=0;i<nBytes;i++,ps++)
-	{
-		*ps=ntohs(*ps);
-		//ps++;
-		//memcpy(&dstlocal[i], &pconvs, sizeof(pconvs));
-	}
-	//UNICODE×ª»»ÎªANSI   
-	int length = WideCharToMultiByte(CP_ACP, 0, (WCHAR *)(szBuffer+2), nBytes, NULL,	0,	 NULL,NULL); 
-	//int length = WideCharToMultiByte(CP_ACP, 0, (WCHAR *)(szBuffer+2), -1, NULL,		0,	 NULL,NULL); 
-	int nNum   = WideCharToMultiByte(CP_ACP, 0, (WCHAR *)(szBuffer+2), nBytes, buffer, length,  NULL,NULL);  
-	*///------------------------------------------------------
-	
 	//write to Log File.
 	//util::int2str(xx, len);
 	util::int2str(xx,nNum);

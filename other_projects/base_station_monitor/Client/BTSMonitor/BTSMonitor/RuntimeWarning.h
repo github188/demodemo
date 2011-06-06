@@ -3,6 +3,8 @@
 #include "afxwin.h"
 
 #include "const.h"
+#include "ColoredListCtrl.h"
+
 // CRuntimeWarning dialog
 class CWarnPopVideo;
 class CRuntimeWarning : public CPropertyPage
@@ -23,7 +25,8 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	CMFCListCtrl  m_lstRuntimeWarning;
+	//CMFCListCtrl  m_lstRuntimeWarning;
+	CColoredListCtrl	m_lstRuntimeWarning;
 
 public:
 	void AddListView(ALARM_COMING_TYPE type); //
@@ -56,4 +59,6 @@ public:
 	void IncPopVedioCount(void);
 	bool AckedWarning(CString sUUID);
 	bool DeleteItemByUUID(CString sUUID);
+	afx_msg void OnWarningPlay();
+	afx_msg void OnNMCustomdrawLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
 };

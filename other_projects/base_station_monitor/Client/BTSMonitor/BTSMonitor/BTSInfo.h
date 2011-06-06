@@ -40,11 +40,11 @@ public:
 		}
 		else if(idevType==2)
 		{
-			nImage=1;
+			nImage=2;
 		}
 		else if(idevType==1)
 		{
-			nImage=2;
+			nImage=1;
 		}
 		posInTree=tree->InsertItem(name, nImage, nImage);
 		return posInTree;
@@ -59,11 +59,11 @@ public:
 		}
 		else if(idevType==2)
 		{
-			nImage=1;
+			nImage=2;
 		}
 		else if(idevType==1)
 		{
-			nImage=2;
+			nImage=1;
 		}
 		
 		BOOL bIsBTS = (!channelInfo.IsEmpty());
@@ -86,7 +86,7 @@ public:
 		if ( !channelInfo.IsEmpty() )
 		{
 			HTREEITEM hItem;
-			nImage = 1;
+			nImage = 2;
 			int i=0;
 			for(;i< ch_list.GetSize(); i++)
 			{

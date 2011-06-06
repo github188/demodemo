@@ -375,9 +375,14 @@ void CCameraView::OnFindBTS()
 
 	if ( str.IsEmpty() ) return;
 
-	BOOL bFind = FindNewTarget( str );
-	if (!bFind)
-		AfxMessageBox("没有找到!");
+	if (str == m_sFindStr)
+		FindNextTarget();
+	else
+	{
+		BOOL bFind = FindNewTarget( str );
+		if (!bFind)
+			AfxMessageBox("没有找到!");
+	}
 }
 
 void CCameraView::OnUpdateFindBTS(CCmdUI* pCmdUI) 

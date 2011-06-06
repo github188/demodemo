@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ColoredListCtrl.h"
 
 // CCriticalWarning dialog
 
@@ -21,7 +22,8 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	CMFCListCtrl  m_lstCriticalWarning;
+	//CMFCListCtrl  m_lstCriticalWarning;
+	CColoredListCtrl m_lstCriticalWarning;
 
 public:
 	void AddListView(ALARM_COMING_TYPE type); 

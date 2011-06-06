@@ -50,7 +50,7 @@ BOOL CBTSMonitorDoc::OnNewDocument()
 
 	// TODO: 在此添加重新初始化代码
 	// (SDI 文档将重用该文档)
-	this->SetTitle(_T("中国移动通信公司"));
+	//this->SetTitle(_T("移动基站视频图像监控系统"));
 
 	return TRUE;
 }

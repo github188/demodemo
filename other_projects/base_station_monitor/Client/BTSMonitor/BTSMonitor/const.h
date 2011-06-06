@@ -56,6 +56,23 @@ typedef enum tagALARM_COMING_TYPE
 	ALARM_REFRESH
 }ALARM_COMING_TYPE;
 
+typedef enum tagFUNCTION_TYPE
+{
+	GOKU_FUNC_NONE, //Exit 
+	RE_LOG_IN,
+	GET_ALARM_STR,
+	LIST_BTS_TREE,
+	QUERY_ALARM_INFO,
+	GET_REALTIME_ALARM_STR,
+	CONFIRM_ALARM,
+	GET_TASK_LIST,
+	SAVE_TASK_INFO,
+	GET_REAL_IMAGE_BY_BASE64,
+	GET_ALARM_IMAGE_BY_BASE64,
+	GOKU_FUNC_END,
+
+}FUNCTION_TYPE;
+
 const int cnMAX_VV = 25;		//up to 25 play window...
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
 const int cnALARM_VIDEO_VV = 10; //up to 10 alarm play view..

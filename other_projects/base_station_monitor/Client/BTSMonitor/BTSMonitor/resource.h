@@ -215,8 +215,15 @@
 #define IDC_BTN_FAST_BACKWARD           1069
 #define IDC_BTN_MOD_SAVE_TASK           1069
 #define IDC_ALARM_VIDEO                 1070
-#define IDC_BUTTON2                     1071
 #define IDC_BTN_CANCEL_MODIFY           1071
+#define IDC_FIRST                       1072
+#define IDC_PREVIOUS                    1073
+#define IDC_NEXT                        1074
+#define IDC_LAST                        1075
+#define IDC_GOTO                        1076
+#define IDC_PAGE_INFO                   1078
+#define IDC_COMBO1                      1079
+#define IDC_CBO_PAGE_IDX                1079
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -245,14 +252,16 @@
 #define ID_PLAYVIEW_CLOSE               32806
 #define ID_PLAYVIEW_32807               32807
 #define ID_PLAYVIEW_FULLSCREEN          32808
+#define ID_WARNING_B                    32809
+#define ID_WARNING_PLAY                 32810
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        348
-#define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1072
+#define _APS_NEXT_RESOURCE_VALUE        350
+#define _APS_NEXT_COMMAND_VALUE         32811
+#define _APS_NEXT_CONTROL_VALUE         1080
 #define _APS_NEXT_SYMED_VALUE           325
 #endif
 #endif

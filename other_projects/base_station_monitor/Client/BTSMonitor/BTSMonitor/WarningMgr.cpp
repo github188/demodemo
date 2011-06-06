@@ -9,6 +9,7 @@
 #include "util.h"
 #include "DlgImage.h"
 #include "MonitorImage.h"
+#include <math.h>
 // CWarningMgr dialog
 
 IMPLEMENT_DYNAMIC(CWarningMgr, CDialog)
@@ -22,12 +23,15 @@ CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
 	,m_nAlarmVideoSaveCnt(0)
 	,m_bIsSaving(false)
 	,m_nPlayingStatus(0)
+	, m_strPageInfo(_T(""))
 {
 	VERIFY(pDlgImage = new CDlgImage());
 
 	for(int i=0; i<cnALARM_VIDEO_VV; i++)
 		m_bSaving[i] = false;
 
+	m_CurAlarmPara.nCurPg = 0;
+	m_CurAlarmPara.nTotalPg = 0;
 }
 
 CWarningMgr::~CWarningMgr()
@@ -64,6 +68,8 @@ void CWarningMgr::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CBO_START_SECOND, m_cboStartSec);
 	DDX_Control(pDX, IDC_CBO_END_SECOND, m_cboEndSec);
 	DDX_Control(pDX, IDC_ALARM_VIDEO, m_alarmVideoCtrl);
+	DDX_Control(pDX, IDC_CBO_PAGE_IDX, m_cboPageIndex);
+	DDX_Text(pDX, IDC_PAGE_INFO, m_strPageInfo);
 }
 
 
@@ -88,6 +94,11 @@ BEGIN_MESSAGE_MAP(CWarningMgr, CDialog)
 	ON_BN_CLICKED(IDC_BTN_FAST_FORWARD, &CWarningMgr::OnBnClickedBtnFastForward)
 	ON_BN_CLICKED(IDC_BTN_GOTO_BEGIN, &CWarningMgr::OnBnClickedBtnGotoBegin)
 	ON_BN_CLICKED(IDC_BTN_GOTO_END, &CWarningMgr::OnBnClickedBtnGotoEnd)
+	ON_BN_CLICKED(IDC_FIRST, &CWarningMgr::OnBnClickedFirst)
+	ON_BN_CLICKED(IDC_PREVIOUS, &CWarningMgr::OnBnClickedPrevious)
+	ON_BN_CLICKED(IDC_NEXT, &CWarningMgr::OnBnClickedNext)
+	ON_BN_CLICKED(IDC_LAST, &CWarningMgr::OnBnClickedLast)
+	ON_BN_CLICKED(IDC_GOTO, &CWarningMgr::OnBnClickedGoto)
 END_MESSAGE_MAP()
 
 
@@ -158,6 +169,7 @@ BOOL CWarningMgr::OnInitDialog()
 	m_cboWarnType.AddString("硬盘错误"); //1004
 	m_cboWarnType.AddString("连接超时"); //2001
 	m_cboWarnType.AddString("图片告警"); //5001
+	m_cboWarnType.SetCurSel(0);
 
 	//Init Ack type
 	m_cboWarnAckType.ResetContent();
@@ -165,7 +177,8 @@ BOOL CWarningMgr::OnInitDialog()
 	m_cboWarnAckType.AddString("未确认");  //1
 	m_cboWarnAckType.AddString("告警超时自动确认"); //2
 	m_cboWarnAckType.AddString("手动确认"); //3
-
+	m_cboWarnAckType.SetCurSel(0);
+	
 	//Init Time
 	m_cboStartHour.ResetContent();
 	m_cboEndHour.ResetContent();
@@ -192,6 +205,14 @@ BOOL CWarningMgr::OnInitDialog()
 		m_cboStartSec.AddString(strTime);
 		m_cboEndSec.AddString(strTime);
 	}
+	m_cboStartHour.SetCurSel(0);
+	m_cboStartMin.SetCurSel(0);
+	m_cboStartSec.SetCurSel(0);
+
+	m_cboEndHour.SetCurSel(23);
+	m_cboEndMin.SetCurSel(59);
+	m_cboEndSec.SetCurSel(59);
+
 
 	bool bDebug=false;
 	int nCount = 0;
@@ -257,10 +278,15 @@ void CWarningMgr::OnBnClickedBtnWarnMgrDeviceFind()
 	GetDlgItemText(IDC_EDIT_DEVICE_FIND,str);
 
 	if ( str.IsEmpty() ) return;
-
-	BOOL bFind = FindNewTarget( str );
-	if (!bFind)
-		AfxMessageBox("没有找到!");
+	
+	if (str == m_sFindStr)
+		FindNextTarget();
+	else
+	{
+		BOOL bFind = FindNewTarget( str );
+		if (!bFind)
+			AfxMessageBox("没有找到!");
+	}
 
 }
 //Find target warning...
@@ -367,7 +393,9 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 		return ;
 	}
 
-	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID, sCh, strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr);
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID, sCh, strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr,nTotal, nCount);
 	if (sQAlarmStr.IsEmpty())
 	{
 		AfxMessageBox("没有相关告警!");
@@ -375,59 +403,34 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	}
 
 	//显示相关告警信息在列表中
-	m_alarmMgr.getalarmList(sQAlarmStr,true);
-	CString sLocation, sTemp;
-	int nCount = 0;
-	AlarmInfo* pAlarmInfo = NULL;	
-	POSITION pos = m_alarmMgr.alarmList.GetHeadPosition();
-	while( pos!=NULL )
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	//Save Current Alarm Query Parameter
+	m_CurAlarmPara.sCategory = sCategory;
+	m_CurAlarmPara.sUUID = sUUID;
+	m_CurAlarmPara.sCh = sCh;
+	m_CurAlarmPara.strStartDate = strStartDate;
+	m_CurAlarmPara.strStartTime = strStartTime;
+	m_CurAlarmPara.sAckType = sAckType;
+	m_CurAlarmPara.sLevel = sLevel;
+	m_CurAlarmPara.sLimit = sLimit;
+	m_CurAlarmPara.sOffset = sOffset;
+
+	//
+	m_CurAlarmPara.nTotalPg = ceil(nTotal/100.0);
+	m_CurAlarmPara.nCurPg = 1;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+	//Init the Combox
+	CString str;
+	m_cboPageIndex.ResetContent();
+	for(int i=0; i<m_CurAlarmPara.nTotalPg; i++)
 	{
-		pAlarmInfo = m_alarmMgr.alarmList.GetNext(pos);
-		if (pAlarmInfo)
-		{
-			//"告警状态", //level
-			m_lstFindWarnResult.InsertItem(nCount,"",0);
-			m_lstFindWarnResult.SetItem(nCount,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+		str.Format("%d",i);
+		m_cboPageIndex.AddString(str);
+	}
 
-			//"UUID",		//UUID
-			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
-			
-			//"位置",		//place
-			sLocation = m_btsMgr.GetCameraPlace(pAlarmInfo->BTSID);
-			m_lstFindWarnResult.SetItem(nCount,1,LVIF_TEXT,sLocation,0,0,0,0);
-
-			//端局类型
-			m_lstFindWarnResult.SetItem(nCount,2,LVIF_TEXT,pAlarmInfo->BTSType,0,0,0,0);
-
-			//"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
-			m_lstFindWarnResult.SetItem(nCount,3,LVIF_TEXT,pAlarmInfo->alarmCode,0,0,0,0);
-			
-			//"基站",		//BTSID
-			m_lstFindWarnResult.SetItem(nCount,4,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
-
-			//Channel,		
-			m_lstFindWarnResult.SetItem(nCount,5,LVIF_TEXT,pAlarmInfo->ChannelID,0,0,0,0);
-
-			//"开始时间", //start tiem
-			m_lstFindWarnResult.SetItem(nCount,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
-			//"结束时间", //end   time
-			m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
-			//"处理状态" //status
-			sTemp = pAlarmInfo->status==1 ? "未处理":
-				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
-			m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,sTemp,0,0,0,0);	
-
-			int nCategory = atoi(pAlarmInfo->category);
-			sTemp = nCategory == 1 ?  "视频":
-					nCategory == 2 ?  "图片": "无";
-			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,sTemp,0,0,0,0);	
-
-			m_lstFindWarnResult.SetItem(nCount,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
-
-			nCount++;
-
-		}// ArmList
-	}	
 }
 
 void CWarningMgr::InitVedioDeviceTree(void)
@@ -898,7 +901,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		if (err) 
 		{
 			//Only Show Message To user...
-			AfxMessageBox("未知的错误类型!");
+			//AfxMessageBox("未知的错误类型!");
 			return;
 		}
 
@@ -1166,16 +1169,43 @@ void CWarningMgr::OnWarningmgrSaveas()
 	strTemp = sStartTime.Mid(pos+1);
 	sTime+=strTemp;//ss
 
+
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	if (sCategory=="视频")
 	{
+		//sVideoName.Format("%s_%s_%s.h264", sBTSID,sCh,sTime);
+		//CString sWarnVideoName;
+		//util::InitApp();
+		//char *pAlarmImageDir = util::GetAppPath();
+		//strcat(pAlarmImageDir,"AlarmVideo");
+		//sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
+
+
+		//Make Name...
 		sVideoName.Format("%s_%s_%s.h264", sBTSID,sCh,sTime);
 
-		CString sWarnVideoName;
+		CString sDefaultVideoPath, sWarnVideoName;
 		util::InitApp();
 		char *pAlarmImageDir = util::GetAppPath();
 		strcat(pAlarmImageDir,"AlarmVideo");
-		sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
+		//sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
+		sDefaultVideoPath.Format("%s%s", pAlarmImageDir,"\\");
+
+
+		CFileDialog FileDlg(TRUE,_T("告警视频保存"),sVideoName,OFN_HIDEREADONLY|OFN_PATHMUSTEXIST,NULL,NULL);
+		FileDlg.m_ofn.lpstrTitle = "";
+		char sDir[_MAX_PATH];
+		GetCurrentDirectory(_MAX_PATH,sDir);
+		FileDlg.m_ofn.lpstrInitialDir = sDefaultVideoPath;
+		if(FileDlg.DoModal()==IDOK)
+		{
+			sWarnVideoName = FileDlg.GetPathName();
+			//if(!FileExists(m_strMapPath))
+			//	return;
+		}
+		else
+			return;
+
 
 		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO); //StopAlamVideoPlay();
 
@@ -1185,25 +1215,151 @@ void CWarningMgr::OnWarningmgrSaveas()
 
 	}
 	else
-		sVideoName.Format("%s_%s_%s.jpg", sBTSID,sCh,sTime);
-
-	/*
-	CFileDialog FileDlg(TRUE,_T(""),sVideoName,OFN_HIDEREADONLY|OFN_PATHMUSTEXIST,NULL,NULL);
-	FileDlg.m_ofn.lpstrTitle = "";
-	char sDir[_MAX_PATH];
-	GetCurrentDirectory(_MAX_PATH,sDir);
-	FileDlg.m_ofn.lpstrInitialDir = sDir;
-	CString strMapPath;
-	if(FileDlg.DoModal()==IDOK)
 	{
-		strMapPath = FileDlg.GetPathName();
-		//if(!FileExists(m_strMapPath))
-		//	return;
-		int i=0;
+		CString sImagePath;
+		//Select a Directory...
+		LPMALLOC pMalloc;
+		/* Gets the Shell's default allocator */
+		if (::SHGetMalloc(&pMalloc) == NOERROR)
+		{
+			BROWSEINFO bi;
+			char pszBuffer[MAX_PATH];
+			LPITEMIDLIST pidl;
+			// Get help on BROWSEINFO struct - it's got all the bit settings.
+			bi.hwndOwner = GetSafeHwnd();
+			bi.pidlRoot = NULL;
+			bi.pszDisplayName = pszBuffer;
+			bi.lpszTitle = _T("请选择一个目录！");
+			bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+			bi.lpfn = NULL;
+			bi.lParam = 0;
+			// This next call issues the dialog box.
+			if ((pidl = ::SHBrowseForFolder(&bi)) != NULL)
+			{
+				if (::SHGetPathFromIDList(pidl, pszBuffer))
+				{ 
+					// At this point pszBuffer contains the selected path */.
+					sImagePath = pszBuffer;
+					UpdateData(FALSE);
+				}
+				// Free the PIDL allocated by SHBrowseForFolder.
+				pMalloc->Free(pidl);
+			}
+			// Release the shell's allocator.
+			pMalloc->Release();
+		}
+
+		if ( sImagePath.IsEmpty() )
+		{
+			AfxMessageBox("选择目录为空！");
+			return;
+		}
+
+
+		//Save JPG to the des place...
+		int err=0;
+		CString sError;
+		CString sDateTime, sBts, sCh;
+		CString sRoute		= pApp->pgkclient->btsmanager.GetRouteByUUID(sBTSID);
+		//MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sUUID, &err);
+		MonitorImage *pMoImage = pApp->pgkclient->getAlarmImagebyBase64(sBTSID, "", sRoute, AlarmID,&err);
+		switch(err)
+		{
+		case -2: //:返回         -2:参数错误
+			{
+				sError.Format("%s-%s:%d",sBTSID,"参数错误", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("参数错误!");
+			}
+			break;
+		case 0:
+			sError = "Image Receiving...";
+			break;
+		case 1://基站未找到
+			{
+				sError.Format("%s-%s:%d",sBTSID,"基站未找到", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("基站未找到!");
+			}
+			break;
+		case 2://正在传输其他图片  <--------需要界面提示
+			{
+				sError.Format("%s-%s:%d",sBTSID,"正在传输其他图片", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("正在传输其他图片!");
+			}
+			break;
+		case 0xFF:
+			{
+				//Socket Error , Receive or Write failed...
+				//Need to Re connect socket.
+				sError.Format("%s-%s:%d",sBTSID,"图片获取指令发送失败！", err);
+				CLogFile::WriteLog(sError);
+
+			}
+			break;
+		default:
+			{
+				sError.Format("%s:%d","未知的错误类型", err);
+				CLogFile::WriteLog(sError);
+				//AfxMessageBox("未知的错误类型!");
+			}
+
+		}
+		if (err) 
+		{
+			//Only Show Message To user...
+			AfxMessageBox(sError);
+			return;
+		}
+
+		if (pMoImage)
+		{
+
+			//Save Image to local Directory
+			CString sJpgName;
+
+			//Save current alarm image to the directory.
+			CString sLine, str;
+			int pos=0;
+			int err=0;
+			while ( pMoImage->getNextImage(&err))
+			{
+				sDateTime.Empty(); sBts.Empty(); sCh.Empty();
+
+				//pos = util::split_next(pMoImage->datetime,str,'-',0);
+				//sDateTime+=str;//YY
+				pos = util::split_next(pMoImage->datetime,str,'-',0);
+				sDateTime+=str;//YY
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//MM
+				pos = util::split_next(pMoImage->datetime,str,' ',pos+1);
+				sDateTime+=str;//DD
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//hh
+				pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				sDateTime+=str;//mm
+				//pos = util::split_next(pMoImage->datetime,str,'-',pos+1);
+				str = pMoImage->datetime.Mid(pos+1);
+				sDateTime+=str;//ss
+
+				pos = util::split_next(pMoImage->bts,str,':',0);
+				//pos = util::split_next(pMoImage->bts,str,':',pos+1);
+				pMoImage->bts.Mid(pos+1);
+				sBts+=str;
+
+				pos = util::split_next(pMoImage->channel,str,':',0);
+				//pos = util::split_next(pMoImage->channel,str,':',pos+1);
+				pMoImage->channel.Mid(pos+1);
+				sCh+=str;
+
+				sJpgName.Format("%s%s%s_%s_%s.jpg", sImagePath,"\\", sBts, sCh, sDateTime);
+				pMoImage->savedata(sJpgName);
+			}
+
+		}
+
 	}
-	else
-		return;
-	*/
 
 }
 
@@ -1651,5 +1807,286 @@ void CWarningMgr::OnBnClickedBtnGotoEnd()
 		m_alarmVideoCtrl.SetWindowText(strShowInfo);
 
 		m_nPlayingStatus = 0;
+	}
+}
+
+void CWarningMgr::OnBnClickedFirst()
+{
+	// TODO: Add your control notification handler code here
+	if (m_CurAlarmPara.nCurPg<=1 )
+		return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	CString sQAlarmStr, sOffset;
+	sOffset.Format("%d", 0 );
+
+	pApp->pgkclient->queryAlarmInfo(m_CurAlarmPara.sCategory,
+									m_CurAlarmPara.sUUID, 
+									m_CurAlarmPara.sCh, 
+									m_CurAlarmPara.strStartDate,
+									m_CurAlarmPara.strStartTime,
+									m_CurAlarmPara.sAckType,
+									m_CurAlarmPara.sLevel,
+									m_CurAlarmPara.sLimit,
+									sOffset,
+									sQAlarmStr,
+									nTotal, 
+									nCount);
+	if (sQAlarmStr.IsEmpty())
+	{
+		AfxMessageBox("没有相关告警!");
+		return;
+	}
+
+	//显示相关告警信息在列表中
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	m_CurAlarmPara.sOffset = sOffset;
+
+	m_CurAlarmPara.nCurPg = 1;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+}
+
+void CWarningMgr::OnBnClickedPrevious()
+{
+	// TODO: Add your control notification handler code here
+	if (m_CurAlarmPara.nCurPg<=1 )
+		return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	CString sQAlarmStr, sOffset;
+
+	sOffset.Format("%d", (m_CurAlarmPara.nCurPg-1)*100 );
+
+	pApp->pgkclient->queryAlarmInfo(m_CurAlarmPara.sCategory,
+		m_CurAlarmPara.sUUID, 
+		m_CurAlarmPara.sCh, 
+		m_CurAlarmPara.strStartDate,
+		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.sAckType,
+		m_CurAlarmPara.sLevel,
+		m_CurAlarmPara.sLimit,
+		sOffset,
+		sQAlarmStr,
+		nTotal, 
+		nCount);
+	if (sQAlarmStr.IsEmpty())
+	{
+		AfxMessageBox("没有相关告警!");
+		return;
+	}
+
+	//显示相关告警信息在列表中
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	m_CurAlarmPara.sOffset = sOffset;
+
+	m_CurAlarmPara.nCurPg--;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+}
+
+void CWarningMgr::OnBnClickedNext()
+{
+	// TODO: Add your control notification handler code here
+	if (m_CurAlarmPara.nCurPg >= m_CurAlarmPara.nTotalPg)
+		return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	CString sQAlarmStr, sOffset;
+
+	sOffset.Format("%d", m_CurAlarmPara.nCurPg*100 );
+
+	pApp->pgkclient->queryAlarmInfo(m_CurAlarmPara.sCategory,
+		m_CurAlarmPara.sUUID, 
+		m_CurAlarmPara.sCh, 
+		m_CurAlarmPara.strStartDate,
+		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.sAckType,
+		m_CurAlarmPara.sLevel,
+		m_CurAlarmPara.sLimit,
+		sOffset,
+		sQAlarmStr,
+		nTotal, 
+		nCount);
+	if (sQAlarmStr.IsEmpty())
+	{
+		AfxMessageBox("没有相关告警!");
+		return;
+	}
+
+	//显示相关告警信息在列表中
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	m_CurAlarmPara.sOffset = sOffset;
+
+	m_CurAlarmPara.nCurPg++;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+}
+
+void CWarningMgr::OnBnClickedLast()
+{
+	// TODO: Add your control notification handler code here
+	if (m_CurAlarmPara.nCurPg >= m_CurAlarmPara.nTotalPg)
+		return;
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	CString sQAlarmStr, sOffset;
+
+	sOffset.Format("%d", (m_CurAlarmPara.nTotalPg-1)*100 );
+
+	pApp->pgkclient->queryAlarmInfo(m_CurAlarmPara.sCategory,
+		m_CurAlarmPara.sUUID, 
+		m_CurAlarmPara.sCh, 
+		m_CurAlarmPara.strStartDate,
+		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.sAckType,
+		m_CurAlarmPara.sLevel,
+		m_CurAlarmPara.sLimit,
+		sOffset,
+		sQAlarmStr,
+		nTotal, 
+		nCount);
+	if (sQAlarmStr.IsEmpty())
+	{
+		AfxMessageBox("没有相关告警!");
+		return;
+	}
+
+	//显示相关告警信息在列表中
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	m_CurAlarmPara.sOffset = sOffset;
+
+	m_CurAlarmPara.nCurPg++;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+}
+
+void CWarningMgr::OnBnClickedGoto()
+{
+	// TODO: Add your control notification handler code here
+	if (m_CurAlarmPara.nCurPg >= m_CurAlarmPara.nTotalPg)
+		return;
+
+	int nGotoPg = m_cboPageIndex.GetCurSel();
+	if (nGotoPg == LB_ERR)
+		return;
+
+	nGotoPg++; //index is zero based.
+
+	if (m_CurAlarmPara.nCurPg == nGotoPg) 
+		return;
+
+
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+
+	int nTotal, nCount;
+	nTotal = nCount = 0;
+	CString sQAlarmStr, sOffset;
+
+	sOffset.Format("%d", nGotoPg*100 );
+
+	pApp->pgkclient->queryAlarmInfo(m_CurAlarmPara.sCategory,
+		m_CurAlarmPara.sUUID, 
+		m_CurAlarmPara.sCh, 
+		m_CurAlarmPara.strStartDate,
+		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.sAckType,
+		m_CurAlarmPara.sLevel,
+		m_CurAlarmPara.sLimit,
+		sOffset,
+		sQAlarmStr,
+		nTotal, 
+		nCount);
+	if (sQAlarmStr.IsEmpty())
+	{
+		AfxMessageBox("没有相关告警!");
+		return;
+	}
+
+	//显示相关告警信息在列表中
+	ShowQueryAlarmInfo(sQAlarmStr);
+
+	m_CurAlarmPara.sOffset = sOffset;
+
+	m_CurAlarmPara.nCurPg = nGotoPg+1;
+
+	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+}
+
+void CWarningMgr::ShowQueryAlarmInfo(CString strQueryAlarm)
+{
+	m_lstFindWarnResult.DeleteAllItems();
+
+	m_alarmMgr.getalarmList(strQueryAlarm,true);
+	CString sLocation, sTemp;
+	int nCount = 0;
+	AlarmInfo* pAlarmInfo = NULL;	
+	POSITION pos = m_alarmMgr.alarmList.GetHeadPosition();
+	while( pos!=NULL )
+	{
+		pAlarmInfo = m_alarmMgr.alarmList.GetNext(pos);
+		if (pAlarmInfo)
+		{
+			//"告警状态", //level
+			m_lstFindWarnResult.InsertItem(nCount,"",0);
+			m_lstFindWarnResult.SetItem(nCount,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+
+			//"UUID",		//UUID
+			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
+
+			//"位置",		//place
+			sLocation = m_btsMgr.GetCameraPlace(pAlarmInfo->BTSID);
+			m_lstFindWarnResult.SetItem(nCount,1,LVIF_TEXT,sLocation,0,0,0,0);
+
+			//端局类型
+			m_lstFindWarnResult.SetItem(nCount,2,LVIF_TEXT,pAlarmInfo->BTSType,0,0,0,0);
+
+			//"告警类型", //alarmCode :1:当前实时告警, 正在发生的告警;2:历史告警记录
+			m_lstFindWarnResult.SetItem(nCount,3,LVIF_TEXT,pAlarmInfo->alarmCode,0,0,0,0);
+
+			//"基站",		//BTSID
+			m_lstFindWarnResult.SetItem(nCount,4,LVIF_TEXT,pAlarmInfo->BTSID,0,0,0,0);
+
+			//Channel,		
+			m_lstFindWarnResult.SetItem(nCount,5,LVIF_TEXT,pAlarmInfo->ChannelID,0,0,0,0);
+
+			//"开始时间", //start tiem
+			m_lstFindWarnResult.SetItem(nCount,6,LVIF_TEXT,pAlarmInfo->startTime,0,0,0,0);
+			//"结束时间", //end   time
+			m_lstFindWarnResult.SetItem(nCount,7,LVIF_TEXT,pAlarmInfo->endTime,0,0,0,0);
+			//"处理状态" //status
+			sTemp = pAlarmInfo->status==1 ? "未处理":
+				pAlarmInfo->status==2 ? "超时自动处理":"手动确认";
+			m_lstFindWarnResult.SetItem(nCount,8,LVIF_TEXT,sTemp,0,0,0,0);	
+
+			int nCategory = atoi(pAlarmInfo->category);
+			sTemp = nCategory == 1 ?  "视频":
+				nCategory == 2 ?  "图片": "无";
+			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,sTemp,0,0,0,0);	
+
+			m_lstFindWarnResult.SetItem(nCount,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+
+			nCount++;
+
+		}// ArmList
 	}
 }

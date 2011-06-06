@@ -13,12 +13,12 @@ void MonitorImage::getImageText(CString &line)
 	//CString size;
 	//pos=util::split_next(line, size, '$', 0);
 	pos=util::split_next(line, height, '$', 0);
-	pos=util::split_next(line, width, '$', pos+1);
+	pos=util::split_next(line, width,  '$', pos+1);
 	pos=util::split_next(line, datetime, '$', pos+1);
-	pos=util::split_next(line, lenth, '$', pos+1);
-	pos=util::split_next(line, bts, '$', pos+1);
+	pos=util::split_next(line, lenth,  '$', pos+1);
+	pos=util::split_next(line, bts,    '$', pos+1);
 	pos=util::split_next(line, channel, '$', pos+1);
-	pos=util::split_next(line, status, '$', pos+1);
+	pos=util::split_next(line, status,  '$', pos+1);
 }
 
 void MonitorImage::decodeImageData(CString &base64line)

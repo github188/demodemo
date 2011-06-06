@@ -4,7 +4,23 @@
 #include "BTSManager.h"
 #include "AlarmManager.h"
 #include "atltypes.h"
+#include "ColoredListCtrl.h"
+
 // CWarningMgr dialog
+typedef struct tagCUR_ALARM_PARA
+{
+	CString sCategory;
+	CString sUUID;
+	CString sCh;
+	CString strStartDate;
+	CString strStartTime;
+	CString sAckType;
+	CString sLevel;
+	CString sLimit;
+	CString sOffset;
+	int		nTotalPg;
+	int		nCurPg;
+}CUR_ALARM_PARA;
 class CDlgImage;
 class CWarningMgr : public CDialog
 {
@@ -29,7 +45,8 @@ private:
 	CString	  m_sFilter;
 	CString	  m_sFindStr;
 	CTreeCtrl m_treeWarnMgr;
-	CListCtrl m_lstFindWarnResult;
+	//CListCtrl m_lstFindWarnResult;
+	CColoredListCtrl m_lstFindWarnResult;
 	CComboBox m_cboWarnType;
 	CComboBox m_cboWarnAckType;
 	CDateTimeCtrl m_dateBegin;
@@ -62,6 +79,7 @@ public:
 	afx_msg void OnHdnItemclickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 private:
+	CUR_ALARM_PARA m_CurAlarmPara;
 	int m_nCurItem;
 	CDlgImage *pDlgImage;
 public:
@@ -92,4 +110,12 @@ public:
 	afx_msg void OnBnClickedBtnFastForward();
 	afx_msg void OnBnClickedBtnGotoBegin();
 	afx_msg void OnBnClickedBtnGotoEnd();
+	afx_msg void OnBnClickedFirst();
+	afx_msg void OnBnClickedPrevious();
+	afx_msg void OnBnClickedNext();
+	afx_msg void OnBnClickedLast();
+	afx_msg void OnBnClickedGoto();
+	CComboBox m_cboPageIndex;
+	CString m_strPageInfo;
+	void ShowQueryAlarmInfo(CString strQueryAlarm);
 };

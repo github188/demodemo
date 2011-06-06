@@ -22,21 +22,18 @@ int GokuClient::execute_command(CString &cmd)
 	CString sMsg;
 	if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
 	{
-		ReConnectServer();
-		if ( IsConnected() )
-		{
+//		ReConnectServer();
+//		if ( IsConnected() )
+//		{
 			//LogIn by Saving User & Password
-			if(login(m_sUserName, m_sPassword)==0)
-			{
-				if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
-					return -1;
-			}
-			else
-				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
-
-		}
-		else
-			return -1;
+//			if(login(m_sUserName, m_sPassword)==0)
+//			{
+//				if ( !socket->SendCmdAndRecvMsg(cmd,sMsg) )
+//					return -1;
+//			}
+//			else
+//				AfxMessageBox("服务器已经断开, 请退出系统,重新登陆!");
+		return -1;
 	}
 
 	util::split_next(sMsg, code, ':', 0);
@@ -67,7 +64,19 @@ int GokuClient::login(CString &user, CString &password)
 	sCmd.Append(password);
 	*/
 
-	int ret = execute_command(sCmd);
+
+	CString code;
+	sCmd.Append("\n");
+
+	CString sMsg;
+	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
+		return -1;
+
+	util::split_next(sMsg, code, ':', 0);
+	///----by-liang----------------------------------
+	
+	int ret = util::str2int(code);
+	//int ret = execute_command(sCmd);
 	
 	if (ret == 0)
 	{
@@ -230,7 +239,7 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 }
 
 void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CString startDate, CString startTime,
-				CString type, CString level, CString limit, CString offset, CString &qalarmStr)
+				CString type, CString level, CString limit, CString offset, CString &qalarmStr, int& nTotal, int& nCount)
 {
 	/*//----------------------------------------------
 	qalarmStr.Empty();
@@ -308,11 +317,15 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CStr
 	if (sMsg.IsEmpty())
 		return;
 
-	CString temp;
-	int pos=util::split_next(sMsg, temp, '$', 0);
- 	pos=util::split_next(sMsg, temp, '$', pos+1);
-	pos=util::split_next(sMsg, temp, '$', pos+1);
-	int linenum=util::str2int(temp);
+	//0:告警信息列表$<COUNT>$<RETURN_COUNT>$<QSID>
+	CString temp,sRet,sTotal, sCount, sQSid;
+	int pos=util::split_next(sMsg, sRet, '$', 0);
+ 	pos=util::split_next(sMsg, sTotal, '$', pos+1);
+	pos=util::split_next(sMsg, sCount, '$', pos+1);
+	pos=util::split_next(sMsg, sQSid, '$', pos+1);
+	nTotal=util::str2int(sTotal);
+	int linenum=util::str2int(sCount);
+	nCount = linenum;
 	pos++; //emit \n
 	for(int i=0;i<linenum;i++)
 	{
@@ -1181,4 +1194,103 @@ void GokuClient::ReplayjumpToPos(CString pos)
 
 	if (m_pPlayThread[cnWARNING_VEDIO])
 		PostThreadMessage(m_pPlayThread[cnWARNING_VEDIO]->m_nThreadID, WM_JUMPPOS, 0,0);
+}
+
+//--------------------------------------------------Let Function run in thread....
+void   GokuClient::StartFuncThread()
+{
+	AfxBeginThread(Goku_Funtion_Control, this);
+}
+bool   GokuClient::GetRealAlarmInfo()
+{
+	if ( IsRealAlarmReturn() )
+	{
+		SetRealAlarm(false); //No Alarm...
+		return true;
+	}
+	::SetEvent(m_hFuncEvent[GET_REALTIME_ALARM_STR]);
+
+	return false;
+
+}
+
+ //Let all command run in a thread.
+UINT Goku_Funtion_Control(LPVOID param)
+{
+	GokuClient *pGokuClient = (GokuClient*)param;
+	
+	if (!pGokuClient) return 0;
+
+	bool bRuning = true;
+	DWORD dwRet = 0;
+	while (bRuning)
+	{
+		dwRet = ::WaitForMultipleObjects(2,pGokuClient->m_hFuncEvent,false,INFINITE); //10 Second
+		switch(dwRet)
+		{
+		case WAIT_OBJECT_0: //GOKU_FUNC_NONE, exit
+			{
+				bRuning = false;
+			}
+			break;
+		case WAIT_OBJECT_0+1: //RE_LOG_IN
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+2: //GET_ALARM_STR
+			{
+				//...
+			}
+			break;
+		case WAIT_OBJECT_0+3: //LIST_BTS_TREE
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+4: //QUERY_ALARM_INFO
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+5: //GET_REALTIME_ALARM_STR
+			{
+				//...
+				CString strAlarm;
+				pGokuClient->getRealTimeAlarmStr(strAlarm);
+				if ( strAlarm.IsEmpty() )
+				{
+					pGokuClient->SetRealAlarm(false);
+				}
+				else
+				{
+					pGokuClient->alarmmanager.getalarmList(strAlarm);
+					pGokuClient->SetRealAlarm(true);
+				}
+
+			}
+			break;
+		case WAIT_OBJECT_0+6: //CONFIRM_ALARM
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+7: //GET_TASK_LIST
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+8: //SAVE_TASK_INFO
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+9: //GET_REAL_IMAGE_BY_BASE64
+			{
+			}
+			break;
+		case WAIT_OBJECT_0+10: //GET_ALARM_IMAGE_BY_BASE64
+			{
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	return 19;
 }

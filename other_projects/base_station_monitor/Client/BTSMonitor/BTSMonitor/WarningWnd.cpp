@@ -138,29 +138,26 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 		return; //the BTS Device listview is still not built.
 
 
-//#ifdef _DEBUG	
-	
-//	pApp->pgkclient->getAlarmStr(pApp->alarmStr);
-//	pApp->pgkclient->alarmmanager.getalarmList(pApp->alarmStr);
 
-//#else
 
-	CString alarmStr;
-	pApp->pgkclient->getRealTimeAlarmStr(alarmStr);
-	pApp->pgkclient->alarmmanager.getalarmList(alarmStr);
+	//CString alarmStr;
+	//pApp->pgkclient->getRealTimeAlarmStr(alarmStr);
+	//pApp->pgkclient->alarmmanager.getalarmList(alarmStr);
 
-//#endif
-
-	if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
+	if (pApp->pgkclient->GetRealAlarmInfo())
 	{
-		m_pRuntimePg->AddListView(ALARM_REFRESH);
-		m_pCriticalPg->AddListView(ALARM_REFRESH);
-	}
 
-	if (!pApp->pgkclient->alarmmanager.curNewAlarmList.IsEmpty())
-	{
-		m_pRuntimePg->AddListView(ALARM_NEW);
-		m_pCriticalPg->AddListView(ALARM_NEW);
+		if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
+		{
+			m_pRuntimePg->AddListView(ALARM_REFRESH);
+			m_pCriticalPg->AddListView(ALARM_REFRESH);
+		}
+
+		if (!pApp->pgkclient->alarmmanager.curNewAlarmList.IsEmpty())
+		{
+			m_pRuntimePg->AddListView(ALARM_NEW);
+			m_pCriticalPg->AddListView(ALARM_NEW);
+		}
 	}
 
 	CDockablePane::OnTimer(nIDEvent);

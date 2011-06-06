@@ -121,6 +121,10 @@ BOOL CBTSMonitorApp::InitInstance()
 	{
 		return FALSE;
 	}
+	else
+	{
+		//Start Main Thread for pgkclient ...
+	}
 
 	// 注册应用程序的文档模板。文档模板
 	// 将用作文档、框架窗口和视图之间的连接
@@ -145,6 +149,8 @@ BOOL CBTSMonitorApp::InitInstance()
 	// 用 /RegServer、/Register、/Unregserver 或 /Unregister 启动应用程序，则返回 FALSE。
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
+
+	m_pMainWnd-> SetWindowText("移动基站视频图像监控系统"); 
 
 	// 唯一的一个窗口已初始化，因此显示它并对其进行更新
 	m_pMainWnd->ShowWindow(SW_SHOW);
