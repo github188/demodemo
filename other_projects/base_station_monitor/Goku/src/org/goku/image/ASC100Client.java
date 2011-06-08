@@ -26,6 +26,8 @@ public class ASC100Client {
 	public ASC100Package inBuffer = new ASC100Package();
 	public ImageInfo image = null;
 	public int maxRetryTime = 5;
+	//最后有读数据的时间。MX自动分析，长时间没有响应数据的设备。对其发重传指令。
+	public long lastBenchTime = 0;
 
 	protected Log log = null;
 	protected ASC100MX mx = null;
@@ -35,7 +37,6 @@ public class ASC100Client {
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private byte lastCmd = 0;
 	private long readCount = 0;
-	private long lastBenchTime = 0;
 	
 	
 	public ASC100Client(String location){
@@ -376,7 +377,7 @@ public class ASC100Client {
 		}
 	}
 	
-	private void sendRetryFrame(int[] frames) throws IOException{
+	public void sendRetryFrame(int[] frames) throws IOException{
 		String tmp = "";
 		for(int i : frames) {
 			tmp += " " + i;

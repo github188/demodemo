@@ -1,11 +1,9 @@
 package org.goku.image;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -81,6 +79,7 @@ public class ASC100MX implements Runnable{
 	
 	private ThreadPoolExecutor threadPool = null;
 	private ByteBuffer writeBuffer = null;
+	private RetryMonitor retryMonitor = null;
 	
 	public ASC100MX(int remotePort, int localPort, ThreadPoolExecutor threadPool){
 		this.localPort = localPort; 
@@ -107,6 +106,9 @@ public class ASC100MX implements Runnable{
 	    }catch(Exception e){
 	    	log.error("Failed open local UDP port " + this.localPort + ", error:" + e.toString());
 	    }
+	    
+	    retryMonitor = new RetryMonitor();
+	    threadPool.execute(retryMonitor);
 	    
 	    log.info("Started UPD server at port " + this.localPort);
 	    long lastBenchmarkTime = System.currentTimeMillis();
@@ -346,6 +348,43 @@ public class ASC100MX implements Runnable{
 		
 	};
 	
+	//自动分析所有客户端，如果长时间没有响应，而且图片正在传输中,发送重传指令。
+	public class RetryMonitor implements Runnable{
+		@Override
+		public void run() {
+			log.debug("Start image retry monitor...");
+			while(isRunning) {
+				Collection<ASC100Client> x = new ArrayList<ASC100Client>();
+				x.addAll(clientTable.values());
+				for(ASC100Client c: x){
+					if(c.image == null)continue;
+					//图片传输时间超过了1分钟，取消传输中的图片。
+					if(System.currentTimeMillis() - c.image.startDate.getTime() > 60 * 1000){
+						c.image = null;
+						continue;
+					}
+					
+					//超过2秒没有读到数据，开发发重传包。
+					try {
+						if(System.currentTimeMillis() - c.lastBenchTime > 2000){
+							log.debug("Try to retry image data by retry monitor.");
+							int[] retry = c.image.getReTryFrames();
+							c.image.waitingFrames = retry.length;
+								c.sendRetryFrame(retry);
+						}
+					} catch (Throwable e) {
+						log.error(e.toString(), e);
+					}
+				}
+				try {
+					Thread.sleep(1000 * 5);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+		
+	}
+	
 	/**
 	 * 一个简单的队列，修正UPD的接收乱序问题。每次接收到一个包先放到哟个队列，让后在
 	 * 判断下一个应处理的包。如果下一个包是需要处理的包开始处理。如果不是则等待1秒钟。
@@ -359,9 +398,8 @@ public class ASC100MX implements Runnable{
 		public Map<Integer, ByteBuffer> queue = new HashMap<Integer, ByteBuffer>();
 		
 		public void put(int order, ByteBuffer data){
-			if(next_index == -1 || 
-			   (next_index > order && order != 0) ||
-			   order - next_index > 15 //如果已经累计超过15个包没有处理，从最新一个包开始处理。
+			if(order > next_index ||     //只要下一个到达的包是增量的。
+			   next_index - order > 10000 //累加计数回到了10000以前，假设计数器复位。
 			   ){
 				next_index = order;
 				size = 0;
