@@ -515,6 +515,14 @@ public class ASC100Client {
 			log.error(e.toString(), e);
 		}		
 	}
+
+	public void getDevVersion(){
+		try {
+			sendCommand((byte)0x02, new byte[]{12});
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}		
+	}	
 	
 	public void getDateTime(){
 		try {

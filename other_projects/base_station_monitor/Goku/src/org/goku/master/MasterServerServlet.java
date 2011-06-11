@@ -800,6 +800,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 	throws IOException, ServletException{
 		forwardToRoute("get_date", request, response, false);
 	}
+	
+	public void img_load_version(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException{
+		forwardToRoute("load_version", request, response, false);
+	}	
 		
 	public void rpc_list_bts(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException{

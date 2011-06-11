@@ -60,7 +60,9 @@ $(document).ready(function(){
 	
 	$('#btn_mjld').click(function(e){
 		save_param('11,' + $('#mjld').val());
-	});		
+	});	
+	
+	$('#btn_load_ver').click(load_dev_ver);
 	
 	//img_restart
 	
@@ -146,6 +148,26 @@ function save_date(date){
 );		
 }
 
+function load_dev_ver(date){
+	$.post("/", {'q': 'img_load_version',
+		 'uuid': uuid,
+		},
+		function(data){
+			if(data['status'] == 'image'){
+				alert("设备正在传图片，不能操作设备。");
+			}else if(data['status'] == 'timeout'){
+				alert("版本读取超时，请稍后再重试。");
+			}else if(data['status'] == 'err'){
+				alert("版本读取出错，请与开发人员联系。");
+			}else if(data['status'] == 'ok'){				
+				$('#dev_ver').val(data['version']);
+				alert("设备版本读取成功。");
+			}
+		},
+  'json'
+);		
+}
+
 function restart(date){
 	$.post("/", {'q': 'img_restart',
 		 'uuid': uuid,
@@ -191,9 +213,14 @@ function save_param(param){
 	<h3>设备操作</h3>
 	<input type='submit' id='read_param' name='read_param' value='读取设备参数' />&nbsp;&nbsp;		
 	<input type='submit' id='btn_restart' name='submit' value='系统重启' />&nbsp;&nbsp;	
-	<input type='submit' id='btn_reset_param' name='submit' value='视频通道恢复默认设置' />&nbsp;&nbsp;	
-	<input type='submit' name='submit' value='读取设备状态' />&nbsp;&nbsp;				
+	<input type='submit' id='btn_reset_param' name='submit' value='视频通道恢复默认设置' />&nbsp;&nbsp;				
 	<br/> 
+</div>
+
+<div>
+	<h3>软件版本</h3>
+	<span>版本:<input size='10' readonly='readonly' type='text' id='dev_ver' name='dev_ver' value='0' /></span>
+	<input type='submit' id='btn_load_ver' name='submit' value='读取设备版本' />&nbsp;&nbsp;	
 </div>
 
 <div>
@@ -231,15 +258,7 @@ function save_param(param){
 </div>
 
 <div>
-	<h3>4. 视频通道图像颜色设置 --没有找到命令</h3>
-	<span>敏感度:<input size='4' type='text'  name='s' value='0' /></span>
-	<input type='submit' name='submit' id='#' value='保存到设备' />&nbsp;&nbsp; 
-	<br/> 
-	<div>0x00-黑白,   0x01-彩色</div>
-</div>
-
-<div>
-	<h3>5. 视频通道图像压缩比设置</h3>
+	<h3>4. 视频通道图像压缩比设置</h3>
 	<span>压缩比:<input size='4' type='text' id='zip_rate' name='zip_rate' value='100' /></span>
 	<input type='submit' name='submit' id='btn_zip_rate' value='保存到设备' />&nbsp;&nbsp; 
 	<br/> 
@@ -247,7 +266,7 @@ function save_param(param){
 </div>
 
 <div>
-	<h3>6. 设置设备时钟</h3>
+	<h3>5. 设置设备时钟</h3>
 	<span>时间:<input size='16' type='text' id='dateTime' name='dateTime' value='2011-05-11 01:01' /></span>
 	<input type='submit' id='btn_save_date' name='submit' value='保存到设备' />&nbsp;&nbsp; 
 	<input type='submit' id='btn_load_date' name='submit' value='读取设备时间' />&nbsp;&nbsp;	
@@ -255,14 +274,14 @@ function save_param(param){
 </div>
 
 <div>
-	<h3>7. 分辨率设置</h3>
+	<h3>6. 分辨率设置</h3>
 	<span>分辨率:<input size='16' type='text' id='fbl' name='fbl' value='0' /></span>
 	<input type='submit' name='submit' id='btn_fbl' value='保存到设备' />&nbsp;&nbsp; 
 	<div>X＝0（704x576），1（352x288）</div>	
 	<br/> 
 </div>
 <div>
-	<h3>8. 门禁联动开关设置</h3>
+	<h3>7. 门禁联动开关设置</h3>
 	<span>是否联动:<input size='16' type='text' id='mjld' name='mjld' value='0' /></span>
 	<input type='submit' name='submit' id='btn_mjld' value='保存到设备' />&nbsp;&nbsp; 
 	<div>如果为1表示开“门禁联动”，如果为0表示关“门禁联动”</div>	

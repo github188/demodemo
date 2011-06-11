@@ -168,6 +168,50 @@ public class ImageRouteServerServlet extends BaseRouteServlet {
 		}	
 		JSONValue.writeJSONString(result, response.getWriter());	    	
     }    
+    
+    public void load_version(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+		String uuid = this.getStringParam(request, "uuid", null);
+		final Map<String, String> result = new HashMap<String, String>();
+		result.put("status", "error");
+		if(uuid == null){
+			result.put("msg", "-2:Parameter error");
+		}else {			
+			ASC100Client ascClient = server.getMonitorClient(uuid);
+			if(ascClient == null){
+				result.put("msg", "1$Not found base station");
+			}else {
+				result.put("status", "timeout");
+				ImageClientListener l = new AbstractImageListener() {
+					public void message(ImageClientEvent event){
+						if(event.data.len == 5){
+							ByteBuffer b = event.data.inBuffer.asReadOnlyBuffer();
+							if(b.get() == 2 && b.get() == 12){
+								result.put("status", "ok");
+								result.put("version", String.format("%c.%c%c",
+										b.get(), b.get(), b.get() 
+										));
+								synchronized(this){
+									this.notifyAll();
+								}
+							}
+						}
+					};
+				};
+				ascClient.addListener(l);		
+				ascClient.getDevVersion();
+				try {
+					synchronized(l){
+						l.wait(1000 * 10);
+					}
+				} catch (InterruptedException e) {
+				}finally{
+					ascClient.removeListener(l);
+				}				
+			}			
+		}	
+		JSONValue.writeJSONString(result, response.getWriter());    	
+    }
 
     public void set_date(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
@@ -330,6 +374,13 @@ L(串口流控参数(L1，L2)，(T1，T2))，M(错误机制设置(T1，T2)，(Cn
 							b.get();
 							b.get();
 							b.get();
+							//空5个字节,兼容老设备
+							b.get();
+							b.get();
+							b.get();
+							b.get();
+							b.get();
+							
 							result.put("mode_ch3", String.format("%x", b.get()));
 							result.put("mode_ch4", String.format("%x", b.get()));							
 							synchronized(this){
