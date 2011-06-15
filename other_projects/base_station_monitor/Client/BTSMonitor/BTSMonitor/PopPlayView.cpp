@@ -306,7 +306,7 @@ void CPopPlayView::OnTimer(UINT_PTR nIDEvent)
 			}
 			else
 			{
-				m_sImageStatus = "Unknown error!"; //Only Warning Mgr...
+				m_sImageStatus = "No Information!"; //"Unknown error!"; //Only Warning Mgr...
 				strError.Format("getNextImage()Ê§°Ü BTSID=%s, ChannelID=%s .Î´ÖªµÄ´íÎó´úÂë=%d", m_sUUID, m_sChannelID,err);
 				CLogFile::WriteLog(strError);
 			}

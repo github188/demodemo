@@ -123,7 +123,7 @@ BOOL CRuntimeWarning::OnInitDialog()
 	if (hIcon)		m_imagelist.Add(hIcon);
 
 #ifdef _DEBUG
-	SetTimer(WM_RUNTIME_TIMER,1000,NULL);
+	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
 #endif
 
 	i=0;
@@ -584,7 +584,7 @@ void CRuntimeWarning::OnWarningPlay()
 		{
 			if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 			{
-				m_pPopVideoDlg[i]->SetVideoPara(sBtsID,sUUID, sLocation,sCh,sBeginTime, sEndTime, sType);
+				m_pPopVideoDlg[i]->SetVideoPara(sBtsID,sUUID, sLocation,sCh,sBeginTime, sEndTime, sType, TRUE);
 				m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
 				m_pPopVideoDlg[i]->PlayVideo();
 

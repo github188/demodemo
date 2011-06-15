@@ -230,7 +230,7 @@ public:
 
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
-	void queryAlarmInfo(CString category, CString uuid, CString sCh,CString startDate, CString startTime,
+	void queryAlarmInfo(CString category, CString uuid, CString sCh,CString startDate, CString startTime, CString endDate,CString endTime,
 				CString type, CString level, CString limit, CString offset, CString &qalarmStr,int& nTotal, int& nCount);
 	void getRealTimeAlarmStr(CString &alarmStr);
 	bool confirmAlarm(CString uuid);
@@ -268,7 +268,7 @@ public:
 	//MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *errno);
 	//MonitorImage* getAlarmImagebyBase64(CString alarmID, int *errno);
 	MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *err);
-	MonitorImage* getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute , int *err);
+	MonitorImage* getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute , int *err, BOOL bPlayImage=FALSE);
 	//MonitorImage* getAlarmImagebyBase64(CString alarmID, int *err);
 	MonitorImage* getAlarmImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute,CString alarmID, int *err);
 

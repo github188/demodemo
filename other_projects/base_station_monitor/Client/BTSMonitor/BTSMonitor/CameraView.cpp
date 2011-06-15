@@ -76,18 +76,18 @@ int CCameraView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//
 	HFONT hFont;   
 	hFont =  CreateFont(12,0,0,0,400,0,0,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH || FF_DONTCARE,"宋体");
-	m_pStcFind->Create("查询设备",WS_CHILD|WS_VISIBLE, CRect(20,3,70,20), this);
+	m_pStcFind->Create("查询设备",WS_CHILD|WS_VISIBLE, CRect(5,3,55,20), this);
 	m_pStcFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
 
 	//m_wndEdit.Create(WS_CHILD | WS_VISIBLE | WS_BORDER |   WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_WANTRETURN, CRect(10, 10, 400, 300), this, IDC_EDIT1);
 	//m_wndEdit.ModifyStyleEx(0, WS_EX_CLIENTEDGE);
 	//m_wndEdit.CreateEx(WS_EX_CLIENTEDGE, _T("EDIT"), NULL, WS_CHILD | WS_VISIBLE/* | WS_BORDER*/ |  WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_WANTRETURN, CRect(10, 10, 400, 300), this, IDC_EDIT1);
-	m_pEdtFind->Create(WS_CHILD | WS_VISIBLE,CRect(75,3,170,20), this ,ID_EBOX_FIND);
+	m_pEdtFind->Create(WS_CHILD | WS_VISIBLE,CRect(60,3,155,20), this ,ID_EBOX_FIND);
 	m_pEdtFind->ModifyStyleEx(0,   WS_EX_CLIENTEDGE,   SWP_DRAWFRAME);
 	m_pEdtFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
 
 	//
-	m_pBtnFind->Create("查找",WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON,CRect(175,3,230,20), this ,ID_BTN_FIND);
+	m_pBtnFind->Create("查找",WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON,CRect(160,3,215,20), this ,ID_BTN_FIND);
 	m_pBtnFind->EnableWindow();
 	m_pBtnFind->SendMessage(WM_SETFONT,(DWORD)hFont,TRUE);
 

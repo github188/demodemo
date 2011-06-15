@@ -14,6 +14,8 @@ typedef struct tagCUR_ALARM_PARA
 	CString sCh;
 	CString strStartDate;
 	CString strStartTime;
+	CString strEndDate;
+	CString strEndTime;
 	CString sAckType;
 	CString sLevel;
 	CString sLimit;

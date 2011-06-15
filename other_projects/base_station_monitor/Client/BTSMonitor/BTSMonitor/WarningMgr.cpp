@@ -395,7 +395,7 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 
 	int nTotal, nCount;
 	nTotal = nCount = 0;
-	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID, sCh, strStartDate,strStartTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr,nTotal, nCount);
+	pApp->pgkclient->queryAlarmInfo(sCategory,sUUID, sCh, strStartDate,strStartTime,strEndDate,strEndTime,sAckType,sLevel,sLimit,sOffset,sQAlarmStr,nTotal, nCount);
 	if (sQAlarmStr.IsEmpty())
 	{
 		AfxMessageBox("没有相关告警!");
@@ -411,6 +411,8 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	m_CurAlarmPara.sCh = sCh;
 	m_CurAlarmPara.strStartDate = strStartDate;
 	m_CurAlarmPara.strStartTime = strStartTime;
+	m_CurAlarmPara.strEndDate = strEndDate,
+	m_CurAlarmPara.strEndTime = strEndTime,
 	m_CurAlarmPara.sAckType = sAckType;
 	m_CurAlarmPara.sLevel = sLevel;
 	m_CurAlarmPara.sLimit = sLimit;
@@ -1828,6 +1830,8 @@ void CWarningMgr::OnBnClickedFirst()
 									m_CurAlarmPara.sCh, 
 									m_CurAlarmPara.strStartDate,
 									m_CurAlarmPara.strStartTime,
+									m_CurAlarmPara.strEndDate,
+									m_CurAlarmPara.strStartTime,
 									m_CurAlarmPara.sAckType,
 									m_CurAlarmPara.sLevel,
 									m_CurAlarmPara.sLimit,
@@ -1871,6 +1875,8 @@ void CWarningMgr::OnBnClickedPrevious()
 		m_CurAlarmPara.sCh, 
 		m_CurAlarmPara.strStartDate,
 		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.strEndDate,
+		m_CurAlarmPara.strEndTime,
 		m_CurAlarmPara.sAckType,
 		m_CurAlarmPara.sLevel,
 		m_CurAlarmPara.sLimit,
@@ -1914,6 +1920,9 @@ void CWarningMgr::OnBnClickedNext()
 		m_CurAlarmPara.sCh, 
 		m_CurAlarmPara.strStartDate,
 		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.strEndDate,
+		m_CurAlarmPara.strEndTime,
+
 		m_CurAlarmPara.sAckType,
 		m_CurAlarmPara.sLevel,
 		m_CurAlarmPara.sLimit,
@@ -1957,6 +1966,9 @@ void CWarningMgr::OnBnClickedLast()
 		m_CurAlarmPara.sCh, 
 		m_CurAlarmPara.strStartDate,
 		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.strEndDate,
+		m_CurAlarmPara.strEndTime,
+
 		m_CurAlarmPara.sAckType,
 		m_CurAlarmPara.sLevel,
 		m_CurAlarmPara.sLimit,
@@ -2009,6 +2021,9 @@ void CWarningMgr::OnBnClickedGoto()
 		m_CurAlarmPara.sCh, 
 		m_CurAlarmPara.strStartDate,
 		m_CurAlarmPara.strStartTime,
+		m_CurAlarmPara.strEndDate,
+		m_CurAlarmPara.strEndTime,
+
 		m_CurAlarmPara.sAckType,
 		m_CurAlarmPara.sLevel,
 		m_CurAlarmPara.sLimit,

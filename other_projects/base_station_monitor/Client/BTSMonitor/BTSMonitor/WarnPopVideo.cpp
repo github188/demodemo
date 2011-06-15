@@ -252,7 +252,7 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 
 }
 
-void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime, CString sCategory)
+void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName, CString sChannel,CString sStartTime, CString sEndTime, CString sCategory, BOOL bPlayImage)
 {
 	m_sBtsID	 = sBtsID;
 	m_sUUID		 = sUUID;
@@ -261,6 +261,8 @@ void CWarnPopVideo::SetVideoPara(CString sBtsID, CString sUUID,CString sBtsName,
 	m_sStartTime = sStartTime;
 	m_sEndTime   = sEndTime;
 	m_sCategory	 = sCategory;
+
+	m_bPlayImage = bPlayImage;
 }
 
 void CWarnPopVideo::OnClose()
@@ -328,7 +330,7 @@ void CWarnPopVideo::PlayVideo(void)
 		//start Image Monitoring....
 		int err=0;
 		CString sError;		
-		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(m_sBtsID,m_sChannel,sRoute,&err);
+		MonitorImage *pMoImage = pApp->pgkclient->getRealImagebyBase64(m_sBtsID,m_sChannel,sRoute,&err, m_bPlayImage);
 		switch(err)
 		{
 		case -2: //:·µ»Ø         -2:²ÎÊı´íÎó

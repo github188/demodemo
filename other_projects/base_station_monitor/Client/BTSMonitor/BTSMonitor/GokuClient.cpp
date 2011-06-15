@@ -150,19 +150,29 @@ void GokuClient::listbtstree(CString &str)
 	if (sMsg.IsEmpty())
 		return;
 
-	CString temp;
-	int pos=util::split_next(sMsg, temp, '$',   0);
+	CString temp, sRet;
+	int pos=util::split_next(sMsg, sRet, '$',   0);
+	int err = util::str2int(sRet);
 	pos = util::split_next(sMsg, temp, '\n', pos+1);
 	int line=util::str2int(temp);
 	//pos++;
-	for(int i=0;i<line;i++)
+	if (err==0)
 	{
-		pos=util::split_next(sMsg, temp, '\n', pos+1);
-		if (temp.IsEmpty())
-			break;
+		for(int i=0;i<line;i++)
+		{
+			pos=util::split_next(sMsg, temp, '\n', pos+1);
+			if (temp.IsEmpty())
+				break;
 
-		str.Append(temp);
-		str.Append("\n");
+			str.Append(temp);
+			str.Append("\n");
+		}
+	}
+	else
+	{
+		CString strError;
+		strError.Format("%s ErrorInfo:%s","listbtstree()",sRet);
+		CLogFile::WriteLog(strError);
 	}
 
 }
@@ -238,7 +248,7 @@ void GokuClient::getAlarmStr(CString &alarmStr)
 	///------------------------------------------------
 }
 
-void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CString startDate, CString startTime,
+void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CString startDate, CString startTime,CString endDate,CString endTime,
 				CString type, CString level, CString limit, CString offset, CString &qalarmStr, int& nTotal, int& nCount)
 {
 	/*//----------------------------------------------
@@ -299,6 +309,14 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CStr
 	{
 		sCmd.Append(" ");
 		sCmd.Append(startTime);
+	}
+	sCmd.Append("&endTime=");
+	sCmd.Append(endDate);
+	if (endDate!="")
+	{
+		sCmd.Append(" ");
+		sCmd.Append(endTime);
+
 	}
 	sCmd.Append("&status=");
 	sCmd.Append(type);
@@ -879,11 +897,13 @@ UINT video_thread_control(LPVOID param)
 					{
 						int nViewID = pGokuClient->m_pArrVideoCtrl[i]->sessionId;
 						LPARAM lPara = MAKELPARAM( nViewID, 5); //4 Blocking..
-						::SendMessage(pGokuClient->m_pArrVideoCtrl[i]->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_REFRESH_PLAYVIEW,lPara);
+						if (pGokuClient->m_pArrVideoCtrl[i])
+							::SendMessage(pGokuClient->m_pArrVideoCtrl[i]->m_hWnd,WM_PLAYVIEW_SELECTED,(WPARAM)MSG_REFRESH_PLAYVIEW,lPara);
+						else
+							continue;
 
 					}
 					
-
 					//Blocking Control............................................................
 					if (pGokuClient->m_pArrVideoCtrl[i]->status == 1) //running...
 					{
@@ -1028,7 +1048,7 @@ MonitorImage* GokuClient::getRealImagebyBase64(BTSInfo *binfo, int *err)
 }
 
 //liang add for single channel image retriving.
-MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute, int *err)
+MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute, int *err, BOOL bPlayImage)
 {
 	if (!m_pMoImage) //Create MoniterImage Object
 	{
@@ -1051,7 +1071,10 @@ MonitorImage* GokuClient::getRealImagebyBase64(CString sBtsUUID,CString sCh, CSt
 	}
 
 	CString sCmd;
-	sCmd.Append("img>real_image?");
+	if (bPlayImage)
+		sCmd.Append("img>alarm_image?");
+	else
+		sCmd.Append("img>real_image?");
 	sCmd.Append("baseStation=");
 	sCmd.Append(sBtsUUID);
 	sCmd.Append("&");
