@@ -58,7 +58,8 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		OutputWriter out = new OutputWriter(client);
 		if(cmd.equals("alarm_image")){
 			alarmImage(client, out, param.get("alarmId"), 
-					param.get("baseStation"), param.get("status"),
+					param.get("baseStation"), param.get("channel"),
+					param.get("status"),
 					param.get("last"), param.get("mode"),
 					param.get("encode")
 					);
@@ -83,7 +84,8 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 	}
 	
 	protected void alarmImage(SocketClient client, OutputWriter out,
-			String alarmId, String baseStation, String last, String status,
+			String alarmId, String baseStation, String ch,
+			String last, String status, 
 			String mode, String encode) throws IOException {
 		int nLast = 0, nStatus = 0;
 		if(last != null && !"".equals(last)){
@@ -100,7 +102,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 				log.error(e.toString());
 			}
 		}
-		Collection<AlarmRecord> imageList = server.fileManager.getImageListByAlaram(alarmId, nLast, nStatus, baseStation);
+		Collection<AlarmRecord> imageList = server.fileManager.getImageListByAlaram(alarmId, nLast, nStatus, baseStation, ch);
 		String sid = createSessionId() + "";
 		Iterator<AlarmRecord> iter = imageList.iterator();
 		out.println("0$alarm_image$" + sid);
@@ -247,7 +249,7 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 				AlarmRecord alarm = this.nextImage(session.iter);
 				if(alarm == null){
 					Collection<AlarmRecord> imageList = server.fileManager.getImageListByAlaram(session.alarmId,
-							session.nLast, session.nStatus, session.baseStation);
+							session.nLast, session.nStatus, session.baseStation, session.channel);
 					session.iter = imageList.iterator();
 					alarm = this.nextImage(session.iter);
 					if(alarm == null){

@@ -503,7 +503,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 
 				//开始时间
 				String startTime = this.getStringParam(request, "startTime", null);
-				if(type != null && !"".equals(type) && !"all".equals(type)){
+				if(startTime != null && !"".equals(startTime) && !"all".equals(startTime)){
 					log.info("Start time:" + startTime);
 					try {
 						filter.put("startTime__>=", format.parse(startTime));
@@ -513,8 +513,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 				}
 				
 				String endTime = this.getStringParam(request, "endTime", null);
-				if(type != null && !"".equals(type) && !"all".equals(type)){
-					log.info("end time:" + startTime);
+				if(endTime != null && !"".equals(endTime) && !"all".equals(endTime)){
+					log.info("end time:" + endTime);
 					try {
 						filter.put("startTime_<=", format.parse(endTime));
 					} catch (ParseException e) {

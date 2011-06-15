@@ -106,7 +106,7 @@ public class FileManager {
 	 * 通过告警ID，查询图片列表。 
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<AlarmRecord> getImageListByAlaram(String alarmUUID, int last, int status, String baseUUID){
+	public Collection<AlarmRecord> getImageListByAlaram(String alarmUUID, int last, int status, String baseUUID, String ch){
 		Map<String, Object> filter = new HashMap<String, Object>();
 		QueryParameter param = new QueryParameter();
 		param.qsid = null;
@@ -120,6 +120,12 @@ public class FileManager {
 		if(baseUUID != null && !"".equals(baseUUID)){
 			filter.put("baseStation__=", baseUUID);
 		}
+		if(baseUUID != null && !"".equals(baseUUID)){
+			filter.put("baseStation__=", baseUUID);
+		}
+		if(ch != null && !"".equals(ch)){
+			filter.put("channelId__=", ch);
+		}		
 		if(status != 0){
 			filter.put("alarmStatus__=", status + "");
 		}
