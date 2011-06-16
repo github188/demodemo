@@ -112,7 +112,7 @@ bool CSimpleSocket::SendCmdAndRecvMsg(CString& sCmd, CString& sMsg)
 	//Receive Data
 	ZeroMemory(m_sBuffer, sizeof(m_sBuffer));
 	m_bufferLimit = read_buffer(m_sBuffer, BUFSIZE);
-	if (m_bufferLimit == 0)
+	if (m_bufferLimit<=0)
 		return false;
 
 	sMsg = m_sBuffer;

@@ -130,7 +130,7 @@ BOOL CWarningMgr::OnInitDialog()
 	};
 
 	int nCnt = sizeof(strHeader)/sizeof(strHeader[0]);
-	int nWidth[] = {68,160,68,68,68,60,180,180,68,50,0};
+	int nWidth[] = {68,160,68,68,68,60,180,180,68,68,0};
 	int i=0;
 	for (; i<nCnt-1; i++)
 		m_lstFindWarnResult.InsertColumn(i,strHeader[i],LVCFMT_CENTER, nWidth[i]);

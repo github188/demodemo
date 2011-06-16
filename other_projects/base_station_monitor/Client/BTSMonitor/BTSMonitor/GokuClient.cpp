@@ -336,11 +336,21 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CStr
 		return;
 
 	//0:告警信息列表$<COUNT>$<RETURN_COUNT>$<QSID>
-	CString temp,sRet,sTotal, sCount, sQSid;
-	int pos=util::split_next(sMsg, sRet, '$', 0);
- 	pos=util::split_next(sMsg, sTotal, '$', pos+1);
-	pos=util::split_next(sMsg, sCount, '$', pos+1);
-	pos=util::split_next(sMsg, sQSid, '$', pos+1);
+	CString temp,sRet,sResult, sTotal, sCount, sQSid;
+	int pos=util::split_next(sMsg, temp, '\n', 0);
+	if(temp.IsEmpty())
+		return;
+	//0:alarm list
+	int pos1=util::split_next(temp, sRet, '$', 0);
+	util::split_next(sRet, sResult, ':', 0);
+	if ( util::str2int(sResult) )
+	{
+		return;
+	}
+
+	pos1=util::split_next(temp, sTotal, '$', pos1+1);
+	pos1=util::split_next(temp, sCount, '$', pos1+1);
+	sQSid=temp.Mid(pos1+1);
 	nTotal=util::str2int(sTotal);
 	int linenum=util::str2int(sCount);
 	nCount = linenum;
