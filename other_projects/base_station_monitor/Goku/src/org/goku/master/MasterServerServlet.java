@@ -516,7 +516,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 				if(endTime != null && !"".equals(endTime) && !"all".equals(endTime)){
 					log.info("end time:" + endTime);
 					try {
-						filter.put("startTime_<=", format.parse(endTime));
+						filter.put("startTime__<=", format.parse(endTime));
 					} catch (ParseException e) {
 						log.error(e.toString(), e);
 					}
