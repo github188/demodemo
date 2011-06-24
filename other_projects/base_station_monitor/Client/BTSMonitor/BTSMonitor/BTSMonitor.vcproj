@@ -285,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MyProgressDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayView.cpp"
 				>
 			</File>
@@ -468,6 +472,10 @@
 			</File>
 			<File
 				RelativePath=".\MonitorImage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MyProgressDlg.h"
 				>
 			</File>
 			<File
@@ -709,11 +717,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
+				RelativePath=".\res\LogOn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\LogOn.ico"
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size64\LogOn.ico"
 				>
 			</File>
 			<File
@@ -733,15 +741,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\setting3.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\BTS_Doc\ICO\Size48\setting3.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\BTS_Doc\ICO\Size32\setting3.ico"
 				>
 			</File>
 			<File

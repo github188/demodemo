@@ -280,8 +280,10 @@ BOOL util::DeleteDirectory(char* sDirName, BOOL bIncludeDirectory)
 
 	if (bIncludeDirectory)
 	{
-		if(!RemoveDirectory(sDirName)) 
-			return FALSE; 
+		CString sFolderName = sDirName;
+		sFolderName = sFolderName.Mid(sFolderName.ReverseFind('\\')+1);
+		if (sFolderName != "AlarmImage")
+			RemoveDirectory(sDirName);
 	}
 
     return TRUE; 

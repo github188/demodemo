@@ -120,4 +120,5 @@ public:
 	CComboBox m_cboPageIndex;
 	CString m_strPageInfo;
 	void ShowQueryAlarmInfo(CString strQueryAlarm);
+//	afx_msg void OnStnClickedAlarmVideo();
 };

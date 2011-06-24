@@ -10,6 +10,7 @@
 #include "DlgImage.h"
 #include "MonitorImage.h"
 #include <math.h>
+#include "MyProgressDlg.h"
 // CWarningMgr dialog
 
 IMPLEMENT_DYNAMIC(CWarningMgr, CDialog)
@@ -99,6 +100,7 @@ BEGIN_MESSAGE_MAP(CWarningMgr, CDialog)
 	ON_BN_CLICKED(IDC_NEXT, &CWarningMgr::OnBnClickedNext)
 	ON_BN_CLICKED(IDC_LAST, &CWarningMgr::OnBnClickedLast)
 	ON_BN_CLICKED(IDC_GOTO, &CWarningMgr::OnBnClickedGoto)
+//	ON_STN_CLICKED(IDC_ALARM_VIDEO, &CWarningMgr::OnStnClickedAlarmVideo)
 END_MESSAGE_MAP()
 
 
@@ -252,13 +254,13 @@ BOOL CWarningMgr::OnInitDialog()
 
 	CRect rc, rect, rectTree;
 	GetClientRect(&rect);
-	m_treeWarnMgr.GetWindowRect(rectTree);
-	m_alarmVideoCtrl.GetWindowRect(&rc);
+	m_treeWarnMgr.GetClientRect(rectTree);
+	m_alarmVideoCtrl.GetClientRect(&rc);
 	if (pDlgImage)
 	{
 		m_rcVedio.top    = rect.top;
-		m_rcVedio.bottom = rectTree.bottom-12;
-		m_rcVedio.left   = rectTree.right;
+		m_rcVedio.bottom = rectTree.bottom+50;
+		m_rcVedio.left   = rectTree.right+20;
 		m_rcVedio.right  = rect.right;
 
 		pDlgImage->Create(IDD_DLG_IMAGE, this);
@@ -422,17 +424,18 @@ void CWarningMgr::OnBnClickedFindTargetWarning()
 	m_CurAlarmPara.nTotalPg = ceil(nTotal/100.0);
 	m_CurAlarmPara.nCurPg = 1;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
 
 	//Init the Combox
 	CString str;
 	m_cboPageIndex.ResetContent();
-	for(int i=0; i<m_CurAlarmPara.nTotalPg; i++)
+	for(int i=1; i<=m_CurAlarmPara.nTotalPg; i++)
 	{
 		str.Format("%d",i);
 		m_cboPageIndex.AddString(str);
 	}
 
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::InitVedioDeviceTree(void)
@@ -917,7 +920,7 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			strcat(pAlarmImageDir,"AlarmImage");
 
 			//Remove all file of this directory...
-			//util::DeleteAllFile(pAlarmImageDir);
+			util::DeleteAllFile(pAlarmImageDir, true);
 
 			CTime tmCur = CTime::GetCurrentTime();
 			CString sSaveDir;
@@ -1325,8 +1328,25 @@ void CWarningMgr::OnWarningmgrSaveas()
 			CString sLine, str;
 			int pos=0;
 			int err=0;
-			while ( pMoImage->getNextImage(&err))
+			CString strShowInfo;
+			bool bRetriveNextImage = TRUE;
+			int nImageCnt = 1;
+			CMyProgressDlg *pProgressDlg = NULL;
+			VERIFY(pProgressDlg = new  CMyProgressDlg(this) );
+			pProgressDlg->Create(IDD_PROGRESS_DLG);
+			pProgressDlg->ShowWindow(SW_SHOW);
+			//while ( pMoImage->getNextImage(&err))
+			while (bRetriveNextImage)
 			{
+				//CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+				//strShowInfo+="No Video...";
+
+				strShowInfo.Format("正在获取第 %d 张告警图片", nImageCnt);
+				pProgressDlg->UpdateProgress(strShowInfo);
+
+				if ( !pMoImage->getNextImage(&err) )
+					break;
+
 				sDateTime.Empty(); sBts.Empty(); sCh.Empty();
 
 				//pos = util::split_next(pMoImage->datetime,str,'-',0);
@@ -1357,7 +1377,11 @@ void CWarningMgr::OnWarningmgrSaveas()
 
 				sJpgName.Format("%s%s%s_%s_%s.jpg", sImagePath,"\\", sBts, sCh, sDateTime);
 				pMoImage->savedata(sJpgName);
+
+				nImageCnt++;
 			}
+
+			delete pProgressDlg;
 
 		}
 
@@ -1382,6 +1406,9 @@ void CWarningMgr::ShowButton(bool bShow)
 
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_STOP);
 		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+		
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_BACKWARD);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
 
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_FORWARD);
 		if (pBtn) pBtn->ShowWindow(SW_SHOW);
@@ -1391,7 +1418,10 @@ void CWarningMgr::ShowButton(bool bShow)
 
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END);
 		if (pBtn) pBtn->ShowWindow(SW_SHOW);
-		
+
+		pBtn = (CButton *)GetDlgItem(IDC_PLAY_CTRL_BOX);
+		if (pBtn) pBtn->ShowWindow(SW_SHOW);
+
 		if (m_alarmVideoCtrl.m_hWnd)
 			m_alarmVideoCtrl.ShowWindow(SW_SHOW);
 
@@ -1407,6 +1437,9 @@ void CWarningMgr::ShowButton(bool bShow)
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_STOP);
 		if (pBtn) pBtn->ShowWindow(SW_HIDE);
 
+		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_BACKWARD);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_FAST_FORWARD);
 		if (pBtn) pBtn->ShowWindow(SW_HIDE);
 
@@ -1416,7 +1449,9 @@ void CWarningMgr::ShowButton(bool bShow)
 		pBtn = (CButton *)GetDlgItem(IDC_BTN_GOTO_END);
 		if (pBtn) pBtn->ShowWindow(SW_HIDE);
 
-
+		pBtn = (CButton *)GetDlgItem(IDC_PLAY_CTRL_BOX);
+		if (pBtn) pBtn->ShowWindow(SW_HIDE);
+	
 		if (m_alarmVideoCtrl.m_hWnd)
 			m_alarmVideoCtrl.ShowWindow(SW_HIDE);
 
@@ -1633,7 +1668,7 @@ void CWarningMgr::OnBnClickedBtnPlay()
 			strcat(pAlarmImageDir,"AlarmImage");
 
 			//Remove all file of this directory...
-			//util::DeleteAllFile(pAlarmImageDir);
+			util::DeleteAllFile(pAlarmImageDir);
 
 			CTime tmCur = CTime::GetCurrentTime();
 			CString sSaveDir;
@@ -1852,8 +1887,9 @@ void CWarningMgr::OnBnClickedFirst()
 
 	m_CurAlarmPara.nCurPg = 1;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
 
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::OnBnClickedPrevious()
@@ -1897,8 +1933,9 @@ void CWarningMgr::OnBnClickedPrevious()
 
 	m_CurAlarmPara.nCurPg--;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
 
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::OnBnClickedNext()
@@ -1943,8 +1980,9 @@ void CWarningMgr::OnBnClickedNext()
 
 	m_CurAlarmPara.nCurPg++;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
 
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::OnBnClickedLast()
@@ -1989,22 +2027,25 @@ void CWarningMgr::OnBnClickedLast()
 
 	m_CurAlarmPara.nCurPg++;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::OnBnClickedGoto()
 {
 	// TODO: Add your control notification handler code here
-	if (m_CurAlarmPara.nCurPg >= m_CurAlarmPara.nTotalPg)
-		return;
+
+//	if (m_CurAlarmPara.nCurPg >= m_CurAlarmPara.nTotalPg)
+//		return;b
 
 	int nGotoPg = m_cboPageIndex.GetCurSel();
 	if (nGotoPg == LB_ERR)
 		return;
 
-	nGotoPg++; //index is zero based.
+	//nGotoPg++; //index is zero based.
 
-	if (m_CurAlarmPara.nCurPg == nGotoPg) 
+	if ( m_CurAlarmPara.nCurPg == (nGotoPg+1) ) 
 		return;
 
 
@@ -2044,7 +2085,9 @@ void CWarningMgr::OnBnClickedGoto()
 
 	m_CurAlarmPara.nCurPg = nGotoPg+1;
 
-	m_strPageInfo.Format("告警总页数:%d  当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+	m_strPageInfo.Format("告警总页数:%d\t当前页:%d", m_CurAlarmPara.nTotalPg, m_CurAlarmPara.nCurPg);
+
+	UpdateData(FALSE);
 }
 
 void CWarningMgr::ShowQueryAlarmInfo(CString strQueryAlarm)
