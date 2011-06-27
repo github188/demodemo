@@ -65,7 +65,7 @@ public class StatusBar extends JPanel {
 	}
 	
 	public void setText(final String text){
-		System.out.println("ST:" + text);
+		//System.out.println("ST:" + text);
 		if(SwingUtilities.isEventDispatchThread()){
 			label.setText(text);
 		}else {

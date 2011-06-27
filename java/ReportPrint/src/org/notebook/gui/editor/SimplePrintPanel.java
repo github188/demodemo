@@ -21,9 +21,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.InputDataField;
+import org.notebook.gui.StatusBar;
 
 public class SimplePrintPanel extends JPanel {
 	//private Image bg = null;
+	public StatusBar bar = null;
 	private JTextField input = null;
 	private Log log = LogFactory.getLog("print");
 	private ImageObserver bgObserver = null;
@@ -141,6 +143,7 @@ public class SimplePrintPanel extends JPanel {
 		@Override
 		public void focusGained(FocusEvent event) {
 			focusOn = (JComponent)event.getComponent();
+			bar.setText("输入-" + focusOn.getName());
 		}
 
 		@Override

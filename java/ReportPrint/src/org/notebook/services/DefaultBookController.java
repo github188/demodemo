@@ -1,6 +1,8 @@
 package org.notebook.services;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -148,6 +150,16 @@ public class DefaultBookController implements BookController{
 		
 		public void Exit(BookAction event) {
 			log.info("shutdown applcation...");
+			/*
+			DocumentDefine doc = mainFrame.saveDocumentDefine();
+			try {
+				OutputStreamWriter out = new OutputStreamWriter(System.out);
+				doc.save(out);
+				out.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 			mainFrame.dispose();
 			System.exit(0);
 		}

@@ -30,8 +30,8 @@ public class InputDataField implements Serializable, Cloneable{
 		}
 	}
 	
-	public String getConfigData(){		
+	public String getConfigData(){
 		return String.format("%s$%s$%s$%s$%s$%s$%s", 
-				type, name, x, y, w, h, tabIndex);
+				type, tabIndex, name, x, y, w, h);
 	}
 }

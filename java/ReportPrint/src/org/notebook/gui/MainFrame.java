@@ -158,10 +158,16 @@ public class MainFrame extends JFrame {
     
     public void updateDocumentDefine(DocumentDefine doc){
     	_panel.remove(this.mainPanel);  
-    	this.mainPanel = new SimplePrintPanel(); 
+    	this.mainPanel = new SimplePrintPanel();
+    	this.mainPanel.bar = this.statusBar;
     	this.mainPanel.loadDocument(doc);
     	_panel.getViewport().add(this.mainPanel);
     }
+    
+    
+    public DocumentDefine saveDocumentDefine(){
+    	return this.mainPanel.saveLayout();
+    }    
 
 	protected void initGui() {
 		menu = new MenuToolbar(this);

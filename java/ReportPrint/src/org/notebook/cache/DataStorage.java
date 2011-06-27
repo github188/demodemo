@@ -35,10 +35,10 @@ public abstract class DataStorage{
 	}
 	
 	public void saveDocument(String name, DocumentDefine doc){
-		OutputStream out = openOutputStream(name);
+		OutputStreamWriter out = new OutputStreamWriter(openOutputStream(name));
 		if(out != null){
 			try{
-				doc.save(new OutputStreamWriter(out));
+				doc.save(out);
 				out.flush();
 			}catch(IOException e){
 				log.error(e.toString(), e.getCause());
