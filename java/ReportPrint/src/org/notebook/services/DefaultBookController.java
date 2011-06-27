@@ -1,8 +1,8 @@
 package org.notebook.services;
 
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -146,7 +146,7 @@ public class DefaultBookController implements BookController{
 			log.info("applcation loaded...");
 			DocumentDefine doc = storage.loadDocument("simple.cfg");
 			mainFrame.updateDocumentDefine(doc);		
-		}
+		}		
 		
 		public void Exit(BookAction event) {
 			log.info("shutdown applcation...");
@@ -172,8 +172,17 @@ public class DefaultBookController implements BookController{
 		}
 
 		public void Print(BookAction event){
-			//mainFrame.showSettings();
+			//mainFrame.showSettings();		
 			log.info("print view...");			
+			PrinterJob printJob = PrinterJob.getPrinterJob();			
+		    printJob.setPrintable(new ImagePrintable(mainFrame.printViews()));
+		    if (printJob.printDialog()){
+		    	try {
+			        printJob.print();
+			    } catch(PrinterException pe) {
+			    	log.error(pe.toString());
+			    }
+		    }
 		}		
 		
 	}

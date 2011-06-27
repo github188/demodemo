@@ -35,6 +35,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -163,6 +164,10 @@ public class MainFrame extends JFrame {
     	this.mainPanel.loadDocument(doc);
     	_panel.getViewport().add(this.mainPanel);
     }
+    
+    public List<Image> printViews(){
+    	return this.mainPanel.getPrintScreen();
+    }    
     
     
     public DocumentDefine saveDocumentDefine(){

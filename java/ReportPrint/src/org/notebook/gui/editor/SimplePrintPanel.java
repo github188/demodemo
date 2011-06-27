@@ -10,7 +10,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -90,13 +92,15 @@ public class SimplePrintPanel extends JPanel {
 	/**
 	 * 返回一个打印对象。
 	 */
-	public Image getPrintScreen(){
+	public List<Image> getPrintScreen(){
 		Image page = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		//page.getGraphics()
 		boolean o = this.setShowBackGroup(false);
 		this.paintAll(page.getGraphics());
-		this.setShowBackGroup(o);		
-		return page;
+		this.setShowBackGroup(o);
+		List<Image> l = new ArrayList<Image>();
+		l.add(page);
+		return l;
 	}
 	
 	protected void paintComponent(Graphics g) {
