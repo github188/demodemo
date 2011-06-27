@@ -1,13 +1,19 @@
 package org.notebook.gui.editor;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -23,6 +29,8 @@ public class SimplePrintPanel extends JPanel {
 	private ImageObserver bgObserver = null;
 	private DocumentDefine doc = null;
 	
+	private JComponent focusOn = null;
+	
 	/*
 	 * 设置是否显示背景，用来区分是打印，还是屏幕显示。如果屏幕显示需要看到背景，
 	 * 打印的时候。不需要背景，实现套打功能。
@@ -34,18 +42,41 @@ public class SimplePrintPanel extends JPanel {
 		this.doc = doc;
 		this.bgObserver = new BgImageObserver();
 		
+		LayoutFocus f1 = new LayoutFocus();
+		LayoutContorl l = new LayoutContorl();
+		
 		JTextField jText = null;
 		for(InputDataField f: doc.fields){
 			jText = new JTextField();
 			jText.setBounds(f.x, f.y, f.w, f.h);
+			jText.addFocusListener(f1);
+			jText.addKeyListener(l);
+			jText.setName(f.name);
 			this.add(jText);
 		}
-		
-		this.updateSize();
-		this.repaint();
-		this.doLayout();
+		if(doc.bgImage.getHeight(this.bgObserver) > 0){
+			this.updateSize();
+		}
 	}
 	
+	public DocumentDefine saveLayout(){
+		Map<String, Component> sub = new HashMap<String, Component>(); 
+		for(Component c : this.getComponents()){
+			sub.put(c.getName(), c);
+		}
+		
+		Component child = null;
+		for(InputDataField f: doc.fields){
+			child = sub.get(f.name);
+			if(child == null)continue;
+			f.x = child.getX();
+			f.y = child.getY();
+			f.h = child.getSize().height;
+			f.w = child.getSize().width;
+		}
+		
+		return this.doc;
+	}	
 	//private void 
 	
 	private boolean setShowBackGroup(boolean isShow){
@@ -81,7 +112,10 @@ public class SimplePrintPanel extends JPanel {
 	    setMinimumSize(size);
 	    setMaximumSize(size);
 	    setSize(size);	 
-	    
+	    if(this.getParent() != null){
+	    	getParent().doLayout();
+	    }
+	    repaint();
 	}
 	
 	/**
@@ -96,11 +130,79 @@ public class SimplePrintPanel extends JPanel {
 			//log.info("xxxxxxxxxxxxx");
 			if(arg1 == ImageObserver.ALLBITS){
 				updateSize();
-				repaint();
-				doLayout();
 				return false;				
 			}
 			return true;
 		}		
+	}
+	
+	class LayoutFocus  implements FocusListener{
+
+		@Override
+		public void focusGained(FocusEvent event) {
+			focusOn = (JComponent)event.getComponent();
+		}
+
+		@Override
+		public void focusLost(FocusEvent event) {
+			focusOn = null;			
+		}
+		
+	}
+	
+	class LayoutContorl implements KeyListener{
+		int updateSizeMask = KeyEvent.CTRL_DOWN_MASK;
+		int updateLocalMask = KeyEvent.ALT_DOWN_MASK;
+		@Override
+		public void keyPressed(KeyEvent event) {
+			if(focusOn != null){
+				if((event.getModifiersEx() & updateSizeMask) == updateSizeMask){
+
+					switch(event.getKeyCode()){
+						case KeyEvent.VK_DOWN:
+							focusOn.setSize(focusOn.getWidth(), focusOn.getHeight() + 2);
+							break;
+						case KeyEvent.VK_UP:
+							focusOn.setSize(focusOn.getWidth(), focusOn.getHeight() - 2);
+							break;
+						case KeyEvent.VK_LEFT:
+							focusOn.setSize(focusOn.getWidth() -2 , focusOn.getHeight());
+							break;
+						case KeyEvent.VK_RIGHT:
+							focusOn.setSize(focusOn.getWidth() + 2, focusOn.getHeight());
+							break;
+					}
+				}else if ((event.getModifiersEx() & updateLocalMask) == updateLocalMask){
+					int val = 0;
+					switch(event.getKeyCode()){
+						case KeyEvent.VK_DOWN:
+							focusOn.setLocation(focusOn.getX(), focusOn.getY() + 2);
+							break;
+						case KeyEvent.VK_UP:
+							focusOn.setLocation(focusOn.getX(), focusOn.getY() - 2);
+							break;
+						case KeyEvent.VK_LEFT:
+							focusOn.setLocation(focusOn.getX() -2 , focusOn.getY());
+							break;
+						case KeyEvent.VK_RIGHT:
+							focusOn.setLocation(focusOn.getX() + 2, focusOn.getY());
+							break;
+					}
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
