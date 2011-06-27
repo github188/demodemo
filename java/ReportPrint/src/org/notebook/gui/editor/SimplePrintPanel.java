@@ -1,5 +1,6 @@
 package org.notebook.gui.editor;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -15,9 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +46,8 @@ public class SimplePrintPanel extends JPanel {
 	
 	public void loadDocument(DocumentDefine doc){
 		this.setLayout(null);
+		//无背景
+		this.setOpaque(false);
 		this.doc = doc;
 		this.bgObserver = new BgImageObserver();
 		
@@ -56,6 +61,8 @@ public class SimplePrintPanel extends JPanel {
 			jText.addFocusListener(f1);
 			jText.addKeyListener(l);
 			jText.setName(f.name);
+			Border border = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+			jText.setBorder(border);
 			this.add(jText);
 		}
 		if(doc.bgImage.getHeight(this.bgObserver) > 0){
@@ -96,6 +103,7 @@ public class SimplePrintPanel extends JPanel {
 		Image page = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		//page.getGraphics()
 		boolean o = this.setShowBackGroup(false);
+		//this.setBackground('');		
 		this.paintAll(page.getGraphics());
 		this.setShowBackGroup(o);
 		List<Image> l = new ArrayList<Image>();
