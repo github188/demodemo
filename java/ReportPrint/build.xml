@@ -75,6 +75,7 @@
          		  tofile="src/org/notebook/Version.java"
          		  filtering="yes"
          		  encoding='utf8'
+         		  overwrite="yes"
          			  />
          	
                  <javac srcdir="src" 
