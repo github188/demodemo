@@ -111,10 +111,11 @@ public class MainFrame extends JFrame {
 	
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
-		System.out.println("NoteBook " + Version.getVersion());
-		//System.setProperty("file.encoding", "UTF-8");
-		//System.setProperty("sun.jnu.encoding", "UTF-8");
-		//System.out.println("中文");
+		//Inno Setup
+		System.out.println(Version.getVerName());
+		System.out.println("java.home:" + System.getProperty("java.home"));
+		System.out.println("java.runtime.version:" + System.getProperty("java.runtime.version"));
+		System.out.println("java.runtime.name:" + System.getProperty("java.runtime.name"));
     	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {

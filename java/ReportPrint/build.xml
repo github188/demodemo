@@ -53,7 +53,9 @@
      </tstamp> 
      <property file="build.properties"/> 
      <property name="version" value="0.1"/> 
-            
+     <property environment="env" /> 
+     
+     <filter token="build" value="${env.BUILD_NUMBER}"/> 
    </target> 
   
          <target name="init" depends="properties"> 
@@ -69,6 +71,12 @@
     </path>         
           
          <target name="compile-shell" depends="properties, init"> 
+         	<copy file="src/org/notebook/Version.java.tempate" 
+         		  tofile="src/org/notebook/Version.java"
+         		  filtering="yes"
+         		  encoding='utf8'
+         			  />
+         	
                  <javac srcdir="src" 
                             destdir="${build.dir}/classes" 
                             includes="**/*.java" 
@@ -103,7 +111,7 @@
                     <zipfileset src="lib/json_simple-1.1.jar" />                    
 				</jar>
     		<signjar destDir="${dist.dir}"
-    		    alias="NoteBook" keystore="test_key"
+    		    alias="${name}" keystore="test_key"
     		    storepass="password"
     		    preservelastmodified="true">
     		  <path>
@@ -114,7 +122,7 @@
          
 	<target name="gen-key">
         <delete quiet="true" file="test_key"/> 
-		<genkey alias="NoteBook" storepass="password" keystore="test_key" >
+		<genkey alias="${name}" storepass="password" keystore="test_key" >
 		  <dname>
 		    <param name="CN" value="NoteBook"/>
 		    <param name="OU" value="DeonWu"/>
