@@ -27,4 +27,4 @@ rem set JS_HOME=%~dp0
 rem echo %JS_HOME%
 
 set JS_HOME=%~dp0..
-java -jar %~dp0notebook-0.1.jar
+java -jar %~dp0blueStar-0.1.jar
