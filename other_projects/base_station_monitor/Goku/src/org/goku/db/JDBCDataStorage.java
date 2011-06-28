@@ -455,6 +455,7 @@ public class JDBCDataStorage extends DataStorage {
 				conn = DriverManager.getConnection(settings[0], 
 						settings[1],
 						settings[2]);
+				conn.setAutoCommit(false);
 			}catch (SQLException e) {
 				this.wokingDB = (this.wokingDB + 1) % this.config.length;
 				if(this.wokingDB == 0){

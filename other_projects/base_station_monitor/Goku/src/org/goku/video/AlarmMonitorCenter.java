@@ -250,7 +250,10 @@ public class AlarmMonitorCenter implements Runnable{
 			boolean active = false;
 			String activeKey = record.baseStation + "_" + record.channelId + "_" + record.alarmCode;
 			//告警还在处理中，避免保存重复告警。避免每次都通过数据库查询来判断是否有告警。
-			if(activeAlarm.hasKey(activeKey))return false;
+			if(activeAlarm.hasKey(activeKey)){
+				log.debug("Duplicated alarm in cache:"+ alarm.toString() + ", client:" + client.info.toString() + ", channel:" + record.channelId);
+				return false;
+			}
 			if(alarm.isGlobal() ||
 			   (alarm.isCustomize() && client.info.isSupport(alarm.alarmCode))
 			  ){
@@ -260,13 +263,15 @@ public class AlarmMonitorCenter implements Runnable{
 				Date checkTime = new Date(System.currentTimeMillis() - alarm.reActiveTime * 1000 * 60);
 				//
 				String sql = "select count(*) as have_row from alarm_record where " +
-								"startTime > ${0} and baseStation = ${1} and channelId= ${2} " +
+								"startTime <= ${4} and startTime > ${0} and baseStation = ${1} and channelId= ${2} " +
 								"and alarmCode = ${3}";
 				
 				Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{checkTime,
 						record.baseStation,
 						record.channelId,
-						record.alarmCode});
+						record.alarmCode,
+						new Date(System.currentTimeMillis())
+						});
 				int rowCount = 0;
 				if(xx.size() > 0){
 					rowCount = (Integer)xx.iterator().next().get("have_row");
@@ -294,7 +299,7 @@ public class AlarmMonitorCenter implements Runnable{
 			record.startTime = new Date();
 			record.alarmCode = alarm.alarmCode;
 			record.alarmCategory = alarm.alarmCategory;
-			record.alarmLevel = alarm.alarmLevel;
+			record.alarmLevel = alarm.alarmLevel.trim();
 			record.alarmStatus = "1";
 			
 			/*
