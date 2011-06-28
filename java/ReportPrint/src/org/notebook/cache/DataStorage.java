@@ -12,7 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public abstract class DataStorage{
-	protected Log log = LogFactory.getLog("DataStorage");
+	protected Log log = LogFactory.getLog("storage");
 	
 	public DocumentDefine loadDocument(String name){
 		InputStream in = openInputStream(name);

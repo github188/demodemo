@@ -20,7 +20,7 @@ import org.notebook.gui.MainFrame;
 import org.notebook.gui.MenuToolbar.BookAction;
 
 public class DefaultBookController implements BookController{
-	private static Log log = LogFactory.getLog("DefaultBookController");
+	private static Log log = LogFactory.getLog("services");
 	private DataStorage storage = null;
 	//private SyncService sync = null;
 

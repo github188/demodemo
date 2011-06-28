@@ -58,7 +58,7 @@ import org.notebook.services.SocketSingleInstance;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
-	private Log log = LogFactory.getLog("MainFrame");
+	private Log log = LogFactory.getLog("main");
 
 	public MenuToolbar menu = null;	
 	//public DocumentEditor editor = null;
@@ -146,7 +146,12 @@ public class MainFrame extends JFrame {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run(){
 	            	final MainFrame main = new MainFrame();
-	            	main.installTrayIcon();
+	            	main.log.info(Version.getVerName());
+	            	main.log.info("java.home:" + System.getProperty("java.home"));
+	            	main.log.info("java.runtime.version:" + System.getProperty("java.runtime.version"));
+	            	main.log.info("java.runtime.name:" + System.getProperty("java.runtime.name"));
+	            	
+	            	//main.installTrayIcon();
 	            	if(main.runingJNLP()){
 	            		main.setupJNLPSingltenService();
 	            	}
