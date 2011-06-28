@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for FiveChess Application -->
+<jnlp
+  spec="1.5+"
+  codebase="http://demodemo.googlecode.com/svn/trunk/java/notebook/dist"
+  href="notebook.jnlp">
+  <information>
+    <title>Deon's NoteBook</title>
+    <vendor>Deonwu</vendor>
+    <description>Simple note book</description>
+    <icon href="http://demodemo.googlecode.com/svn/trunk/java/notebook/dist/notebook32.jpg"/> 
+    <offline-allowed/>
+    <shortcut online="false">
+      <desktop/>
+    </shortcut>
+  </information>
+  <security>
+        <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+" java-vm-args=""/>
+    <jar href="notebook-0.1.jar"/>
+  </resources>
+  <application-desc main-class="org.notebook.gui.MainFrame"/>
+</jnlp> 
+
