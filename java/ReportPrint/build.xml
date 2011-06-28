@@ -78,6 +78,7 @@
                             source="${source-level}" 
                             classpath="" 
                             encoding="utf-8" 
+                            includeantruntime="false"
                  > 
                     <classpath refid="dependent-lib"/>
                  </javac> 
