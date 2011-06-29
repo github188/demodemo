@@ -59,8 +59,8 @@ public class MenuToolbar {
 	public static final String RENAME = "ReName";
 	
 	public static final String SYNC = "Sync";
-	public static final String SYNCDOWNLOAD = "SyncDownLoad";
-	public static final String SYNCUPLOAD = "SyncUpLoad";
+	public static final String NEXT_REC = "DataNext";
+	public static final String PRE_REC = "DataPre";
 	public static final String SYNCSTATUS = "SyncStatus";
 	
 	public static final String SETTINGS = "Settings";
@@ -159,8 +159,8 @@ public class MenuToolbar {
 		$(RENAME, "", 0);		
 		
 		$(SYNC, "cvs_synch.gif", 0);			
-		$(SYNCDOWNLOAD, "down_load.png", 0);	
-		$(SYNCUPLOAD, "up_load.png", 0);
+		$(NEXT_REC, "down_load.png", 0);	
+		$(PRE_REC, "up_load.png", 0);
 		$(SYNCSTATUS, "", 0);
 		
 		$(SHOWWINDOW, "editor.gif", 0);	
@@ -241,8 +241,8 @@ public class MenuToolbar {
 		//toolbar.add($(DELETE));
 		
 		toolbar.addSeparator();
-		toolbar.add($(SYNCDOWNLOAD));
-		toolbar.add($(SYNCUPLOAD));
+		toolbar.add($(NEXT_REC));
+		toolbar.add($(PRE_REC));
 		//toolbar.add($(SYNC));		
 		//toolbar.addSeparator();
 		//toolbar.add($(SETTINGS));

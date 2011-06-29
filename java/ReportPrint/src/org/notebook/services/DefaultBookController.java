@@ -4,15 +4,21 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.DataStorage;
+import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.LocalFileStorage;
 import org.notebook.gui.AboutDialog;
@@ -37,6 +43,11 @@ public class DefaultBookController implements BookController{
 	//初始化了本地NoteBook路径.
 	private boolean initedBook = false;
 	private boolean isWin = false;
+	
+	//演示数据
+	private int dataCursor = 0;
+	private Map<String, List<Document>> _temp = new HashMap<String, List<Document>>();
+	private List<Document> _cur = null;
 	
 	public DefaultBookController(MainFrame mainJFrame, boolean isJNLP, boolean isSandBox){
 		isWin = System.getProperty("sun.desktop").equals("windows");
@@ -145,8 +156,10 @@ public class DefaultBookController implements BookController{
 		public void Loaded(BookAction event){
 			log.info("applcation loaded...");
 			DocumentDefine doc = storage.loadDocument("simple.cfg");
-			mainFrame.updateDocumentDefine(doc);		
-		}		
+			mainFrame.updateDocumentDefine(doc);
+			_cur = new ArrayList<Document>();
+			//if()
+		}	
 		
 		public void Exit(BookAction event) {
 			log.info("shutdown applcation...");
@@ -162,6 +175,41 @@ public class DefaultBookController implements BookController{
 			}*/
 			mainFrame.dispose();
 			System.exit(0);
+		}
+
+		public void DataPre(BookAction event){
+			if(dataCursor - 1 < 0){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "没有找到上一条记录.",
+					    "消息",
+					    JOptionPane.INFORMATION_MESSAGE);			
+			}else {
+				dataCursor--;
+				if(dataCursor >= _cur.size())
+					dataCursor = _cur.size() - 1; 
+				mainFrame.updateDocumentData(_cur.get(dataCursor));
+			}
+		}		
+		
+		public void DataNext(BookAction event){
+			if(dataCursor + 1 > _cur.size()){
+				JOptionPane.showMessageDialog(mainFrame,
+					    "没有找到下一条记录.",
+					    "消息",
+					    JOptionPane.INFORMATION_MESSAGE);			
+			}else {
+				dataCursor++;
+				mainFrame.updateDocumentData(_cur.get(dataCursor));
+			}
+		}
+
+		public void Save(BookAction event){
+			_cur.add(mainFrame.getDocumentData());			
+			JOptionPane.showMessageDialog(mainFrame,
+				    "打印文档数据保存成功!",
+				    "消息",
+				    JOptionPane.INFORMATION_MESSAGE);
+			dataCursor = _cur.size();
 		}
 		
 		public void About(BookAction event){

@@ -40,13 +40,13 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.Version;
+import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.gui.MenuToolbar.BookAction;
 import org.notebook.gui.editor.SimplePrintPanel;
@@ -164,12 +164,20 @@ public class MainFrame extends JFrame {
 	}  
     
     public void updateDocumentDefine(DocumentDefine doc){
-    	_panel.remove(this.mainPanel);  
+    	_panel.remove(this.mainPanel); 
     	this.mainPanel = new SimplePrintPanel();
     	this.mainPanel.bar = this.statusBar;
     	this.mainPanel.loadDocument(doc);
     	_panel.getViewport().add(this.mainPanel);
     }
+    
+    public void updateDocumentData(Document doc){
+    	this.mainPanel.showDocument(doc);
+    }
+    
+    public Document getDocumentData(){
+    	return this.mainPanel.getDocumentData();
+    }        
     
     public List<Image> printViews(){
     	return this.mainPanel.getPrintScreen();

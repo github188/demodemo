@@ -1,6 +1,5 @@
 package org.notebook.gui.editor;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,6 +23,7 @@ import javax.swing.border.Border;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.InputDataField;
 import org.notebook.gui.StatusBar;
@@ -35,6 +35,7 @@ public class SimplePrintPanel extends JPanel {
 	private Log log = LogFactory.getLog("print");
 	private ImageObserver bgObserver = null;
 	private DocumentDefine doc = null;
+	private Document data = null;
 	
 	private JComponent focusOn = null;
 	
@@ -68,6 +69,33 @@ public class SimplePrintPanel extends JPanel {
 		if(doc.bgImage.getHeight(this.bgObserver) > 0){
 			this.updateSize();
 		}
+	}
+	
+	public void showDocument(Document doc){
+		this.data = doc;
+		JTextField f = null;
+		for(Component c : this.getComponents()){
+			if(c instanceof JTextField){
+				f = (JTextField) c;
+				f.setText(data.get(f.getName()));
+			}
+		}
+	}
+	
+	public Document getDocumentData(){
+		if(this.data == null){
+			this.data = new Document();
+		}
+		
+		JTextField f = null;
+		for(Component c : this.getComponents()){
+			if(c instanceof JTextField){
+				f = (JTextField) c;
+				data.put(f.getName(), f.getText());
+			}
+		}
+		
+		return this.data.copy();
 	}
 	
 	public DocumentDefine saveLayout(){
