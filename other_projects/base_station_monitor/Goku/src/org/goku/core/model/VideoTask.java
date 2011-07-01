@@ -12,7 +12,7 @@ public class VideoTask {
 		"startTime", "endTime", "uuid", "channel", 
 		"windowID", "minShowTime", "showOrder"
 		};
-	public static final String[] ORM_PK_FIELDS = new String[]{"uuid"};
+	public static final String[] ORM_PK_FIELDS = new String[]{"taskID"};
 	
 	
 	/**
