@@ -83,6 +83,7 @@ public class VideoTask {
 		VideoTask task = new VideoTask();
 		task.userName = userName;
 		task.taskID = 1;
+		task.minShowTime = "60";
 		String sql = "select max(taskID) as taskPK from video_task";
 		Collection<Map<String, Object>> xx = storage.query(sql, new Object[]{});
 		if(xx.size() > 0){
