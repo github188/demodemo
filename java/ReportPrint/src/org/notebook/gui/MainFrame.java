@@ -43,6 +43,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
@@ -52,12 +53,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceColorScheme;
 import org.jvnet.substance.api.SubstanceConstants;
+import org.jvnet.substance.api.SubstanceSkin;
 import org.notebook.Version;
 import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.gui.MenuToolbar.BookAction;
 import org.notebook.gui.editor.SimplePrintPanel;
+import org.notebook.gui.widget.GuiUtils;
+import org.notebook.gui.widget.ListPane;
+import org.notebook.gui.widget.QQStylePane;
 import org.notebook.services.BookController;
 import org.notebook.services.DefaultBookController;
 import org.notebook.services.SingleInstance;
@@ -154,6 +160,26 @@ public class MainFrame extends JFrame {
 			UIManager.put("ToolTip.background", new ColorUIResource(Color.WHITE));
 			UIManager.put("ToolTip.foreground", new ColorUIResource(Color.BLACK));
 			
+			SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
+			SubstanceColorScheme scheme = skin.getMainActiveColorScheme();
+			
+			GuiUtils.putLookAndFeelColor("borderColor", scheme.getMidColor());
+			GuiUtils.putLookAndFeelColor("lightColor", scheme.getLightColor());
+			GuiUtils.putLookAndFeelColor("lightBackgroundFillColor",
+										 scheme.getLightBackgroundFillColor());
+			GuiUtils.putLookAndFeelColor("darkColor", scheme.getDarkColor());
+			GuiUtils.putLookAndFeelColor("backgroundFillColor",
+										 scheme.getBackgroundFillColor());
+			GuiUtils.putLookAndFeelColor("lineColor", scheme.getLineColor());
+			GuiUtils.putLookAndFeelColor("selectionForegroundColor",
+										 scheme.getSelectionForegroundColor());
+			GuiUtils.putLookAndFeelColor("selectionBackgroundColor",
+										 scheme.getSelectionBackgroundColor());
+			GuiUtils.putLookAndFeelColor("foregroundColor",
+										 scheme.getForegroundColor());
+			GuiUtils.putLookAndFeelColor("focusRingColor",
+										 scheme.getFocusRingColor());
+			
 		}catch(Exception e){
 			System.out.println(e.toString());
 		}
@@ -211,6 +237,42 @@ public class MainFrame extends JFrame {
     public DocumentDefine saveDocumentDefine(){
     	return this.mainPanel.saveLayout();
     }    
+    
+    protected QQStylePane getNavigationBar(){
+    	QQStylePane pane = new QQStylePane();    	
+    	pane.setAnimated(true);
+    	
+		ListPane p = new ListPane();
+		p.addItem("证明1", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("证明2", MenuToolbar.icon("file_obj.gif"), null);
+		p.setSize(185, 74);
+    	
+		pane.addPane("免疫证明1", MenuToolbar.icon("editor.gif"), p);
+		
+		p = new ListPane();
+		p.addItem("证明21", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("证明22", MenuToolbar.icon("file_obj.gif"), null);
+		p.setSize(185, 74);		
+		pane.addPane("免疫证明2", MenuToolbar.icon("editor.gif"), p);
+		
+		p = new ListPane();
+		p.addItem("申请材料11", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("申请材料12", MenuToolbar.icon("file_obj.gif"), null);
+		p.setSize(185, 74);				
+		pane.addPane("免疫申请材料1", MenuToolbar.icon("file_obj.gif"), p);
+
+		p = new ListPane();
+		p.addItem("申请材料21", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("申请材料22", MenuToolbar.icon("file_obj.gif"), null);
+		p.setSize(185, 74);						
+		pane.addPane("免疫申请材料2", MenuToolbar.icon("file_obj.gif"), p);
+		
+		pane.setSelectedPane(0);
+    	
+    	return pane;
+    }
+    
+    
 
 	protected void initGui() {
 		menu = new MenuToolbar(this);
@@ -220,22 +282,29 @@ public class MainFrame extends JFrame {
 		//menu.addExtraToolBar(editor.getToolBar());
 
 		//JScrollPane leftTree = new JScrollPane(tree);
-		Dimension minSize = new Dimension(150, 400);	
+		Dimension minSize = new Dimension(150, 400);
 		
-		
-			
-		mainPanel = new SimplePrintPanel();
-		
+		mainPanel = new SimplePrintPanel();		
 		_panel = new JScrollPane(mainPanel);
-		_panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
-
+		_panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 		
+		
+		JSplitPane splitPanel; 
+		splitPanel = new JSplitPane();
+		splitPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
+		//splitPanel.setAutoscrolls(true);
+		splitPanel.setDividerLocation(0.35);
+		splitPanel.setOneTouchExpandable(true);
+		splitPanel.setLeftComponent(getNavigationBar());
+		splitPanel.setRightComponent(_panel);		
 		
 		statusBar = new StatusBar();
 
 		Container contentPane = getContentPane();
 		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
-		//contentPane.add(splitPane, BorderLayout.CENTER);
-		contentPane.add(_panel, BorderLayout.CENTER);
+		
+		contentPane.add(splitPanel, BorderLayout.CENTER);
+		//contentPane.add(_panel, BorderLayout.CENTER);
+		
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		//controller = createPrivilegedProxy(new DefaultBookController(this));
