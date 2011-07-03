@@ -251,6 +251,7 @@ public class MenuToolbar {
 			toolbar.add(c);
 		}		
 
+		toolbar.setFloatable(true);
 		return toolbar;
 	}
 	

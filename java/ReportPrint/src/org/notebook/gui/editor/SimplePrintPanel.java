@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.apache.commons.logging.Log;
@@ -155,9 +156,14 @@ public class SimplePrintPanel extends JPanel {
 	    setMaximumSize(size);
 	    setSize(size);	 
 	    if(this.getParent() != null){
-	    	getParent().doLayout();
+	    	//在界面线程更新布局。
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run(){	    	
+					getParent().validate();
+				}
+			});
 	    }
-	    repaint();
+	    //repaint();
 	}
 	
 	/**

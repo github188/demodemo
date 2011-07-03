@@ -18,6 +18,7 @@
 package org.notebook.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -37,14 +38,21 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jvnet.lafwidget.LafWidget;
+import org.jvnet.lafwidget.utils.LafConstants;
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceConstants;
 import org.notebook.Version;
 import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
@@ -54,7 +62,6 @@ import org.notebook.services.BookController;
 import org.notebook.services.DefaultBookController;
 import org.notebook.services.SingleInstance;
 import org.notebook.services.SocketSingleInstance;
-
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -128,8 +135,25 @@ public class MainFrame extends JFrame {
  	
     public static void mainPrivileged(String[] args){
 		try{
+	        /*
 			UIManager.setLookAndFeel(
 		            UIManager.getSystemLookAndFeelClassName());
+		    */
+            UIManager.setLookAndFeel(
+            		"org.jvnet.substance.skin.SubstanceOfficeBlue2007LookAndFeel"
+                    //ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel()
+                );
+			UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
+			UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
+						SubstanceConstants.TabContentPaneBorderKind.SINGLE_FULL);
+            
+			JFrame.setDefaultLookAndFeelDecorated(true);
+			JDialog.setDefaultLookAndFeelDecorated(true);   
+			Color c = SubstanceLookAndFeel.getCurrentSkin().getMainActiveColorScheme().getMidColor();			
+			UIManager.put("ToolTip.border", BorderFactory.createLineBorder(c));
+			UIManager.put("ToolTip.background", new ColorUIResource(Color.WHITE));
+			UIManager.put("ToolTip.foreground", new ColorUIResource(Color.BLACK));
+			
 		}catch(Exception e){
 			System.out.println(e.toString());
 		}

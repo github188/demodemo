@@ -55,7 +55,18 @@
      <property name="version" value="0.1"/> 
      <property environment="env" /> 
      
-     <filter token="build" value="${env.BUILD_NUMBER}"/> 
+     <condition property="fileTargetName" value="${env.BUILD_NUMBER}">
+        <isset property="env.BUILD_NUMBER" />
+     </condition>
+
+     <condition property="fileTargetName" value="dev">
+        <not>
+            <isset property="env.BUILD_NUMBER" />
+        </not>
+     </condition>     
+     
+     <filter token="build" value="${fileTargetName}"/>
+     <echo>Start to build '0.1.${fileTargetName}'.</echo>
    </target> 
   
          <target name="init" depends="properties"> 
@@ -109,7 +120,8 @@
 						  <attribute name="Main-Class" value="org.notebook.gui.MainFrame"/>
 					</manifest>
                     <zipfileset src="lib/commons-logging-1.1.1.jar" />
-                    <zipfileset src="lib/json_simple-1.1.jar" />                    
+                    <zipfileset src="lib/json_simple-1.1.jar" />         
+                    <zipfileset src="lib/substance-5.2_01.jar" />                    
 				</jar>
     		<signjar destDir="${dist.dir}"
     		    alias="${name}" keystore="test_key"
