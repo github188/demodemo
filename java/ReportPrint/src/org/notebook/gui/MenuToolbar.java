@@ -105,6 +105,7 @@ public class MenuToolbar {
 			try{
 				this.attachedObject = param;
 				this.attachedEvent = event;
+				//event.gets
 				owner.processEvent(this);
 			}finally{
 				//this.processing = false;

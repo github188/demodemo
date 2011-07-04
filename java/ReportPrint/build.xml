@@ -74,6 +74,8 @@
                  <mkdir dir="${build.dir}/classes"/> 
                  <mkdir dir="${build.dir}/lib"/>
                  <mkdir dir="${dist.dir}"/> 
+                 <mkdir dir="${build.dir}/test_reports"/>
+                 <mkdir dir="${build.dir}/unittest"/>  
          </target> 
     <path id="dependent-lib">
         <fileset dir="lib" >
@@ -133,6 +135,58 @@
     		</signjar>                
          </target>
          
+   <target name="compile-test" depends="properties">
+                <javac srcdir="unittest"
+                           destdir="${build.dir}/unittest"
+                           includes="**/*.java"
+                           deprecation="on"
+                           debug="true"
+                           target="1.5"
+                           source="1.5"
+                           encoding="utf-8"
+                           includeantruntime="flase"
+                >
+	            <classpath>	
+              		  <fileset dir="${build.dir}/lib" >
+           				 <include name="*.jar"/>
+			       	  </fileset>
+    	        	  
+        				<fileset dir="lib" >
+           					<include name="*.jar"/>
+        				</fileset>
+    					<fileset dir="jmock-2.5.1" >
+       						<include name="*.jar"/>
+    					</fileset>	            	
+                </classpath>
+                
+                </javac>
+    </target>       
+         
+    <target name="test" depends="compile-test">
+         <junit printsummary="yes" haltonfailure="no" fork="true" newenvironment="true">
+           <classpath>
+           	<!-- Can't use singed jar -->
+              <pathelement location="${build.dir}/unittest"/>
+              <fileset dir="${build.dir}/lib" >
+           		 <include name="*.jar"/>
+        	  </fileset>
+              <fileset dir="lib" >
+           		 <include name="*.jar"/>
+        	  </fileset>
+			  <fileset dir="jmock-2.5.1" >
+				 <include name="*.jar"/>
+			  </fileset>           	
+           </classpath>
+
+		   <formatter type="plain"/>
+           <batchtest fork="yes" todir="${build.dir}/test_reports">
+              	<fileset dir="unittest">
+                	<include name="**/Test**.java"/>
+           	  	</fileset>
+           </batchtest>
+         </junit>
+    </target>
+             
 	<target name="gen-key">
         <delete quiet="true" file="test_key"/> 
 		<genkey alias="${name}" storepass="password" keystore="test_key" >

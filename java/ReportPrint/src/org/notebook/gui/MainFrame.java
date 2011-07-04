@@ -81,8 +81,6 @@ public class MainFrame extends JFrame {
 	private BookController controller = null;
 	private JScrollPane _panel = null;
 		
-	//只用来判断是否已经有一个进程在运行.
-	private static SingleInstance singlton = new SocketSingleInstance();
 	//初始化托盘时, Controller还没有创建。把安装的结果临时保存。等Contoller创建后，再传给Controller.
 	private boolean visibleTrayIcon = false;
 	
@@ -122,96 +120,6 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void main(final String[] args){
-		//Inno Setup
-		System.out.println(Version.getVerName());
-		System.out.println("java.home:" + System.getProperty("java.home"));
-		System.out.println("java.runtime.version:" + System.getProperty("java.runtime.version"));
-		System.out.println("java.runtime.name:" + System.getProperty("java.runtime.name"));
-    	
-    	AccessController.doPrivileged(
-				new PrivilegedAction() {
-					public Object run(){
-						mainPrivileged(args);
-						return null;
-					}
-				});				
-	}
- 	
-    public static void mainPrivileged(String[] args){
-		try{
-	        /*
-			UIManager.setLookAndFeel(
-		            UIManager.getSystemLookAndFeelClassName());
-		    */
-            UIManager.setLookAndFeel(
-            		"org.jvnet.substance.skin.SubstanceOfficeBlue2007LookAndFeel"
-                    //ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel()
-                );
-			UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
-			UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
-						SubstanceConstants.TabContentPaneBorderKind.SINGLE_FULL);
-            
-			JFrame.setDefaultLookAndFeelDecorated(true);
-			JDialog.setDefaultLookAndFeelDecorated(true);   
-			Color c = SubstanceLookAndFeel.getCurrentSkin().getMainActiveColorScheme().getMidColor();			
-			UIManager.put("ToolTip.border", BorderFactory.createLineBorder(c));
-			UIManager.put("ToolTip.background", new ColorUIResource(Color.WHITE));
-			UIManager.put("ToolTip.foreground", new ColorUIResource(Color.BLACK));
-			
-			SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
-			SubstanceColorScheme scheme = skin.getMainActiveColorScheme();
-			
-			GuiUtils.putLookAndFeelColor("borderColor", scheme.getMidColor());
-			GuiUtils.putLookAndFeelColor("lightColor", scheme.getLightColor());
-			GuiUtils.putLookAndFeelColor("lightBackgroundFillColor",
-										 scheme.getLightBackgroundFillColor());
-			GuiUtils.putLookAndFeelColor("darkColor", scheme.getDarkColor());
-			GuiUtils.putLookAndFeelColor("backgroundFillColor",
-										 scheme.getBackgroundFillColor());
-			GuiUtils.putLookAndFeelColor("lineColor", scheme.getLineColor());
-			GuiUtils.putLookAndFeelColor("selectionForegroundColor",
-										 scheme.getSelectionForegroundColor());
-			GuiUtils.putLookAndFeelColor("selectionBackgroundColor",
-										 scheme.getSelectionBackgroundColor());
-			GuiUtils.putLookAndFeelColor("foregroundColor",
-										 scheme.getForegroundColor());
-			GuiUtils.putLookAndFeelColor("focusRingColor",
-										 scheme.getFocusRingColor());
-			
-		}catch(Exception e){
-			System.out.println(e.toString());
-		}
-		
-    	//showMessageBox("ss");
-		if(singlton.checkRunning(null)){
-			JOptionPane.showMessageDialog(null,
-				    "NoteBook已经在运行中.",
-				    "Error",
-				    JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}else {
-			//使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run(){
-	            	final MainFrame main = new MainFrame();
-	            	main.log.info(Version.getVerName());
-	            	main.log.info("java.home:" + System.getProperty("java.home"));
-	            	main.log.info("java.runtime.version:" + System.getProperty("java.runtime.version"));
-	            	main.log.info("java.runtime.name:" + System.getProperty("java.runtime.name"));
-	            	
-	            	//main.installTrayIcon();
-	            	if(main.runingJNLP()){
-	            		main.setupJNLPSingltenService();
-	            	}
-	            	//窗口居中.
-	            	main.setLocationRelativeTo(null);
-	            	main.setVisible(true);
-				}
-	        });	
-		}
-	}  
     
     public void updateDocumentDefine(DocumentDefine doc){
     	_panel.remove(this.mainPanel); 
@@ -243,29 +151,29 @@ public class MainFrame extends JFrame {
     	pane.setAnimated(true);
     	
 		ListPane p = new ListPane();
-		p.addItem("证明1", MenuToolbar.icon("file_obj.gif"), null);
-		p.addItem("证明2", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("证明1", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
+		p.addItem("证明2", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
 		p.setSize(185, 74);
     	
-		pane.addPane("免疫证明1", MenuToolbar.icon("editor.gif"), p);
+		pane.addPane("免疫证明1", MenuToolbar.icon("org/notebook/gui/images/editor.gif"), p);
 		
 		p = new ListPane();
-		p.addItem("证明21", MenuToolbar.icon("file_obj.gif"), null);
-		p.addItem("证明22", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("证明21", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
+		p.addItem("证明22", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
 		p.setSize(185, 74);		
-		pane.addPane("免疫证明2", MenuToolbar.icon("editor.gif"), p);
+		pane.addPane("免疫证明2", MenuToolbar.icon("org/notebook/gui/images/editor.gif"), p);
 		
 		p = new ListPane();
-		p.addItem("申请材料11", MenuToolbar.icon("file_obj.gif"), null);
-		p.addItem("申请材料12", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("申请材料11", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
+		p.addItem("申请材料12", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
 		p.setSize(185, 74);				
-		pane.addPane("免疫申请材料1", MenuToolbar.icon("file_obj.gif"), p);
+		pane.addPane("免疫申请材料1", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), p);
 
 		p = new ListPane();
-		p.addItem("申请材料21", MenuToolbar.icon("file_obj.gif"), null);
-		p.addItem("申请材料22", MenuToolbar.icon("file_obj.gif"), null);
+		p.addItem("申请材料21", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
+		p.addItem("申请材料22", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
 		p.setSize(185, 74);						
-		pane.addPane("免疫申请材料2", MenuToolbar.icon("file_obj.gif"), p);
+		pane.addPane("免疫申请材料2", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), p);
 		
 		pane.setSelectedPane(0);
     	
