@@ -14,10 +14,12 @@ public class BroadCastEvent extends ActionEvent {
 	public static final int STATUS_ACTIVE = 1;
 	public static final int STATUS_ERROR = 2;
 	public static final int STATUS_CANCEL = 3;
+	public static final int STATUS_DONE = 3;
 	
 	private static final long serialVersionUID = 1L;
 	private ActionEvent event = null;
 	private Map<String, Object> attached = new HashMap<String, Object>();
+	public int status = STATUS_ACTIVE;
 	
 	public BroadCastEvent(ActionEvent event) {
 		super(event.getSource(), event.getID(), event.getActionCommand(), 
@@ -31,5 +33,12 @@ public class BroadCastEvent extends ActionEvent {
 	
 	public void set(String key, Object obj){
 		attached.put(key, obj);
+	}
+	
+	public void done(){
+		this.status = STATUS_DONE;
+	}
+	public void cancel(){
+		this.status = STATUS_CANCEL;
 	}
 }

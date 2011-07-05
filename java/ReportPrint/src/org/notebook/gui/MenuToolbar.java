@@ -40,6 +40,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
+import org.notebook.events.EventQueue;
 import org.notebook.i18n.SimpleResourceBound;
 
 public class MenuToolbar {
@@ -74,17 +75,17 @@ public class MenuToolbar {
 
 	public static final String ORDER_MOVE_UP = "OrderMoveUp";
 	public static final String ORDER_MOVE_DOWN = "OrderMoveDown";
+	
+	public static final String MENU_LOADED = "MenuCreated";
 		
-	private MainFrame owner = null;
+	//private MainFrame owner = null;
+	private EventQueue eventQueue = null;
 	private ResourceBundle rb = new SimpleResourceBound();	
 	private Map<String, BookAction> actions = new HashMap<String, BookAction>();
 	private Collection<JComponent> extraToolBar = new ArrayList<JComponent>(); 
 	
 	public class BookAction extends AbstractAction {
 		private static final long serialVersionUID = -6101997393914923387L;
-		//private boolean processing = false;
-		public Object attachedObject = null;
-		public ActionEvent attachedEvent = null;
 		
 		public BookAction(String name, String icon, int accelerator){
 			super(name, icon("org/notebook/gui/images/" + icon));
@@ -95,23 +96,9 @@ public class MenuToolbar {
 			this.putValue(Action.ACTION_COMMAND_KEY, name);
 			this.putValue(Action.NAME, i18n(name));
 		}
+		
 		public void actionPerformed(ActionEvent event) {
-			//this.SHORT_DESCRIPTION
-			this.actionPerformed(event, null);
-		}
-		public synchronized void actionPerformed(ActionEvent event, Object param) {
-			if(!this.isEnabled())return;
-			//this.processing = true;
-			try{
-				this.attachedObject = param;
-				this.attachedEvent = event;
-				//event.gets
-				owner.processEvent(this);
-			}finally{
-				//this.processing = false;
-				this.attachedObject = null;
-				this.attachedEvent = null;
-			}
+			eventQueue.dispatchEvent(event);
 		}
 		
 		/**
@@ -141,8 +128,9 @@ public class MenuToolbar {
 		return actions.get(name);
 	}
 
-	public MenuToolbar(MainFrame owner){
-		this.owner = owner;
+	public MenuToolbar(EventQueue eventQueue){
+		this.eventQueue = eventQueue;
+		
 		//$(OPEN, "star_off.gif", 0);
 		$(LOADED, "", 0);
 		$(UPDATEDSETTINGS, "", 0);
@@ -217,6 +205,7 @@ public class MenuToolbar {
 		menubar.add(toolMenu);
 		menubar.add(aboutMenu);
 		
+		//menubar.add		
 		//toolMenu.setName("工具");
 		
 		//menubar.getMenu(0).getName()		

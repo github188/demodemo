@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
@@ -21,9 +20,10 @@ import org.notebook.cache.DataStorage;
 import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.LocalFileStorage;
+import org.notebook.events.BroadCastEvent;
+import org.notebook.events.EventAction;
 import org.notebook.gui.AboutDialog;
 import org.notebook.gui.MainFrame;
-import org.notebook.gui.MenuToolbar.BookAction;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog("services");
@@ -35,6 +35,7 @@ public class DefaultBookController implements BookController{
 	private ThreadPoolExecutor syncThread = null;
 	private ThreadPoolExecutor actionThread = null;
 	private MenuAction menuActions = new MenuAction();
+	private Map<String, Method> actionMapping = new HashMap<String, Method>();
 	
 	private boolean runningJNLP = false;
 	private boolean runningSandBox = false;
@@ -70,6 +71,10 @@ public class DefaultBookController implements BookController{
 	public boolean runingJNLP(){return this.runningJNLP;}
 	public boolean runingSandBox(){return this.runningSandBox;};	
 	
+	public Object getEventActions(){
+		return this.menuActions;
+	}
+	
 	private DataStorage createPersistenceService(){
 		DataStorage  storge = null;		
 		if(runningJNLP && runningSandBox){
@@ -93,45 +98,6 @@ public class DefaultBookController implements BookController{
 		return storge;
 	}	
 	
-	public void processEvent(BookAction e){
-		final String HANDLER = "__actionHander";
-		String command = (String)e.getValue(Action.ACTION_COMMAND_KEY);
-		log.debug("processEvent:" + command);
-		Method m = (Method)e.getValue(HANDLER);
-		if(m == null){
-			try {
-				m = MenuAction.class.getMethod(command, new Class[]{BookAction.class});
-				if(m != null){
-					e.putValue(HANDLER, m);
-					log.debug("get action process for menu, " + command);
-				}
-			} catch (Exception e1) {
-			}
-		}
-		if(m == null){
-			log.warn("Not found action handler, for " + command);
-		}else {
-			try {
-				m.invoke(this.menuActions, new Object[]{e});
-			} catch (Exception e1) {
-				log.error(e1.toString(), e1.getCause());
-			}
-		}
-	}
-	
-	public void dispatchEvent(String command, Object param) {
-		BookAction action = this.mainFrame.menu.$(command);
-		if(action != null){
-			action.actionPerformed(null, param);
-		}else {
-			log.warn("Not found action:" + command);
-		}
-	}
-	
-	public void dispatchEvent(String command) {
-		dispatchEvent(command, null);
-	}	
-	
 	public boolean visibleTrayIcon(){
 		return visibleTrayIcon;		
 	}
@@ -151,17 +117,19 @@ public class DefaultBookController implements BookController{
 
 	}
 	
-	class MenuAction {
-
-		public void Loaded(BookAction event){
+	public class MenuAction {
+		
+		@EventAction(order=1)
+		public void Loaded(BroadCastEvent event){
 			log.info("applcation loaded...");
 			DocumentDefine doc = storage.loadDocument("simple.cfg");
-			mainFrame.updateDocumentDefine(doc);
+			//mainFrame.updateDocumentDefine(doc);
 			_cur = new ArrayList<Document>();
 			//if()
 		}	
 		
-		public void Exit(BookAction event) {
+		@EventAction(order=1)
+		public void Exit(BroadCastEvent event) {
 			log.info("shutdown applcation...");
 			/*
 			DocumentDefine doc = mainFrame.saveDocumentDefine();
@@ -176,8 +144,9 @@ public class DefaultBookController implements BookController{
 			mainFrame.dispose();
 			System.exit(0);
 		}
-
-		public void DataPre(BookAction event){
+		
+		@EventAction(order=1)
+		public void DataPre(BroadCastEvent event){
 			if(dataCursor - 1 < 0){
 				JOptionPane.showMessageDialog(mainFrame,
 					    "没有找到上一条记录.",
@@ -187,11 +156,12 @@ public class DefaultBookController implements BookController{
 				dataCursor--;
 				if(dataCursor >= _cur.size())
 					dataCursor = _cur.size() - 1; 
-				mainFrame.updateDocumentData(_cur.get(dataCursor));
+				//mainFrame.updateDocumentData(_cur.get(dataCursor));
 			}
 		}		
 		
-		public void DataNext(BookAction event){
+		@EventAction(order=1)		
+		public void DataNext(BroadCastEvent event){
 			if(dataCursor + 1 > _cur.size()){
 				JOptionPane.showMessageDialog(mainFrame,
 					    "没有找到下一条记录.",
@@ -199,12 +169,13 @@ public class DefaultBookController implements BookController{
 					    JOptionPane.INFORMATION_MESSAGE);			
 			}else {
 				dataCursor++;
-				mainFrame.updateDocumentData(_cur.get(dataCursor));
+				//mainFrame.updateDocumentData(_cur.get(dataCursor));
 			}
 		}
 
-		public void Save(BookAction event){
-			_cur.add(mainFrame.getDocumentData());			
+		@EventAction(order=100)
+		public void Save(BroadCastEvent event){
+			//_cur.add(mainFrame.getDocumentData());			
 			JOptionPane.showMessageDialog(mainFrame,
 				    "打印文档数据保存成功!",
 				    "消息",
@@ -212,18 +183,11 @@ public class DefaultBookController implements BookController{
 			dataCursor = _cur.size();
 		}
 		
-		public void About(BookAction event){
-			//mainFrame.showSettings();
-			AboutDialog about = new AboutDialog(mainFrame);
-			about.setLocationRelativeTo(mainFrame);
-			about.setVisible(true);
-		}
-
-		public void Print(BookAction event){
+		public void Print(BroadCastEvent event){
 			//mainFrame.showSettings();		
 			log.info("print view...");			
 			PrinterJob printJob = PrinterJob.getPrinterJob();			
-		    printJob.setPrintable(new ImagePrintable(mainFrame.printViews()));
+		    //printJob.setPrintable(new ImagePrintable(mainFrame.printViews()));
 		    if (printJob.printDialog()){
 		    	try {
 			        printJob.print();
@@ -231,7 +195,10 @@ public class DefaultBookController implements BookController{
 			    	log.error(pe.toString());
 			    }
 		    }
-		}		
+		}
 		
+		public String toString(){
+			return "BookController Actions";
+		}
 	}
 }

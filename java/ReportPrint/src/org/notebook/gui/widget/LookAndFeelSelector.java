@@ -46,6 +46,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceColorScheme;
 import org.jvnet.substance.api.SubstanceConstants;
 import org.jvnet.substance.api.SubstanceSkin;
+import org.notebook.events.EventQueue;
 
 /**
  * The Class LookAndFeelSelector.
@@ -58,6 +59,7 @@ public class LookAndFeelSelector {
 
 	/** The Constant DEFAULT_SKIN. */
 	public final String DEFAULT_SKIN = "aTunes Blue";
+	
 
 	/**
 	 * Gets the list of skins.

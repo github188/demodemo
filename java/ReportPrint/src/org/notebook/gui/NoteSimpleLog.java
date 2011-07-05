@@ -76,6 +76,7 @@ public class NoteSimpleLog extends SimpleLog{
 				writer.write(buffer.toString());
 				writer.write("\n");
 				writer.flush();
+				//System.out.println(buffer);
 			} catch (IOException e) {
 				System.err.println("Error to write log:" + e.toString());
 			}
