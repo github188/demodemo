@@ -112,7 +112,8 @@ public class MainFrame extends JFrame {
 		//JScrollPane leftTree = new JScrollPane(tree);
 		Dimension minSize = new Dimension(150, 400);
 		
-		mainPanel = new SimplePrintPanel();		
+		mainPanel = new SimplePrintPanel();	
+		events.registerAction(mainPanel.getEventsHandler());
 		_panel = new JScrollPane(mainPanel);
 		_panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 		
 		
@@ -126,7 +127,8 @@ public class MainFrame extends JFrame {
 		splitPanel.setRightComponent(_panel);		
 		
 		statusBar = new StatusBar();
-
+		mainPanel.bar = statusBar;
+		
 		Container contentPane = getContentPane();
 		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
 		
@@ -167,7 +169,7 @@ public class MainFrame extends JFrame {
 		//settings.setVisible(true);
 	}
 	
-	@EventAction(order=0)
+	@EventAction(order=1)
 	public void About(BroadCastEvent event){
 		AboutDialog about = new AboutDialog(mainFrame);
 		about.setLocationRelativeTo(mainFrame);

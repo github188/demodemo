@@ -27,6 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.InputDataField;
+import org.notebook.events.BroadCastEvent;
+import org.notebook.events.EventAction;
+import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.StatusBar;
 
 public class SimplePrintPanel extends JPanel {
@@ -39,6 +42,7 @@ public class SimplePrintPanel extends JPanel {
 	private Document data = null;
 	
 	private JComponent focusOn = null;
+	private EventHandler handler = new EventHandler();
 	
 	/*
 	 * 设置是否显示背景，用来区分是打印，还是屏幕显示。如果屏幕显示需要看到背景，
@@ -47,6 +51,7 @@ public class SimplePrintPanel extends JPanel {
 	private boolean isShowBG = true;	
 	
 	public void loadDocument(DocumentDefine doc){
+		this.removeAll();
 		this.setLayout(null);
 		//无背景
 		this.setOpaque(false);
@@ -72,6 +77,10 @@ public class SimplePrintPanel extends JPanel {
 		}
 	}
 	
+	public Object getEventsHandler(){
+		return this.handler;
+	}
+	
 	public void showDocument(Document doc){
 		this.data = doc;
 		JTextField f = null;
@@ -81,6 +90,7 @@ public class SimplePrintPanel extends JPanel {
 				f.setText(data.get(f.getName()));
 			}
 		}
+		//this.di
 	}
 	
 	public Document getDocumentData(){
@@ -164,6 +174,45 @@ public class SimplePrintPanel extends JPanel {
 			});
 	    }
 	    //repaint();
+	}
+	
+	public class EventHandler{		
+		@EventAction(order = 100)
+		public void LoadDocPanel(BroadCastEvent e){
+			Object obj = e.get(MenuToolbar.EVENT_DATA_DOC_PANEL);
+			if(obj != null && obj instanceof DocumentDefine){
+				loadDocument((DocumentDefine)obj);
+				e.done();
+			}else {
+				log.warn("Not found panel object to load.");
+			}
+		}
+		
+		@EventAction(order = 100)
+		public void LoadDocData(BroadCastEvent e){
+			Object obj = e.get(MenuToolbar.EVENT_DATA_DOC_DATA);
+			if(obj != null && obj instanceof Document){
+				showDocument((Document)obj);
+				e.done();
+			}else {
+				log.warn("Not found data object to load.");
+			}
+		}
+		
+		@EventAction(order = 1)
+		public void SaveDocPanel(BroadCastEvent e){
+			e.set(MenuToolbar.EVENT_DATA_DOC_PANEL, saveLayout());
+		}
+		
+		@EventAction(order = 1, event=MenuToolbar.SAVE)
+		public void SaveDocData(BroadCastEvent e){
+			e.set(MenuToolbar.EVENT_DATA_DOC_DATA, getDocumentData());
+		}
+
+		@EventAction(order = 1)
+		public void Print(BroadCastEvent e){
+			e.set(MenuToolbar.EVENT_DATA_PRINT, getPrintScreen());
+		}
 	}
 	
 	/**

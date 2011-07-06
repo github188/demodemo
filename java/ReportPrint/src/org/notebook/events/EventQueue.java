@@ -3,6 +3,7 @@ package org.notebook.events;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
@@ -73,7 +74,14 @@ public class EventQueue {
 	 */
 	public int dispatchEvent(ActionEvent event){
 		String name = event.getActionCommand();
-		BroadCastEvent bcEvent = new BroadCastEvent(event);
+		BroadCastEvent bcEvent = null;
+		if(event instanceof BroadCastEvent){
+			bcEvent = (BroadCastEvent) event; 
+		}else {
+			bcEvent = new BroadCastEvent(event);
+		}
+		bcEvent.queue = this;
+		
 		log.debug(String.format("start dispatch event:%s", name));
 		int count = 0;
 		for(EventMap action: queue){
@@ -99,6 +107,10 @@ public class EventQueue {
 	public int fireEvent(String name, Object source){
 		return dispatchEvent(new ActionEvent(source, 0, name));
 	}
+	
+	public int fireEvent(String name, Object source, Map<String, Object> param){
+		return dispatchEvent(new BroadCastEvent(source, 0, name, param));
+	}	
 	
 	class EventMap{
 		private Pattern p = null;

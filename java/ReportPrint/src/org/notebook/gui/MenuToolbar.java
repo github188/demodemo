@@ -77,6 +77,17 @@ public class MenuToolbar {
 	public static final String ORDER_MOVE_DOWN = "OrderMoveDown";
 	
 	public static final String MENU_LOADED = "MenuCreated";
+	
+	public static final String LOAD_DOC_PANEL = "LoadDocPanel";
+	public static final String LOAD_DOC_DATA = "LoadDocData";
+
+	public static final String SAVE_DOC_PANEL = "SaveDocPanel";
+	public static final String SAVE_DOC_DATA = "SaveDocData";
+	
+	public static final String EVENT_DATA_DOC_PANEL = "eData_doc_panel";
+	public static final String EVENT_DATA_DOC_DATA = "eData_doc_data";
+	public static final String EVENT_DATA_PRINT = "eData_doc_print";
+	
 		
 	//private MainFrame owner = null;
 	private EventQueue eventQueue = null;
