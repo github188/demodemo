@@ -67,28 +67,24 @@ public class NoteBookApp {
 	}
 	
 	public void startup(){
-		//使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
 		eventQueue = new EventQueue(null);		
-		lafManager = new LookAndFeelSelector();
+		lafManager = new LookAndFeelSelector();		
+		lafManager.setLookAndFeel(LookAndFeelSelector.DEFAULT_SKIN); 
 		
 		//把界面风格相关的事件注册。
-		eventQueue.registerAction(lafManager);
+		eventQueue.registerAction(lafManager);		
+		services = createPrivilegedProxy(new DefaultBookController(runingJNLP(),
+	 			runningSandbox()));	
 		
-		main = new MainFrame(eventQueue);
-		services = createPrivilegedProxy(new DefaultBookController(main, runingJNLP(),
-	 			runningSandbox()));
-		
-		eventQueue.registerAction(services.getEventActions());
-		
-		//主窗口显示的时候，触发加载事件。
-		main.addComponentListener(new ComponentAdapter() {
-	        public void componentShown(ComponentEvent ce) {
-	        	eventQueue.fireEvent(MenuToolbar.LOADED, main);
-	        }}
-		);
-		
+		eventQueue.registerAction(services.getEventActions());		
+		/*
+		 * 使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
+		 * 使用自定义LAF后，只能在Event thread创建JFrame
+		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run(){
+				main = new MainFrame(eventQueue);				
+				services.setTopWindow(main);
 				main.initGui();
             	//窗口居中.
             	main.setLocationRelativeTo(null);

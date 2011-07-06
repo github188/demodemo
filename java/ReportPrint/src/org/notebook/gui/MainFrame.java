@@ -32,11 +32,12 @@ import javax.swing.JSplitPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.events.BroadCastEvent;
+import org.notebook.events.EventAction;
 import org.notebook.events.EventQueue;
 import org.notebook.gui.editor.SimplePrintPanel;
 import org.notebook.gui.widget.ListPane;
 import org.notebook.gui.widget.QQStylePane;
-import org.notebook.services.SingleInstance;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -141,11 +142,19 @@ public class MainFrame extends JFrame {
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		final MainFrame mainFrame = this;
+
 	    addWindowListener(new WindowAdapter(){
+	    	//窗口关闭，
 	    	public void windowClosing(WindowEvent e){
 	    		events.fireEvent(MenuToolbar.EXIT, mainFrame);
 	    	}
+	    	
+	    	//窗口打开，触发初始化加载事件。
+	    	public void windowOpened(WindowEvent e){
+	    		events.fireEvent(MenuToolbar.LOADED, mainFrame);
+	    	}
 	    });
+	    events.registerAction(this);
 	    	    	    	    
 		pack(); 
 		setSize(670,548);
@@ -157,6 +166,15 @@ public class MainFrame extends JFrame {
 		//settings.setLocationRelativeTo(this);
 		//settings.setVisible(true);
 	}
+	
+	@EventAction(order=0)
+	public void About(BroadCastEvent event){
+		AboutDialog about = new AboutDialog(mainFrame);
+		about.setLocationRelativeTo(mainFrame);
+		about.setVisible(true);
+		event.done();
+	}
+	
 		
 	public void status(String msg){
 		this.statusBar.setText(msg);

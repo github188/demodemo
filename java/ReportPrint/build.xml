@@ -119,7 +119,7 @@
                           compress="${jar-compression}"
                   >
 					<manifest>
-						  <attribute name="Main-Class" value="org.notebook.gui.MainFrame"/>
+						  <attribute name="Main-Class" value="org.notebook.gui.NoteBookApp"/>
 					</manifest>
                     <zipfileset src="lib/commons-logging-1.1.1.jar" />
                     <zipfileset src="lib/json_simple-1.1.jar" />         

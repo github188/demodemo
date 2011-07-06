@@ -50,9 +50,8 @@ public class DefaultBookController implements BookController{
 	private Map<String, List<Document>> _temp = new HashMap<String, List<Document>>();
 	private List<Document> _cur = null;
 	
-	public DefaultBookController(MainFrame mainJFrame, boolean isJNLP, boolean isSandBox){
+	public DefaultBookController(boolean isJNLP, boolean isSandBox){
 		isWin = System.getProperty("sun.desktop").equals("windows");
-		this.mainFrame = mainJFrame;
 		this.runningJNLP = isJNLP;
 		this.runningSandBox = isSandBox;
 		
@@ -66,6 +65,10 @@ public class DefaultBookController implements BookController{
 		//this.sync.start();
 		
 		this.storage = createPersistenceService();
+	}
+	
+	public void setTopWindow(MainFrame mainJFrame){
+		this.mainFrame = mainJFrame;		
 	}
 	
 	public boolean runingJNLP(){return this.runningJNLP;}

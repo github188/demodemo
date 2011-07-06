@@ -58,7 +58,7 @@ public class LookAndFeelSelector {
 	private Map<String, String> skins = setListOfSkins();
 
 	/** The Constant DEFAULT_SKIN. */
-	public final String DEFAULT_SKIN = "aTunes Blue";
+	public static final String DEFAULT_SKIN = "OfficeBlue2007";
 	
 
 	/**
