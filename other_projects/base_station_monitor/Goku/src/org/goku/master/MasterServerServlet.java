@@ -462,8 +462,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
 						extraAL = server.taskManager.getVideoEvents(userObj.name, userObj.lastRealAlarmTime.getTime());
 					}else {
-						filter.put("lastUpdateTime__>=", new Date(System.currentTimeMillis()));
-						filter.put("extra_where_1", " or (alarmStatus = 1 and alarmCategory <> 4)");
+						filter.put("startTime__>=", new Date(System.currentTimeMillis() - 1000 * 3600 * 24 * 7));
+						filter.put("extra_where_1", " and alarmStatus in (1, 2)");
 					}
 					//如果有屏蔽告警的基站。
 					if(server.stopAlarm.keys().size() > 0){
