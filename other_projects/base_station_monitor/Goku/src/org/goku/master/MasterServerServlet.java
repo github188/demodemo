@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.goku.core.Version;
 import org.goku.core.model.AlarmDefine;
 import org.goku.core.model.AlarmRecord;
 import org.goku.core.model.BaseStation;
@@ -246,12 +247,31 @@ public class MasterServerServlet extends BaseRouteServlet{
 	protected void index_page(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		//response.getWriter().write("Welcome master server!");
+		/*
+		response.getWriter().println("<!--");
+		response.getWriter().println(Version.getName() + " " + Version.getVersion());
+		response.getWriter().println("build at " + Version.getBuildDate());
+		response.getWriter().println("java.home:" + System.getProperty("java.home"));
+		response.getWriter().println("java.runtime.version:" + System.getProperty("java.runtime.version"));
+		response.getWriter().println("java.runtime.name:" + System.getProperty("java.runtime.name"));
+		response.getWriter().println("-->");
+		response.getWriter().flush();
+		*/
 		static_serve("org/goku/master/statics/index_home_page.txt", HTML, response);
 	}
 	
 	public void help_doc(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		static_serve("org/goku/master/statics/help_doc.txt", TEXT, response);
+	}
+
+	public void version(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().println(Version.getName() + " " + Version.getVersion());
+		response.getWriter().println("build at " + Version.getBuildDate());
+		response.getWriter().println("java.home:" + System.getProperty("java.home"));
+		response.getWriter().println("java.runtime.version:" + System.getProperty("java.runtime.version"));
+		response.getWriter().println("java.runtime.name:" + System.getProperty("java.runtime.name"));
 	}
 	
 	public void new_password(HttpServletRequest request,
@@ -462,7 +482,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 						filter.put("lastUpdateTime__>=", userObj.lastRealAlarmTime);
 						extraAL = server.taskManager.getVideoEvents(userObj.name, userObj.lastRealAlarmTime.getTime());
 					}else {
-						filter.put("startTime__>=", new Date(System.currentTimeMillis() - 1000 * 3600 * 24 * 7));
+						int days = server.settings.getInt("alarm_active_days", 7);
+						filter.put("startTime__>=", new Date(System.currentTimeMillis() - 1000 * 3600 * 24 * days));
 						filter.put("extra_where_1", " and alarmStatus in (1, 2)");
 					}
 					//如果有屏蔽告警的基站。

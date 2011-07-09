@@ -1,12 +1,17 @@
 package org.goku.core;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.goku.image.ImageRouteServer;
 import org.goku.master.MasterVideoServer;
 import org.goku.settings.Settings;
 import org.goku.video.VideoRouteServer;
-
 
 public class Main {
 	
@@ -26,7 +31,7 @@ public class Main {
 		//LogFactory.getLog("main");
 		if (args.length == 1){
 			if(args[0].equals("--version")){
-				System.out.println(Version.getName() + " " + Version.getVersion());
+				System.out.println(Version.getName() + " " + Version.getVersion() + " at " + Version.getBuildDate());
 				System.exit(0);
 			}else if(args[0].equals("--help")){
 				help();
@@ -49,18 +54,21 @@ public class Main {
 	private void startAsMaster() throws Exception{
 		initLog4jFile("master.log");
 		Settings settings = new Settings("master.conf");
+		startCleanLog(settings, "master.log");
 		new MasterVideoServer(settings).startUp();
 	}
 	
 	private void startAsVideoRoute() throws Exception {
 		initLog4jFile("video.log");
 		Settings settings = new Settings("video.conf");
+		startCleanLog(settings, "video.log");
 		new VideoRouteServer(settings).startUp();
 	}
 	
 	private void startAsImageRoute() throws Exception {
 		initLog4jFile("image.log");
 		Settings settings = new Settings("image.conf");
+		startCleanLog(settings, "image.log");
 		new ImageRouteServer(settings).startUp();
 	}
 	
@@ -97,11 +105,17 @@ public class Main {
 		try {
 			root.addAppender(new org.apache.log4j.DailyRollingFileAppender(root.getAppender("S").getLayout(),
 					"logs/" + name, 
-					".yyy-MM-dd"));
+					".yy-MM-dd"));
 		} catch (IOException e) {
 			System.out.println("Failed to add file appender.");
 			// TODO Auto-generated catch block
 		}
+		
+		root.info(Version.getName() + " " + Version.getVersion());
+		root.info("build at " + Version.getBuildDate());
+		root.info("java.home:" + System.getProperty("java.home"));
+		root.info("java.runtime.version:" + System.getProperty("java.runtime.version"));
+		root.info("java.runtime.name:" + System.getProperty("java.runtime.name"));
 		
 		//root.removeAppender("R");
 		//org.apache.log4j.DailyRollingFileAppender appender = (org.apache.log4j.DailyRollingFileAppender)root.getAppender("R");
@@ -110,6 +124,53 @@ public class Main {
 		//root.info("===========================================");
 	}
 	
+	private void startCleanLog(final Settings s, final String name){
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run() {
+				org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
+				try{
+					updateLog4jLevel(s, name);
+				}catch(Throwable e){
+					root.info(e.toString());
+				}
+			}
+		}, 100, 1000 * 3600 * 12);		
+	}
+	
+	private void updateLog4jLevel(Settings s, String name){
+		org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
+		String level = s.getString("log_level", "debug").toLowerCase().trim();
+		if(level.equals("debug")){
+			root.setLevel(org.apache.log4j.Level.DEBUG);
+		}else if(level.equals("info")){
+			root.setLevel(org.apache.log4j.Level.INFO);
+		}else if(level.equals("warn")){
+			root.setLevel(org.apache.log4j.Level.WARN);
+		}
+		File r = new File("logs");
+		
+		int max_log_days = s.getInt("max_log_days", 10);		
+		Date d = new Date(System.currentTimeMillis() - 1000 * 3600 * 24 * max_log_days);		
+		DateFormat format= new SimpleDateFormat("yy-MM-dd"); 		
+		root.debug("Remove log before " + format.format(d));
+		for(File log : r.listFiles()){
+			if(!log.getName().startsWith(name))continue;
+			String[] p = log.getName().split("\\.");
+			String logDate = p[p.length -1];
+			if(logDate.indexOf("-") > 0){
+				try {
+					if(format.parse(logDate).getTime() < d.getTime()){
+						root.info("remove old log file:" + log.getName());
+						log.delete();
+					}
+				} catch (Exception e) {
+					root.info(e.toString());
+				}
+			}
+		}
+	}
 
 	private static void help(){
 		System.out.println("java -jar Goku.jar <Option>\n" +

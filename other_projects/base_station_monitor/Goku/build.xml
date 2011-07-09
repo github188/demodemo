@@ -10,6 +10,23 @@
      </tstamp> 
      <property file="build.properties"/> 
      <property name="version" value="1.0.0"/>
+    
+   	<property environment="env" /> 
+    
+    <condition property="fileTargetName" value="${env.BUILD_NUMBER}">
+       <isset property="env.BUILD_NUMBER" />
+    </condition>
+
+    <condition property="fileTargetName" value="dev">
+       <not>
+           <isset property="env.BUILD_NUMBER" />
+       </not>
+    </condition>     
+    
+    <filter token="build" value="${fileTargetName}"/>
+   	<filter token="build_date" value="${build.date}"/>   	
+    <echo>Start to build '0.1.${fileTargetName}'.</echo>
+   	
    </target> 
   
    <target name="init" depends="properties"> 
@@ -27,6 +44,13 @@
     </path>         
           
          <target name="compile-shell" depends="properties, init"> 
+         	<copy file="src/org/goku/core/Version.java.tempate" 
+         		  tofile="src/org/goku/core/Version.java"
+         		  filtering="yes"
+         		  encoding='utf8'
+         		  overwrite="yes"
+         			  />
+         	
                  <javac srcdir="src" 
                             destdir="${build.dir}/classes" 
                             includes="**/*.java" 

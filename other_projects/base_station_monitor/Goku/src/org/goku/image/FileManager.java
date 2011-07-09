@@ -45,6 +45,12 @@ public class FileManager {
 		pattern = settings.getString(Settings.FILE_NAME_PATTERN, DEFAULT);		
 	}
 	
+	class AlarmUUID{
+		String uuid;
+		Date createTime;
+		AlarmUUID(String d, Date c){uuid=d; createTime = c;}
+	}
+	
 	public AlarmRecord saveImageFile(ASC100Client client, ImageInfo image) throws IOException{
 		log.info(String.format("Save image uuid:%s, ch:%s, time:%s", client.info.uuid, image.channel, image.generateDate));
 		AlarmDefine alarm = AlarmDefine.alarm(AlarmDefine.AL_5001);
@@ -59,7 +65,11 @@ public class FileManager {
 		String combineUuid = null;
 		String cacheKey = client.info.uuid + "_" + image.channel + "_" + alarm.alarmCode;
 		if(activeAlarm.get(cacheKey, false) != null){
-			combineUuid = (String)activeAlarm.get(cacheKey, false);
+			AlarmUUID u = (AlarmUUID)activeAlarm.get(cacheKey, false);
+			long diff = image.generateDate.getTime() - u.createTime.getTime();
+			if(diff > 0 && diff < alarm.reActiveTime * 1000 * 60){
+				combineUuid = u.uuid;
+			}
 		}
 		
 		if(combineUuid == null){
@@ -73,7 +83,7 @@ public class FileManager {
 					image.generateDate});
 			if(xx.size() > 0){
 				combineUuid = (String)xx.iterator().next().get("combineUuid");
-				activeAlarm.set(cacheKey, combineUuid, (int)alarm.reActiveTime * 60);
+				activeAlarm.set(cacheKey, new AlarmUUID(combineUuid, image.generateDate), (int)alarm.reActiveTime * 60);
 			}
 		}
 		
@@ -94,7 +104,7 @@ public class FileManager {
 		}else {
 			rec.alarmCategory = alarm.alarmCategory;
 			rec.combineUuid = rec.uuid;
-			activeAlarm.set(cacheKey, rec.uuid, (int)alarm.reActiveTime * 60);
+			activeAlarm.set(cacheKey, new AlarmUUID(rec.uuid, image.generateDate), (int)alarm.reActiveTime * 60);
 		}
 		storage.save(rec);
 		log.debug(String.format("image alarm uuid:%s, combinedUUID:%s, path:%s", rec.uuid, rec.combineUuid, rec.videoPath));

@@ -7,7 +7,7 @@
 </head>
 <body>
 <!-- Container -->
-<h1>中国移动基站视频图像监控系统接口--v1.0</h1>
+<h1>中国移动基站视频图像监控系统接口--<a href="?q=version">v1.0</a></h1>
 <a href="?q=help_doc">系统调用接口文档</a><br/>
 <a href="?q=settings_doc">系统配置参数文档</a><br/>
 <a href="GokuCtrl/admin">后台配置入口</a><br/>
