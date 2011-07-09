@@ -21,6 +21,6 @@
     <j2se version="1.5+" java-vm-args=""/>
     <jar href="blueStar-0.1.jar"/>
   </resources>
-  <application-desc main-class="org.notebook.gui.MainFrame"/>
+  <application-desc main-class="org.notebook.gui.NoteBookApp"/>
 </jnlp> 
 
