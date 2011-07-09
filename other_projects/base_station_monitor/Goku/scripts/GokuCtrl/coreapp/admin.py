@@ -79,9 +79,10 @@ class BaseStationAdmin(admin.ModelAdmin):
     
 class AlarmRecordAdmin(admin.ModelAdmin):
     fields = ['uuid', 'base_station', 'channelId', 'alarmCode', 'alarmStatus', 'startTime', 'alarmCategory', 'alarmLevel', 'combineUuid', 'dataSize', 'videoPath']
-    list_display = ('uuid', 'base_station', 'channelId', 'alarmCode', 'startTime', 'alarmCategory', 'alarmLevel', 'alarmStatus', 'user', 'download')
+    list_display = ('uuid', 'base_station', 'channelId', 'alarmName', 'startTime', 'alarmCategory', 'alarmLevel', 'alarmStatus', 'user', 'download')
     #list_filter = ['alarmCode', ]
-    search_fields = ['base_station__uuid', 'alarmCode__alarmCode', ]
+    #search_fields = ['base_station__uuid', 'alarmCode__alarmCode', ]
+    search_fields = ['base_station', 'alarmCode', ]
     order_by = ("-startTime", "base_station", "channelId")
     where_sql = "alarmCategory != 4"
     

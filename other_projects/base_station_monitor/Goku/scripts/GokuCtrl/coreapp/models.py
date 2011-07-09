@@ -190,10 +190,12 @@ class AlarmRecord(models.Model):
         verbose_name = '告警'
         
     uuid = models.CharField(max_length=32, primary_key=True, verbose_name="告警ID")
-
-    base_station = models.ForeignKey(BaseStation, db_column='baseStation', verbose_name="基站")
+    
+    base_station = models.CharField(max_length=32, db_column='baseStation', verbose_name="基站编号")
+    #base_station = models.ForeignKey(BaseStation, db_column='baseStation', verbose_name="基站")
     channelId = models.CharField(max_length=10, default='', verbose_name="告警通道")
-    alarmCode = models.ForeignKey('sysparam.AlarmDefine', db_column='alarmCode',  verbose_name="告警名称", )
+    alarmCode = models.CharField(max_length=32, verbose_name="告警编码")
+    #alarmCode = models.ForeignKey('sysparam.AlarmDefine', db_column='alarmCode',  verbose_name="告警名称", )
     
     alarmLevel = models.CharField(max_length=10, default='', verbose_name="告警级别")
     
@@ -234,7 +236,16 @@ class AlarmRecord(models.Model):
     comfirmTime = models.DateTimeField(verbose_name='手动确认时间', null=True)
     
     def __unicode__(self):
-        return "%s-%s" % (self.base_station.uuid, self.alarmCode)
+        return "%s-%s" % (self.base_station, self.alarmCode)
+    
+    def alarmName(self):
+        if not hasattr(AlarmRecord, '_name'):
+            import GokuCtrl.sysparam.models as a
+            _name = {}
+            for e in a.AlarmDefine.objects.all():
+                _name[e.alarmCode] = e.alarmName
+            AlarmRecord._name = _name
+        return AlarmRecord._name.get(self.alarmCode) or self.alarmCode
     
     def download(self, ):
         path = os.environ.get("DATA_ROOT", ".")
@@ -249,7 +260,8 @@ class AlarmRecord(models.Model):
         elif self.videoPath:
             return self.videoPath
     download.allow_tags = True
-    download.verbose_name = "文件下载"    
+    download.verbose_name = "文件下载"
+    alarmName.verbose_name = "告警类型"    
                 
 class SystemLog(models.Model):
     class Meta:
