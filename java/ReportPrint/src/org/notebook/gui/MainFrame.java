@@ -103,9 +103,6 @@ public class MainFrame extends JFrame {
 		menu = new MenuToolbar(events);
 		this.getRootPane().setJMenuBar(menu.getMenuBar());
 		
-		//触发菜单创建成功事件，其他控件，可以响应事件并更新自己特有的菜单。
-		events.fireEvent(MenuToolbar.MENU_LOADED, this);
-		
 		//editor = new DocumentEditor();
 		//menu.addExtraToolBar(editor.getToolBar());
 
@@ -156,6 +153,10 @@ public class MainFrame extends JFrame {
 	    		events.fireEvent(MenuToolbar.LOADED, mainFrame);
 	    	}
 	    });
+	    
+		//触发菜单创建成功事件，其他控件，可以响应事件并更新自己特有的菜单。
+		events.fireEvent(MenuToolbar.GUI_INITED, this);
+		
 	    events.registerAction(this);
 	    	    	    	    
 		pack(); 

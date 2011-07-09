@@ -76,7 +76,7 @@ public class MenuToolbar {
 	public static final String ORDER_MOVE_UP = "OrderMoveUp";
 	public static final String ORDER_MOVE_DOWN = "OrderMoveDown";
 	
-	public static final String MENU_LOADED = "MenuCreated";
+	public static final String GUI_INITED = "GuiInited";
 	
 	public static final String LOAD_DOC_PANEL = "LoadDocPanel";
 	public static final String LOAD_DOC_DATA = "LoadDocData";
@@ -88,10 +88,9 @@ public class MenuToolbar {
 	public static final String EVENT_DATA_DOC_DATA = "eData_doc_data";
 	public static final String EVENT_DATA_PRINT = "eData_doc_print";
 	
-		
+	private static  ResourceBundle rb = new SimpleResourceBound();	
 	//private MainFrame owner = null;
 	private EventQueue eventQueue = null;
-	private ResourceBundle rb = new SimpleResourceBound();	
 	private Map<String, BookAction> actions = new HashMap<String, BookAction>();
 	private Collection<JComponent> extraToolBar = new ArrayList<JComponent>(); 
 	
@@ -288,7 +287,7 @@ public class MenuToolbar {
 		return icon;
 	}
 	
-	public String i18n(String key){
+	public static String i18n(String key){
 		if(rb == null){
 			rb = ResourceBundle.getBundle("NoteBook", new Locale("zh", "CN"));
 		}

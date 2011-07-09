@@ -22,6 +22,7 @@ package org.notebook.gui.widget;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,9 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -46,7 +53,9 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceColorScheme;
 import org.jvnet.substance.api.SubstanceConstants;
 import org.jvnet.substance.api.SubstanceSkin;
-import org.notebook.events.EventQueue;
+import org.notebook.events.BroadCastEvent;
+import org.notebook.events.EventAction;
+import org.notebook.gui.MenuToolbar;
 
 /**
  * The Class LookAndFeelSelector.
@@ -59,7 +68,52 @@ public class LookAndFeelSelector {
 
 	/** The Constant DEFAULT_SKIN. */
 	public static final String DEFAULT_SKIN = "OfficeBlue2007";
+	private JFrame frame = null;
 	
+	public class LafMenuAction extends AbstractAction {
+		private static final long serialVersionUID = -6101997393914923387L;
+	
+		public LafMenuAction(String name ){
+			super(name);
+			this.putValue(Action.ACTION_COMMAND_KEY, name);
+			this.putValue(Action.NAME, MenuToolbar.i18n(name));
+		}		
+		public void actionPerformed(ActionEvent event) {
+			//log.info("Set Look and feel:" + event.getActionCommand());
+			setLookAndFeel(event.getActionCommand());
+			
+			JRadioButtonMenuItem item = (JRadioButtonMenuItem)event.getSource();
+			
+			SwingUtilities.updateComponentTreeUI(frame);
+		}
+	}
+			
+	@EventAction(order=1)
+	public void GuiInited(BroadCastEvent event){
+		Object o = event.getSource();
+		if(o instanceof JFrame){
+			frame = (JFrame)o;
+			JMenuBar mb = frame.getJMenuBar();
+			mb.add(createMenu(), 2);
+			mb.validate();
+		}
+	}
+	
+	protected JMenu createMenu(){
+		JMenu toolMenu = new JMenu(MenuToolbar.i18n("Views"));
+		ButtonGroup group = new ButtonGroup();
+		JRadioButtonMenuItem item = null;
+		for(String n : getListOfSkins()){
+			item = new JRadioButtonMenuItem(new LafMenuAction(n)); 
+			if(n.equals(DEFAULT_SKIN)){
+				item.setSelected(true);
+			}
+			group.add(item);
+			toolMenu.add(item);			
+		}
+		
+		return toolMenu;
+	}
 
 	/**
 	 * Gets the list of skins.
@@ -139,7 +193,7 @@ public class LookAndFeelSelector {
 
 		/*
 		 * custom skins
-		 */
+		
 		result.put("aTunes Blue",
 					"com.wateray.ipassbook.ui.substance.SubstanceATunesBlueLookAndFeel");
 		result.put("aTunes Dark",
@@ -147,6 +201,8 @@ public class LookAndFeelSelector {
 		result.put("aTunes Gray",
 					"com.wateray.ipassbook.ui.substance.SubstanceATunesGrayLookAndFeel");
 
+		 */
+		
 		for (LookAndFeelInfo lf : UIManager.getInstalledLookAndFeels()) {
 			result.put(lf.getName(), lf.getClassName());
 		}
