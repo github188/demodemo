@@ -59,19 +59,20 @@ public class FileManager {
 		os.getChannel().write(image.buffer);
 		os.close();
 		
-		//检查最短触发时间。
-		Date checkTime = new Date(image.generateDate.getTime() - alarm.reActiveTime * 1000 * 60);
 		//
 		String combineUuid = null;
 		String cacheKey = client.info.uuid + "_" + image.channel + "_" + alarm.alarmCode;
 		if(activeAlarm.get(cacheKey, false) != null){
 			AlarmUUID u = (AlarmUUID)activeAlarm.get(cacheKey, false);
 			long diff = image.generateDate.getTime() - u.createTime.getTime();
-			if(diff > 0 && diff < alarm.reActiveTime * 1000 * 60){
+			if(Math.abs(diff) < alarm.reActiveTime * 1000 * 60){
 				combineUuid = u.uuid;
 			}
 		}
-		
+
+		//检查最短触发时间, 有可能是倒序的。
+		Date checkTime = new Date(image.generateDate.getTime() - alarm.reActiveTime * 1000 * 60 /2);
+		Date endTime = new Date(image.generateDate.getTime() + alarm.reActiveTime * 1000 * 60 /2);
 		if(combineUuid == null){
 			String sql = "select combineUuid from alarm_record where " +
 							"startTime > ${0} and startTime <= ${4} and baseStation = ${1} and channelId= ${2} " +
@@ -80,7 +81,7 @@ public class FileManager {
 					client.info.uuid,
 					image.channel,
 					alarm.alarmCode,
-					image.generateDate});
+					endTime});
 			if(xx.size() > 0){
 				combineUuid = (String)xx.iterator().next().get("combineUuid");
 				activeAlarm.set(cacheKey, new AlarmUUID(combineUuid, image.generateDate), (int)alarm.reActiveTime * 60);
