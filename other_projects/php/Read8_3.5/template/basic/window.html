@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<title><!-- IF action=="bookcase" -->修改书架<!-- ELSEIF action=="worksed" -->书籍类别更改<!-- ENDIF --></title>
+</head>
+<body>
+<div style="margin-top: 10px;text-align: center;border-collapse: collapse;background: #E5ECFA; border: 1px solid #5296FF;">
+	<div style="margin: 10px auto;font-weight: bold;"><!-- IF action=="bookcase" -->请选择新的书架<!-- ELSEIF action=="worksed" -->请选择新的书籍类别<!-- ENDIF --></div>
+<!-- IF action=="bookcase" -->
+	<form style="margin: 10px auto;" action="bookcase.php?changebcid2={C_changebcid}" method="post">
+		<select name="newchangebcname">
+		<!-- BEGIN bclist -->
+			<option value="{C_bookcasename}"<!-- IF thebcname==C_bookcasename --> selected="selected"<!-- ENDIF -->><!-- IF C_bookcasename -->{C_bookcasename}<!-- ELSE -->默认书架<!-- ENDIF --></option>
+		<!-- END bclist -->
+		</select>
+		新建: <input type="text" name="newchangebcname2" size="10" />
+		<input type="submit" value="修改" />
+	</form>
+<!-- ELSEIF action=="worksed" -->
+	<form style="margin: 10px auto;" action="worksed.php" method="post">
+		<input type="hidden" name="bid" value="{C_bid}" />
+		<input type="hidden" name="otypeid" value="{C_typeid}" />
+		<select name="newtypeid">
+		<!-- BEGIN typelist -->
+			<option value="{C_key}"{C_selected}>{C_val}</option>
+		<!-- END typelist -->
+		</select> &nbsp;<input type="submit" value="修改" />
+	</form>
+<!-- ELSEIF action=="newintro" -->
+	<form style="margin: 10px auto;" action="" method="post">
+		请输入新简介<br />
+		<textarea name="newintro" rows="10" cols="30"></textarea><br />
+		<input type="submit" value="    提   交    " />
+	</form>
+<!-- ENDIF -->
+</div>
+</body>
+</html>

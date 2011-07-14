@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>图片预览</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="robots" content="noindex, nofollow">
+		<style>
+		body
+		{
+			margin: 0px;
+			padding: 10px;
+			background-color: #f7f7f7;
+		}
+		body, td, input, select, textarea
+		{
+			font-size: 12px;
+			font-family: 'Microsoft Sans Serif' , Arial, Helvetica, Verdana;
+		}
+		body, .BackColor
+		{
+			background-color: #f7f7f7;
+		}
+		</style>
+		<script language="javascript">
+		window.onload = function(){window.parent.SetPreviewElements( document.getElementById( 'imgPreview' ),document.getElementById( 'lnkPreview' ) ) ;}
+		</script>
+	</head>
+	<body style="COLOR: #000000; BACKGROUND-COLOR: #ffffff">
+		<a id="lnkPreview" onClick="return false;" style="CURSOR: default"><img id="imgPreview" onload="window.parent.UpdateOriginal();"></a>
+		[预览]弯弯的月儿小小的船。小小的船儿两头尖。我在小小的船里坐，只看见闪闪的星星蓝蓝的天。[预览]
+	</body>
+</html>

@@ -1,0 +1,127 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+			<!-- IF action=="edit" -->
+				<li>用户后台详细权限设置</li>
+			<!-- ELSE -->
+				<li>当用户具有访问后台的权限后，必须同时在此添加相关记录。</li>
+			<!-- ENDIF -->
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function refreshpriv(prefix, refer){
+			var value = refer.checked;
+			$('label_' + refer.id).style.color = value ? 'Green' : 'Black';
+			var form = document.getElementById('acp_user');
+			for(var i = 0; i < form.elements.length; i++) {
+				var e = form.elements[i];
+				if(e.name.substr(0, prefix.length) == prefix) {
+					e.checked = value;
+					$('label_' + e.id).style.color = value ? 'Green' : 'Black';
+				}
+			}
+		}
+		function calcpriv(prefix, refer, parent){
+			$('label_' + refer.id).style.color = refer.checked ? 'Green' : 'Black';
+			var form = document.getElementById('acp_user');
+			var c = false;
+			var d = false;
+			for(var i = 0; i < form.elements.length; i++) {
+				var e = form.elements[i];
+				if(e.name != prefix && e.name.substr(0, prefix.length) == prefix) {
+					c = c || e.checked;
+					d = d || !e.checked;
+				}
+			}
+			$(parent).checked = c;
+			$(parent).indeterminate = c ? d : false;
+			$('label_' + parent).style.color = c ? 'Green' : 'Black';
+		}
+	</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="acp_user">
+	<div class="adminborder">
+<!-- IF action=="edit" -->
+		<div class="adminhead">用户详细设置</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">用户名:</span><br />
+				<span class="smalltxt">登录后台的用户名，可以和前台登录用户名不一样。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="padmin[name]" size="14" value="{C_name}" /><input type="hidden" name="padmin[id]" size="14" value="{C_id}" readonly="readonly" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">密码:</span><br />
+				<span class="smalltxt">登录后台的密码，可以和前台登录密码不一样，不修改请留空。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="padmin[pswd]" size="14" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">权限:</span><br />
+				<span class="smalltxt">用户在后台的权限。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="founder"><input type="checkbox" id="founder" name="padmin[founder]" value="1"{C_checked} onclick="javascript:if(this.checked) this.checked=confirm('这将使该用户具有与您当前登录的用户相同的后台全局权限，确定？');$('privdetail').style.display = this.checked ? 'none' : '';" /> 总站长</label>
+			</div>
+		</div>
+		<div class="b0" id="privdetail"<!-- IF C_checked --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 98%;padding-left: 1%;">
+	<!-- BEGIN acpprivs -->
+				<label id="label_priv_{m}" for="priv_{m}"<!-- IF checked --> style="color: Green;"<!-- ENDIF -->><input type="checkbox" name="padmin[priv][{m}]" id="priv_{m}" value="1"{checked} onclick="refreshpriv('padmin[priv][{m}]', this);" />{t}</label><br />
+		<!-- BEGIN ksprivs -->
+				 &nbsp;└<label id="label_priv_{m}_{k}" for="priv_{m}_{k}"<!-- IF checked --> style="color: Green;"<!-- ENDIF -->><input type="checkbox" name="padmin[priv][{m}][{k}]" id="priv_{m}_{k}" value="1"{checked} onclick="refreshpriv('padmin[priv][{m}][{k}]', this);calcpriv('padmin[priv][{m}]', this, 'priv_{m}');" />{t}</label><br />
+					 &nbsp; &nbsp; └
+			<!-- BEGIN fsprivs -->
+				<label id="label_priv_{m}_{k}_{f}" for="priv_{m}_{k}_{f}"<!-- IF checked --> style="color: Green;"<!-- ENDIF -->><input type="checkbox" name="padmin[priv][{m}][{k}][{f}]" id="priv_{m}_{k}_{f}" value="1"{checked} onclick="calcpriv('padmin[priv][{m}][{k}]', this, 'priv_{m}_{k}');" />{t}</label>
+			<!-- END fsprivs --><br />
+		<!-- END ksprivs -->
+	<!-- END acpprivs -->
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">访问来源:</span><br />
+				<span class="smalltxt">如设置仅允许从以下IP访问，每行一个，支持通配符。</span>
+			</div>
+			<div style="width: 38%;"><textarea name="padmin[ip]" rows="5" cols="30">{C_ip}</textarea></div>
+		</div>
+<!-- ELSE -->
+		<div class="adminhead">后台用户设置</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td>删除</td>
+					<td>用户编号</td>
+					<td>用户名</td>
+					<td>最后访问时间</td>
+					<td>最后访问IP</td>
+					<td>最后修改密码时间</td>
+					<td>前台用户名</td>
+					<td>添加者</td>
+					<td>编辑</td>
+				</tr>
+	<!-- BEGIN admins -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" align="center">
+					<td><input type="checkbox" name="pdeladmin[]" value="{id}" onclick="javascript:if(this.checked) this.checked=confirm('确实要删除么？')" /></td>
+					<td>{id}</td>
+					<td>{name}</td>
+					<td><!-- IF lastlogin -->{lastlogin_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td><!-- IF lastloginip -->{lastloginip}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td><!-- IF changepswdtime -->{changepswdtime_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td>{username}</td>
+					<td><!-- IF adduser -->{adduser}<!-- ELSE -->SYSTEM<!-- ENDIF --></td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=edit&amp;editadminuser={id}">编辑</a></td>
+				</tr>
+	<!-- END admins -->
+			</table>
+		</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;"><strong>添加</strong>: &nbsp;前台用户名: <input type="text" name="paddadmin[username]" size="10" /> 后台用户名: <input type="text" name="paddadmin[adminname]" size="10" /> 后台初始密码(留空即与前台密码一致): <input type="text" name="paddadmin[adminpswd]" size="10" /></div>
+<!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /><input type="hidden" name="action" value="<!-- IF action="edit" -->update<!-- ELSE -->add<!-- ENDIF -->" /> &nbsp;<input type="reset" value=" 重 置 " /><!-- IF action="edit" --> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/><!-- ENDIF --></div>
+	</div>
+	</form>

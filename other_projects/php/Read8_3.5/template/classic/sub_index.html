@@ -1,0 +1,59 @@
+	<div id="rd8_center">			
+		<h1 class="rd8_subguide">您正在浏览：<acronym>{sc_title}</acronym>频道</h1>	
+			<div id="rd8_leftt">
+				<div class="rd8_subnav">
+<!-- BEGIN subjects -->
+					<a href="category.php?subject={id}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="currentlink"<!-- ENDIF -->>{title}</a> &nbsp;
+<!-- END subjects -->
+					<br />
+					<hr />
+<!-- BEGIN contents -->
+					<a href="category.php?subject={nsubject}&amp;content={id}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="currentlink"<!-- ENDIF -->>{title}</a> &nbsp;
+<!-- END contents -->
+					<br />
+					<strong>按首字母：</strong><br />
+<!-- BEGIN initial -->
+					<a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial={v}&amp;words={nwords}"<!-- IF selected --> class="currentlink"<!-- ENDIF -->>[{v}]</a>&nbsp;
+<!-- END initial -->
+					<br />
+					<strong>按字数：</strong><br />
+<!-- BEGIN words -->
+					<a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={v}"<!-- IF selected --> class="currentlink"<!-- ENDIF -->>[{v}]</a>&nbsp;
+<!-- END words -->
+				</div>
+			</div>
+			<div id="rd8_middle">
+				<p class="rd8_catetitle">最新上架</p>
+					<ul>
+<!-- BEGIN nc11 -->
+						<li><a href="{InfoURL}">{title}</a>({dateline_DATE_m-d})</li>
+<!-- END nc11 -->
+					</ul>
+					<small><a href="#">查看所有图书>></a></small>						
+				<p class="rd8_catetitle">最新评论</p>
+					<ul>
+
+					<li><a href="#">□&nbsp;好看啊，就是不知道什么时候才能完</a> <font class="commenttime"><b>hwc</b>于03-25 13:01评  <b>《浪荡皇帝秘史》</b></font> </li>
+
+					<small><a href="#">查看所有评论>></a></small>																
+			</div>
+			<div id="rd8_rightt">
+				<div class="rd8_canada">
+					<dl>
+						<dt style="margin-top:-12px;*margin-top:0;">本类总推荐榜 </dt>
+<!-- BEGIN nc4 -->
+					<dd><a href="{InfoURL}">{title}</a>({vote})</dd>
+<!-- END nc4 -->					</dl>
+					<span><a href="#">更多&gt;&gt;</a></span>		
+				</div>	
+				<div class="rd8_canada">
+					<dl>
+						<dt style="margin-top:-12px;*margin-top:0;">小说点击榜</dt>
+<!-- BEGIN nc4 -->
+					<dd><a href="{InfoURL}">{title}</a>({vote})</dd>
+<!-- END nc4 -->
+                   </dl>
+					<span><a href="#">更多&gt;&gt;</a></span>
+				</div>	
+			</div>
+	</div>

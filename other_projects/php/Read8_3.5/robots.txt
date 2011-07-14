@@ -1,0 +1,35 @@
+#
+# robots.txt for Read8.Net 3.5
+# last update Aug. 4th. 2008
+#
+
+User-agent: *
+
+Disallow: /admin/
+Disallow: /author/
+Disallow: /data/
+Disallow: /images/
+Disallow: /include/
+Disallow: /install/
+Disallow: /lang/
+Disallow: /my/
+Disallow: /template/
+Disallow: /typewriter/
+Disallow: /upload/
+Disallow: /ajax.php
+Disallow: /cart.php
+Disallow: /click.php
+Disallow: /comment.php
+Disallow: /config.inc.php
+Disallow: /digg.php
+Disallow: /download.php
+Disallow: /drafted.php
+Disallow: /install.php
+Disallow: /js.php
+Disallow: /login.php
+Disallow: /rate.php
+Disallow: /register.php
+Disallow: /shop.php
+Disallow: /user.php
+Disallow: /vip.php
+Disallow: /vote.php

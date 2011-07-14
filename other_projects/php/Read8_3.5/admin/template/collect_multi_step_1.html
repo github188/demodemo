@@ -1,0 +1,107 @@
+	<script type="text/javascript">
+		function showhide(multi){
+			$('setup_regexp').style.display = 'none';
+			$('setup_text').style.display   = 'none';
+			$('setup_range').style.display  = 'none';
+
+			$('setup_' + multi).style.display = '';
+		}
+	</script>
+	
+	<div class="adminborder">
+		<div class="adminhead">选择采集方式和设置</div>
+		<div class="col1">
+			<form action="?" method="get">
+				<table>
+					<tr>
+						<td width="11%" align="center">
+							采集方式
+						</td>
+						<td width="55%" colspan="5">
+							&nbsp;<label for="multi_regexp"><input type="radio" name="multi" id="multi_regexp" value="regexp"{multi_regexp_c} onclick="javascript:showhide('regexp');" /> 使用规则</label>
+							&nbsp;<label for="multi_text"><input type="radio" name="multi" id="multi_text" value="text"{multi_text_c} onclick="javascript:showhide('text');" /> 使用文本</label>
+							&nbsp;<label for="multi_range"><input type="radio" name="multi" id="multi_range" value="range"{multi_range_c} onclick="javascript:showhide('range');" /> 指定范围</label><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /><input type="hidden" name="step" value="2" />
+						</td>
+						<td width="11%" align="center">
+							录&nbsp;入&nbsp;员
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;<input type="text" name="typewriter" value="{typewriter}" />
+						</td>
+					</tr>
+					<tr class="col0">
+						<td width="11%" align="center">
+							数 &nbsp; &nbsp;据
+						</td>
+						<td width="55%" colspan="5">
+							&nbsp;<label for="clear_0"><input type="radio" name="clear" id="clear_0" value="0" checked="checked" /> 更新 (如果本站有同名书籍)</label> &nbsp;<label for="clear_1"><input type="radio" name="clear" id="clear_1" value="1"<!-- IF clear --> checked="checked"<!-- ENDIF --> /> 覆盖 (更新前先清除同名书籍的数据)</label>
+						</td>
+						<td width="11%" align="center">
+							跳 &nbsp; &nbsp;转
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;每 <input type="text" name="jump" value="{jump}" size="14" /> 章
+						</td>
+					</tr>
+					<tr>
+						<td colspan="9">
+							<table id="setup_regexp"{multi_regexp_d}>
+								<tr>
+									<td width="11%" align="center">
+										规则名称
+									</td>
+									<td width="88%">
+										&nbsp;<select name="regexp_target">
+<!-- BEGIN sites -->
+											<option value="{id}">{title} (基础规则标识: {parent})</option>
+<!-- END sites -->
+										</select>
+									</td>
+								</tr>
+							</table>
+							<table id="setup_text"{multi_text_d}>
+								<tr>
+									<td width="11%" align="center">
+										文&nbsp;件&nbsp;名
+									</td>
+									<td width="88%">
+										&nbsp;<select name="text_target">
+<!-- BEGIN texts -->
+											<option value="{f}">{f}</option>
+<!-- END texts -->
+										</select>
+									</td>
+								</tr>
+							</table>
+							<table id="setup_range"{multi_range_d}>
+								<tr>
+									<td width="11%" align="center">
+										基础规则
+									</td>
+									<td width="88%">
+										&nbsp;<select name="range_target">
+<!-- BEGIN single_sites -->
+											<option value="{mark}">{title} (标识: {mark})</option>
+<!-- END single_sites -->
+										</select>
+									</td>
+								</tr>
+								<tr class="col0">
+									<td width="11%" align="center">
+										书籍编号
+									</td>
+									<td width="88%">
+										&nbsp;从 <input type="text" name="range_start" /> 到 <input type="text" name="range_end" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="colt">
+						<td align="center" colspan="9"><input type="submit" value="   下一步   " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+

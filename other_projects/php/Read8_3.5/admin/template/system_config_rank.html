@@ -1,0 +1,117 @@
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">排行榜设置</div>
+		
+		<div class="col1">
+			<table>
+				<tr align="center">
+					<td width="40%" rowspan="3">排行榜名称</td>
+					<td colspan="6">显示数量</td>
+				</tr>
+				<tr align="center">
+					<td colspan="3">长篇</td>
+					<td colspan="3">短篇</td>
+				</tr>
+				<tr align="center">
+					<td width="10%">周榜</td>
+					<td width="10%">月榜</td>
+					<td width="10%">总榜</td>
+					<td width="10%">周榜</td>
+					<td width="10%">月榜</td>
+					<td width="10%">总榜</td>
+				</td>
+				<tr align="center" class="col0">
+					<td><strong>点击榜</strong></td>
+					<td><input type="text" name="pclick_week_novel" value="{C_click_week_novel}" size="5" /></td>
+					<td><input type="text" name="pclick_month_novel" value="{C_click_month_novel}" size="5" /></td>
+					<td><input type="text" name="pclick_total_novel" value="{C_click_total_novel}" size="5" /></td>
+					<td><input type="text" name="pclick_week_story" value="{C_click_week_story}" size="5" /></td>
+					<td><input type="text" name="pclick_month_story" value="{C_click_month_story}" size="5" /></td>
+					<td><input type="text" name="pclick_total_story" value="{C_click_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>投票榜</strong></td>
+					<td><input type="text" name="pvote_week_novel" value="{C_vote_week_novel}" size="5" /></td>
+					<td><input type="text" name="pvote_month_novel" value="{C_vote_month_novel}" size="5" /></td>
+					<td><input type="text" name="pvote_total_novel" value="{C_vote_total_novel}" size="5" /></td>
+					<td><input type="text" name="pvote_week_story" value="{C_vote_week_story}" size="5" /></td>
+					<td><input type="text" name="pvote_month_story" value="{C_vote_month_story}" size="5" /></td>
+					<td><input type="text" name="pvote_total_story" value="{C_vote_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center" class="col0">
+					<td><strong>评分榜</strong></td>
+					<td><input type="text" name="prate_week_novel" value="{C_rate_week_novel}" size="5" /></td>
+					<td><input type="text" name="prate_month_novel" value="{C_rate_month_novel}" size="5" /></td>
+					<td><input type="text" name="prate_total_novel" value="{C_rate_total_novel}" size="5" /></td>
+					<td><input type="text" name="prate_week_story" value="{C_rate_week_story}" size="5" /></td>
+					<td><input type="text" name="prate_month_story" value="{C_rate_month_story}" size="5" /></td>
+					<td><input type="text" name="prate_total_story" value="{C_rate_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>收藏榜</strong></td>
+					<td><input type="text" name="pfavo_week_novel" value="{C_favo_week_novel}" size="5" /></td>
+					<td><input type="text" name="pfavo_month_novel" value="{C_favo_month_novel}" size="5" /></td>
+					<td><input type="text" name="pfavo_total_novel" value="{C_favo_total_novel}" size="5" /></td>
+					<td><input type="text" name="pfavo_week_story" value="{C_favo_week_story}" size="5" /></td>
+					<td><input type="text" name="pfavo_month_story" value="{C_favo_month_story}" size="5" /></td>
+					<td><input type="text" name="pfavo_total_story" value="{C_favo_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center" class="col0">
+					<td><strong>推荐榜</strong></td>
+					<td><input type="text" name="pcommend_week_novel" value="{C_commend_week_novel}" size="5" /></td>
+					<td><input type="text" name="pcommend_month_novel" value="{C_commend_month_novel}" size="5" /></td>
+					<td><input type="text" name="pcommend_total_novel" value="{C_commend_total_novel}" size="5" /></td>
+					<td><input type="text" name="pcommend_week_story" value="{C_commend_week_story}" size="5" /></td>
+					<td><input type="text" name="pcommend_month_story" value="{C_commend_month_story}" size="5" /></td>
+					<td><input type="text" name="pcommend_total_story" value="{C_commend_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>顶榜</strong></td>
+					<td><input type="text" name="pdigg_week_novel" value="{C_digg_week_novel}" size="5" /></td>
+					<td><input type="text" name="pdigg_month_novel" value="{C_digg_month_novel}" size="5" /></td>
+					<td><input type="text" name="pdigg_total_novel" value="{C_digg_total_novel}" size="5" /></td>
+					<td><input type="text" name="pdigg_week_story" value="{C_digg_week_story}" size="5" /></td>
+					<td><input type="text" name="pdigg_month_story" value="{C_digg_month_story}" size="5" /></td>
+					<td><input type="text" name="pdigg_total_story" value="{C_digg_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center" class="col0">
+					<td><strong>埋榜</strong></td>
+					<td><input type="text" name="pbury_week_novel" value="{C_bury_week_novel}" size="5" /></td>
+					<td><input type="text" name="pbury_month_novel" value="{C_bury_month_novel}" size="5" /></td>
+					<td><input type="text" name="pbury_total_novel" value="{C_bury_total_novel}" size="5" /></td>
+					<td><input type="text" name="pbury_week_story" value="{C_bury_week_story}" size="5" /></td>
+					<td><input type="text" name="pbury_month_story" value="{C_bury_month_story}" size="5" /></td>
+					<td><input type="text" name="pbury_total_story" value="{C_bury_total_story}" size="5" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>封面推荐榜</strong></td>
+					<td colspan="3"><input type="text" name="pnovel_1" value="{C_novel_1}" /></td>
+					<td colspan="3"><input type="text" name="pstory_1" value="{C_story_1}" /></td>
+				</tr>
+				<tr align="center" class="col0">
+					<td><strong>强力推荐榜</strong></td>
+					<td colspan="3"><input type="text" name="pnovel_2" value="{C_novel_2}" /></td>
+					<td colspan="3"><input type="text" name="pstory_2" value="{C_story_2}" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>编辑推荐榜</strong></td>
+					<td colspan="3"><input type="text" name="pnovel_3" value="{C_novel_3}" /></td>
+					<td colspan="3"><input type="text" name="pstory_3" value="{C_story_3}" /></td>
+				</tr>
+				<tr align="center" class="col0">
+					<td><strong>VIP 推荐榜</strong></td>
+					<td colspan="3"><input type="text" name="pnovel_4" value="{C_novel_4}" /></td>
+					<td colspan="3"><input type="text" name="pstory_4" value="{C_story_4}" /></td>
+				</tr>
+				<tr align="center">
+					<td><strong>分类推荐榜</strong></td>
+					<td colspan="3"><input type="text" name="pnovel_5" value="{C_novel_5}" /></td>
+					<td colspan="3"><input type="text" name="pstory_5" value="{C_story_5}" /></td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

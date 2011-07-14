@@ -1,0 +1,96 @@
+	<div id="rd8_center">
+
+
+		<div id="rd8_left">
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总点击榜</dt>
+<!-- BEGIN story_total_click -->
+					<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END story_total_click -->
+				</dl>
+				<span><a href="rank.php?times=total&amp;types=click">更多&gt;&gt;</a></span>
+			</div>
+
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总推荐榜</dt>
+<!-- BEGIN story_total_commend -->
+					<dd><a href="{URL}">{title}</a>({vote_total})</dd>
+<!-- END story_total_commend -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=commend">更多&gt;&gt;</a></span>
+			</div>
+
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总收藏榜</dt>
+<!-- BEGIN story_total_favo -->
+					<dd><a href="{URL}">{title}</a>({favo_total})</dd>
+<!-- END story_total_favo -->
+				</dl>
+				<span><a href="rank.php?times=total&amp;types=favo">更多&gt;&gt;</a></span>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="include/js/xmlhttp.js"></script>
+		<script type="text/javascript" src="include/js/favorite.js"></script>
+
+		<div id="rd8_right">
+			<p class="rd8_guide">  当前所在位置：<a href="/demo/upload">首页</a> &gt;&gt; <a href="category.php">{subject}</a> &gt;&gt;<a href="{HTMLURL}">{title}</a></p>
+			<div class="rd8_content">
+				<h1>{title}</h1>
+				<div id="rd8_bookinfo">
+					<p><strong>作品名称: </strong><span>{title}</span></p>
+					<p>作 &nbsp; &nbsp;者: {author}</p> 
+					<p>类 &nbsp; &nbsp;别: {subject} - {content}</p>
+					<p>发表日期: {dateline_DATE_Y-m-d H:i:s}<!-- IF lastupdate --> (最后更新: {lastupdate_DATE_Y-m-d H:i:s})<!-- ENDIF --></p>
+					<p>人 &nbsp; &nbsp;气: 阅读量{click}, 投票数{vote}, 分数{rate}</p>
+					<p>标 &nbsp; &nbsp;签:
+<!-- BEGIN tags -->
+					<!-- IF tag --><a href="tag.php?tag={encode}">{tag}</a><!-- ELSE -->暂无内容<!-- ENDIF -->
+<!-- END tags -->
+
+					</p>
+					<div style="margin-bottom:10px;margin-left:4px;margin-top:10px;">我要评分:&nbsp;&nbsp;<span class="rd8_b" onclick="javascript:rate('{bid}',1,1);">很差</span>&nbsp;&nbsp;
+							 <span class="rd8_b" onclick="javascript:rate('{bid}',2,1);">较差</span>&nbsp;&nbsp;
+							 <span class="rd8_b" onclick="javascript:rate('{bid}',3,1);">一般</span>&nbsp;&nbsp;
+							 <span class="rd8_b" onclick="javascript:rate('{bid}',4,1);">较好</span>&nbsp;&nbsp;
+							 <span class="rd8_b" onclick="javascript:rate('{bid}',5,1);">很好</span>&nbsp;&nbsp;<br /><br />
+							 <a href="my/help.php?title=举报《{title}》"><span style="color:#0000FF;padding-top:3px;">我要举报</span></a>
+							 &nbsp;&nbsp;&nbsp;&nbsp;
+							 <!-- IF dugg --><span style="color:grey;">顶过了</span><!-- ELSE --><span onclick="javascript:digg('{bid}',1,1);" id="rd8_digg" style="cursor:pointer;">顶一下</span>&nbsp;&nbsp;&nbsp;<!-- ENDIF --><span id="rd8_digg_count" class="current_digg" title="有{digg}人顶过了"onclick="javascript:digg('{bid}',1,0);">{digg}</span> &nbsp;&nbsp;&nbsp;
+				 
+							 </div>
+				</div>     
+
+				<div class="rd8_introduction">
+					<p>
+						<strong>内 &nbsp; &nbsp;容: </strong><br />
+						{body}
+					</p>
+				</div>
+				<div id="rd8_book_comment">
+<!-- IF comment_open -->
+					<p><strong>发表书评: </strong><span id="rd8_lengthlimit">可写 {comment_min} - {comment_max} 字</span></p>
+					<form action="comment.php?bid={bid}&amp;story=1" method="post">
+						<input type="text" name="title" size="65" />&lt;&lt; 长篇评论请写标题<br />
+						<textarea name="comment" id="rd8_comment" rows="6" cols="70" onkeyup="javascript:calclen(this.value, {comment_max}, {comment_min});" onblur="javascript:calclen(this.value, {comment_max}, {comment_min});" style="margin-bottom:8px;margin-top:8px;"></textarea><br />
+						<!-- IF comment_secode -->验证码: <input type="text" name="secode" id="rd8_hash" size="8" title="请在该框中输入右图显示的字符" />&nbsp;<img src="download.php?action=gethashimg" alt="请在左框中输入该图显示的字符" align="absmiddle" style="cursor: pointer;" onclick="javascript:this.src='download.php?action=gethashimg&amp;xx='+Math.random();" /> <!-- ENDIF --><input type="submit" id="rd8_refer" value=" 发 表 " /> &nbsp; &nbsp;<input type="reset" value=" 取 消 " />
+					</form>
+<!-- ENDIF -->
+
+					<div class="all"  style="margin-top:8px;">所有书评</div>
+<!-- IF comments -->
+	<!-- BEGIN comments -->
+					<div class="rd8_all">{username} 于 {dateline_DATE_Y-m-d H:i:s}: <a id="comment{id}">&nbsp;</a></div>
+					<div class="rd8_all"><strong>{title}</strong></div>
+					<div class="rd8_all" style="border-bottom:1px solid #698CC3;width:600px;">{content}</div>
+	<!-- END comments -->
+<!-- ELSE -->
+					<div class="rd8_all">沙发空缺中，还不快抢？</div>
+<!-- ENDIF -->
+				</div>
+			</div>
+		</div>
+	</div>

@@ -1,0 +1,32 @@
+<div class="rd8_main">
+	<div class="rd8_full">
+		<p class="rd8_guide">当前所在位置:  {rank_title}</p>
+		<div class="rd8_fullborder">
+			<div class="rd8_col0">
+				<table>
+					<tr class="rd8_head">
+						<td>作品名称</td>
+						<td>作者</td>
+						<td>更新时间</td>
+						<td>类别</td>
+						<td>状态</td>
+						<td>总点击</td>
+						<td>本周点击</td>
+					</tr>
+<!-- BEGIN ranklist -->
+					<tr align="center" class="rd8_col{A}" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'">
+						<td><a href="{InfoURL}" rel="external">{title}</a></td>
+						<td><!-- IF author_id --><a href="{AuthorURL}" rel="external"><!-- ENDIF -->{author}<!-- IF author_id --></a><!-- ENDIF --></td>
+						<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+						<td>{subject} - {content}</td>
+						<td>{state}</td>
+						<td>{click_total}</td>
+						<td>{click_week}</td>
+					</tr>
+<!-- END ranklist -->
+				</table>
+			</div>
+		</div>
+		<div class="rd8_tablebottom" style="clear:both;"><!-- IF pagelink -->{pagelink}<!-- ELSE -->共一页<!-- ENDIF --></div>
+	</div>
+</div>

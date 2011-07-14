@@ -1,0 +1,305 @@
+	<div id="rd8_center">
+<!--广告位开始 -->
+		<div class="rd8_ad_position">
+			<div style="float:left;overflow:hidden;">{CAD_index_1}</div>
+			<div style="float:right;overflow:hidden;">{CAD_index_2}</div>
+
+		</div>
+<!--广告位结束 -->
+		<!--封面图片和FLASH -->
+		<div class="rd8_images">
+		
+			<div class="rd8_imagesleft">
+				<div class="rd8_book">
+<!-- BEGIN novel_1 -->
+					<div class="rd8_booklinkbox">
+						<a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" height="130" style="border:none;" width="100"/></a>
+					</div>
+<!-- END novel_1 -->
+				</div>
+			</div>
+			<div class="rd8_imagesright">
+				<a target="_self" href="javascript:goUrl()"> 
+					<script type="text/javascript">/*<![CDATA[*/
+						var focus_width=303;
+						var focus_height=164;
+						var text_height=18;
+						var swf_height = focus_height+text_height;
+
+						var pics='{pics}';
+						var links='{links}';
+						var texts='{texts}';
+							 
+						document.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="'+ focus_width +'" height="'+ swf_height +'">');
+						document.write('<param name="allowScriptAccess" value="sameDomain"><param name="movie" value="include/flash/focus.swf"><param name="quality" value="high"><param name="bgcolor" value="#CCCCCC">');
+						document.write('<param name="menu" value="false"><param name=wmode value="opaque">');
+						document.write('<param name="FlashVars" value="pics='+pics+'&links='+links+'&texts='+texts+'&borderwidth='+focus_width+'&borderheight='+focus_height+'&textheight='+text_height+'">');
+						document.write('<embed src="include/flash/focus.swf" wmode="opaque" FlashVars="pics='+pics+'&links='+links+'&texts='+texts+'&borderwidth='+focus_width+'&borderheight='+focus_height+'&textheight='+text_height+'" menu="false" bgcolor="#F0F0F0" quality="high" width="'+ focus_width +'" height="'+ focus_height +'" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />');  document.write('</object>');
+					/*]]>*/</script>
+				</a>
+			</div>
+		
+
+		</div>
+		<!--推荐栏开始 -->
+		<div class="rd8_recommend">
+			<div style="float:left;margin-bottom:6px;*margin-bottom:0;">
+				<div class="rd8_recommendlist">
+				
+					<dl>
+						<dt>强力推荐榜</dt>
+<!-- BEGIN novel_2 -->
+						<dd>
+							<strong class="rd8_bookname"><a href="{InfoURL}">
+							<img src="{HTMLURL}/bookface.jpg" alt="{title}" align="left" width="100" height="125"/>{title}<br />
+							</a></strong>
+						</dd>
+<!-- END novel_2 -->
+					</dl>
+				</div>
+
+ 				<div class="rd8_talk">
+					<dl>
+						<dt>作家访谈</dt>
+
+						<dd>
+							{interview.content}
+						</dd>
+
+					</dl>
+					<span><a href="interview.php?id={interview.id}">[查看全部]</a></span>
+				</div>
+			</div>
+			<div class="rd8_recommendmiddle">
+				<div id="rd8_recommendcontent">
+					<ul id="rd8_rectabs">
+<!-- BEGIN idxfctab -->
+						<li id="rd8_rectab{II}" onmouseover="recsetTab('rd8_recommendcontent', 'rd8_reccontent{II}', 'rd8_rectab{II}');"<!-- IF II=="1" --> class="rd8_selectedtab" style="margin: 0 0 0 -32px;*margin:0;"<!-- ENDIF -->>{subject}</li>
+<!-- END idxfctab -->
+					</ul>
+<!-- BEGIN idxfctab -->
+					<div class="rd8_rectabcon" id="rd8_reccontent{II}"<!-- IF II>"1" --> style="display: none"<!-- ENDIF -->>
+	<!-- BEGIN fc -->
+						<p class="rd8_imgtxttit"><strong class="rd8_bookname"><a href="{InfoURL}">{title}</a></strong><span style="padding-right:6px;">作者：{author}</span></p>
+						<p class="rd8_imgtxt"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" align="left" width="144" height="179" /></a><span>{intro}</span></p>
+	<!-- END fc -->
+					</div>
+<!-- END idxfctab -->
+				</div>
+
+				<div class="rd8_notice">
+					<div class="rd8_g">最新公告</div>
+					<ul>
+<!-- BEGIN Announceblock -->
+						<li><a href="announcement.php?id={id}">{title}</a><span>（{dateline_DATE_y-m-d}）</span></li>
+<!-- END Announceblock -->
+					</ul>
+					<span style="float:right;padding-top:4px;*padding:0;padding-right:2px;"><a href="announcement.php">更多&gt;&gt;</a></span>
+				 </div>
+			</div>
+
+
+
+			<div style="float:left;margin-left:8px !important;margin-left:6px;">
+				<div class="rd8_recommendlist">
+					<dl>
+						<dt>编辑推荐栏</dt>
+<!-- BEGIN novel_3 -->
+						<dd>
+							<strong class="rd8_bookname"><a href="{InfoURL}">
+							<img src="{HTMLURL}/bookface.jpg" alt="{title}" align="left" width="100" height="125"/>{title}<br />
+							</a></strong>
+						</dd>
+<!-- END novel_3 -->
+					</dl>
+				</div>
+
+				<div class="rd8_behavior">
+					<!--<dl>-->
+						<div class="rd8_g">就在刚才</div>
+<!-- BEGIN justnow -->
+							&nbsp;{text}<br />
+<!-- END justnow -->
+					<!--</dl>-->
+					<span><a href="justnow.html">更多&gt;&gt;</a></span>
+				</div>
+			</div>
+		</div>
+		<!--推荐栏结束 -->
+
+		<!--点击榜开始 -->
+		<div class="rd8_events">
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总点击榜</dt>
+<!-- BEGIN novel_total_click -->
+					<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END novel_total_click -->
+				</dl>
+				<span><a href="rank.php?times=total&amp;types=click">更多&gt;&gt;</a></span>
+			</div>
+<!-- BEGIN idxfccab1 -->
+			<div class="rd8_fiction">
+				<p class="rd8_title">{subject}阁</p>
+	<!-- BEGIN fc -->
+				<p class="rd8_ficimgtxt">
+					<a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" width="80" height="100" align="left" /></a>{intro}
+				</p>
+	<!-- END fc -->
+			</div>
+<!-- END idxfccab1 -->
+		</div>
+		<!--点击榜结束 -->
+
+		<!--投票榜开始 -->
+		<div class="rd8_events">
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总推荐榜</dt>
+<!-- BEGIN novel_total_commend -->
+					<dd><a href="{InfoURL}">{title}</a>({commend_total})</dd>
+<!-- END novel_total_commend -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=commend">更多&gt;&gt;</a></span>
+			</div>
+
+<!-- BEGIN idxfccab2 -->
+			<div class="rd8_fiction">
+				<p class="rd8_title">{subject}阁</p>
+	<!-- BEGIN fc -->
+				<p class="rd8_ficimgtxt">
+					<a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" width="80" height="100" align="left" /></a>{intro}
+				</p>
+	<!-- END fc -->
+			</div>
+<!-- END idxfccab2 -->
+		</div>
+		<!--投票榜结束 -->
+
+		<div class="rd8_news">
+			<div class="rd8_newsleft">
+				<div class="rd8_Canada">
+					<dl>
+						<dt>最新入库作品</dt>
+<!-- BEGIN nc11 -->
+						<dd><a href="{InfoURL}">{title}</a>({dateline_DATE_m-d})</dd>
+<!-- END nc11 -->
+					</dl>
+					<span><a href="novellib.php?oderbycreate=1">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada" style="margin-bottom:0;">
+					<dl>
+						<dt>总收藏榜</dt>
+<!-- BEGIN novel_total_favo -->
+						<dd><a href="{InfoURL}">{title}</a>({favo_total})</dd>
+<!-- END novel_total_favo -->
+					</dl>
+					<span><a href="rank.php?times=total&amp;types=favo">更多&gt;&gt;</a></span>
+				</div>
+			</div>
+
+			<!--最近更新、最新全本开始 -->
+			<div id="rd8_newsmiddle">
+				<ul id="rd8_newstabs" style="margin-bottom:0;">
+					<li id="rd8_newstab1" onmouseover="newssetTab('rd8_newsmiddle','rd8_newscontent1','rd8_newstab1');" class="rd8_selectedtab" style="margin: 0 0 0 -40px;*margin: 0;">最近更新</li>
+					<li id="rd8_newstab2" onmouseover="newssetTab('rd8_newsmiddle','rd8_newscontent2','rd8_newstab2');">最新全本</li>
+				</ul>
+
+				<div class="rd8_newscon" id="rd8_newscontent1">
+					<ul>
+<!-- BEGIN lastupdate -->
+						<li><span class="rd8_lisubject">[{subject}]</span> <a href="{InfoURL}">《{title}》 {chapter_title} </a><span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span><span class="rd8_liauthor">{author}</span></li>
+<!-- END lastupdate -->
+					</ul>
+				</div>
+
+				<div class="rd8_newscon" id="rd8_newscontent2" style="display: none">
+					<ul>
+<!-- BEGIN lastfinish -->
+						<li><span class="rd8_lisubject">[{subject}]</span> <a href="{InfoURL}">《{title}》 {chapter_title} </a><span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span><span class="rd8_liauthor">{author}</span></li>
+<!-- END lastfinish -->
+					</ul>
+				</div>
+			</div>
+			<!--最近更新、最新全本结束 -->
+
+			<div class="rd8_newsright">
+				<div class="rd8_Canada">
+					<dl>
+						<dt>月点击榜</dt>
+<!-- BEGIN novel_month_click -->
+						<dd><a href="{InfoURL}">{title}</a>({click_month})</dd>
+<!-- END novel_month_click -->
+					</dl>
+					<span><a href="rank.php?times=month&amp;types=click">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada" style="margin-bottom:0;">
+					<dl>
+						<dt>月推荐榜</dt>
+<!-- BEGIN novel_month_commend -->
+						<dd><a href="{InfoURL}">{title}</a>({commend_month})</dd>
+<!-- END novel_month_commend -->
+					</dl>
+					<span><a href="rank.php?times=month&amp;types=commend">更多&gt;&gt;</a></span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 一级分类示例图书标签切换开始 -->
+		<div id="rd8_catetabs">
+			<ul id="rd8_tabs">
+<!-- BEGIN idxfchab -->
+				<li id="rd8_tab{II}" onmouseover="setTab('rd8_catetabs', 'rd8_content{II}', 'rd8_tab{II}');"<!-- IF II=="1" --> class="selectedtab"<!-- ENDIF -->>{subject}</li>
+<!-- END idxfchab -->
+			</ul>
+
+<!-- BEGIN idxfchab -->
+			<div class="rd8_catecon" id="rd8_content{II}"<!-- IF II>"1" --> style="display: none"<!-- ENDIF -->>
+	<!-- BEGIN fc -->
+				<p class="rd8_typeimgtxt">
+					<a href="{InfoURL}">
+						<img src="{HTMLURL}/bookface.jpg" width="100" height="125" align="left" /><strong class="rd8_bookname">{title}</strong>
+					</a>
+					<br /><br />
+					<strong class="rd8_detail">作品类型：</strong>{subject}<br />
+					<strong class="rd8_detail">作 &nbsp; &nbsp;者：</strong>{author}<br />
+					<strong class="rd8_detail">更新日期：</strong>{lastupdate_DATE_m-d}<br />
+				</p>
+	<!-- END fc -->
+			</div>
+<!-- END idxfchab -->
+		</div>
+		<!-- 一级分类示例图书标签切换结束 -->
+
+		<div class="rd8_authorcomment">
+			<div class="rd8_Canada">
+				<dl>
+					<dt>读者收藏榜</dt>
+<!-- BEGIN nc16 -->
+					<dd><a href="{InfoURL}">{title}</a></dd>
+<!-- END nc16  -->
+				</dl>
+				<span><a href="rank.php?rid=12">更多&gt;&gt;</a></span>
+			</div>
+
+			<!-- 最新评论开始 -->
+			<div class="rd8_comment">
+				<dl>
+					<dt> 最新评论 </dt>
+<!-- BEGIN nc12 -->
+					<dd><a href="#">&nbsp;{title}</a> <font class="rd8_commenttime">{username} 于 {dateline_DATE_m-d H:i} 评  <strong>《{title}》</strong></font> </dd>
+<!-- END nc12 -->
+				</dl>
+			</div>
+			<!-- 最新评论结束 -->
+		</div>
+		<!-- 友情链接开始 -->
+		<div class="rd8_unionwebsite">
+<!-- BEGIN friendlinks -->
+			<a href="http://{url}" target="_blank">{name}</a>
+<!-- END friendlinks -->
+		</div>
+		<!-- 友情链接结束 -->
+	</div>

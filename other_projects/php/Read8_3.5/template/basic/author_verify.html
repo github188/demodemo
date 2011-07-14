@@ -1,0 +1,21 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">作品审核信息</div>
+		<div class="rd8_col0">
+			<table>
+				<tr class="rd8_category" align="center">
+					<td>作品名称</td>
+					<td>申请时间</td>
+					<td>审核时间</td>
+					<td>是否通过</td>
+				</tr>
+<!-- BEGIN novels -->
+				<tr class="rd8_col{A}" align="center" onmouseover="javascript:this.className = 'rd8_col2';" onmouseout="javascript:this.className = 'rd8_col{A}';">
+					<td><!-- IF book_id --><a href="author/book_info.php?bid={book_id}"><!-- ENDIF -->《{title}》<!-- IF book_id --></a><!-- ENDIF --></td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF verifytime -->{verifytime_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td><!-- IF verifytime --><!-- IF book_id -->是<!-- ELSE -->否<!-- ENDIF --><!-- ELSE -->审核中<!-- ENDIF --></td>
+				</tr>
+<!-- END novels -->
+			</table>
+		</div>
+	</div>

@@ -1,0 +1,52 @@
+<!-- IF action=="start" -->
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>打包过程由于2需要遍历静态网页，故耗时与所选的书籍总容量有关，请耐心等待。</li></ul></div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">打包状态</div>
+		<div class="b0"><div id="test" style="font-size: 24px;"></div><div id="dl_info">正在导出书籍的数据库部分...</div></div>
+	</div>
+<!-- ELSE -->
+	<div class="adminborder">
+		<div class="adminhead">说明</div>
+		<div class="b0">
+			<ul>
+				<li>本功能可用做保存书籍和与其他书网交换书籍资源之用。</li>
+				<li>当前书籍总数为 <span style="color: Blue;font-weight: bold;">{C_allbooknum}</span> 本，最大书籍编号为 <span style="color: Blue;font-weight: bold;">{C_maxbookid}</span> 。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=start&amp;obnocallback=1" method="post">
+	<div class="adminborder">
+		<div class="adminhead">书籍备份导出</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">选择范围:</span><br />
+				<span class="smalltxt">{C_type_full}包括所有书籍，<br />
+				{C_type_bytype}为某一分类的书籍，<br />
+				{C_type_manual}为备份指定书籍编号范围内的书籍(格式为“开始编号-结束编号”)，<br />
+				{C_type_single}为单本书籍的备份，需要填入指定书籍的编号(仅为数字)。</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="type" value="full" onclick="this.form.typeid.disabled=this.checked;this.form.bookidarea.disabled=this.checked;this.form.bookid.disabled=this.checked;" />&nbsp;{C_type_full}</label><br />
+				<label><input type="radio" name="type" value="bytype" checked="checked" onclick="this.form.typeid.disabled=!this.checked;this.form.bookidarea.disabled=this.checked;this.form.bookid.disabled=this.checked;" />&nbsp;{C_type_bytype} &nbsp;选择类别 
+					<select name="typeid">
+					<!-- BEGIN booktypelist -->
+						<option value="{C_key}">{C_val}</option>
+					<!-- END booktypelist -->
+					</select></label><br />
+				<label><input type="radio" name="type" value="manual" onclick="this.form.typeid.disabled=this.checked;this.form.bookidarea.disabled=!this.checked;this.form.bookid.disabled=this.checked;" />&nbsp;{C_type_manual}  &nbsp;选择范围 <input type="text" name="bookidarea" value="1-{C_maxbookid}" disabled="disabled" /></label><br />
+				<label><input type="radio" name="type" value="single" onclick="this.form.typeid.disabled=this.checked;this.form.bookidarea.disabled=this.checked;this.form.bookid.disabled=!this.checked;" />&nbsp;{C_type_single} &nbsp;书籍编号 <input type="text" name="bookid" value="{C_maxbookid}" disabled="disabled" /></label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;"><span style="font-weight: bold;">备份文件名:</span><br /><span class="smalltxt">备份的文件名的路径为“data/backup”。</span></div>
+			<div style="width: 38%;"><input type="text" name="datafile" value="{C_tmpname}" size="40" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 备 份 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

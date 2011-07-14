@@ -1,0 +1,25 @@
+
+	<div class="rd8_fullborder" style="border:0;">
+		<div class="rd8_head">求助投诉</div>
+		<div style="background-color:#CCC;height:24px;line-height:24px;text-align:center;width:60%;margin:2px auto;">
+			<!-- IF current --><span><a href="my/help.php" style="font-weight:bold;color:#FFF;">我要投诉</a></span>&nbsp;&nbsp;<!-- ENDIF -->
+			<span><a href="my/help_check.php">查看信息</a></span>
+		</div>
+		<div>
+			<form action="my/help_send.php" method="post">
+				<table align="center" style="margin:1px auto;width:60%;border:1px solid #CCC;">
+					<tr class="rd8_col0">
+						<td width="30%" align="right">标 &nbsp;题:&nbsp;</td>
+						<td>&nbsp;<input type="text" name="title" size="60" value="{title}" /></td>
+					</tr>
+					<tr>
+						<td align="right">内 &nbsp;容:&nbsp;</td>
+						<td>&nbsp;<textarea rows="5" cols="60" name="content" style="margin-right:10px;"></textarea></td>
+					</tr>
+					<tr class="rd8_colt">
+						<td align="center" colspan="2"><input type="submit" value=" 提 交 " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>

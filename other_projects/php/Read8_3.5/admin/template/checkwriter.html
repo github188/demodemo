@@ -1,0 +1,35 @@
+<script type="text/javascript">
+	function openwin(cbcid) {
+		window.open("?ptype={ptype}&amp;pfile={pfile}&amp;action=showps&amp;showpsid="+cbcid,"","width=500,height=400,toolbar=no,menubar=no, scrollbars=yes,resizable=yes,location=no, status=no")
+	}
+</script>
+
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>审核作家。</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">作家申请管理</div>
+		<!-- IF itemlist -->
+			<div class="cat" style="text-align: center;">
+				<div style="width: 20%;">笔名</div>
+				<div style="width: 15%;">申请时间</div>
+				<div style="width: 34%;">操作</div>
+			</div>
+			<!-- BEGIN itemlist -->
+				<div class="b{A}" onmouseover="this.className='b2'" onmouseout="this.className='b{A}'" style="text-align: center;">
+					<div style="width: 20%;"><a href="profile.php?target={C_username}" title="点击查看资料" target="_blank">{pseudonym}</a></div>
+					<div style="width: 15%;">{dateline_DATE_Y-m-d H:i:s}</div>
+					<div style="width: 34%;"><a href="javascript:cfmoption('您确认同意此作家申请么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=apply&amp;cbid={id}')"><span style="color: Blue;">通过</span></a> &nbsp;<a href="javascript:cfmoption('您确认拒绝此作家申请么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=deny&amp;denybid={id}')"><span style="color: Red;">拒绝</span></a></div>
+				</div>
+			<!-- END itemlist -->
+			<!-- IF C_pagelink --><div class="cat">{C_pagelink}</div><!-- ENDIF -->
+		<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">尚未有用户申请作家</div>
+		<!-- ENDIF -->
+	</div>

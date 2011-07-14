@@ -1,0 +1,90 @@
+	<script type="text/javascript">
+		function showhide1(show){
+			if(show) {
+				$('sh1').style.display = '';
+				$('sh2').style.display = '';
+			}else {
+				$('sh1').style.display = 'none';
+				$('sh2').style.display = 'none';
+			}
+		}
+	</script>
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>这里设置的是首页一个模块的查询SQL语句及标识等信息。</li>
+			</ul>
+		</div>
+	</div>
+
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post">
+		<div class="adminborder">
+			<div class="adminhead">自定义缓存</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">缓存标识:</span><br />
+					<span class="smalltxt">只能使用字母和数字。</span>
+				</div>
+				<div style="width: 51%;">{id}</div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">缓存描述:</span><br />
+					<span class="smalltxt">说明该缓存有什么用处。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="title" value="{title}" /></div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">SQL 语句:</span><br />
+					<span class="smalltxt">取得缓存结果的 SQL 查询语句。<br />可以使用“&#123;db_prefix&#125;”代替数据表前缀。<br />
+					以下内容将被自动替换成新字段：<br />
+					&nbsp;&nbsp;id(替换成bid)<br />
+					以下内容将被自动替换成相应的中文:<br />
+					&nbsp;&nbsp;subject(被替换成该一级分类的名字)、<br />
+					&nbsp;&nbsp;content(替换成该二级分类的名字)、<br />
+					&nbsp;&nbsp;style(被替换成作品的风格)、<br />
+					&nbsp;&nbsp;state(作品的状态)、<br />
+					&nbsp;&nbsp;licence(作品的授权)<br />
+					如需要原值则需将该值在选取时映射别名。
+
+
+
+					
+					</span>
+				</div>
+				<div style="width: 51%;"><textarea rows="10" cols="60" name="customsql">{sql}</textarea></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">结果维度:</span><br />
+					<span class="smalltxt">生成一维或二维数组。</span>
+				</div>
+				<div style="width: 51%;">
+					<label for="twod_0"><input size="25" type="radio" name="twod" id="twod_0" value="0"<!-- IF twod=="0" --> checked="checked"<!-- ENDIF --> onclick="javascript:showhide1(0);" /> 一维</label>
+					<label for="twod_1"><input size="25" type="radio" name="twod" id="twod_1" value="1"<!-- IF twod --> checked="checked"<!-- ENDIF --> onclick="javascript:showhide1(1);" /> 二维</label>
+				</div>
+			</div>
+			<div class="b0" id="sh1"<!-- IF twod=="0" --> style="display: none;"<!-- ENDIF -->>
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">二维归类:</span><br />
+					<span class="smalltxt">二维数组中分类依据。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="60" type="text" name="customgroup" value="{group}" />
+				</div>
+			</div>
+			<div class="b1" id="sh2"<!-- IF twod=="0" --> style="display: none;"<!-- ENDIF -->>
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">一维包含:</span><br />
+					<span class="smalltxt">半角逗号分隔。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="60" type="text" name="customwith" value="{with}" />
+				</div>
+			</div>
+			<div class="bt"><input type="submit" value=" 完 成 " /> &nbsp;<input type="hidden" name="id" value="{id}" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+		</div>
+	</form>

@@ -1,0 +1,19 @@
+	<div class="rd8_fullborder" style="border:0;">
+		<div class="rd8_head">站内短信-详细内容</div>
+		<div style="background-color:#CCC;height:24px;margin:2px auto;line-height:24px;text-align:center;width:60%;">
+			<a href="my/pm_inbox.php">收件箱</a>&nbsp;&nbsp;
+			<a href="my/pm_outbox.php">发件箱</a>&nbsp;&nbsp;
+			<a href="my/pm_compose.php">撰写短信</a>
+		</div>
+			<div style="margin:2px auto;width:60%;border:1px solid #CCC;">
+<!-- IF from -->
+					<span>{from}于{dateline_DATE_Y-m-d H:i:s}发信息：<br /><br />
+<!-- ENDIF -->
+
+<!-- IF to -->
+					<span>{dateline_DATE_Y-m-d H:i:s}发信息给{to}：<br /><br />
+<!-- ENDIF -->
+					<strong>主题：{title}</strong><br /><br />
+					<span>{content}</span></span>&nbsp;&nbsp;<br /><br />
+			</div>
+	</div>

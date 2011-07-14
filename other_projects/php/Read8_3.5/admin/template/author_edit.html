@@ -1,0 +1,63 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>高级作家可以发表 VIP 章节。</li>
+				<li>身份为“高级作家”和“普通作家”，点击切换。</li>
+			</ul>
+		</div>
+	</div>
+<!-- IF C_user_id -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">编辑作家<input type="hidden" name="id" value="{C_user_id}" /></div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">笔 &nbsp; &nbsp;名:</div>
+			<div style="width: 68%;">{pseudonym}</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">头 &nbsp; &nbsp;像:</div>
+			<div style="width: 68%;"><input type="text" name="avatar" value="{avatar}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">专栏名称:</div>
+			<div style="width: 68%;"><input type="text" name="column_name" value="{column_name}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">作者自白:</div>
+			<div style="width: 68%;"><textarea name="intro" rows="5" cols="40">{intro}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">作者公告:</div>
+			<div style="width: 68%;"><textarea name="announcement" rows="5" cols="40">{announcement}</textarea></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ELSE -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="user">
+	<div class="adminborder">
+		<div class="adminhead">作家列表</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td align="left">&nbsp;笔名</td>
+					<td>身份</td>
+					<td>加入日期</td>
+					<td>管理选项</td>
+				</tr>
+	<!-- BEGIN itemlist -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+					<td align="left">&nbsp;{pseudonym}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=vip"><!-- IF vip -->高级作家<!-- ELSE -->普通作家<!-- ENDIF --></a></td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}">编辑</a> &nbsp;<a href="javascript:cfmoption('确实要删除该作家吗？', '?ptype={ptype}&pfile={pfile}&id={id}&action=delete');">删除</a></td>
+				</tr>
+	<!-- END itemlist -->
+			</table>
+		</div>
+	<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="<!-- IF C_user_id -->update<!-- ELSE -->delete<!-- ENDIF -->" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

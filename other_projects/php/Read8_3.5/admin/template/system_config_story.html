@@ -1,0 +1,38 @@
+<script type="text/javascript">
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">短篇文学设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">短篇文学功能:</span><br />
+				<span class="smalltxt">开启短篇文学功能，允许注册用户发表短篇文章。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="popen_1"><input type="radio" name="popen" id="popen_1" value="1"{C_open_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="popen_0"><input type="radio" name="popen" id="popen_0" value="0"{C_open_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">短篇审核:</span><br />
+				<span class="smalltxt">选中“开启”选项后，注册用户发表的文章需要经过管理员的审核方可显示。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="verify_1"><input type="radio" name="pverify" id="verify_1" value="1"{C_verify_yes} />开启</label> &nbsp;
+				<label for="verify_0"><input type="radio" name="pverify" id="verify_0" value="0"{C_verify_no} />关闭</label>
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

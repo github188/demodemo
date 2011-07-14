@@ -1,0 +1,99 @@
+<div class="rd8_main">
+	<div class="rd8_full">
+		<div class="rd8_fullborder">
+		<!-- IF action=="newbook" -->
+		<form action="apply.php" method="post">
+			<div class="rd8_head">新书申请</div>
+			<div class="rd8_col0">
+				<div class="rd8_appleft">书名</div>
+				<div class="rd8_appright"><input type="text" name="bookname" /></div>
+			</div>
+			<div class="rd8_col1">
+				<div class="rd8_appleft">作者</div>
+				<div class="rd8_appright"><input type="text" name="bookauthor" value="{C_username}" />(录入员为自己。若需修改请在作品管理中改动。)</div>
+			</div>
+			<div class="rd8_col0">
+				<div class="rd8_appleft">类别:&nbsp;(一旦确定不能修改)</div>
+				<div class="rd8_appright">
+					<select name="booktype">
+						<!-- BEGIN Booktypeblock --><option value="{C_typeid}">{C_typename}</option><!-- END Booktypeblock -->
+					</select>
+				</div>
+			</div>
+			<div class="rd8_col1">
+				<div class="rd8_appleft">角色</div>
+				<div class="rd8_appright"><input type="text" name="bookactor" /></div>
+			</div>
+			<div class="rd8_col0">
+				<div class="rd8_appleft">作品简介<br />(必填，这是通过审核的保障。)</div>
+				<div class="rd8_appright"><textarea name="bookintro" rows="10" cols="80"></textarea></div>
+			</div>
+			<div class="rd8_col1">
+				<div class="rd8_appleft">授权方式</div>
+				<div class="rd8_appright">
+					<select name="bookattrib">
+						<option value="原创作品">原创作品</option>
+						<option value="授权作品">授权作品</option>
+						<option value="临时作品">临时作品</option>
+						<option value="公开作品">公开作品</option>
+					</select>
+				</div>
+			</div>
+			<div class="rd8_col1" style="width: 881px;padding-left: 5px;">{C_newbookps}</div>
+			<div class="rd8_colt" style="text-align: center;"><input type="submit" value="   提   交   " /></div>
+		</form>
+		</div>
+
+		<div class="rd8_fullborder">
+			<div class="rd8_head">新书申请记录</div>
+			<div class="rd8_category">
+				<div style="width: 350px;padding-left: 5px;">书名</div>
+				<div style="width: 111px;">作者</div>
+				<div style="width: 100px;">类别</div>
+				<div style="width: 100px;">授权方式</div>
+				<div style="width: 100px;">申请时间</div>
+				<div style="width: 100px;">审核时间</div>
+			</div>
+			<!-- BEGIN Newbooklistblock -->
+				<div class="rd8_col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'">
+					<div style="width: 350px;padding-left: 5px;">{C_booktitle}</div>
+					<div style="width: 111px;text-align: center;">{C_author}</div>
+					<div style="width: 100px;text-align: center;">{C_typename}</div>
+					<div style="width: 100px;text-align: center;">{C_attrib}</div>
+					<div style="width: 100px;text-align: center;">{C_applytime}</div>
+					<div style="width: 100px;text-align: center;"><!-- IF C_checktime=="0" -->暂未审核<!-- ELSEIF C_checktime=="1" -->未通过<!-- ELSE -->{C_checktime}<!-- ENDIF --></div>
+				</div>
+			<!-- END Newbooklistblock -->
+			<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+		<!-- ELSEIF action=="newauthor" -->
+		<form action="apply.php" method="post">
+			<div class="rd8_head">作家申请</div>
+			<div class="rd8_col0">
+				<div class="rd8_appleft">您的用户名</div>
+				<div class="rd8_appright">{C_username}</div>
+			</div>
+			<div class="rd8_col1">
+				<div class="rd8_appleft">附加说明<br />(必填，这是通过审核的保障。)</div>
+				<div class="rd8_appright"><textarea name="authorintro" rows="10" cols="80"></textarea></div>
+			</div>
+			<div class="rd8_col1" style="width: 881px;padding-left: 5px;">{C_newauthorps}</div>
+			<div class="rd8_colt" style="text-align: center;"><input type="submit" value="   提   交   " /></div>
+		</form>
+		</div>
+
+		<div class="rd8_fullborder">
+			<div class="rd8_head">作家申请记录</div>
+			<div class="rd8_category">
+				<div style="width: 443px;">申请时间</div>
+				<div style="width: 443px;">审核时间</div>
+			</div>
+			<!-- BEGIN Newauthorlistblock -->
+			<div class="rd8_col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+				<div style="width: 443px;">{C_applytime}</div>
+				<div style="width: 443px;"><!-- IF C_checktime=="0" -->暂未审核<!-- ELSEIF C_checktime=="1" -->未通过<!-- ELSE -->{C_checktime}<!-- ENDIF --></div>
+			</div>
+			<!-- END Newauthorlistblock -->
+		<!-- ENDIF -->
+		</div>
+	</div>
+</div>

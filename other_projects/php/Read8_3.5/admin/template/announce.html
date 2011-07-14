@@ -1,0 +1,36 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>设置网站首页公告，支持html代码。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post">
+	<div class="adminborder">
+		<div class="adminhead">公告{ttl}</div>
+		<div class="b0">
+			<div style="width: 15%;padding-left: 1%;font-weight: bold;">公告标题:</div>
+			<div style="width: 83%;">
+				<input type="text" name="title" value="{title}" style="width: 90%;" />
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 15%;padding-left: 1%;font-weight: bold;">公告内容:</div>
+			<div style="width: 83%;">
+				<textarea name="content" rows="15" style="width: 90%;">{content}</textarea><br />
+			</div>
+		</div>
+		<div class="bt">
+			<div style="text-align: center;"><input type="hidden" name="editid" value="{editid}" /><input type="submit" value=" {ttl} " /></div>
+		</div>
+	</div>
+	</form>
+
+	<div class="adminborder">
+		<div class="adminhead">公告列表</div>
+		<!-- BEGIN itemlist -->
+			<div class="b{A}">
+				<div style="width: 15%;padding-left: 1%;font-weight: bold;"><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=update&amp;editid={id}">修改</a>   
+					<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=del&amp;delid={id}">删除</a></div>
+				<div style="width: 83%;"><strong>{title}</strong><br />{content}</div>
+			</div>
+		<!-- END itemlist -->
+	</div>

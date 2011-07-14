@@ -1,0 +1,41 @@
+	<div class="admin_about">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>在此推荐的书籍将显示在“编辑推荐”栏目。</li></ul></div>
+	</div>
+	<form action="" method="get">
+	<div class="admin_search">
+		<div class="adminhead"><li class="img_sleft">书名搜索</li><li class="img_right"></li></div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">书名关键词: <input type="text" name="thename" value="{C_thename}" /> <input type="submit" value="搜索" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /></div>
+	</div>
+	</form>	
+	<div class="adminborder">
+		<div class="adminhead">编辑推荐管理</div>
+		<div class="cat" style="width: 99%;padding-left: 1%;">已有推荐列表</div>
+		<div class="b0">
+			<div style="width: 99%;padding-left: 1%;">
+			<!-- IF books -->
+				<!-- BEGIN books -->
+					<div style="margin-left:6px;width:145px;"><a href="{InfoURL}" target="_blank"><img src="../{HTMLPATH}/bookface.jpg" alt="{title}" width="128" height="160" /></a>
+					<p style="text-align:center;"><a href="../novel.php?bid={id}" target="_blank"><span style="font-weight: bold;">{title}</span></a> [ <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=dcommend&amp;bid={id}" onclick="if(!confirm('确认删除此推荐吗？')) return false;">删除</a> ] &nbsp;</p></div>
+				<!-- END books -->
+			<!-- ELSE -->
+				没有已被推荐的书籍
+			<!-- ENDIF -->
+			</div>
+		</div>
+	</div>
+
+<!-- IF C_thename -->
+	<div class="adminborder">
+		<div class="adminhead">搜索结果</div>
+		<div class="b0">
+			<div>
+			<!-- BEGIN searchlist -->
+				<a href="../novel.php?bid={id}" target="_blank"><span style="font-weight: bold;">{title}</span></a> [ <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认推荐该作品吗？')) return false;">推荐</a> ]&nbsp;
+			<!-- END searchlist -->
+			</div>
+		</div>
+	</div>
+<!-- ENDIF -->
+
+

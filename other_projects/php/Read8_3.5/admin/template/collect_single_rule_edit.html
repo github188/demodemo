@@ -1,0 +1,415 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>熟悉本规则后可制作任意网站的阅读采集。</li>
+				<li>在可以使用变量的选项中，点击左侧对应变量名即可自动填入光标处。</li>
+				<li>更多正则和站点恢复请<a href="http://bbs.read8.net/forum-11-1.html" target="_blank">点此弹出查看官方论坛二次开发版</a>。</li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">/*<![CDATA[*/
+		var _subject_posargs = 0;
+		var _content_posargs = 0;
+		var _replacementargs = 0;
+
+		function append_subject_pos(){
+			var li = document.createElement('li');
+				li.id = 'subject_posli_' + _subject_posargs;
+				li.innerHTML = '<input size="25" type="text" name="subject_pos[from][' + _subject_posargs + ']" id="subject_posfrom_' + _subject_posargs + '" \/> 对应 <select name="subject_pos[to][' + _subject_posargs + ']" id="subject_posto_' + _subject_posargs + '"><\/select> <label for="subject_posdelete_' + _subject_posargs + '"><input type="checkbox" name="subject_pos[delete][' + _subject_posargs + ']" id="subject_posdelete_' + _subject_posargs + '" onclick="javascript:subject_pos_change(\'' + _subject_posargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_subject_pos').appendChild(li);
+
+<!-- BEGIN subjects -->
+			var opt = document.createElement('option');
+				opt.value      = '{id}';
+				opt.innerHTML  = '{title}';
+			$('subject_posto_' + _subject_posargs).appendChild(opt);
+
+<!-- END subjects -->
+
+			_subject_posargs++;
+		}
+		function append_subject_pos_with_value(f, t){
+			var li = document.createElement('li');
+				li.id = 'subject_posli_' + _subject_posargs;
+				li.innerHTML = '<input size="25" type="text" name="subject_pos[from][' + _subject_posargs + ']" id="subject_posfrom_' + _subject_posargs + '" value="' + f + '" \/> 对应 <select name="subject_pos[to][' + _subject_posargs + ']" id="subject_posto_' + _subject_posargs + '"><\/select> <label for="subject_posdelete_' + _subject_posargs + '"><input type="checkbox" name="subject_pos[delete][' + _subject_posargs + ']" id="subject_posdelete_' + _subject_posargs + '" onclick="javascript:subject_pos_change(\'' + _subject_posargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_subject_pos').appendChild(li);
+
+<!-- BEGIN subjects -->
+			var opt = document.createElement('option');
+				opt.value           = '{id}';
+				opt.innerHTML       = '{title}';
+				opt.defaultSelected = t == {id} ? true : false;
+				opt.selected        = t == {id} ? true : false;
+			$('subject_posto_' + _subject_posargs).appendChild(opt);
+
+<!-- END subjects -->
+
+			_subject_posargs++;
+		}
+		function subject_pos_change(subject_pos){
+			var state = $('subject_posdelete_' + subject_pos).checked;
+			$('subject_posli_' + subject_pos).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('subject_posfrom_' + subject_pos).disabled = state;
+			$('subject_posto_' + subject_pos).disabled = state;
+		}
+		function append_content_pos(){
+			var li = document.createElement('li');
+				li.id = 'content_posli_' + _content_posargs;
+				li.innerHTML = '<input size="25" type="text" name="content_pos[from][' + _content_posargs + ']" id="content_posfrom_' + _content_posargs + '" \/> 对应 <select name="content_pos[to][' + _content_posargs + ']" id="content_posto_' + _content_posargs + '"><\/select> <label for="content_posdelete_' + _content_posargs + '"><input type="checkbox" name="content_pos[delete][' + _content_posargs + ']" id="content_posdelete_' + _content_posargs + '" onclick="javascript:content_pos_change(\'' + _content_posargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_content_pos').appendChild(li);
+
+<!-- BEGIN contents -->
+			var opt = document.createElement('option');
+				opt.value      = '{id}';
+				opt.innerHTML  = '{title}';
+			$('content_posto_' + _content_posargs).appendChild(opt);
+
+<!-- END contents -->
+
+			_content_posargs++;
+		}
+		function append_content_pos_with_value(f, t){
+			var li = document.createElement('li');
+				li.id = 'content_posli_' + _content_posargs;
+				li.innerHTML = '<input size="25" type="text" name="content_pos[from][' + _content_posargs + ']" id="content_posfrom_' + _content_posargs + '" value="' + f + '" \/> 对应 <select name="content_pos[to][' + _content_posargs + ']" id="content_posto_' + _content_posargs + '"><\/select> <label for="content_posdelete_' + _content_posargs + '"><input type="checkbox" name="content_pos[delete][' + _content_posargs + ']" id="content_posdelete_' + _content_posargs + '" onclick="javascript:content_pos_change(\'' + _content_posargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_content_pos').appendChild(li);
+
+<!-- BEGIN contents -->
+			var opt = document.createElement('option');
+				opt.value           = '{id}';
+				opt.innerHTML       = '{title}';
+				opt.defaultSelected = t == {id} ? true : false;
+				opt.selected        = t == {id} ? true : false;
+			$('content_posto_' + _content_posargs).appendChild(opt);
+
+<!-- END contents -->
+
+			_content_posargs++;
+		}
+		function content_pos_change(content_pos){
+			var state = $('content_posdelete_' + content_pos).checked;
+			$('content_posli_' + content_pos).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('content_posfrom_' + content_pos).disabled = state;
+			$('content_posto_' + content_pos).disabled = state;
+		}
+		function append_replacement(){
+			var li = document.createElement('li');
+				li.id = 'replacementli_' + _replacementargs;
+				li.innerHTML = '将 <input size="20" type="text" name="replacements[from][' + _replacementargs + ']" id="replacementfrom_' + _replacementargs + '" \/> 替换为 <input size="20" type="text" name="replacements[to][' + _replacementargs + ']" id="replacementto_' + _replacementargs + '" \/> <label for="replacementregexp_' + _replacementargs + '"><input type="checkbox" name="replacements[regexp][' + _replacementargs + ']" id="replacementregexp_' + _replacementargs + '" value="1" \/> 使用正则<\/label> <label for="replacementdelete_' + _replacementargs + '"><input type="checkbox" name="replacements[delete][' + _replacementargs + ']" id="replacementdelete_' + _replacementargs + '" onclick="javascript:replacement_change(\'' + _replacementargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_replacements').appendChild(li);
+
+			_replacementargs++;
+		}
+		function append_replacement_with_value(f, t, s){
+			var li = document.createElement('li');
+				li.id = 'replacementli_' + _replacementargs;
+				li.innerHTML = '将 <input size="20" type="text" name="replacements[from][' + _replacementargs + ']" id="replacementfrom_' + _replacementargs + '" value="' + f + '" \/> 替换为 <input size="20" type="text" name="replacements[to][' + _replacementargs + ']" id="replacementto_' + _replacementargs + '" value="' + t + '" \/> <label for="replacementregexp_' + _replacementargs + '"><input type="checkbox" name="replacements[regexp][' + _replacementargs + ']" id="replacementregexp_' + _replacementargs + '" value="1"' + (s ? ' checked="checked"' : '') + ' \/> 使用正则<\/label> <label for="replacementdelete_' + _replacementargs + '"><input type="checkbox" name="replacements[delete][' + _replacementargs + ']" id="replacementdelete_' + _replacementargs + '" onclick="javascript:replacement_change(\'' + _replacementargs + '\');" value="1" \/> 删除<\/label>';
+
+			$('_replacements').appendChild(li);
+
+			_replacementargs++;
+		}
+		function replacement_change(replacement){
+			var state = $('replacementdelete_' + replacement).checked;
+			$('replacementli_' + replacement).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('replacementfrom_' + replacement).disabled = state;
+			$('replacementto_' + replacement).disabled = state;
+			$('replacementregexp_' + replacement).disabled = state;
+		}
+		function insert_var(obj, str){
+			if(typeof document.selection == 'object') {
+				obj.focus();
+				sr = document.selection.createRange();
+				sr.text = str;
+			}else if(typeof obj.selectionStart == 'number') {
+				var startPos = obj.selectionStart;
+				var endPos   = obj.selectionEnd;
+				prefix = obj.value.substring(0, startPos);
+				suffix = obj.value.substring(endPos, obj.value.length);
+				obj.value = prefix + str + suffix;
+				obj.focus();
+				obj.setSelectionRange(startPos, startPos + str.length);
+			}else {
+				obj.value += str;
+				obj.focus();
+			}
+		}
+	/*]]>*/</script>
+
+	<div class="adminborder">
+		<div class="adminhead">采集规则编辑</div>
+		<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post">
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">站点标识<font color="red">*</font>:</span><br />
+					<span class="smalltxt">当前站点规则在采集中的唯一英文名称。只能使用字母和数字。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="mark" value="{mark}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">目标站名称<font color="red">*</font>:</span><br />
+					<span class="smalltxt">用作当前站点在采集中的显示，可以使用中文。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="title" value="{title}" /></div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">目标站地址<font color="red">*</font>:</span><br />
+					<span class="smalltxt">当前站点的网站地址。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="address" value="{address}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍信息页面地址<font color="red">*</font>:</span><br />
+					<span class="smalltxt">同时含有一本书标题/作者/介绍/封面和特殊变量的单本书籍介绍地址。<br />使用<input type="button" class="a" onclick="javascript:insert_var($('page_info'), '{' + 'read8bid}');" onfocus="this.blur();" value="&#123;read8bid}" />代替书籍编号。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="page_info" id="page_info" value="{page_info}" /></div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍名称起始与结束标记<font color="red">*</font>:</span><br />
+					<span class="smalltxt">两标记之间为书籍名称，起始标记应唯一或在文档中首次出现。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="title_start" value="{title_start}" />
+					<input size="25" type="text" name="title_end" value="{title_end}" />
+				</div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍作者起始与结束标记<font color="red">*</font>:</span><br />
+					<span class="smalltxt">同上。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="author_start" value="{author_start}" />
+					<input size="25" type="text" name="author_end" value="{author_end}" />
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍一级分类起始与结束标记:</span><br />
+					<span class="smalltxt">同上。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="subject_start" value="{subject_start}" />
+					<input size="25" type="text" name="subject_end" value="{subject_end}" />
+				</div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍一级分类对应关系:</span><br />
+					<span class="smalltxt">若目标站分类名称与本站分类名称不同，可在此设置对应关系，例：本站“言情”类 ID 为 1，目标站分类名为“都市言情”。</span>
+				</div>
+				<div style="width: 51%;">
+					<ul style="list-style-type: none;margin: 0;padding: 0;" id="_subject_pos">
+					</ul>
+					<span class="a" onclick="javascript:append_subject_pos();">[+]</span>
+				</div>
+				<script type="text/javascript">
+<!-- BEGIN subject_pos -->
+					append_subject_pos_with_value('{f}', {t});
+<!-- END subject_pos -->
+					append_subject_pos();
+				</script>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍二级分类起始与结束标记:</span><br />
+					<span class="smalltxt">同上。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="content_start" value="{content_start}" />
+					<input size="25" type="text" name="content_end" value="{content_end}" />
+				</div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍二级分类对应关系:</span><br />
+					<span class="smalltxt">同上。</span>
+				</div>
+				<div style="width: 51%;">
+					<ul style="list-style-type: none;margin: 0;padding: 0;" id="_content_pos">
+					</ul>
+					<span class="a" onclick="javascript:append_content_pos();">[+]</span>
+				</div>
+				<script type="text/javascript">
+<!-- BEGIN content_pos -->
+					append_content_pos_with_value('{f}', {t});
+<!-- END content_pos -->
+					append_content_pos();
+				</script>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">书籍介绍起始与结束标记<font color="red">*</font>:</span><br />
+					<span class="smalltxt">同上。可留空。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="intro_start" value="{intro_start}" />
+					<input size="25" type="text" name="intro_end" value="{intro_end}" />
+				</div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">封面起始与结束标记<font color="red">*</font>:</span><br />
+					<span class="smalltxt">同上。可留空。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="cover_start" value="{cover_start}" />
+					<input size="25" type="text" name="cover_end" value="{cover_end}" />
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">封面前导路径:</span><br />
+					<span class="smalltxt">上一项取得的结果将附加在本项之后共同构成封面图片地址。可留空。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="cover_prefix" value="{cover_prefix}" /></div>
+			</div>
+
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">匹配正则 - 书籍信息页面通用变量获得:</span><br />
+					<span class="smalltxt">选填。可匹配五个变量。在下文地址中用 &#123;read8g1v1} 到 &#123;read8g1v5} 来替换。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="general_regexp_1" value="{general_regexp_1}" /></div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">章节列表页面地址<font color="red">*</font>:</span><br />
+					<span class="smalltxt">书籍的章节具体列表的地址。<br />可用变量<br /><input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8bid}');" onfocus="this.blur();" value="&#123;read8bid}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8g1v1}');" onfocus="this.blur();" value="&#123;read8g1v1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8g1v2}');" onfocus="this.blur();" value="&#123;read8g1v2}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8g1v3}');" onfocus="this.blur();" value="&#123;read8g1v3}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8g1v4}');" onfocus="this.blur();" value="&#123;read8g1v4}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8g1v5}');" onfocus="this.blur();" value="&#123;read8g1v5}" />。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="page_list" id="page_list" value="{page_list}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">分卷起始与结束标记:</span><br />
+					<span class="smalltxt">同上。可留空。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="volume_start" value="{volume_start}" />
+					<input size="25" type="text" name="volume_end" value="{volume_end}" />
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">匹配正则 - 取得章节列表内容的变量组<font color="red">*</font>:</span><br />
+					<span class="smalltxt">必填。可匹配最多五个变量组。用于获得章节阅读地址用的变量。在下文地址中用 &#123;read8cv1} 到 &#123;read8cv5} 来替换。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="chapter_regexp" value="{chapter_regexp}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">章节标题变量名<font color="red">*</font>:</span><br />
+					<span class="smalltxt">在上一项所取得的变量中，哪个变量是章节标题。</span>
+				</div>
+				<div style="width: 51%;">
+					<select name="chapter_title_pos">
+<!-- BEGIN cv_pos -->
+						<option value="{v}"{c}>{t}</option>
+<!-- END cv_pos -->
+					</select>
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">章节阅读页面地址<font color="red">*</font>:</span><br />
+					<span class="smalltxt">书籍的章节阅读页面的地址。<br />可用变量<br /><input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8bid}');" onfocus="this.blur();" value="&#123;read8bid}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8g1v1}');" onfocus="this.blur();" value="&#123;read8g1v1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8g1v2}');" onfocus="this.blur();" value="&#123;read8g1v2}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8g1v3}');" onfocus="this.blur();" value="&#123;read8g1v3}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8g1v4}');" onfocus="this.blur();" value="&#123;read8g1v4}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8g1v5}');" onfocus="this.blur();" value="&#123;read8g1v5}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8cv1}');" onfocus="this.blur();" value="&#123;read8cv1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8cv2}');" onfocus="this.blur();" value="&#123;read8cv2}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8cv3}');" onfocus="this.blur();" value="&#123;read8cv3}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8cv4}');" onfocus="this.blur();" value="&#123;read8cv4}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_read'), '{' + 'read8cv5}');" onfocus="this.blur();" value="&#123;read8cv5}" />。<br />某些时候，该页面并不存在章节内容，但是需要根据此页面中的部分信息得到章节内容的地址，请继续填写以下两项。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="page_read" id="page_read" value="{page_read}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">匹配正则 - 章节阅读页面通用变量获得:</span><br />
+					<span class="smalltxt">若在章节阅读页面仍不能读取到内容，填写该项获得两个变量 &#123;read8g3v1}、&#123;read8g3v2} 用于下一项获得最终内容地址。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="general_regexp_3" value="{general_regexp_3}" /></div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">章节内容页面地址:</span><br />
+					<span class="smalltxt">通常不需要使用该项设置，建议仅当需要从章节阅读页面获得特殊变量才能得到内容页面地址时填写上一项及本项。<br />可用变量<br /><input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8bid}');" onfocus="this.blur();" value="&#123;read8bid}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g1v1}');" onfocus="this.blur();" value="&#123;read8g1v1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g1v2}');" onfocus="this.blur();" value="&#123;read8g1v2}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g1v3}');" onfocus="this.blur();" value="&#123;read8g1v3}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g1v4}');" onfocus="this.blur();" value="&#123;read8g1v4}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g1v5}');" onfocus="this.blur();" value="&#123;read8g1v5}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8cv1}');" onfocus="this.blur();" value="&#123;read8cv1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8cv2}');" onfocus="this.blur();" value="&#123;read8cv2}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8cv3}');" onfocus="this.blur();" value="&#123;read8cv3}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8cv4}');" onfocus="this.blur();" value="&#123;read8cv4}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8cv5}');" onfocus="this.blur();" value="&#123;read8cv5}" /><br /><input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g3v1}');" onfocus="this.blur();" value="&#123;read8g3v1}" /> <input type="button" class="a" onclick="javascript:insert_var($('page_final'), '{' + 'read8g3v2}');" onfocus="this.blur();" value="&#123;read8g3v2}" />。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="page_final" id="page_final" value="{page_final}" /></div>
+			</div>
+
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">章节内容起始与结束标记:</span><br />
+					<span class="smalltxt">同上。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" size="20" name="text_start" value="{text_start}" />
+					<input size="25" type="text" size="20" name="text_end" value="{text_end}" />
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">内容替换:</span><br />
+					<span class="smalltxt">将书籍介绍以及章节内容中的 一个或多个目标字符 按顺序替换为 目标值(可为空)。<br />若内容中有非\r\n或\n换行的换行符，请将其替换为\n</span>
+				</div>
+				<div style="width: 51%;">
+					<ul style="list-style-type: none;margin: 0;padding: 0;" id="_replacements">
+					</ul>
+					<span class="a" onclick="javascript:append_replacement();">[+]</span>
+				</div>
+				<script type="text/javascript">
+<!-- BEGIN replaces -->
+					append_replacement_with_value('{f}', '{t}', {s});
+<!-- END replaces -->
+					append_replacement();
+				</script>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">下载图片:</span><br />
+					<span class="smalltxt">可选。是否下载图片到本地。若目标站图片章节较多，可能导致本地空间占用较大，建议仅在目标站图片禁止盗链时使用。</span>
+				</div>
+				<div style="width: 51%;">
+					<label for="image_1"><input type="radio" name="image" id="image_1" value="1"{image_open} /> 开启</label> &nbsp;
+					<label for="image_0"><input type="radio" name="image" id="image_0" value="0"{image_close} /> 关闭</label>
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">图片前导路径:</span><br />
+					<span class="smalltxt">可选。当目标站使用相对地址调用图片时，需要设置该项。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="image_prefix" value="{image_prefix}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">页面压缩:</span><br />
+					<span class="smalltxt">所采集网站的页面是否被压缩，如果采集全部都是乱码则表示只能探测失败或所选压缩方式与目标网站不符。</span>
+				</div>
+				<div style="width: 51%;">
+					<label for="compression_0"><input type="radio" name="compression" id="compression_0" value="0"{compression_auto} /> 智能探测</label> &nbsp;
+					<label for="compression_1"><input type="radio" name="compression" id="compression_1" value="1"{compression_none} /> 无压缩</label> &nbsp;
+					<label for="compression_2"><input type="radio" name="compression" id="compression_2" value="2"{compression_gzip} /> gzip 压缩</label> &nbsp;
+					<label for="compression_3"><input type="radio" name="compression" id="compression_3" value="3"{compression_deflate} /> deflate 压缩</label>
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">目标站编码<font color="red">*</font>:</span><br />
+					<span class="smalltxt">所采集网站的页面编码，可以通过网站的 meta 标签查看，如果采集出现文字乱码则表示智能探测失败或所选编码与目标网站不符。</span>
+				</div>
+				<div style="width: 51%;">
+					<label for="charsets_0"><input type="radio" name="charsets" id="charsets_0" value="0"{charsets_auto} /> 智能探测</label> &nbsp;
+					<label for="charsets_1"><input type="radio" name="charsets" id="charsets_1" value="1"{charsets_utf8} /> utf-8</label> &nbsp;
+					<label for="charsets_2"><input type="radio" name="charsets" id="charsets_2" value="2"{charsets_gb2312} /> gb2312</label> &nbsp;
+					<label for="charsets_3"><input type="radio" name="charsets" id="charsets_3" value="3"{charsets_big5} /> big5</label>
+				</div>
+			</div>
+			<div class="bt"><input type="submit" value=" 完 成 " /><input type="hidden" name="id" value="{id}" /> &nbsp;<input type="reset" value=" 重 置 " /> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></div>
+		</form>
+	</div>

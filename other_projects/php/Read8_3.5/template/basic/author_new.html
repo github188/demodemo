@@ -1,0 +1,88 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">新建作品</div>
+		<div class="rd8_col0">
+			<form action="author/new_apply.php" method="post">
+				<table>
+					<tr>
+						<td width="15%" align="center">作品名称</td>
+						<td width="35%"><input type="text" name="title" /> (不用添加书名号)</td>
+						<td width="15%" align="center">作 &nbsp; &nbsp;者</td>
+						<td width="35%">{pseudonym}</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">作品类型</td>
+						<td>
+							<select name="subject" style="border:1px solid #CCC;">
+<!-- BEGIN subjects -->
+								<option value="{id}">{title}</option>
+<!-- END subjects -->
+							</select>
+							<select name="content" style="border:1px solid #CCC;">
+<!-- BEGIN contents -->
+								<option value="{id}">{title}</option>
+<!-- END contents -->
+							</select>
+						</td>
+						<td align="center">作品风格</td>
+						<td>
+							<select name="style" style="border:1px solid #CCC;">
+<!-- BEGIN styles -->
+								<option value="{id}">{title}</option>
+<!-- END styles -->
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">作品主角</td>
+						<td><input type="text" name="role_lead" /></td>
+						<td align="center">主要配角</td>
+						<td><input type="text" name="role_support" /></td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">授权级别</td>
+
+						<script type="text/javascript">
+						<!-- BEGIN licenses -->
+							var license{id} = '{description}';
+						<!-- END licenses -->
+
+							function show_license() {
+								eval("$('license_description').innerHTML = license" + $('license').value + ";");
+							}
+						</script>
+
+						<td colspan="3">
+							<select name="license" id="rd8_license" onchange="javascript:show_license();" style="border:1px solid #CCC;">
+<!-- BEGIN licenses -->
+								<option value="{id}">{title}</option>
+<!-- END licenses -->
+							</select> <span id="rd8_license_description"></span>
+						</td>
+
+						<script type="text/javascript">
+							show_license();
+						</script>
+					</tr>
+					<tr>
+						<td align="center">内容介绍</td>
+						<td colspan="3"><input type="text" name="description" size="55" /> (请使用自然语言描述本书内容，不超过八十四个汉字。)</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">关 键 字</td>
+						<td colspan="3"><input type="text" name="tag" /> (请填写不超过三个的除作品名称、类型、风格以外与作品内容相关的词语。使用 , 分隔)</td>
+					</tr>
+					<tr>
+						<td align="center">作品简介</td>
+						<td colspan="3">将显示在书籍信息页面<br /><textarea rows="10" cols="90" name="intro" style="border:1px solid #CCC;"></textarea></td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">作品片断</td>
+						<td colspan="3">请附上作品片断以供审核<br /><textarea rows="10" cols="90" name="sample" style="border:1px solid #CCC;"></textarea></td>
+					</tr>
+					<tr>
+						<td class="rd8_colt" align="center" colspan="4"><input type="submit" value=" 申请发表 " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>

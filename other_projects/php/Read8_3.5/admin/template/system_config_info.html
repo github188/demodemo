@@ -1,0 +1,65 @@
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">周边信息设置</div>
+
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>关于我们</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[about]" value="1"{C_info0_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pabout" rows="10" cols="100">{C_about}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>用户指南</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[guide]" value="1"{C_info1_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pguide" rows="10" cols="100">{C_guide}</textarea></div>
+		</div>
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>业务联系</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[contact]" value="1"{C_info2_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pcontact" rows="10" cols="100">{C_contact}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>在线支付说明</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[pay]" value="1"{C_info3_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="ppay" rows="10" cols="100">{C_pay}</textarea></div>
+		</div>
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>兑换申请说明</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[fee]" value="1"{C_info4_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pfee" rows="10" cols="100">{C_fee}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>新书申请说明</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[novel]" value="1"{C_info5_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pnovel" rows="10" cols="100">{C_novel}</textarea></div>
+		</div>
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>作家申请说明</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[author]" value="1"{C_info6_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="pauthor" rows="10" cols="100">{C_author}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 14%;padding-left: 1%;">
+				<span>注册协议</span><br /><br />
+				<span><label><input type="checkbox" name="pexternal[eula]" value="1"{C_info7_html} />启用HTML</label></span>
+			</div>
+			<div style="width: 84%;"><textarea name="peula" rows="10" cols="100">{C_eula}</textarea></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

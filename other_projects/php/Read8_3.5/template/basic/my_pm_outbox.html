@@ -1,0 +1,35 @@
+	<div class="rd8_fullborder" style="border: 0px;">
+		<div class="rd8_head">站内短信-发件箱</div>
+		<div style="background-color:#CCC;height:24px;margin:2px auto;line-height:24px;text-align:center;width:60%;">
+			<a href="my/pm_inbox.php">收件箱</a>&nbsp;&nbsp;
+			<!-- IF current --><a href="my/pm_outbox.php" style="color:#FFF;font-weight:bold;">发件箱</a>&nbsp;&nbsp;<!-- ENDIF -->
+			<a href="my/pm_compose.php">撰写短信</a>
+		</div>
+<!-- IF pinfo -->
+	<form method="post" action="my/pm_delete.php" id="form2">
+		<table align="center" style="margin:3px auto;width:60%;border:1px solid #CCC;">
+			<tr style="height:24px;line-height:24px;background-color:#B6DBFF;font-weight:bold;">
+				<td align="center"><input type="checkbox" title="全选" onclick="javascript:checkall(this.form.id,this);"/>
+				批量删除</td>
+				<td align="center">收件人</td>
+				<td align="center">主题</td>
+				<td align="center">时间</td>
+				<td align="center">操作</td>
+			</tr>
+<!-- BEGIN pinfo -->
+			<tr class="rd8_col{A}" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'"onclick="javascript:HighLight.click('{id}');">
+				<td align="center"><input type="checkbox" name="delo[]" value="{id}" id={id} /></td>
+				<td align="center">{to}</td>
+				<td align="center"><a href="my/pm_check_content.php?oid={id}">{title}</td>
+				<td align="center">{dateline_DATE_Y-m-d H:i:s}</td>
+				<td align="center"><a href="my/pm_delete.php?oid={id}" onclick="return confirm('确认要删除此信息吗?');">[删除]</a></td>
+			</tr>
+<!-- END pinfo -->
+			<tr><td colspan="5" align="center"><input type="submit" name="action1" value="删除选中项" onclick="return confirm('确认要删除信息吗?');"></td></tr>
+				<tr><td colspan="5" class="rd8_colt"><!-- IF pagelink -->{pagelink}<!-- ELSE -->共一页<!-- ENDIF --></td></tr>
+		</table>
+	</form>
+<!-- ELSE -->
+			<div style="text-align:center;font-size:14px;font-weight: bold;">没有短消息</div>
+<!-- ENDIF -->
+	</div>

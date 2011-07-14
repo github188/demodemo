@@ -1,0 +1,55 @@
+	<script type="text/javascript">
+		function openwin(cbcid) {
+			window.open("?ptype={ptype}&pfile={pfile}&action=showps&showpsid="+cbcid,"","width=500,height=400,toolbar=no,menubar=no,scrollbars=yes, resizable=yes,location=no, status=no")
+		}
+		function submit_d(a){
+			if(a == 1) {
+				$('action').value = "apply";
+			}else {
+				$('action').value = "deny";
+			}
+		}
+	</script>
+
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>由于书籍直接出现在网站首要位置，为了安全起见，故新书需要审核方可发书。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">新书申请管理</div>
+		<!-- IF itemlist -->
+			<div class="cat" style="text-align: center;">
+				<div style="width: 5%;"><input type="checkbox" onclick="javascript:checkall(this.form.id,this);">全</div>
+				<div style="width: 20%;">书名</div>
+				<div style="width: 8%;">作者</div>
+				<!--div style="width: 8%;">录入员</div-->
+				<div style="width: 8%;">授权</div>
+				<div style="width: 18%;">分类</div>
+				<div style="width: 7%;">简介</div>
+				<div style="width: 17%;">申请时间</div>
+				<!--div style="width: 15%;">审核</div-->
+				<div style="width: 17%;">操作</div>
+			</div>
+			<!-- BEGIN itemlist -->
+				<div class="b{A}" onmouseover="this.className='b2'" onmouseout="this.className='b{A}'" style="text-align: center;">
+					<div style="width: 5%;"><input type="checkbox" name="bids[]" value='{id}'></div>
+					<div style="width: 20%;">{title}</div>
+					<div style="width: 8%;"><a href="author.php?aid={author_id}" title="点击查看作家详情" target="_blank">{author}</a></div>
+					<!--div style="width: 8%;"><a href="profile.php?target={C_username" title="点击查看资料" target="_blank">{C_username</a></div-->
+					<div style="width: 8%;">{license}</div>
+					<div style="width: 18%;">{subject} - {content}</div>
+					<div style="width: 7%;"><a href="###" onclick="openwin('{id}')" title="{description}">查看</a></div>
+					<div style="width: 17%;">{dateline_DATE_Y-m-d H:i:s}</div>
+					<!--div style="width: 15%;">{C_status</div-->
+					<div style="width: 17%;"><a href="javascript:cfmoption('您确认同意此书发表么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=apply&amp;bids[]={id}')"><span style="color: Blue;">通过</span></a> &nbsp;<a href="javascript:cfmoption('您确认拒绝此新书申请么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=deny&amp;bids[]={id}')"><span style="color: Red;">拒绝</span></a></div>
+				</div>
+			<!-- END itemlist -->
+			<div class="cat" style="text-align: center;"><input type="hidden" name="action" id="action" value="denybid" /><input type="submit" value=" 通 过 " onclick="if(!confirm('你确认同意所选新书申请么？')) return false;else submit_d(1);"> <input type="submit" value=" 拒 绝 " onclick="if(!confirm('你确认拒绝所选新书申请么？')) return false;else submit_d(2);"></div>
+			<!-- IF C_pagelink --><div class="cat">{C_pagelink}</div><!-- ENDIF -->
+		<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">尚未有作家申请新书</div>
+		<!-- ENDIF -->
+		</div>
+	</form>

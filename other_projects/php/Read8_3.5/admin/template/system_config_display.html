@@ -1,0 +1,33 @@
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">界面显示设置</div>
+
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">首页公告数量:</span><br />
+				<span class="smalltxt">首页显示多少条公告信息</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="announce" value="{C_announce}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">统计代码:</span><br />
+				<span class="smalltxt">提供网站流量统计服务的html代码，如修改此处请同时更新模板缓存并更新书籍页面。 &nbsp; &nbsp;<a href="http://www.9tong.cc" target="_blank" style="color: Blue;">立即注册九统流量统计</a></span>
+			</div>
+			<div style="width: 38%;"><textarea name="pstatcode" rows="5" cols="30">{C_statcode}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">页面执行时间显示:</span><br />
+				<span class="smalltxt">显示在网站底部，即“Processed in * second(s), * queries”的字样。</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="pspeedtrace" value="1"{C_speedtrace_yes} />开启</label> &nbsp;
+				<label><input type="radio" name="pspeedtrace" value="0"{C_speedtrace_no} />关闭</label>
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

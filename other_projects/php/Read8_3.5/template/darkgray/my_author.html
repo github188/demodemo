@@ -1,0 +1,9 @@
+	<div class="rd8_fullborder">
+		<form action="my/author_apply.php" method="post">
+			<div class="rd8_head">申请作家</div>
+			<div class="rd8_myauthor">
+				<li>笔名:&nbsp;<!-- IF applyed=="1" -->{pseudonym}<!-- ELSE --><input type="text" name="pseudonym" /><!-- ENDIF --></li>
+				<li><!-- IF applyed=="1" -->您已使用 笔名: “{pseudonym}” 申请成为作家，请耐心等待审核。<!-- ELSE --><input type="submit" value=" 申请作家 " /><!-- ENDIF --></li>
+			</div>
+		</form>
+	</div>

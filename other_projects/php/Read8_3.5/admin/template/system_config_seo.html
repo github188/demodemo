@@ -1,0 +1,104 @@
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">搜索引擎优化</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍数据目录:</span><br />
+				<span class="smalltxt">存放书籍静态文件的目录名，默认为“html”，若修改此处，请使用ftp或在服务器上将该文件夹同步改名。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="phtmlpath" value="{C_htmlpath}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍数据子目录:</span><br />
+				<span class="smalltxt">存放书籍静态文件的子目录格式，默认为“首字母/日期”。修改后将应用于新书，原有书籍不受影响。</span>
+			</div>
+			<div style="width: 38%;">
+				<select name="phtmlsubdir">
+<!-- BEGIN htmlsubdirs -->
+					<option value="{v}"{s}>&nbsp;{t}&nbsp;</option>
+<!-- END htmlsubdirs -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍数据子目录日期格式:</span><br />
+				<span class="smalltxt">当上一项设置中存在日期时，该项有效。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="phtmlsubdirdateformat" value="{C_htmlsubdirdateformat}" /></div>
+		</div>
+		<script type="text/javascript" src="{G_siteurl}/include/js/ajax.js"></script>
+		<script type="text/javascript">
+			function getHot(pos) {
+				var ajax = AJAX_Init();
+				ajax.open("GET","{G_siteurl}/ajax.php?action=gethot&pos=" + pos,true);
+				ajax.onreadystatechange = function() {
+					if(ajax.readyState == 4 && ajax.status == 200) {
+						eval(ajax.responseText);
+					}
+				}
+				ajax.send(null);
+			}
+		</script>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">标题附加字:</span><br />
+				<span class="smalltxt">网页标题通常是搜索引擎关注的重点，本附加字设置将出现在标题中论坛名称的后面，如果有多个关键字，建议用 “|”、“,” 等符号分隔。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" size="40" id="seot" name="ptitle" value="{C_title}" />
+				<input type="text" size="40" id="tmpseot" value="这里将显示自动抓取结果.." disabled="disabled" /><br />
+				<input type="button" id="t" onclick="this.disabled=true;this.value='请 稍 候';$('tmpseot').value='正在抓取中.....';getHot('t');" value="自动抓取" />
+				<input type="button" id="inst" value=" 填 入 " onclick="this.disabled=true;$('t').disabled=false;$('t').value='自动抓取';$('seot').value=$('tmpseot').value;$('tmpseot').value='';" disabled="disabled" />
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">搜索关键字:</span><br />
+				<span class="smalltxt">本项作用于网站动态页面的 meta keywords 标签中，正确的设置本项有利于用户从搜索引擎搜索到本站，多个关键字间请用半角逗号 "," 隔开。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" size="40" id="seom" name="pkeywords" value="{C_keywords}" />
+				<input type="text" size="40" id="tmpseom" value="这里将显示自动抓取结果.." disabled="disabled" /><br />
+				<input type="button" id="m" onclick="this.disabled=true;this.value='请 稍 候';$('tmpseom').value='正在抓取中.....';getHot('m');" value="自动抓取" />
+				<input type="button" id="insm" value=" 填 入 " onclick="this.disabled=true;$('m').disabled=false;$('m').value='自动抓取';$('seom').value=$('tmpseom').value;$('tmpseom').value='';" disabled="disabled" />
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站描述:</span><br />
+				<span class="smalltxt">本项作用于网站动态页面的 meta description 标签中，请用自然语言描述本网站，正确的设置本项有利于用户从搜索引擎搜索到本站，若留空则不在网站中使用 meta description，静态页面不受影响。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" size="40" name="pdescription" value="{C_description}" />
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">小说重写模式:</span><br />
+				<span class="smalltxt">此项设置小说的重写模式。设置方式请务必参考<a href="http://bbs.read8.net/thread-4387-1-1.html" target="_blank">读吧书网3.5重写规则</a>。</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="pnovel" value="0"<!-- IF C_novel=="0" --> checked="checked"<!-- ENDIF --> />不对小说重写</label><br />
+				<label><input type="radio" name="pnovel" value="1"<!-- IF C_novel=="1" --> checked="checked"<!-- ENDIF --> />对小说使用拼音重写</label><br />
+				<label><input type="radio" name="pnovel" value="2"<!-- IF C_novel=="2" --> checked="checked"<!-- ENDIF --> />对小说使用子域名重写</label><br />
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">作者重写模式:</span><br />
+				<span class="smalltxt">此项设置作者的重写模式。设置方式同上。</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="pauthor" value="0"<!-- IF C_author=="0" --> checked="checked"<!-- ENDIF --> />不对作者重写</label><br />
+				<label><input type="radio" name="pauthor" value="1"<!-- IF C_author=="1" --> checked="checked"<!-- ENDIF --> />对作者使用拼音重写</label><br />
+				<label><input type="radio" name="pauthor" value="2"<!-- IF C_author=="2" --> checked="checked"<!-- ENDIF --> />对作者使用子域名重写</label><br />
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

@@ -1,0 +1,48 @@
+	<div class="adminborder">
+<!-- IF category=="global" -->
+		<div class="adminhead">站内概要</div>
+		<div class="b0" style="text-align: center;">
+			今日VIP在线支付: <span style="color: Blue;">{C_todaybank}</span> 元;　今日续费: <span style="color: Blue;">{C_todaypay}</span> 元<br />
+			今日新书: <span style="color: Blue;">{C_todaybooks}</span> 本;　今日兑换: <span style="color: Blue;">{C_todayfee}</span> 元<br />
+			今日注册用户: <span style="color: Blue;">{C_todayusers}</span> 人;　今日章节发表: <span style="color: Blue;">{C_todaychapters}</span> 章<br />
+			<hr style="width: 98%;height 1px;" />
+			总VIP在线支付: <span style="color: Blue;">{C_bank}</span> 元;　总续费通过款额: <span style="color: Blue;">{C_pay}</span> 元<br />
+			总书目: <span style="color: Blue;">{C_books}</span> 本;　总兑换: <span style="color: Blue;">{C_fee}</span> 元<br />
+			总注册用户: <span style="color: Blue;">{C_allusers}</span> 人;　总章节发表: <span style="color: Blue;">{C_chapters}</span> 章
+		</div>
+<!-- ELSEIF category=="book" -->
+		<div class="adminhead">书籍排行</div>
+		<table width="100%">
+		<!-- BEGIN trlist -->
+			<tr>
+			<!-- BEGIN ranklist -->
+				<td width="25%">
+					<table width="100%">
+						<tr><td class="adminhead" colspan="3">{name}</td></tr>
+					<!-- BEGIN list -->
+						<tr class="b{A}"><td>{C_rank}</td><td><a href="novel.php?bid={C_bid}">{C_title}</a></td><td>{C_num}</td></tr>
+					<!-- END list -->
+					</table>
+				</td>
+			<!-- END ranklist -->
+			</tr>
+		<!-- END trlist -->
+		</table>
+<!-- ELSEIF category=="writer" -->
+		<div class="adminhead">作家排行</div>
+		<table width="100%">
+			<tr>
+			<!-- BEGIN ranklist -->
+				<td width="25%">
+					<table width="100%">
+						<tr><td class="adminhead" colspan="3">{name}</td></tr>
+					<!-- BEGIN list -->
+						<tr class="b{A}"><td>{C_rank}</td><td>{C_name}</td><td>{C_num}</td></tr>
+					<!-- END list -->
+					</table>
+				</td>
+			<!-- END ranklist -->
+			</tr>
+		</table>
+<!-- ENDIF -->
+	</div>

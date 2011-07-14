@@ -1,0 +1,28 @@
+<div class="rd8_main">
+	<div class="rd8_full">
+		<p class="rd8_guide">当前所在位置:  电子书店</p>
+		<div class="rd8_fullborder">
+			<div class="rd8_author_book">
+				<table>
+					<tr class="rd8_texture">
+						<td>作品名称</td>
+						<td>最新章节</td>
+						<td>作者</td>
+						<td>类别</td>
+						<td>更新时间</td>
+					</tr>
+<!-- BEGIN novels -->
+					<tr align="center" class="rd8_col{A}" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'">
+						<td><a href="{InfoURL}" target="_blank">{title}</a></td>
+						<td><a href="{ChapterURL}" target="_blank">{chapter_title}</a></td>
+						<td><!-- IF author_id --><a href="{AuthorURL}" rel="external"><!-- ENDIF -->{author}<!-- IF author_id --></a><!-- ENDIF --></td>
+						<td>{subject} - {content}</td>
+						<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+					</tr>
+<!-- END novels -->
+				</table>
+			</div>
+		</div>
+		<div class="rd8_tablebottom" style="clear:both;"><!-- IF pagelink -->{pagelink}<!-- ELSE -->共一页<!-- ENDIF --></div>
+	</div>
+</div>

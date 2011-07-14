@@ -1,0 +1,95 @@
+	<script type="text/javascript">
+		function showhide(type){
+			$('api_none').style.display     = 'none';
+			$('api_general').style.display  = 'none';
+			$('api_ucenter').style.display  = 'none';
+
+			$('api_' + type).style.display = '';
+		}
+	</script>
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>这里可整合的PHPWind为所有版本。</li>
+				<li>这里可整合的Discuz!为6.0之前的不含UC的版本。</li>
+				<li>添加新通行证后请编辑该通行证，确保其设置与该通行证产品的设置相同。若设置不同或私钥不同，则无法正常登录或注册。</li>
+			</ul>
+		</div>
+	</div>
+	<div class="adminborder">
+		<div class="adminhead">通行证设置</div>
+		<div class="col1">
+			<form action="?ptype={ptype}&pfile={pfile}" method="post">
+				<table>
+					<tr>
+						<td width="33%" colspan="3" align="center">
+							通 行 证
+						</td>
+						<td width="66%" colspan="6">
+							&nbsp;<label for="api_none_i"><input type="radio" name="api" id="api_none_i" value="none"{api_none_c} onclick="javascript:showhide('none');" /> 关闭</label>
+							&nbsp;<label for="api_general_i"><input type="radio" name="api" id="api_general_i" value="general"{api_general_c} onclick="javascript:showhide('general');" /> 通用通行证</label>
+							&nbsp;<label for="api_ucenter_i"><input type="radio" name="api" id="api_ucenter_i" value="ucenter"{api_ucenter_c} onclick="javascript:showhide('ucenter');" /> UCenter</label><input type="hidden" name="update" value="1" />
+						</td>
+					</tr>
+					<tr class="col0">
+						<td colspan="9">
+							<table id="api_none"{api_none_d}>
+								<tr>
+									<td width="33%" colspan="3" align="center">
+										&nbsp;
+									</td>
+									<td width="66%" colspan="6">
+										&nbsp;不与其他应用程序整合
+									</td>
+								</tr>
+							</table>
+							<table id="api_general"{api_general_d}>
+								<tr>
+									<td width="33%" colspan="3" align="center">
+										&nbsp;
+									</td>
+									<td width="66%" colspan="6">
+										&nbsp;使用通用通行证与其他应用程序整合，可整合 PHPWind 系列产品以及旧版 Discuz! 系列产品。
+									</td>
+								</tr>
+								<tr class="col2" align="center">
+									<td align="left" colspan="5">&nbsp;应用程序地址</td>
+									<td>编码 (点击切换)</td>
+									<td>类型 (点击切换)</td>
+									<td>状态 (点击切换)</td>
+									<td>操作</td>
+								</tr>
+<!-- BEGIN apis -->
+								<tr class="col{A}" align="center">
+									<td align="left" colspan="5">&nbsp;{address}</td>
+									<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=charset">{charset}</a></td>
+									<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=gate">{gate}</a></td>
+									<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=lock"><!-- IF active -->正常<!-- ELSE -->锁定<!-- ENDIF --></a></td>
+									<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=edit">编辑</a> <a href="cfmoption('确定删除吗？', '?ptype={ptype}&amp;pfile={pfile}&amp;id={id}&amp;action=delete');">删除</a></td>
+								</tr>
+<!-- END apis -->
+								<tr class="col2">
+									<td colspan="9">&nbsp;<b>添加</b> 请输入新的欲整合程序的首页地址: <input type="text" name="address" /> <input type="submit" value=" 新增通行证 " /></td>
+								</tr>
+							</table>
+							<table id="api_ucenter"{api_ucenter_d}>
+								<tr>
+									<td width="33%" colspan="3" align="center">
+										&nbsp;
+									</td>
+									<td width="66%" colspan="6">
+										&nbsp;暂不提供。
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="colt">
+						<td align="center" colspan="9"><input type="submit" value="   确  定   " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+

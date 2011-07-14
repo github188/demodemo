@@ -1,0 +1,67 @@
+	<div id="rd8_center">
+		<div id="rd8_left">
+			<div class="rd8_subnav">
+				<div class="rd8_subject">
+					<dl>
+						<dt>按&nbsp;题&nbsp;材</dt>
+						<dd class="current_dd"><a href="category.php?subject=0&amp;content={ncontent}&amp;initial={ninitial}&amp;words={nwords}">全部</a></dd> 
+<!-- BEGIN subjects -->
+						<dd><a href="category.php?subject={id}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> <!-- ENDIF -->>{title}</a></dd> 
+<!-- END subjects -->
+					</dl>
+				</div>
+				<div class="rd8_contents">
+					<dl>
+						<dt>按&nbsp;内&nbsp;容</dt>
+						<dd class="current_dd"><a href="category.php?subject={nsubject}&amp;content=0&amp;initial={ninitial}&amp;words={nwords}">全&nbsp;&nbsp;&nbsp;&nbsp;部</a></dd>
+<!-- BEGIN contents -->
+						<dd><a href="category.php?subject={nsubject}&amp;content={id}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> <!-- ENDIF -->>{title}</a> </dd>
+<!-- END contents -->
+					</dl>
+				</div>
+				<div class="rd8_initial" style="clear:both;">
+					<dl>
+						<dt>按&nbsp;首&nbsp;字&nbsp;母</dt>
+						<dd class="current_dd"><a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial=&amp;words={nwords}">[全&nbsp;&nbsp;部]</a></dd>
+<!-- BEGIN initial -->
+					 <dd><a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial={v}&amp;words={nwords}"<!-- IF selected --> <!-- ENDIF -->>[{v}]</a></dd>
+<!-- END initial -->
+					</dl>
+				</div>
+				<div class="rd8_subject" style="clear:both;">
+					<dl>
+						<dt>按&nbsp;字&nbsp;数</dt>
+						<dd class="current_dd"><a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial={ninitial}&amp;words=">[全部]</a></dd>
+<!-- BEGIN words -->
+						<dd><a href="category.php?subject={nsubject}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={v}"<!-- IF selected --> <!-- ENDIF -->>[{v}]</a></dd>
+<!-- END words -->
+					</dl>
+				</div>
+			</div>
+		</div>
+
+		<div id="rd8_right">
+			<p class="rd8_guide">  当前所在位置：大众书库</p>
+			<table>
+				<tr class="rd8_texture">
+					<td>作品名称</td>
+					<td>最新章节</td>
+					<td>类别</td>
+					<td>作者</td>
+					<td>更新时间</td>
+				</tr>
+<!-- BEGIN novels -->
+				<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+					<td><a href="{InfoURL}">《{title}》</a></td>
+					<td><a href="{ChapterURL}">{chapter_title}</a></td>
+					<td>{subject} - {content}</td>
+					<td>{author}</td>
+					<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+				</tr>
+<!-- END novels -->
+				<tr>
+					<td colspan="8" class="rd8_tablebottom">{pagelink}</td>
+				</tr>
+			</table>
+		</div>
+	</div>

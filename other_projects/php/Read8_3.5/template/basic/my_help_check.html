@@ -1,0 +1,18 @@
+	<div class="rd8_fullborder" style="border:0;">
+		<div class="rd8_head">求助投诉</div>
+		<div style="background-color:#CCC;height:24px;line-height:24px;text-align:center;width:60%;margin:2px auto;">
+			<span><a href="my/help.php">我要投诉</a></span>&nbsp;&nbsp;
+			<!-- IF current --><span><a href="my/help_check.php" style="font-weight:bold;color:#FFF;">查看信息</a></span><!-- ENDIF -->
+		</div>
+<!-- IF helps -->
+		<div style="margin:2px auto;width:60%;border:1px solid #CCC;">
+<!-- BEGIN helps -->
+				<span>{dateline_DATE_Y-m-d H:i:s}</span><br /><br />
+				<strong>{title}</strong><br /><br />
+				<span>{content}</span><br /><br />
+				<div style="border-bottom:1px solid #CCC;background-color:#B6DBFF;"><!-- IF replytime --><span>管理员{dateline_DATE_Y-m-d H:i:s}回复:{reply}</span><!-- ELSE --><span>管理员暂无回复</span><!-- ENDIF --></div>
+<!-- END helps -->
+				<div class="rd8_colt"><!-- IF pagelink -->{pagelink}<!-- ELSE -->共一页<!-- ENDIF --></div>
+		</div>
+<!-- ELSE --><div style="text-align:center;font-size:14px;font-weight: bold;">您没有求助投诉消息</div><!-- ENDIF -->
+	</div>

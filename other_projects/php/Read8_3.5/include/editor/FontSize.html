@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>字体大小</TITLE>
+<META content="MSHTML 6.00.2900.2995" name=GENERATOR>
+<META content="" name=Author>
+<META content="" name=Keywords>
+<META content="" name=Description>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<STYLE type=text/css>BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; OVERFLOW: hidden; PADDING-TOP: 1px
+}
+.Aout {
+	BORDER-RIGHT: #fff 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #fff 1px solid; PADDING-LEFT: 2px; FONT-SIZE: 14px; PADDING-BOTTOM: 2px; BORDER-LEFT: #fff 1px solid; WIDTH: 98%; COLOR: #555; PADDING-TOP: 2px; BORDER-BOTTOM: #fff 1px solid
+}
+.Aover {
+	BORDER-RIGHT: #999 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #999 1px solid; PADDING-LEFT: 2px; FONT-SIZE: 14px; BACKGROUND: #eee; PADDING-BOTTOM: 2px; BORDER-LEFT: #999 1px solid; WIDTH: 98%; COLOR: #000; PADDING-TOP: 2px; BORDER-BOTTOM: #999 1px solid
+}
+</STYLE>
+
+<SCRIPT type=text/javascript>
+function setCmd(_sSort, _sFont){
+	if(window.Event){
+		var oRTE = opener.getFrameNode(opener.sRTE);
+	}else {
+		var oRTE = dialogArguments.getFrameNode(dialogArguments.sRTE);
+	}
+	oRTE.focus();
+	oRTE.document.execCommand(_sSort, false, _sFont);
+	oRTE.focus();
+	window.close();
+}
+function _over(o) {
+	o.className="Aover";
+}
+function _out(o) {
+	o.className="Aout";
+}
+</SCRIPT>
+</HEAD>
+<BODY>
+<CENTER>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '1')" 
+onmouseout=_out(this) style="font-size:10px;">10 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '2')" 
+onmouseout=_out(this) style="font-size:14px;">14 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '3')" 
+onmouseout=_out(this) style="font-size:16px;">16 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '4')" 
+onmouseout=_out(this) style="font-size:18px;">18 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '5')" 
+onmouseout=_out(this) style="font-size:24px;">24 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '6')" 
+onmouseout=_out(this) style="font-size:32px;">32 px</DIV>
+<DIV class=Aout onmouseover=_over(this) onClick="setCmd('FontSize', '7')" 
+onmouseout=_out(this) style="font-size:48px;">48 px</DIV></CENTER></BODY></HTML>

@@ -1,0 +1,115 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+			<!-- IF category=="add" -->
+				<li>在这里可以不通过前台的注册页面而直接添加用户并设定用户组。</li>
+			<!-- ELSEIF category=="edit" -->
+				<li>通过本功能可以实现用户资料的修改。</li>
+				<li>输入关键词可以开始模糊搜索 。</li>
+				<li>按住Ctrl可以多选或取消选择。</li>
+			<!-- ELSEIF category=="ban" -->
+				<li>在这里可以设置对站内恶意用户的封禁操作。</li>
+				<li>点击已存在封禁用户名即可删除。</li>
+			<!-- ENDIF -->
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post" id="user">
+	<div class="adminborder">
+	<!-- IF category=="add" -->
+		<div class="adminhead">添加用户</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">用户名:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="20" name="reguser" value="{C_reguser}" /><!-- IF CE_user --> &nbsp;<span style="color: Red;">{CE_user}</span><!-- ENDIF --></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">密 &nbsp;码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="regpwd" value="{C_regpwd}" /><!-- IF CE_pwd --> &nbsp;<span style="color: Red;">{CE_pwd}</span><!-- ENDIF --></div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">E-mail:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="75" name="regemail" value="{C_regemail}" /><!-- IF CE_email --> &nbsp;<span style="color: Red;">{CE_email}</span><!-- ENDIF --></div>
+		</div>
+	<!-- ELSEIF category=="edit" -->
+	<!-- IF C_user_id -->
+		<script type="text/javascript">
+			function validate(theform) {
+				if(theform.pnewpwd.value!=theform.pnewpwd2.value) {
+					alert("两次密码不一致");
+					return false; 
+				}
+				return true;
+			}
+		</script>
+
+		<div class="adminhead">编辑用户</div>
+		<div class="cat" style="text-align: center;">-==必填内容==-</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">用户名:</div>
+			<div style="width: 68%;"><input type="hidden" name="puser_id" value="{C_user_id}" /><input type="text" name="pusername" id="uname" value="{C_username}" disabled="disabled" /> 如不是特别需要，请不要修改用户名 <input type="button" value="修改" onclick="javascript:if(this.value=='修改') {this.value='取消';$('uname').disabled=false;}else {this.value='修改';$('uname').disabled=true;}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新密码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="pnewpwd" /> 如果不更改密码此处请留空</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">E-mail:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="75" name="pemail" value="{C_user_email}" /><label><input type="checkbox" name="publicmail" value="1"{C_pubmailchecked} /><span style="color: Black;">公开</span></label></div>
+		</div>
+	<!-- ELSE -->
+		<div class="adminhead">查找用户</div>
+		<div class="b0">
+			<div style="width: 40%;padding-left: 1%;">用户名:</div>
+			<div style="width: 58%;"><input type="text" name="thename" size="50" maxlength="20" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 40%;padding-left: 1%;">注册时间介于:</div>
+			<div style="width: 58%;"><input type="text" name="regf" size="20" maxlength="20" /> - <input type="text" name="regt" size="20" maxlength="20" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">用户列表</div>
+		<div class="cat" style="text-align: center;">
+			<div style="width: 15%;"><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />删?</div>
+			<div style="width: 15%;">用户ID</div>
+			<div style="width: 39%;">用户名</div>
+			<div style="width: 15%;">注册时间</div>
+			<div style="width: 15%;">管理选项</div>
+		</div>
+		<!-- BEGIN itemlist -->
+			<div class="b{A}" onmouseover="this.className='b2'" onmouseout="this.className='b{A}'" style="text-align: center;">
+				<div style="width: 15%;"><input type="checkbox" name="id[]" value="{C_editid}" /></div>
+				<div style="width: 15%;font-weight: bold;">{C_editid}</div>
+				<div style="width: 39%;text-align: left;">{C_username}</div>
+				<div style="width: 15%;">{C_user_regdate}</div>
+				<div style="width: 15%;"><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=edit&amp;id={C_editid}">编辑</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;id[]={C_editid}" onclick="if(!confirm('确认删除？')) return false;">删除</a></div>
+			</div>
+		<!-- END itemlist -->
+		<!-- IF C_pagelink --><div class="cat">{C_pagelink}</div><!-- ENDIF -->
+	<!-- ENDIF -->
+
+
+	<!-- ELSEIF category=="ban" -->
+		<div class="adminhead">已有封禁列表</div>
+		<div class="b0">
+				<!-- BEGIN itemlist -->
+					<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=update&amp;delid={C_id}" onclick="if(!confirm('确认停止对{C_word}的封禁吗？')) return false;">{C_word}</a>
+				<!-- END -->
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">禁止用户</div>
+		<div class="b0">
+			<div style="width: 40%;padding-left: 1%;">用户名:</div>
+			<div style="width: 58%;"><input type="text" name="thename" size="50" maxlength="20" /></div>
+		</div>
+
+	<!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " /> &nbsp; &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></div>
+	</div>
+	</form>

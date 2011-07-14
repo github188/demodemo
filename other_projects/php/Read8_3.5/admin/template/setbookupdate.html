@@ -1,0 +1,46 @@
+<!-- IF action=="retidy" -->
+	<div class="adminborder">
+		<div class="adminhead">阅读风格批量重生成状态</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">
+			<span style="color: #483D8B;font-size: 12px;">批量重生成对象: 从书籍 <span style="color: Blue;font-weight: bold;">{C_startnum}</span> 开始，至书籍 <span style="color: Blue;font-weight: bold;">{C_stopnum}</span> 。</span>
+			<div id="thewatcherbook" style="display: none;width: 99%;"></div>
+			<div id="thewatcher"></div>
+		</div>
+	</div>
+<!-- ELSE -->
+	<div class="adminborder">
+		<div class="adminhead">站内地图</div>
+		<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=gomap" method="post">
+			<div class="b0">
+				<ul>
+					<li>此功能将生成站内书籍索引，可优化网站alexa排名及搜索引擎。此功能所需时间视站内书籍总量决定。</li>
+					<li>如果不选择使用静态页作为地图索引，则程序将默认使用简单版的页面作为地图索引。</li>
+				</ul>
+			</div>
+			<div class="bt"><input type="submit" value=" 生成站内地图 " /></div>
+		</form>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">阅读风格批量重生成</div>
+		<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=retidy&amp;obnocallback=1" method="post">
+			<div class="b0" style="width: 99%;padding-left: 1%;">
+				<ul>
+					<li>功能: 针对书籍阅读页面的风格批量替换。</li>
+					<li>当前书籍最大编号: <span style="color: Blue;font-weight: bold;">{C_allbooknum}</span> 。</li>
+					<li>范围: 仅当修改html/template下的阅读模板后，统一静态书籍阅读页面时适用。</li>
+					<li>作用: 此功能将遍历更新所有静态书籍文件夹下的书籍文件。静态书籍文件夹为html下的所有数字文件夹。</li>
+					<li>注意: 此功能的运行需要较长时间。</li>
+				</ul>
+			</div>
+			<div class="bt">
+				从书籍<input type="text" name="startnum" size="10" value="{C_startnum}" />开始更新至书籍<input type="text" name="stopnum" size="10" value="{C_stopnum}" />的
+				<select name="changefile">
+					<option value="index">书目页面(index.html)</option>
+					<option value="content">书籍内容页面(content.html)</option>
+				</select>
+				<input type="submit" value=" 开始更新 " />
+			</div>
+		</form>
+	</div>
+<!-- ENDIF -->

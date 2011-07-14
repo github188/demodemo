@@ -1,0 +1,1100 @@
+/*-- 读吧书网CSS */
+
+body		{ color: #666;margin:0;font-size: 12px;}
+a			{ font-size: 12px;color: #000;text-decoration: none;}
+a:link		{ font-size: 12px;color: #000;text-decoration: none;}
+a:visited   { font-size: 12px;color: #000;text-decoration: none;}
+a:hover		{ font-size: 12px;color:#CE7325;text-decoration: underline;}
+p			{ line-height: 1.9;}
+img			{ margin-right: 4px;margin-bottom: 2px;padding: 2px;border:none;}
+form		{ margin: 0px;}
+table		{ border: 0;padding: 0;	margin: 0;width: 100%;border-collapse: collapse;}
+hr			{ width: 100%;height: 2px;background-color: #DEC499;}
+.rd8_a		{ cursor: pointer;}
+.rd8_b		{ cursor:pointer;color:#000;}
+.rd8_evenrow{ background-color: #EDF7FF;}
+#rd8_main   { position:relative;width: 990px;margin: 0 auto;}
+#rd8_header { position:relative;width: 100%;clear: both;margin-top: 27px;}
+input,textarea{ border: 1px solid #DEC499;}
+#rd8_userstate{
+	position: absolute;
+	top: 0px;
+	*top:1px;
+	left:10px;
+	margin: 0;
+	padding: 0;
+	height: 23px;
+	line-height: 23px;
+	background-color:#B6DBFF;
+	width:990px;
+	z-index:100;
+}
+
+#rd8_userstate img {
+	border: 0;
+}
+#rd8_userlogin {
+	float: left;
+	margin-left:50px;
+}
+#rd8_userlogin input[type="submit"] {
+	height: 18px;
+}
+#rd8_userlogin input[type="text"], #rd8_userlogin input[type="password"] {
+	height: 14px;
+	margin: 0;
+}
+#rd8_wap {
+	float: right;
+	margin-right: 28px;
+	*margin-right: 28px !important;
+}
+#rd8_favorite, #rd8_homepage, #rd8_font_lang {
+	float: right;
+	margin-right: 26px;
+}
+
+
+#rd8_wap .rd8_a,#rd8_favorite .rd8_a,#rd8_homepage .rd8_a,#rd8_font_lang .rd8_a{
+	cursor:pointer;
+}
+/*-- LOGO */
+img.rd8_logo {
+	float:left;
+	margin-left:10px;
+	border-style: none;
+}
+/*-- 首页导航 */
+.rd8_nav {
+	float: left;
+	color: #003366;
+	margin: 0 0 0 30px;
+	padding: 4px 0;
+	font-size: 12px;
+	line-height: 1.8;
+	font-family: "宋体" serif ;
+}
+.rd8_nav a, .rd8_nav a:link, .rd8_nav a:hover, .rd8_nav a:visited {
+	font-size: 12px;
+}
+.rd8_nav form{
+	margin-top: 0;
+	margin-right: 0;
+	margin-bottom: 4px;
+	margin-left: 0;
+}
+input.rd8_login {
+	border: 1px solid #DEC499;
+}
+
+
+
+/*-- 设为首页、加入收藏 */
+.rd8_topguide {
+	float:left;
+	color: #003366;
+	margin: 0 0 0 15px;
+	padding: 0;
+}
+.rd8_rd8_topguide img {
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+/*-- 广告栏 */
+
+img.rd8_banner{
+	width:49.2%;
+	float: left;
+	margin: 0px;
+	padding-top: 10px;
+	padding-right: 4px;
+	padding-bottom: 10px;
+	padding-left: 4px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+#rd8_center {
+    position:relative;
+	width: 100%;
+	clear:both;
+	margin-bottom: 8px;
+}
+
+
+
+/* index.html start */
+#rd8_center {position:relative;	width: 100%;clear:both;	padding-bottom: 6px;}
+li{list-style:none;margin:0;padding:0;}
+	#rd8_left{width:73%;float: left;}
+		#rd8_inleft{width:240px;height:400px;;float: left;}
+			#rd8_flash_top{overflow:hidden;float:left;width:100%;height:150px;margin-bottom:8px;border:1px solid #C79A44;}
+			#rd8_announce{float:left;width:100%;height:242px;border:1px solid #C79A44;}
+				#rd8_announce ul{width:100%;height:100%;margin:0;padding:0;float:left;}
+				#rd8_announce li{padding:0px;float:left;width:99.5%;*width:100%;}
+				.rd8_list_first{border:1px solid #FFF;background:#C79A44;height:26px;line-height:26px;font-size:14px;color:#7A4922;font-weight:bold;letter-spacing:3px;}
+				.rd8_list_title{width:70%;padding:0 5px;float:left;}
+				.rd8_list_more a:link,.rd8_list_more a:visited{color:#FFF;}
+				.rd8_list_more a:hover,.rd8_list_more a:active{color:#000;}
+		#rd8_highlights{width:469px;*width:467px;height:402px;float:left;margin-left:7px;border:1px solid #C79A44;}
+			#rd8_highlights img{border:none;}
+			.rd8_recommended_book{width:121px;height:190px;float:left;margin:3px 17.6px;*margin:3px 17.6px !important;*margin:3px 13.9px;}
+			#rd8_highlights a:link,#rd8_highlights a:visited,#rd8_highlights a:hover{font-size: 12px;color: #000;text-decoration: none;padding:0px;}
+			span.rd8_recommended_img{width:100px;height:125px;float:left;}
+			span.rd8_recommended_title{width:100px;height:20px;float:left;text-align:center;font-weight:bolder;}
+
+		.rd8_books{overflow:hidden;width:353px;height:350px;float:left;margin-top:8px;border:1px solid #C79A44;}
+		.rd8_books_clear{margin-left:8px;}
+		.rd8_books li{padding:0;float:left;width:100%;}
+		.rd8_books_first{border-bottom:1px solid #C79A44;background:#FDFBF7;height:26px;line-height:26px;font-size:14px;color:#7A4922;font-weight:bold;letter-spacing:3px;}
+		.rd8_books_title{width:70%;padding:0 5px;float:left;}
+		.rd8_books_more a:link,.rd8_books_more a:visited{color:#CE7325;}
+		.rd8_books_more a:hover,.rd8_books_more a:active{color:#000;}
+		#rd8_left li a{padding-left:10px;line-height:20px;}
+
+	#rd8_right{width:26%;float:left;margin-left:4px;}
+		.rd8_rank{float:left;width:100%;margin-bottom:8px;height:242px;border:1px solid #C79A44;}
+		.rd8_rank li{ padding:0;margin:0;float:left;width:100%;}
+		.rd8_rank_first{ border:1px solid #FFF;background:#C79A44;height:26px;line-height:26px;font-size:14px;color:#7A4922;font-weight:bold;letter-spacing:3px;}
+		.rd8_rank_title{ width:70%;padding:0 5px;float:left;}
+		
+			.rd8_rank_more a:link,.rd8_rank_more a:visited{color: #FFF;}
+			.rd8_rank_more a:hover{color: #000;}
+
+		#rd8_right .rd8_news{text-indent:10px;line-height:20px;}
+		.rd8_short{ height:222px;}
+	.unionwebsite{ background:#FDFBF7;border:1px solid #C79A44;padding:10px 0;width:99.5%;margin-top:6px;margin-bottom:10px;clear:both;position:relative;float:left;text-align:center;}
+		.rd8_books_detail{ margin:0;padding:0;width:100%;height:50%;}
+			.rd8_books_detail a{margin:0;padding:0;}	
+			.rd8_books_img{margin:0;padding:0;border:none; width:25%;*width:32% !important;float:left;display:block;}
+			.rd8_books_titles,.rd8_books_author{ margin-left:25px;width:65%;height:20px;float:left;padding:0 3px;*margin-left:1px !important;*width:62% !important;*width:62%;*margin-left:1px;}
+			.rd8_books_contents{ width:65%;height:131px;margin-left:25px;float:left;padding:0 3px;line-height:15px;overflow:hidden;*width:62%;*margin-left:1px;}
+			.rd8_books_update{ margin-bottom:2px;background-color:#EDF7FF;}
+/* index.html end */
+
+/* novelbib.html start */
+	#rd8_novellib_left {width:25%;float: left;}
+		.rd8_subject{float:left;width:100%;margin-bottom:8px;/*height:260px;*/border:1px solid #C79A44;}
+			.rd8_subject li{padding:0;margin:0;*float:left;*width:100%;}
+			.rd8_subject_title{border:1px solid #FFF;background:#C79A44;text-align:center;height:26px;line-height:26px;font-size:14px;color:#7A4922;font-weight:bold;letter-spacing:3px;}
+			.rd8_subject .rd8_subject_news{width:52px;height:20px;float:left;padding:5px 0 0 8px;line-height:20px;}
+
+	#rd8_novellib_right{width:73.8%;*width:70%;float:left;margin-left:8px;}
+/* 表格 */
+		#rd8_center .rd8_guide{margin:0 0 5px 0;padding:0;font-size:14px;font-weight:bolder;line-height:26px;color:#000;background:#FDFBF7;border-bottom:1px dashed #C79A44;}
+		#rd8_center table{width: 100%;margin: 0;border-collapse :collapse;border: 1px solid #DEC499;float: left;}
+		#rd8_center table td{border-right:1px solid #DEC499;border-bottom:1px solid #DEC499;line-height:26px;text-align: center;}
+/* 表格第一行 */
+		.rd8_texture{font-size: 12px;font-weight: bold;color:#FFF;letter-spacing:5px;background:#C79A44;height:26px;line-height:26px;}
+/* 从表格第二行算起，奇数行用oddtablerow，偶数行用eventablerow */
+		#rd8_oddtablerow{height: 26px;}
+		#rd8_eventablerow {height: 26px;background-color: #FDF9F7;}
+/* 表格最后一行：分页条 */
+		.rd8_tablebottom{padding-top: 14px;padding-bottom: 14px;}
+		.rd8_tablebottom a:link {color: #C9A450;font-size: 14px;padding: 4px 8px;margin-right: 4px;border: 1px solid #CCC;text-decoration: none;font-family: Arial, Helvetica, sans-serif;}
+		.rd8_tablebottom a:visited{color: #C9A450;font-size: 14px;padding: 4px 8px;margin-right: 4px;border: 1px solid #CCC;text-decoration: none;font-family: Arial, Helvetica, sans-serif;}
+		.rd8_tablebottom a:hover {color: #000000;font-size: 14px;padding: 4px 8px;margin-right: 4px;border: 1px solid #D9BB89;text-decoration: none;font-family: Arial, Helvetica, sans-serif;background-color: #FFFFFF;}
+		.current {background:#ECF8FF;font-weight:bolder;cursor: pointer;color: #C9A450;font-size: 14px;padding: 4px 8px;margin-right: 4px;border: 1px solid #C79A44;text-decoration: none;font-family: Arial, Helvetica, sans-serif;}
+/* 选中的那一页的样式 */
+		a.currentpage {color: #FFFFFF!important;font-size: 14px;font-weight: bold;padding: 4px 8px;margin-right: 2px;background-color: #C79A44!important;font-family: Arial, Helvetica, sans-serif;}
+		#rd8_center table acronym{color: #FF0000;}
+/* novelbib.html end */
+
+/* novel_info.html start */
+	#rd8_novellib_introduce{float:left;margin-top:2px;width:100%;border:1px solid #C79A44;}
+		#rd8_novellib_introduce li{list-style:none;margin:0;padding:0;float:left;}
+			.rd8_introduce {float:left;padding:5px;width:84%;line-height:20px;margin: 10px 0 0 5px;}
+			.rd8_introduce_img{width:15%;border:none;margin-right:8px;margin-bottom: 2px;}
+
+	#rd8_book_comment{ width:90%;float:left;margin-top:10px;}
+		#rd8_book_comment .rd8_all{background:#FDFBF7;line-height:26px;margin:8px 0;font-size:14px;font-weight:bolder;color:#000;border-bottom:1px dashed #C79A44;}
+
+		.rd8_commentbox{font-size:12px;background-color: #ececec;padding:10px;line-height:26px;}
+		.rd8_commen_title{font-weight:bolder;letter-spacing:2px;}
+		.rd8_commen_content{padding:0 10px;letter-spacing:1px;}
+		.rd8_commentfooter{background: url(../classic/images/arrow.gif) 20px -5px no-repeat;padding:1px 0 0 58px;margin-bottom:25px;font-size:90%;color:#4A4A4A;}
+
+	#rd8_bdleft{width: 23%; float: left;}
+	#rd8_bdleft .rd8_subject_news{width:90%;height:20px;float:left;padding:2px 0 0 8px;line-height:20px;}
+/* novel_info.html end */
+
+/* author_book.html start 	*/
+	.rd8_head{color: #FFF;background: #C79A44;font-weight: bold;height: 24px;line-height: 24px;width: 100%;	text-align: center;clear:both;	margin-bottom:15px;border-bottom:1px dashed #C79A44;}
+		.rd8_author_book table{border:1px solid #DEC499;border-collapse:collapse;float:left;margin:0pt;width:100%;border-collapse:collapse;}
+		.rd8_author_book td {border-bottom:1px solid #DEC499;border-right:1px solid #DEC499;line-height:26px;text-align:center;}
+			#rd8_typewriter tr td{padding-left:5px;text-align:left;background:#FFF;}
+			.rd8_typewriter_action a{border:1px solid #CCC;padding:4px;}
+			.rd8_typewriter_action a:hover{background:#CCC;}
+		
+		.rd8_navigation, #rd8_navigation_ucp, #rd8_navigation_aucp{color: White;background: #C79A44;height: 24px;line-height: 24px;	width: 100%;text-align: center;}
+		.rd8_navigation a, #rd8_navigation_ucp a, #rd8_navigation_aucp a {color: White;text-decoration: none;}
+		.rd8_navigation a:hover, #rd8_navigation_ucp a:hover, #rd8_navigation_aucp a:hover{color: #698CC3;	background: White;font-weight: bold;text-decoration: none;}
+		.rd8_navigation span, #rd8_navigation_ucp span, #rd8_navigation_aucp span {color: White;font-weight: bold;}
+
+		.rd8_fullborder{width: 100%;float:left;padding: 0;margin-bottom: 10px;}
+		.rd8_fullborder .rd8_head{background:#FFF;color:#C79A44;}
+		.rd8_navigation, #rd8_navigation_ucp, #rd8_navigation_aucp {color: White;background: #C79A44;height: 24px;line-height: 24px;width: 100%;text-align: center;	}
+		.rd8_navigation a, #rd8_navigation_ucp a, #rd8_navigation_aucp a {color: White;text-decoration: none;}
+		.rd8_navigation a:hover, #rd8_navigation_ucp a:hover, #rd8_navigation_aucp a:hover {color: #698CC3;background: White;font-weight: bold;text-decoration: none;}
+		.rd8_navigation span, #rd8_navigation_ucp span, #rd8_navigation_aucp span {color: White;font-weight: bold;}
+
+	
+
+/* author_book.html end */	
+
+/* my_help.html start */
+	.rd8_help{width:60%;margin:0 auto;}
+	.rd8_commen_footer{margin-bottom:25px;}
+	.rd8_noreply{width:150px;height:40px;margin:-38px 0 0 600px;}
+/* my_help.html end */
+
+/* my_profile.html start */
+	#rd8_navigation_ucp{float:left;width:100%;}
+		.rd8_col1 textarea{border:1px solid #C79A44;}
+		 .rd8_co10 form{margin:0;padding:0;float:left;}
+		.rd8_col0 table{width: 100%;margin: 0;border-collapse :collapse;border: 0px solid #DEC499;float: left;}
+		.rd8_col0 table td{border-right:0px solid #DEC499;border-bottom:0px solid #DEC499;line-height:26px;/*text-align: center;*/}
+		.rd8_col0 tr{width:100%;margin:0;padding:0;line-height:30px;height:30px;} 
+		.rd8_category{height: 30px;background: #C79A44;line-height: 30px;font-weight: bold;width: 100%;margin-top: 1px;text-align: center;}
+		.rd8_new_book{width:50%;margin:0 auto; border:1px solid red;}
+		.rd8_new_book tr td{background:#FFF;}
+		.rd8_col0{width: 100%;line-height: 30px;margin: 1px 0 0;}
+		.rd8_col1{width: 100%;line-height: 30px;margin: 1px 0 0;background: #ECF8FF;}
+		.rd8_col2{width: 100%;line-height: 30px;background: #CCFFCC;margin: 1px 0 0;}
+		.rd8_colt{height: 28px;width: 100%;line-height: 28px;margin: 1px 0 0;font-weight: bold;}
+/* my_profile.html end */
+
+/* novel_index.html start */
+	.rd8_subguide{font-size: 14px;line-height: 26px;font-weight: bold;color:#C79A44;background-color:#FDFBF7;text-indent: 5px;float:left;height:26px;width:100%;margin:0 0 5px 0;border-bottom:1px dashed #C79A44;}
+		.rd8_subguide acronym{font-size: 16px;}
+	
+	#rd8_middle{width:50%;float:left;margin:0px 0 10px 8px;border: 1px solid #DEC499;background:#FFF;}
+		#rd8_middle li{float:left;list-style:none;margin:0;width:100%;margin:3px 0;}
+		#rd8_middle .rd8_subject_title{ background:#C79A44;border:1px solid #FFF;margin:0;padding:0;}
+		.rd8_lisubject{float: left;}
+		#rd8_middle small{background:#FFF;font-weight:normal;display:block;text-align: right;width:100%;float:left;padding:6px 0;
+}
+		.rd8_lidate{float: right;width:70px;color: #9E9E9D;text-align: right;}
+/*-- 最近更新 最新全本列表中的作者 */
+		.rd8_liauthor{float: right;width: 80px;color: #003366;text-align: right;}
+		.rd8_newscon dt{background-color: #698CC3;font-size: 14px;line-height: 26px;font-weight: bold;color: #FFFFFF;text-indent: 2pc;height: 26px;margin-bottom: 6px;}
+		.rd8_newscon li{margin: 0;padding-top: 4px;padding-right: 4px;padding-bottom: 4px;padding-left: 10px;}
+/*-- 一级分类示例图书标签切换部分 */
+		#rd8_catetabs{width: 1001px;height: 138px;margin: 0 auto 6px;border: 1px solid #698CC3;clear: both;}
+/*-- 一级分类示例图书标签条 */
+	
+	#rd8_subright{width: 223px;*width: 219px;float: left;margin:0px 0 10px 8px;}
+		#rd8_subright .rd8_subject_news{text-indent:10px;line-height:20px;}
+		.rd8_catetitle{background-color: #C79A44;font-size:14px;line-height:26px;font-weight:bold;color:#FFFFFF;text-align:center;height:26px;width:100%;margin:0 0 8px;float:left;}
+/* novel_index.html end */
+
+
+/*-- 强力推荐榜 玄幻魔法标签切换 编辑推荐栏 部分 */
+.rd8_recommend {
+	width: 100%;
+	*margin: 0 auto;
+}
+/*-- 强力推荐榜 编辑推荐栏共同使用的样式 */
+.rd8_recommendlist {
+	width: 230px;
+	border: 1px solid #698CC3;
+	padding: 2px;
+	height: 460px;
+	overflow: hidden;
+	margin-bottom:6px;
+}
+.rd8_recommendlist dl {
+	margin: 0;
+	width: 100%;
+}
+.rd8_recommendlist dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin:0 0 10px;
+
+}
+.rd8_recommendlist dd {
+	margin: 0;
+	float: left;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+	padding-left: 4px;
+}
+.rd8_recommendlist b {
+	font-size: 14px;
+}
+.rd8_recommendlist a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_recommendlist a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_recommendlist a:hover {
+	font-size: 12px;
+	color: #666666;
+	background-color: #FFFFFF;
+	text-decoration: underline;
+}
+/*-- 玄幻魔法标签切换 最新公告 */
+.rd8_recommendmiddle {
+	float: left;
+	width: 516px;
+	margin-left:6px;
+}
+/*-- 玄幻魔法标签切换 */
+#rd8_recommendcontent {
+	width: 100% !important;
+	width: 100%;
+	height: 507px;
+	border: 1px solid #698CC3;
+	float: left;
+	overflow: hidden;
+	margin-left:0;
+
+}
+/*-- 玄幻魔法标签切换 标签条 */
+#rd8_rectabs
+{
+	float: left;
+	width: 476px;
+	*width: 516px;
+	background-color: #698CC3;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 6px;
+	margin-left: 0px;
+	list-style-type: none;
+}
+
+#rd8_rectabs li
+{
+	float: left;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 5px 10px;
+	border: 2px solid #FFFFFF;
+	text-decoration: none;
+	color: #FFFFFF;
+	cursor: pointer;
+}
+#rd8_rectabs li.rd8_selectedtab
+{
+
+	background: #FFFFFF;
+	color: #000000;
+	height: 100%;
+}
+/*-- 玄幻魔法标签切换 每个标签所对应的内容 */
+.rd8_rectabcon {
+	width: 100%;
+}
+.rd8_rectabcon a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_rectabcon a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_rectabcon a:hover {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: underline;
+	background-color: #FFFFFF;
+}
+
+#rd8_bdleft dl {
+	float: left;
+	width: 100%;
+	height: 255px;
+	*height:263px;
+	margin: 0 0 6px 0;
+}
+#rd8_bdleft dt {
+	background-color: #C79A44;
+	line-height: 26px;
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 6px;
+	height: 26px;
+	text-align: center;
+}
+#rd8_bdleft dd {
+	text-indent: 1.5pc;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+	background-image: url(../images/list.gif);
+	background-repeat: no-repeat;
+	background-position: 12px 1px;
+}
+#rd8_bdleft address {
+	float: left;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+	text-align: right;
+	margin-top: -16px;
+}
+#rd8_bdright {
+	width: 74.5%;
+  float: left;
+  margin: 0 0 0 12px
+}
+#rd8_detail {
+	float:left;
+	width: 100%;
+	border: 1px solid #CC9900;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+}
+#rd8_detail span {
+	background:#FDFBF7 none repeat scroll 0 0;
+	float:left;
+	width: 50%;*width: 49%;
+	line-height: 30px;
+	height: 30px;
+	text-indent: 7px;
+	border-bottom: 1px dashed #000000;
+	margin: 0px;
+}
+.noborder {
+	border-style: none!important;
+}
+#rd8_detail strong {
+    font-size: 1.5em;
+}
+
+#rd8_comment{
+	border:1px solid #C79A44;
+	margin:0;
+	padding:0;
+}
+
+.pages{float:left;padding:5px;width:300px;margin-top:14px;height:40px;}
+		.pages a,.pages a:link { border:1px solid #B5C6E1;color:#698CC3;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin-right:4px;padding:4px 8px;text-decoration:none;}
+		.pages a:hover		   { background-color:#FFFFFF;border:1px solid #698CC3;color:#000033;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin-right:4px;padding:4px 8px;text-decoration:none;}
+
+
+.pages span .current {
+	border:1px solid red;
+}
+
+.rd8_subnav{line-height:2;text-align:left;float: left;width: 100%;padding-top: 10px;padding-bottom: 10px;}
+.rd8_subnav a:link {
+	text-decoration: underline;
+}
+.rd8_subnav a:visited {
+	text-decoration: underline;
+}
+.rd8_subnav a:hover {
+	color: #FFFFFF;
+	text-decoration: none;
+	background-color: #C79A44;
+	border: 1px solid #98742E;
+	padding: 2px;
+}
+a.currentlink {
+	color: #FF0000!important;
+	text-decoration: none;
+}
+
+#rd8_leftt {
+	width: 23%;
+   float: left;
+}
+#rd8_rightt {
+	width: 23%;
+   float: left;
+   margin: 0 0 0 12px
+}
+
+.rd8_canada span {
+	width: 98%;
+	float: left;
+	text-align: right;
+}
+
+.rd8_opration {
+	float: left;
+	width: 100%;
+	line-height: 1.8;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+}
+a.read {
+    color:#FF0000!important;
+	font-weight: 600;
+}
+a.add {
+   color: #995B2A!important;
+	font-weight: 600;
+}
+a.latest {
+	font-weight: 600;
+}
+form.comment {
+	float: left;
+	width: 100%;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	border: 1px solid #EFD8C6;
+	background-color: #FDFBF7;
+}
+.comment div {
+	width: 90%;
+	margin-top: 8px;
+	margin-right: auto;
+	margin-bottom: 8px;
+	margin-left: auto;
+}
+.comment span {
+	width: 50px;
+	float: left;
+	margin: 4px 0 0 0;
+}
+.comment input {
+	width: 200px;
+}
+.comment textarea {
+	width: 450px;
+	height: 100px;
+	border: 1px solid #DEC499;
+}
+input.annouce {
+	width: 100px;
+}
+
+	
+	
+	.unionwebsite p {
+		width: 95%;
+		text-align: center;
+		margin-top: 0px;
+		margin-right: auto;
+		margin-bottom: 0px;
+		margin-left: auto;
+		line-height: normal;
+	}
+	.unionwebsite p a {
+		width: 110px;
+		float: left;
+		padding-top: 4px;
+		padding-bottom: 4px;
+	}
+		.rd8_canada{padding:1px;}
+		#rd8_right .rd8_canada {
+			margin: 0 0 5px 0;
+			float: left;
+			width: 100%;
+			height: 300px;
+			border: 1px solid #DEC499;
+		}
+		#rd8_right .rd8_canada dt {
+			background-color: #C79A44;
+			text-indent: 2pt;
+			line-height: 26px;
+			color: #FFFFFF;
+			font-size: 14px;
+			font-weight: bold;
+			letter-spacing: 1px;
+			margin-bottom: 6px;
+			height: 26px;
+		}
+		#rd8_right .rd8_canada dd {
+			text-indent: 10px;
+			font-size: 12px;
+			float: left;
+			margin-top: 0px;
+			margin-right: 0px;
+			margin-bottom: 2px;
+			margin-left: 0px;
+			padding-top: 4px;
+			padding-bottom: 4px;
+			clear: both;
+			width: 100%;
+		}
+		a.more2 {
+		   font-size: 12px!important;
+		   color: #FFFFFF!important;
+		   font-family: sans-serif;
+		   letter-spacing: normal;
+		}
+
+
+
+#rd8_inright {
+	width: 63.2%;
+   float: left;
+   margin: 0 0 0 12px
+}
+
+a#rd8_flash {
+	height: 150px;
+   float: left;
+   margin: 0 0 6px 0;
+}
+
+a#more {
+   color: #FFFFFF;
+   font-family: sans-serif;
+   letter-spacing: normal;
+}
+.rd8_highlights {
+	width: 64%;
+	height: 386px;
+	float: left;
+	margin-left:10px;
+	border: 1px solid #DEC499;
+}
+.rd8_highlights a:link {
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+}
+.rd8_highlights a:visited {
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+}
+.rd8_highlights a:hover {
+	font-size: 12px;
+	color: #000000;
+	text-decoration: underline;
+}
+#rd8_highttop {
+   line-height: 190%;
+   text-align: center;
+   width: 100%;
+   margin: 0 auto 16px;
+   padding: 10px 0;
+   border-bottom: 1px dashed #937759;
+}
+#rd8_highttop strong {
+   font-size: 2em;
+}
+p.rd8_hightcenter {
+   line-height: 150%;
+   width: 100%;*width: 107%;
+   float:left;
+   margin-top: 0;
+   margin-bottom: 10px;
+}
+.rd8_hightcenter img {
+   width: 66px;
+   height: 66px;
+   margin: 0 6px 2px 6px;
+}
+.rd8_highlights ul {
+	width: 89%;*width: 107%;
+   float:left;
+   clear: both;
+   margin: 6px 0 0 0 ;
+}
+.rd8_highlights li {
+   *text-indent: 1pc;
+	width: 100%;
+   float: left;
+   margin: 0 0 0 -25px;*margin: 0;
+   padding: 4px 0;
+   list-style-type: none;
+}
+.rd8_highlights ul a:link {
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+}
+.rd8_highlights ul a:visited {
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+}
+.rd8_highlights ul a:hover {
+	font-size: 12px;
+	color: #FF0000;
+	text-decoration: underline;
+}
+.rd8_catebooks {
+	width: 49.05%;
+	*width:49.1%;
+    float: left;
+    margin: 6px 0 0 9px;
+}
+.clear {
+   margin: 6px 0 0 0!important;
+}
+.rd8_catebooks dl {
+	margin: 0;
+	float: left;
+	width: 100%;
+	height: 355px;
+	border: 1px solid #DEC499;
+}
+.rd8_catebooks dt {
+	background-color: #FDFBF7;
+	text-indent: 2pt;
+	line-height: 26px;
+	color: #7A4922;
+	font-size: 1em;
+	font-weight: bold;
+	margin-bottom: 6px;
+	height: 26px;
+	border-bottom: 1px solid #E8D6B8;
+}
+a.more1 {
+   *font-size: .6pc!important;
+   color: #CE7325!important;
+   font-family: sans-serif;
+   letter-spacing: normal;
+}
+.rd8_catebooks dd {
+	text-indent: 6px;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+}
+.rd8_imgtxt {
+   line-height: 150%;
+   width: 95%;
+   margin: 0 auto;
+}
+.rd8_imgtxt img {
+   width: 66px;
+   height: 66px;
+   margin: 0 4px 2px 0;
+}
+.rd8_imgtxt a {
+   float: none!important;
+}
+.rd8_catebooks dd a {
+   float: left;
+}
+.liauthor {
+	float: right;
+	text-align: right;
+	margin: 0 4px 0 0;
+}
+.rd8_editorrec {
+	margin: 6px 0 0 0 ;
+	float: left;
+	width: 100%;
+	height: 225px;
+	border: 1px solid #DEC499;
+}
+.rd8_editorrec dt {
+	background-color: #C79A44;
+	letter-spacing: 1px;
+	text-indent: 2pt;
+	line-height: 26px;
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 6px;
+	height: 26px;
+}
+.rd8_editorrec dd {
+	text-indent: 10px;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+}
+.rd8_canada {
+	margin: 6px 0 0 0 ;
+	float: left;
+	width: 100%;
+	height: 225px;
+	border: 1px solid #DEC499;
+}
+.rd8_canada dt {
+	margin-top:0;
+	*margin-top:0;
+	background-color: #C79A44;
+	text-indent: 2pt;
+	line-height: 26px;
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	margin-bottom: 3px;
+	height: 26px;
+}
+.rd8_canada dd {
+	text-indent: 10px;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+.rd8_latest {
+    width:63.6%;
+	float: left;
+    margin: 6px 0 0 11px;
+    height:463px;
+	border: 1px solid #DEC499;
+	overflow:hidden;
+}
+.rd8_latest dl {
+	margin: 0 ;
+	float: left;
+}
+.rd8_latest dt {
+	width:459px;
+	background-color: #C79A44;
+	letter-spacing: 1px;
+	text-indent: 2pt;
+	line-height: 26px;
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 6px;
+	height: 26px;
+}
+.rd8_latest dd {
+	text-indent: 10px;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+}
+.rd8_latest dd a {
+   float: left;
+}
+.lidate {
+  color: #666666;
+	float: right;
+	text-align: right;
+	margin: 0 6px 0 0;
+}
+.rd8_newbooks {
+	width: 49%;
+   float: left;
+   margin: 6px 0 0 9px;
+   *margin: 6px 0 0 10px;
+}
+.rd8_newbooks dl {
+	margin: 0;
+	float: left;
+	width: 100%;
+	height: 255px;
+	border: 1px solid #DEC499;
+}
+.rd8_newbooks dt {
+	background-color: #FDFBF7;
+	text-indent: 2pt;
+	line-height: 26px;
+	color: #7A4922;
+	font-size: 1em;
+	font-weight: bold;
+	margin-bottom: 6px;
+	height: 26px;
+	border-bottom: 1px solid #E8D6B8;
+}
+.rd8_newbooks dd {
+	text-indent: 6px;
+	font-size: 12px;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	margin-left: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	clear: both;
+	width: 100%;
+}
+.rd8_newbooks dd a {
+   float: left;
+}
+#rd8_footer{
+	position:relative;
+	width: 100%;
+	clear:both;
+	border-top: 1px solid #000;
+	padding:10px 0;
+	float: left;
+}
+.rd8_aboutus {
+	text-align: center;
+	width: 100%;
+	float: left;
+	line-height: 1.5;
+}
+.rd8_pas{
+	*margin-left:7px;
+}
+
+
+.topnav li {
+	float:left;
+	display: inline;
+}
+.topnav a:link {
+  color: #FFFFFF;
+	line-height: 26px;
+	background-color: #995B2A;
+	height: 26px;
+	float: left;
+	padding: 0 6px;
+}
+.topnav a:visited {
+  color: #FFFFFF;
+	line-height: 26px;
+	background-color: #995B2A;
+	height: 26px;
+	float: left;
+	padding: 0 6px;
+}
+.topnav a:hover {
+	color: #000000;
+	line-height: 26px;
+	text-decoration: none;
+	background-color: #BBA56A;
+	height: 26px;
+	float: left;
+	padding: 0 6px;
+}
+li#ulright {
+	float:right;
+}
+#ulright a:link {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+#ulright a:visited {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+#ulright a:hover {
+	font-size: 12px;
+	background-color: #995B2A;
+	color: #FFFFFF;
+	text-decoration: underline;
+}
+ul.bottomnav {
+	float:left;
+	width: 95%;*width: 100%;
+	clear: both;
+	margin: 0;
+	background-color: #F4ECDB;
+	list-style-type: none;
+}
+.bottomnav li {	float:left;	display: inline;padding: 6px 4px;}
+
+
+#rd8_userpanel{
+	width:98%;
+	float:left;
+}
+#rd8_userpanel li{
+	list-style:none;
+}
+.rd8_userpanel_title{
+	font-weight:bolder;
+	font-size:13px;
+	letter-spacing:5px;
+	width:100%;
+	text-align:center;
+	line-height:26px;
+	border-bottom:1px dashed #636C81;
+	margin-bottom:10px;
+	float:left;
+}
+.rd8_myhelp{
+	width:100%;
+	height:100%;
+	float:left;
+}
+.rd8_userpanel_msg{
+	width:100%;
+	line-height:26px;
+	border-bottom:0px solid #636C81;
+	float:left;
+}
+.rd8_userpanel_msg form{
+	width:100%;
+	float:left;
+}
+.rd8_userpanel_pay{
+	display:block;
+	line-height:26px;
+	margin:5px 10px;
+	padding:5px;
+	float:left;
+	border:1px solid #636C81;
+}
+.rd8_userpanel_pay a:hover{
+	color:red;
+}
+.rd8_guide{
+	white-space: pre;
+	width: 100%;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+	border-bottom-width: 3px;
+	border-bottom-style: solid;
+	border-bottom-color: #C79A44;
+	font-size: 14px;
+	color: #698CC3;
+	font-weight: bold;
+	margin-top: 0px;
+
+}

@@ -1,0 +1,55 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>本功能在恢复备份数据的同时，将全部覆盖原有数据。</li>
+				<li>请确定导入的sql文件版本对应，导入旧版数据可能导致出错。</li>
+				<li>从本地恢复数据需要服务器支持文件上传并保证数据尺寸小于允许上传的上限，否则只能使用从服务器恢复。</li>
+				<li>注意: 为保障网站安全，如果不存在“{sqlsff}”文件则数据库导入不可用。如果需要修改请自行创建此文件。建议您在导入完毕后到FTP上删除此文件。</li>
+<!-- IF sqlrun -->
+				<li class="warning">注意: 当前可以运行 SQL 语句。 <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=disable">点此禁止运行</a></li>
+<!-- ELSE -->
+				<li>注意: 当前不可以运行SQL命令。</li>
+<!-- ENDIF -->
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function setHighlight(){
+<!-- BEGIN files -->
+			HighLight.change('row_{filename}', 'rdo_{filename}');
+<!-- END files -->
+		}
+	</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="db_import">
+	<div class="adminborder">
+		<div class="adminhead">数据库备份记录</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id, this);setHighlight();" />全选</td>
+					<td>文件名</td>
+					<td>版本</td>
+					<td>时间</td>
+					<td>类型</td>
+					<td>大小</td>
+					<td>操作</td>
+				</tr>
+<!-- BEGIN files -->
+				<tr class="col0" id="row_{filename}" align="center" onclick="javascript:HighLight.click('rdo_{filename}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'rdo_{filename}');">
+					<td><input type="checkbox" name="unlinkfile[]" id="rdo_{filename}" value="{filename}" onclick="HighLight.click(this.id);" onchange="javascript:HighLight.change('row_{filename}', this.id);" /></td>
+					<td><a href="../data/backup/{filename}" target="_blank">{filename}</a></td>
+					<td>{version}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF tables=="full" -->书网所有数据<!-- ELSEIF tables=="novel" -->长篇小说数据<!-- ELSEIF tables=="story" -->短篇小说数据<!-- ELSEIF tables=="user" -->所有用户数据<!-- ELSEIF tables=="config" -->系统设置数据<!-- ELSE -->自定义<!-- ENDIF --></td>
+					<td>{filesize}</td>
+					<td><!-- IF sqlrun --><a href="javascript:cfmoption('你确认导入该备份吗？导入之后可能有数据将被替换。','?ptype={ptype}&amp;pfile={pfile}&amp;action=import&amp;file={filename}')">导入</a><!-- ELSE -->--<!-- ENDIF --></td>
+				</tr>
+<!-- END files -->
+			</table>
+		</div>
+		<div class="bt"><input type="submit" value=" 删 除 " /><input type="hidden" name="action" value="delete" /></div>
+	</div>
+	</form>

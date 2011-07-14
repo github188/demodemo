@@ -1,0 +1,32 @@
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">书籍列表</div>
+		<div class="rd8_col0">
+			<table>
+				<tr class="rd8_category">
+					<td>书名</td>
+					<td>授权</td>
+					<td>类别</td>
+					<td>字数</td>
+					<td>状态</td>
+					<td>时间</td>
+					<td>最后更新</td>
+					<td>管理</td>
+				</tr>
+<!-- BEGIN books -->
+ 					<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+
+					<td>{title}</td>
+					<td>{license}</td>
+					<td>{subject} - {content}</td>
+					<td>{words}</td>
+					<td>{state}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF lastupdate -->{lastupdate_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td class="rd8_typewriter_action"><!-- IF state=="正在连载" --> <a href="author/book_chapter.php?bid={id}">更新</a><!-- ELSEIF state=="锁定" --> <a href="author/book_chapter.php?bid={id}">更新</a><!-- ENDIF --><!-- IF state=="冻结" -->--<!-- ELSEIF state=="审核中" -->--<!-- ELSE -->&nbsp;&nbsp;<a href="author/book_info.php?bid={id}">管理</a><!-- ENDIF --></td>
+				</tr>
+<!-- END books -->
+			</table>
+		</div>
+		<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+	</div>

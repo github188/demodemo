@@ -1,0 +1,33 @@
+	<div class="adminborder">
+		<div class="adminhead">统计列表</div>
+		<div class="b0">
+			<div style="width: 99%;padding-left: 1%;text-align: center;">
+				今日VIP在线支付款额: <span style="color: Blue;">{C_tdbank}</span> 元;　今日续费通过款额: <span style="color: Blue;">{C_tdpay}</span> 元<br />
+				今日新书申请通过数量: <span style="color: Blue;">{C_tdbook}</span> 本;　今日兑换支付款额: <span style="color: Blue;">{C_tdfee}</span> 元<br />
+				今日注册用户数量: <span style="color: Blue;">{C_tduser}</span> 人;　今日章节发表数目: <span style="color: Blue;">{C_tdchapter}</span> 章<br />
+				<hr style="width: 98%;height 1px;" />
+				总VIP在线支付款额: <span style="color: Blue;">{C_bank}</span> 元;　总续费通过款额: <span style="color: Blue;">{C_pay}</span> 元<br />
+				总书目数量: <span style="color: Blue;">{C_book}</span> 本;　总兑换支付款额: <span style="color: Blue;">{C_fee}</span> 元<br />
+				总注册用户数量: <span style="color: Blue;">{C_user}</span> 人;　总章节发表数目: <span style="color: Blue;">{C_chapter}</span> 章
+			</div>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">录入员排名</div>
+		<div class="b0">
+		<!-- BEGIN boundlist -->
+			<div class="admincountborder">
+				<div class="adminhead" style="width: 166px;">{C_topname}排行榜</div>
+				<!-- BEGIN toplist -->
+					<div class="b{A}" style="text-align: center;">
+						<td>{C_bound}</td>
+						<td>&nbsp;<a href="profile.php?target={C_username}" title="点击查看资料" target="_blank">{C_username}</a></td>
+						<td>{C_thenum}</td>
+					</div>
+				<!-- END toplist -->
+			</div>
+		<!-- END boundlist -->
+		</div>
+		</div>
+	</div>

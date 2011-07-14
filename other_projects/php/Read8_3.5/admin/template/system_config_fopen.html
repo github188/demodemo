@@ -1,0 +1,81 @@
+<script type="text/javascript">
+	function setValue(objId, value){
+		$(objId).value = value;
+	}
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = '';
+			$('sh3').style.display = '';
+			$('sh4').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = 'none';
+			$('sh3').style.display = 'none';
+			$('sh4').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">远程读取设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">模拟浏览器:</span><br />
+				<span class="smalltxt">服务器必须能正常使用 CURL 扩展 或 fsockopen 函数。开启此项将向被访问网站模拟浏览器(接受)发送 referer/cookie 等信息，可绕过大部分网站的防盗链措施，同时可略微减少服务器cpu资源可能占用过高的情况。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="emulate_1"><input type="radio" name="pemulate" id="emulate_1" value="1"{C_emulate_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="emulate_0"><input type="radio" name="pemulate" id="emulate_0" value="0"{C_emulate_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_emulate_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">模拟方式:</span><br />
+				 &nbsp;<span class="smalltxt">若某项被禁止则表示服务器不支持。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="curl_1"><input type="radio" name="pcurl" id="curl_1" value="1"{C_curl_yes} />CURL 扩展 (Client URL Extension)</label> &nbsp;
+				<label for="curl_0"><input type="radio" name="pcurl" id="curl_0" value="0"{C_curl_no} />fsockopen</label>
+			</div>
+		</div>
+		<div class="b0" id="sh2"<!-- IF C_emulate_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">用户代理:</span><br />
+				 &nbsp;<span class="smalltxt">通常服务器据此识别客户端的系统和浏览器信息，留空为使用默认 Mozilla/5.0 (compatible; HTTPRequest/1.0; http://www.read8.net; ) 。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="pagent" size="45" id="useragent" value="{C_agent}" />
+				<select onchange="javascript:setValue('useragent', this.value);">
+					<option value="{C_agent}">    恢     复    </option>
+					<option value="Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.8.0.4) Gecko/20060508 Firefox/1.5.0.4">Mozilla Firefox 1.5/Linux</option>
+					<option value="Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14">Mozilla Firefox 2/Linux</option>
+					<option value="Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.8.0.4) Gecko/20060508 Firefox/1.5.0.4">Mozilla Firefox 1.5/Windows XP</option>
+					<option value="Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14">Mozilla Firefox 2/Windows XP</option>
+					<option value="Mozilla/5.0 (Windows; U; Windows NT 6.0; zh-CN; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14">Mozilla Firefox 2/Windows Vista</option>
+					<option value="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)">Internet Explorer 6/Windows XP</option>
+					<option value="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)">Internet Explorer 7/Windows XP</option>
+					<option value="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)">Internet Explorer 7/Windows Vista</option>
+				</select>
+			</div>
+		</div>
+		<div class="b1" id="sh3"<!-- IF C_emulate_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">使用代理服务器:</span><br />
+				 &nbsp;<span class="smalltxt">格式为服务器地址(或IP):端口号，留空为不使用。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pproxy" value="{C_proxy}" /></div>
+		</div>
+		<div class="b0" id="sh4"<!-- IF C_emulate_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">Cookie 保存文件:</span><br />
+				 &nbsp;<span class="smalltxt">本文件保存的是远程读取临时数据。相对于书网根目录或绝对路径，需要文件读取/写入/修改权限，留空为默认 “data/cookies.txt”。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcookie" value="{C_cookie}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

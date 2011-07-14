@@ -1,0 +1,41 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>数据库优化可以尝试修复已损坏的数据表并去除数据表中的碎片，使记录排列紧密，提高读写速度。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=optimize" method="post" id="db_optimize">
+		<div class="adminborder">
+			<div class="adminhead">书网数据表 <label for="read8_table_display"><input type="checkbox" id="read8_table_display" onclick="$('read8_tables').style.display = this.checked ? 'none' : '';" /> 隐藏</div>
+			<div class="col0" id="read8_tables">
+				<table>
+					<tr class="category">
+						<td><input type="checkbox" id="tbl_chk" onclick="javascript:checkall(this.form.id, this, 'tbl_');" />全选</td>
+						<td align="left">&nbsp;数据表</td>
+						<td>类型</td>
+						<td align="right">记录数&nbsp;</td>
+						<td align="right">数据大小&nbsp;</td>
+						<td align="right">索引大小&nbsp;</td>
+						<td align="right">碎片大小&nbsp;</td>
+						<td align="left">&nbsp;备注</td>
+					</tr>
+<!-- BEGIN read8_tables -->
+					<tr class="col<!-- IF Data_free=="0 B" -->0<!-- ELSE -->2<!-- ENDIF -->" id="tbl_row_{Name}" align="center" onclick="javascript:HighLight.click('tbl_rdo_{Name}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'tbl_rdo_{Name}');">
+						<td><input type="checkbox" name="tbl_read8[]" id="tbl_rdo_{Name}" value="{Name}" onclick="HighLight.click(this.id);" onchange="javascript:HighLight.change('tbl_row_{Name}', this.id);"<!-- IF Data_free!="0 B" --> checked="checked"<!-- ENDIF --> /></td>
+						<td align="left">&nbsp;{Name}</td>
+	<!-- IF Engine=="" -->
+						<td colspan="6">已损坏</td>
+	<!-- ELSE -->
+						<td>{Engine}</td>
+						<td align="right">{Rows}&nbsp;</td>
+						<td align="right">{Data_length}&nbsp;</td>
+						<td align="right">{Index_length}&nbsp;</td>
+						<td align="right">{Data_free}&nbsp;</td>
+						<td align="left">&nbsp;{Comment}</td>
+	<!-- ENDIF -->
+					</tr>
+<!-- END read8_tables -->
+				</table>
+			</div>
+			<div class="bt"><input type="submit" value=" 优 化 " /></div>
+		</div>
+	</form>

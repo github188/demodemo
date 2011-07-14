@@ -1,0 +1,122 @@
+<!-- IF list -->
+	<div class="rd8_fullborder">
+		<div class="rd8_head"><a href="typewriter/">作品管理</a> => 《{title}》现有章节管理</div>
+		<div class="rd8_author_book">
+			<form action="typewriter/?bid={id}&action=chapter_del" method="post">
+				<table>
+					<tr class="rd8_texture" align="center">
+						<td>管理</td>
+						<td>序号</td>
+						<td>章节名称</td>
+						<td>发布时间</td>
+						<td>字数</td>
+						<td>状态</td>
+						<td>收费</td>
+						<td>操作</td>
+					</tr>
+<!-- BEGIN chapters -->
+					<tr class="rd8_col0" id="cprow{id}" align="center" onclick="javascript:HighLight.click('cps{id}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'cps{id}');">
+						<td><input type="checkbox" name="cps[]" id="rd8_cps{id}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('cprow{id}', this.id);" /></td>
+						<td>{priority}</td>
+						<td>{title}</td>
+						<td>{dateline_DATE_Y-m-d H:i:s}</td>
+						<td>{words}</td>
+						<td><!-- IF locked -->锁定<!-- ELSE -->正常<!-- ENDIF --></td>
+						<td><!-- IF vip -->是<!-- ELSE -->否<!-- ENDIF --></td>
+						<td>
+							<a href="typewriter/?bid={book_id}&amp;cid={id}&amp;action=chapter_edit">编辑</a>&nbsp;
+							<a href="javascript:cfmoption('确实要删除本章吗？', 'typewriter/?bid={book_id}&amp;cid={id}&amp;action=chapter_del');">删除</a>
+						</td>
+					</tr>
+<!-- END chapters -->
+					<tr>
+						<td class="rd8_colt" align="center" colspan="8">
+							将选中的章节 
+							<label for="rd8_acd"><input type="radio" name="action" id="acd" value="delete" onclick="if(!confirm('此操作不可恢复，确实要删除所选章节吗？')) return false;" /> 删除 </label>
+							<input type="submit" value=" 确定 " />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<!-- IF pagelink --><div class="rd8_colt">{pagelink}</div><!-- ENDIF -->
+	</div>
+<!-- ELSE -->
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+		function setattach(id,action) {
+			$('cover'+id).disabled = action;
+		}
+		function editor_submit(){
+			editor.save();
+			if($('article_textarea').value == '') {
+				alert('内容为空');
+				return false;
+			}
+			if($('rd8_title').value == '') {
+				$('rd8_title').focus();
+				alert('标题为空');
+				return false;
+			}
+			$('rd8_submit').value = "提交中";
+			$('rd8_submit').disabled = true;
+		}
+		var _attach = 0;
+		function append_attach(){
+			var li = document.createElement('li');
+				li.id = 'newattach_' + _attach;
+				li.innerHTML = '新附件: <input type="file" name="newattach[]" id="newattachfile_' + _attach + '" size="36" \/> <label for="newattachdelete_' + _attach + '"><input type="checkbox" id="newattachdelete_' + _attach + '" onclick="javascript:attach_change(\'' + _attach + '\');" \/> 删除<\/label>';
+
+			$('rd8_newattach').appendChild(li);
+
+			_attach++;
+		}
+		function attach_change(_attach){
+			var state = $('newattachdelete_' + _attach).checked;
+			$('newattach_' + _attach).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('newattachfile_' + _attach).disabled = state;
+		}
+	//--><!]]></script>
+
+	<div class="rd8_fullborder">
+		<form id="rd8_chapteredform" method="post" action="typewriter/?bid={bid}&cid={cid}&action=chapter_edit" enctype="multipart/form-data" onsubmit="return editor_submit();">
+			<div class="rd8_head">更新《{title}》</div>
+			<div class="rd8_author_book">
+				<table id="rd8_typewriter">
+					<tr>
+						<td width="15%" align="center"><strong>章节标题</strong></td>
+						<td width="35%"><input type="text" name="title" id="rd8_title" value="{title}" /></td>
+						<td width="15%" align="center"><strong>内容提要</strong></td>
+						<td width="35%"><input type="text" name="description" value="{description}" /></td>
+					</tr>
+					<tr>
+						<td align="center"><strong>章节内容</strong></td>
+						<td colspan="3">{editor}</td>
+					</tr>
+<!-- IF upload -->
+					<tr class="rd8_col1">
+						<td align="center"><strong>上传附件</strong></td>
+						<td colspan="3">
+							(最大允许 {upload}, 允许附件类型: {formats}, 不合法附件将自动忽略)<br />
+							<ul style="list-style-type: none;margin: 0;padding: 0; color: Blue;" id="rd8_newattach">
+							</ul>
+							<span class="rd8_a" onclick="javascript:append_attach();">[+]</span>
+						</td>
+					</tr>
+				<script type="text/javascript">
+<!-- BEGIN attachs -->
+					append_attach_with_value('{f}', '{t}', {s});
+<!-- END attachs -->
+					append_attach();
+				</script>
+<!-- ENDIF -->
+				</table>
+			</div>
+			<div class="rd8_colt" style="text-align: center;">
+				<input type="submit" value=" 编 辑 " id="rd8_submit" title="提交中" />
+				<input type="hidden" name="update" value="1" />
+				<input type="reset" value=" 返 回 " name="history.back(-1)" />
+			</div>
+		</form>
+	</div>
+<!-- ENDIF -->
+

@@ -1,0 +1,56 @@
+	<div class="admin_about">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>如该作品的作家是驻站作家可点击进入作家专栏。</li></ul></div>
+	</div>
+
+	<form action="" method="get">
+	<div class="admin_search">
+		<div class="adminhead"><li class="img_sleft">书名搜索</li><li class="img_right"></li></div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">书名关键词: <input type="text" name="thename" value="{C_thename}" /> <input type="submit" value="搜索" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /></div>
+	</div>
+	</form>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete" method="post" id="work">
+	<div class="adminborder">
+		<div class="adminhead">作品总列表管理</div>
+<!-- IF booklist -->
+		<div class="b0">
+			<table>
+				<tr class="category">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" title="全选" />全</td>
+					<td>书名</td>
+					<td>时间</td>
+					<td>作家/录入</td>
+					<td>授权</td>
+					<td>类型</td>
+					<td>状态</td>
+					<td>操作</td>
+				</tr>
+	<!-- BEGIN booklist -->
+				<tr class="col{A}" align="center" id="bk{id}" onclick="javascript:HighLight.click('bki{id}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'bki{id}');">
+					<td><input type="checkbox" name="delbookarr[]" id="bki{id}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('bk{id}', this.id);" /></td>
+					<td><a href="../novel.php?bid={id}" target="_blank">{title}</a></td>
+					<td><span title="发表于{dateline_DATE_Y-m-d H:i:s}">{lastupdate_DATE_m-d}</span></td>
+					<td><!-- IF author_id --><a href="../author.php?aid={author_id}" target="_blank"><!-- ENDIF -->{author}<!-- IF author_id --></a><!-- ENDIF --><!-- IF typewriter_id -->/<a href="../typewriter.php?tid={typewriter_id}" target="_blank">{typewriter}</a><!-- ENDIF --></td>
+					<td>{license}</td>
+					<td>{subject}-{content}</td>
+					<td>{state}</td>
+					<td>
+						<a href="../typewriter/?bid={id}&amp;action=novel_edit" target="_blank">编辑</a> 
+						<!-- IF state=="正在连载" --><a href="../typewriter/?bid={id}&amp;action=chapter_add" target="_blank">更新</a> <!-- ENDIF -->
+						<a href="../typewriter/?bid={id}&amp;action=chapter_edit" target="_blank">管理</a> 
+						<a href="?ptype={ptype}&amp;pfile=novel_commend_face&amp;action=commend&amp;bid={id}&amp;return=setworks" onclick="if(!confirm('确认将该作品设为封面推荐吗？')) return false;" title="将该作品设为封面推荐">封</a>/<a href="?ptype={ptype}&amp;pfile=novel_commend_subject&amp;action=commend&amp;bid={id}&amp;return=setworks" onclick="if(!confirm('确认将该作品设为分类封面推荐吗？')) return false;" title="将该作品设为分类封面推荐">分</a>/<a href="?ptype={ptype}&amp;pfile=novel_commend_strong&amp;action=commend&amp;bid={id}&amp;return=setworks" onclick="if(!confirm('确认将该作品设为强力推荐吗？')) return false;" title="将该作品设为强力推荐">强</a>/<a href="?ptype={ptype}&amp;pfile=novel_commend_editor&amp;action=commend&amp;bid={id}&amp;return=setworks" onclick="if(!confirm('确认将该作品设为编辑推荐吗？')) return false;" title="将该作品设为编辑推荐">编</a>/<a href="?ptype={ptype}&amp;pfile=novel_commend_vip&amp;action=commend&amp;bid={id}&amp;return=setworks" onclick="if(!confirm('确认将该作品设为VIP电子书推荐吗？')) return false;" title="将该作品设为VIP电子书推荐">电</a> 
+						<a href="javascript:cfmoption('你确认清除这本书么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=clear&amp;clrbookarr[]={id}')" title="清除这本书"><span style="color: Red;">清</span></a> 
+						<a href="javascript:cfmoption('你确认删除这本书么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;delbookarr[]={id}')" title="删除这本书"><span style="color: Red;">删</span></a>
+					</td>
+				</tr>
+	<!-- END booklist -->
+			</table>
+		</div>
+			<!-- IF C_pagelink --><div class="b0"> {C_pagelink}</div><!-- ENDIF -->
+			<div class="bt"><input type="submit" value=" 删 除 " onclick="if(!confirm('你确认批量删除这些选定的书吗？')) return false;"></div>
+<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">当前没有书籍数据</div>
+<!-- ENDIF -->
+	</div>
+	</form>

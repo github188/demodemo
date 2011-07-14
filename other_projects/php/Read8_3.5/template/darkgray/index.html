@@ -1,0 +1,185 @@
+	<div id="rd8_center">	
+		<div class="rd8_ad_position">
+			<div style="float:left;overflow:hidden;">{CAD_index_1}</div>
+			<div style="float:right;overflow:hidden;">{CAD_index_2}</div>
+
+		</div>    <div class="rd8_section1">
+      <div class="rd8_left">
+			<div class="rd8_rank">
+				<dl>
+					<dt>总点击榜</dt>
+<!-- BEGIN custom_zdjb -->
+					<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END custom_zdjb -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=click">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+      <div class="rd8_middle">
+			<div class="rd8_toprec">
+<!-- BEGIN custom_zlqltjb -->
+					<li class="rd8_books_detail">
+						<span class="rd8_books_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></span>
+						<span class="rd8_books_titles"><strong><a href="{InfoURL}">{title}</a></strong></span>
+						<span class="rd8_books_author">作者：{author}</span>
+						<span class="rd8_books_contents">{intro}</span>
+					</li>
+<!-- END custom_zlqltjb -->
+			</div>
+      </div>
+      <div class="rd8_right">
+			<div class="rd8_rank" style="height: 50%;">
+				<dl>
+					<dt>本站公告</dt>
+<!-- BEGIN Announceblock -->
+					<dd><a href="announcement.php?id={id}">{title}</a><span>（{dateline_DATE_y-m-d}）</span></dd>
+<!-- END Announceblock -->
+				</dl>	
+				<span><a href="announcement.php">更多&nbsp;&nbsp;</a></span>
+			</div>
+			<div class="rd8_rank" style="height: 44.5%;">
+				<dl>
+					<dt>搜索</dt>
+					<dd>
+						<div class="rd8_mysearch">
+				<form method="get" style="margin-top:10px;float:left;" action="search.php" onsubmit="return this.value && this.value != '在此输入关键字'">
+					<select name="by" style="magin-top:0;margin-left:3px;">
+						<option value="title"selected="selected">按书名</option>
+						<option value="author">按作者</option>
+					</select>
+					<input type="text" name="kw" style="width:100px;height:18px;border:1px solid #698CC3;" value="在此输入关键字" onfocus="if(this.value == '在此输入关键字') this.value = '';" onblur="if(this.value == '') this.value = '在此输入关键字'" />
+					<input type="submit" value="搜索" style="width:50px;height:20px;margin-left:80px;border:1px solid #698CC3;" />
+				</form>
+
+<!-- 							<form method="get" action="search.php">
+								<select name="by">
+									<option value="title"selected="selected">按书名</option>
+									<option value="author">按作者</option>
+								</select>
+								<input type="text" style="width:100px;height:20px;border:1px solid #698CC3;" value="在此输入关键字" />
+								<input type="submit" value="搜索" style="width:50px;height:20px;margin-left:80px;border:1px solid #698CC3;" />
+							</form>
+ -->						</div>
+					</dd>		
+				</dl>	
+			</div>
+
+
+      </div>
+    </div>
+    <div class="rd8_section2">
+      <div class="rd8_left">
+			<div class="rd8_rank" style="height: 98.4%;">
+				<dl>
+					<dt>总推荐榜</dt>
+<!-- BEGIN custom_ztjb -->
+					<dd>
+						<a href="{InfoURL}">{title}</a>({commend_total})
+					</dd>
+<!-- END custom_ztjb -->
+				</dl>	
+			</div>
+      </div>
+      <div class="rd8_middle" style="border:none;">
+			<div class="rd8_latest" style="width:98.9%;height:98.4%;">
+				<dl>
+					<dt>热门作品</dt>
+				</dl>
+				<div class="rd8_topbook">
+<!-- BEGIN custom_rmzp -->
+					<ul>	
+						<li class="rd8_topbook_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></li>
+						<li class="rd8_topbook_title"><strong><a href="{InfoURL}">{title}</a></strong></li>
+						<li class="rd8_topbook_author">作者：{author}</li>
+						<li class="rd8_topbook_intro">{intro}</li>
+					</ul>
+<!-- END custom_rmzp -->
+				</div>
+				<span><a href="rank.php?times=total&amp;types=click">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+      <div class="rd8_right">
+			<div class="rd8_rank" style="height: 98.4%;">
+				<dl>
+					<dt>月点击榜</dt>
+<!-- BEGIN custom_ydjb -->
+					<dd><a href="{InfoURL}">{title}</a>({click_month})</dd>
+<!-- END custom_ydjb -->
+				</dl>	
+				<span><a href="rank.php?times=month&amp;types=click">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+    </div>
+    <div class="rd8_section3">
+      <div class="rd8_left">
+			<div class="rd8_rank" style="height:98.3%;">
+				<dl>
+					<dt>总收藏榜</dt>
+<!-- BEGIN custom_zscb -->
+						<dd><a href="{InfoURL}">{title}</a>({favo_total})</dd>
+<!-- END custom_zscb -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=favo">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+      <div class="rd8_middle" style="border:none;">
+			<div id="rd8_middle" style="width:99.8%;*width:99.7%;height:99.5%;margin:0px;">
+				<p class="rd8_catetitle">最近更新</p>
+<!-- BEGIN lastupdate -->
+						<li<!-- IF A --> class="rd8_evenrow"<!-- ENDIF -->>[{content}]&nbsp;&nbsp;<a href="{InfoURL}">{title}</a>&nbsp;{author}&nbsp;[{lastupdate_DATE_m-d}]</li>
+<!-- END lastupdate -->
+			<div class="rd8_allbook"><a href="novellib.php?subject={nc}">查看所有图书&nbsp;&nbsp;</a></div>
+			</div>
+      </div>
+      <div class="rd8_right">
+			<div class="rd8_rank" style="height:98.3%;">
+				<dl>
+					<dt>月推荐榜</dt>
+<!-- BEGIN custom_ytjb -->
+						<dd><a href="{InfoURL}">{title}</a>({commend_month})</dd>
+<!-- END custom_ytjb -->
+				</dl>	
+				<span><a href="rank.php?times=month&amp;types=commend">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+    </div>
+    <div class="rd8_section4">
+      <div class="rd8_left">
+			<div class="rd8_rank" style="height:98%;">
+				<dl>
+					<dt>读者收藏榜</dt>
+<!-- BEGIN custom_zscb -->
+						<dd><a href="{InfoURL}">{title}</a>({favo_total})</dd>
+<!-- END custom_zscb -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=favo">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+      <div class="rd8_middle" style="border:none;">
+			<div class="rd8_rank" style="width:98.9%;height:98%;">
+				<dl>
+					<dt>评论天地</dt>
+<!-- BEGIN custom_zxpl -->
+					<dd><font class="rd8_commenttime">{username} 于 {dateline_DATE_m-d H:i} 评  <a href="{InfoURL}">《{title}》</a></font> </dd>
+<!-- END custom_zxpl -->
+				</dl>	
+			</div>
+      </div>
+      <div class="rd8_right">
+			<div class="rd8_rank" style="height:98%;">
+				<dl>
+					<dt>原创排行</dt>
+<!-- BEGIN custom_zdjb -->
+					<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END custom_zdjb -->
+				</dl>	
+				<span><a href="rank.php?times=total&amp;types=click">更多&nbsp;&nbsp;</a></span>
+			</div>
+      </div>
+    </div>
+	</div>
+	<div class="rd8_unionwebsite">
+<!-- BEGIN friendlinks -->
+			<a href="http://{url}" target="_blank">{name}</a>
+<!-- END friendlinks -->
+	</div>

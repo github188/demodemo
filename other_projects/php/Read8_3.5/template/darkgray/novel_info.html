@@ -1,0 +1,79 @@
+	<div id="rd8_center">
+		<div id="rd8_bdleft">
+				<dl>
+					<dt>热门推荐</dt>
+<!-- BEGIN novel_month_commend -->
+					<dd>
+						<a href="{InfoURL}">{title}</a>({commend_month})
+					</dd>
+<!-- END novel_month_commend -->
+				</dl>
+				<dl>
+					<dt>读吧动态</dt>
+
+					<dd><a href="#">幻剑新年奇幻专题</a></dd>
+
+				</dl>
+		</div>
+		<div id="rd8_bdright">
+			<div id="rd8_detail">
+				<span><strong>《{title}》</strong></span>
+				<span>作者：{author}</span>
+				<span>发表时间：{dateline_DATE_y-m-d}</span>
+				<span>所属类别：{subject}</span>
+				<span class="noborder">已阅读：{click}</span>
+				<span class="noborder">所获票数：{vote}</span>
+			</div>
+			<p class="rd8_introduce"><img src="{HTMLURL}/bookface.jpg" alt="{title}" align="left"/>&nbsp;&nbsp;&nbsp;&nbsp;{intro}</p>
+			<p class="rd8_opration"><a href="{HTMLURL}" class="read">点击阅读</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="add">放入书架</a>&nbsp;&nbsp;&nbsp;&nbsp;最后更新章节  <a href="{HTMLURL}/{priority}.html" class="latest">{chapter_title}</a>  </p>
+			<div id="rd8_book_comment">
+<!-- IF comment_open -->
+					<p><strong>发表书评: </strong><span id="rd8_lengthlimit">可写 {comment_min} - {comment_max} 字</span></p>
+					<form action="comment.php?bid={bid}&amp;story=0" method="post">
+						<input type="text" name="title" size="65" />&lt;&lt; 长篇评论请写标题<br />
+						<textarea name="comment" id="rd8_comment" rows="6" cols="70" onkeyup="javascript:calclen(this.value, {comment_max}, {comment_min});" onblur="javascript:calclen(this.value, {comment_max}, {comment_min});" style="margin-bottom:8px;margin-top:8px;" style="border:1px solid #CCC;"></textarea><br />
+						<!-- IF comment_secode -->验证码: <input type="text" name="secode" id="rd8_hash" size="8" title="请在该框中输入右图显示的字符" />&nbsp;<img src="download.php?action=gethashimg" alt="请在左框中输入该图显示的字符" align="absmiddle" style="cursor: pointer;" onclick="javascript:this.src='download.php?action=gethashimg&amp;xx='+Math.random();" /> <!-- ENDIF --><input type="submit" id="rd8_refer" value=" 发 表 " /> &nbsp; &nbsp;<input type="reset" value=" 取 消 " />
+					</form>
+<!-- ENDIF -->
+
+<!-- 					<div class="all"  style="margin-top:8px;">所有书评</div>
+<!-- IF comments -->
+	<!-- BEGIN comments -->
+					<div class="rd8_all">{username} 于 {dateline_DATE_Y-m-d H:i:s}: <a id="comment{id}">&nbsp;</a></div>
+					<div class="rd8_all"><strong>{title}</strong></div>
+					<div class="rd8_all" style="border-bottom:1px solid #698CC3;width:600px;">{content}</div>
+	<!-- END comments -->
+<!-- ELSE -->
+					<div class="rd8_all">沙发空缺中，还不快抢？</div>
+<!-- ENDIF --> -->
+<!-- IF comments -->
+					<div class="rd8_all">本书点评</div>
+	<!-- BEGIN comments -->
+					<div class="rd8_commentbox">
+						<div class="rd8_commen_title"><strong>{title}</strong></div>
+						<div class="rd8_commen_content">{content}</div>
+					</div>
+					<div class="rd8_commentfooter">{username} 于 {dateline_DATE_Y-m-d H:i:s}</div>
+	<!-- END comments -->
+<!-- ELSE -->
+						<div class="rd8_all">沙发空缺中，还不快抢？</div>
+<!-- ENDIF -->
+
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		 </div>
+	</div>

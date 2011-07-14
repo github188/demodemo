@@ -1,0 +1,77 @@
+.editerToolsBox{
+	border-top: 1px solid #808080;
+	border-left:1px solid #808080;
+	border-right:1px solid #808080;
+	height:44px;	
+	background:url("images/bg.gif");
+}
+.editerToolsBG{
+	width:616px;
+	height:44px;
+	padding-left:4px;
+
+}
+.editerToolsBGF{
+	width:616px;
+	height:44px;
+	padding-left:4px;	
+	filter:alpha(opacity=30);
+	-moz-opacity:0.30;
+	opacity:0.30;
+}
+
+.editerArrowDown{
+	width:18px;
+	border-left:1px solid #ffffff;
+	background:url("images/arrow_down.gif")  no-repeat center;
+}
+.bigToolsIMG{
+	background:url("images/tools.gif");
+	height:40px;
+	float:left;
+}
+.topToolsIMG{
+    background:url("images/tools.gif");
+	height:20px;
+}
+
+.bottomToolsIMG{
+	margin-left:-20px;
+	background:url("images/tools.gif");
+	height:20px;
+	float:left;
+}
+.editerTextTopBG{
+	background:url("images/bodyTop.gif");
+	height:16px;
+}
+.editerTextBottomBG{
+	background:url("images/bodyBottom.gif");
+	height:25px;
+}
+.editerTextBG{
+	background-image:url("images/bodyleft.gif");
+	background-color:#ffffff;
+	padding-left:80px;
+}
+.editerTextArea{
+	background:#fff;
+	border:0px;
+	padding-top:10px;
+	overflow:auto;
+}
+.editerTextRight{
+	width:50px;
+	background-image:url("images/bodyright.gif");
+}
+.editerTextBox{
+	border-bottom:1px solid #808080;
+	border-left:1px solid #808080;
+	border-right:1px solid #808080;
+}
+.editorToolDiv{
+	width:500px;
+	background-image:url("images/blank.gif");
+	position:absolute;
+	height:44px;
+}

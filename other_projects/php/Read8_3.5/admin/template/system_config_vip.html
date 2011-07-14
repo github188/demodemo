@@ -1,0 +1,163 @@
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">VIP 功能设置</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">作家分成比:</span><br />
+				<span class="smalltxt">电子书作品被购买时，作家所分成的反馈奖励。<br />当每被购买 <b>1</b> {C_moneytitle} 时作家可得分成多少{C_moneytitle} 。默认为0.7。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="prebate" value="{C_rebate}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP书籍过期时限(单位天):</span><br />
+				<span class="smalltxt">超过此天数的vip章节即被自动转换为公开书籍。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pexpire" value="{C_expire}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP章节价格(单位网站虚拟币):</span><br />
+				<span class="smalltxt">设定每千字的价格。用来自动对VIP章节定价。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pprice" value="{C_price}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读版权 - 文字内容:</span><br />
+				<span class="smalltxt">显示在vip章节的图片上。“[rd8vip]”将被订阅用户名自动替换。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcopyright" value="{C_copyright}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读版权 - 字体:</span><br />
+				<span class="smalltxt">显示版权的字体大小。ttf文件，位于“data/font”目录下。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcopyright_font" value="{C_copyright_font}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读版权 - 字号:</span><br />
+				<span class="smalltxt">显示版权的字体大小。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcopyright_size" value="{C_copyright_size}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 每行字数:</span><br />
+				<span class="smalltxt">VIP图片阅读时，每行显示的字数。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pline" value="{C_line}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 字体:</span><br />
+				<span class="smalltxt">VIP图片阅读时，显示的字体。ttf文件，位于“data/font”目录下。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pfont" value="{C_font}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 字号:</span><br />
+				<span class="smalltxt">VIP图片阅读时，显示的字体大小。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="psize" value="{C_size}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 背景颜色:</span><br />
+				<span class="smalltxt">VIP图片阅读时，图片背景色。</span>
+			</div>
+			<div style="width: 38%;">
+				<input name="pbackground" id="pbackground" type="text" maxlength="11" size="11" value="{C_background}" />
+				<select onchange="javascript:$('pbackground').value = this.value;">
+					<option value="{C_background}">&nbsp;恢复当前设置&nbsp;</option>
+				<!-- BEGIN color -->
+					<option value="{C_color}" style="background: {C_hexcolor};">&nbsp;{C_colorname}&nbsp;</option>
+				<!-- END color -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 背景颜色透明度:</span><br />
+				<span class="smalltxt">0 为完全不透明，127 为完全透明。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pbackground_alpha" value="{C_background_alpha}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP阅读 - 文字颜色:</span><br />
+				<span class="smalltxt">VIP图片阅读时，显示文章的颜色。</span>
+			</div>
+			<div style="width: 38%;">
+				<input name="pcolor" id="pcolor" type="text" maxlength="11" size="11" value="{C_color}" />
+				<select onchange="javascript:$('pcolor').value = this.value;">
+					<option value="{C_color}">&nbsp;恢复当前设置&nbsp;</option>
+				<!-- BEGIN color -->
+					<option value="{C_color}" style="background: {C_hexcolor};">&nbsp;{C_colorname}&nbsp;</option>
+				<!-- END color -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP防盗水印 - 字体:</span><br />
+				<span class="smalltxt">VIP图片防盗水印显示的字体大小。ttf文件，位于“data/font”目录下。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pmark_font" value="{C_mark_font}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP防盗水印 - 字号:</span><br />
+				<span class="smalltxt">VIP图片防盗水印显示的字体大小。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pmark_size" value="{C_mark_size}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP防盗水印 - 颜色:</span><br />
+				<span class="smalltxt">VIP图片防盗水印的颜色。建议尽量与背景色相近，但务必不要相同。</span>
+			</div>
+			<div style="width: 38%;">
+				<input name="pmark_color" id="pmark_color" type="text" maxlength="11" size="11" value="{C_mark_color}" />
+				<select onchange="javascript:$('pmark_color').value = this.value;">
+					<option value="{C_mark_color}">&nbsp;恢复当前设置&nbsp;</option>
+				<!-- BEGIN color -->
+					<option value="{C_color}" style="background: {C_hexcolor};">&nbsp;{C_colorname}&nbsp;</option>
+				<!-- END color -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP章节提示购买 - 提示图片:</span><br />
+				<span class="smalltxt">当用户尚未购买此章节时显示的提示图片，位于“images”目录下。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pbuy_picture" value="{C_buy_picture}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP章节提示购买 - 章节购买按钮坐标:</span><br />
+				<span class="smalltxt">在上述提示图片中的提示章节购买按钮的坐标。<br />格式为四个数字坐标,半角逗号隔开,依次为左上x&y,右下x&y。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="parea_buy" value="{C_area_buy}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP章节提示购买 - 用户登录按钮坐标:</span><br />
+				<span class="smalltxt">在上述提示图片中的用户登录按钮的坐标。格式同上。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="parea_login" value="{C_area_login}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">VIP章节提示购买 - 在线支付按钮坐标:</span><br />
+				<span class="smalltxt">在上述提示图片中的在线支付按钮的坐标。格式同上。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="parea_pay" value="{C_area_pay}" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<meta name="Description" content="{G_sitename},书籍索引,站内地图" />
+<meta name="Keywords" content="{G_sitename},书籍索引,站内地图" />
+<meta name="Author" content="Read8 Group & AOKOSOFT" />
+<meta name="Copyright" content="Copyright (C) 2004 - 2008 AOKOSOFT Inc." />
+<link rel="icon" href="{G_siteurl}/favicon.ico" />
+<link rel="shortcut icon" href="{G_siteurl}/favicon.ico" />
+<link rel="Bookmark" href="{G_siteurl}/favicon.ico" /> 
+<script type="text/javascript" src="{G_siteurl}/include/js/common.js"></script>
+<title>站内地图</title>
+<style type="text/css">
+	a				{text-decoration: none;}
+	a:link			{color: Blue;}
+	a:visited		{color: #666;}
+	a:hover			{color: #F60;}
+	body			{background: White;border: 0;color: Black;display: block;font-family: 宋体;font-size: 12px;margin: 0;padding: 0;}
+	.full			{float: left;margin: 0 3px !important;margin: 0 1px;width: 880px;}
+	.fullborder		{border: 1px solid #CCC;width: 886px;float:left;padding: 1px;margin-bottom: 10px;}
+	.head			{background: #698CC3;color: White;font-weight: bold;height: 24px;line-height: 24px;text-align: center;width: 100%;}
+	.initial		{background: #EBF3E6;float: left;font-weight: bold;	height: 30px;line-height: 30px;margin-top: 1px;text-align: center;width: 100px;}
+	.initialindex	{float: left;width: 886px;}
+	.letterindex	{background: #EBF3E6;float: left;height: 30px;line-height: 30px;text-align: center;width: 786px;}
+	.bookitem		{background: #F7F7F7;float: left;line-height: 30px;margin: 1px;padding-left: 5px;width: 170px;}
+	#page			{background: White;margin: 20px auto;padding: 0;width: 900px;}
+</style>
+</head>
+<body onload="javascript:externallinks();">
+<div id="page">
+	<div class="full">
+		<div class="fullborder">
+			<div class="head">站内地图</div>
+			<!-- BEGIN booklist -->
+				<!-- IF C_initial -->
+				<div class="initialindex">
+					<div class="initial">{C_initial}<a name="{C_initial}">&nbsp;</a></div>
+					<div class="letterindex">
+						<a href="{G_siteurl}/html/map/">[全部]</a>&nbsp;
+						<a href="{G_siteurl}/html/map/#1">[数字]</a>
+						<a href="{G_siteurl}/html/map/#A">[A]</a>
+						<a href="{G_siteurl}/html/map/#B">[B]</a>
+						<a href="{G_siteurl}/html/map/#C">[C]</a>
+						<a href="{G_siteurl}/html/map/#D">[D]</a>
+						<a href="{G_siteurl}/html/map/#E">[E]</a>
+						<a href="{G_siteurl}/html/map/#F">[F]</a>
+						<a href="{G_siteurl}/html/map/#G">[G]</a>
+						<a href="{G_siteurl}/html/map/#H">[H]</a>
+						<a href="{G_siteurl}/html/map/#I">[I]</a>
+						<a href="{G_siteurl}/html/map/#J">[J]</a>
+						<a href="{G_siteurl}/html/map/#K">[K]</a>
+						<a href="{G_siteurl}/html/map/#L">[L]</a>
+						<a href="{G_siteurl}/html/map/#M">[M]</a>
+						<a href="{G_siteurl}/html/map/#N">[N]</a>
+						<a href="{G_siteurl}/html/map/#O">[O]</a>
+						<a href="{G_siteurl}/html/map/#P">[P]</a>
+						<a href="{G_siteurl}/html/map/#Q">[Q]</a>
+						<a href="{G_siteurl}/html/map/#R">[R]</a>
+						<a href="{G_siteurl}/html/map/#S">[S]</a>
+						<a href="{G_siteurl}/html/map/#T">[T]</a>
+						<a href="{G_siteurl}/html/map/#U">[U]</a>
+						<a href="{G_siteurl}/html/map/#V">[V]</a>
+						<a href="{G_siteurl}/html/map/#W">[W]</a>
+						<a href="{G_siteurl}/html/map/#X">[X]</a>
+						<a href="{G_siteurl}/html/map/#Y">[Y]</a>
+						<a href="{G_siteurl}/html/map/#Z">[Z]</a>
+					</div>
+				</div>
+				<!-- ENDIF -->
+				<div class="bookitem"><a href="{G_siteurl}/html/{C_typeid}/{C_bookid}/" rel="external" title="{C_bookauthor} - {C_booktitle}">{C_booktitle}</a></div>
+			<!-- END booklist -->
+		</div>
+	</div>
+</div>
+</body>
+</html>

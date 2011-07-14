@@ -1,0 +1,18 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">我的评论</div>
+		<div class="rd8_col0">
+			<table>
+<!-- IF comments -->
+<!-- BEGIN comments -->
+				<tr class="rd8_col{A}"> 
+					<td style="padding: 2px;">
+						<i>{dateline_DATE_Y-m-d H:i:s} 对 <a href="{InfoURL}">《{novel_title}》</a><!-- IF chapter_title --> 的 {chapter_title}<!-- ENDIF --> 发表的评论:</i><br />
+<!-- IF title -->						<strong>{title}</strong><br /><!-- ENDIF -->
+						{content}
+					</td>
+				</tr>
+<!-- END comments -->
+<!-- ELSE --><tr><td>当前没有任何记录</td></tr><!-- ENDIF -->
+			</table>
+		</div>
+	</div>

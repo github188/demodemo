@@ -1,0 +1,25 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>本程序用于管理 data/zip 目录下的zip文件以及 data/txt 目录下的txt文件。</li><li>这些文件是由当用户点击“打包下载”和“TXT下载”时生成的文件。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="zips">
+	<div class="adminborder">
+		<div class="adminhead">打包下载管理</div>
+		<div class="b0">
+			<ul>
+			<!-- BEGIN ziplist -->
+				<li><input type="checkbox" name="delzips[]" value="{C_filename}" />{C_filename}</li>
+			<!-- END ziplist -->
+			</ul>
+		</div>
+		<div class="b0">
+			<ul>
+			<!-- BEGIN txtlist -->
+				<li><input type="checkbox" name="deltxts[]" value="{C_filename}" />{C_filename}</li>
+			<!-- END txtlist -->
+			</ul>
+		</div>
+		<div class="bt"><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />全选&nbsp;&nbsp;<input type="submit" value=" 删 除 " /></div>
+	</div>
+	</form>

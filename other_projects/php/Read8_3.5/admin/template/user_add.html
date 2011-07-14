@@ -1,0 +1,27 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>可在此直接添加新用户，而无需通过前台页面注册。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">添加用户</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">用 户 名:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="20" name="acp_add_user" value="{C_reguser}" /><!-- IF CE_user --> &nbsp;<span style="color: Red;">{CE_user}</span><!-- ENDIF --></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">密 &nbsp; &nbsp;码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="acp_add_user_pswd" /><!-- IF CE_pwd --> &nbsp;<span style="color: Red;">{CE_pwd}</span><!-- ENDIF --></div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">重复密码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="acp_add_user_pswd2" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">电子邮件:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="75" name="acp_add_user_mail" value="{C_regemail}" /><!-- IF CE_email --> &nbsp;<span style="color: Red;">{CE_email}</span><!-- ENDIF --></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

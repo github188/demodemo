@@ -1,0 +1,36 @@
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">书籍列表</div>
+		<div class="rd8_author_book">
+			<table>
+				<tr class="rd8_texture">
+					<td>书名</td>
+					<td>授权</td>
+					<td>类别</td>
+					<td>字数</td>
+					<td>状态</td>
+					<td>时间</td>
+					<td>最后更新</td>
+					<td>管理</td>
+				</tr>
+<!-- BEGIN itemlist -->
+				<tr class="rd8_col{A}" align="center" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'"> 
+					<td><a href="novel.php?bid={id}" target="_blank">《{title}》</a></td>
+					<td>{license}</td>
+					<td>{subject} - {content}</td>
+					<td>{words}</td>
+					<td>{state}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF lastupdate -->{lastupdate_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td class="rd8_typewriter_action">
+						<a href="typewriter/?bid={id}&amp;action=novel_edit">编辑</a>&nbsp;
+						<a href="typewriter/?bid={id}&amp;action=chapter_add">更新</a>&nbsp;
+						<a href="typewriter/?bid={id}&amp;action=chapter_edit">管理</a>&nbsp;
+						<a href="javascript:cfmoption('确实要删除该书吗？', 'typewriter/?bid={id}&amp;action=novel_del');">删除</a>
+					</td>
+				</tr>
+<!-- END itemlist -->
+			</table>
+		</div>
+		<!-- IF pagelink --><div class="rd8_tablebottom">{pagelink}</div><!-- ENDIF -->
+	</div>

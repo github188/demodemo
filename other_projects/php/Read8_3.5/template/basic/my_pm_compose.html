@@ -1,0 +1,31 @@
+	<div class="rd8_fullborder" style="border: 0px;">
+		<div class="rd8_head">站内短信-撰写信息</div>
+		<div style="background-color:#CCC;height:24px;margin:2px auto;line-height:24px;text-align:center;width:60%;">
+			<a href="my/pm_inbox.php">收件箱</a>&nbsp;&nbsp;
+			<a href="my/pm_outbox.php">发件箱</a>&nbsp;&nbsp;
+			<!-- IF current --><a href="my/pm_compose.php" style="color:#FFF;font-weight:bold;">撰写短信</a><!-- ENDIF -->
+		</div>
+		<div class="rd8_col0">
+			<form action="my/pm_check.php" method="post">
+				<table align="center"style="width:60%;border:1px solid #CCC;margin:0 auto;">
+					<tr class="rd8_col0">
+						<td width="30%" align="right">收件人:&nbsp;</td>
+						<td>&nbsp;<input type="text" name="pmto" size="30" value="" /></td>
+					</tr>
+					<tr class="rd8_col0">
+						<td width="30%" align="right">主 &nbsp;题:&nbsp;</td>
+						<td>&nbsp;<input type="text" name="pmtitle" size="60" value="" /></td>
+					</tr>
+
+					<tr class="rd8_col0">
+						<td align="right">内 &nbsp;容:&nbsp;</td>
+						<td>&nbsp;<textarea rows="5" cols="60" name="pmmsg"></textarea></td>
+					</tr>
+					<tr class="rd8_colt">
+						<td align="center" colspan="2"><input type="submit" value=" 发 送 " name="action" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+

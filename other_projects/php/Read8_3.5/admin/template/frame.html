@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<title>{G_sitename} - 后台管理</title>
+<base href="{G_siteurl}/admin/" />
+<link href="template/acp.css" rel="stylesheet" type="text/css" />
+</head>
+
+<noframes>
+	<body style="background: #9EB6D8;">
+		<div id="page">
+			<div class="adminborder" style="margin: 100px 250px 0 !important;margin: 100px 125px 0;width: 400px;">
+				<div class="adminhead" style="width: 396px;">客户端环境错误</div>
+				<div class="b0" style="width: 395px;padding-left: 5px;color: Red;">您需要支持框架的浏览器才能正常使用后台</div>
+			</div>
+		</div>
+	</body>
+</noframes>
+<noscript>
+	<body style="background: #9EB6D8;">
+		<div id="page">
+			<div class="adminborder" style="margin: 100px 250px 0 !important;margin: 100px 125px 0;width: 400px;">
+				<div class="adminhead" style="width: 396px;">客户端环境错误</div>
+				<div class="b0" style="width: 395px;padding-left: 5px;color: Red;">您需要开启浏览器的JavaScript支持才能正常使用后台</div>
+			</div>
+		</div>
+	</body>
+</noscript>
+
+<frameset rows="55,*" cols="*" frameborder="no" border="0" framespacing="0">
+	<frame name="head" noresize="noresize" scrolling="no" src="?frame=head&amp;ptype=default" />
+	<frameset cols="165,*" rows="*" frameborder="no" border="0" framespacing="0">
+		<frame name="left" noresize="noresize" scrolling="no" src="?frame=left&amp;ptype=default" />
+		<frame name="right" noresize="noresize" scrolling="yes" src="?ptype=default" />
+	</frameset>
+</frameset>
+
+</html>

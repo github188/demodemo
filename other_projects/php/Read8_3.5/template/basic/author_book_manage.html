@@ -1,0 +1,49 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">《{title}》 <a href="author/book_info.php?bid={bid}">修改作品信息</a> <a href="author/book_chapter.php?bid={bid}">更新</a> 章节管理</div>
+		<div class="rd8_col0">
+			<form action="author/book_chapter_manage.php" method="post">
+				<table>
+					<tr class="rd8_category" align="center">
+						<td>管理</td>
+						<td>序号</td>
+						<td>章节名称</td>
+						<td>发布时间</td>
+						<td>字数</td>
+						<td>状态</td>
+						<td>收费</td>
+						<td>操作</td>
+					</tr>
+<!-- BEGIN chapters -->
+					<tr class="rd8_col0" id="cprow{id}" align="center" onclick="javascript:HighLight.click('cps{id}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'cps{id}');">
+						<td><input type="checkbox" name="cps[]" id="cps{id}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('cprow{id}', this.id);" /></td>
+						<td>{priority}</td>
+						<td>{title}</td>
+						<td>{dateline_DATE_Y-m-d H:i:s}</td>
+						<td>{words}</td>
+						<td><!-- IF locked -->锁定<!-- ELSE -->正常<!-- ENDIF --></td>
+						<td><!-- IF vip -->是<!-- ELSE -->否<!-- ENDIF --></td>
+						<td class="rd8_td">
+							<a href="author/book_chapter_edit.php?bid={book_id}&amp;cid={id}">编辑</a>
+						</td>
+					</tr>
+<!-- END chapters -->
+					<tr>
+						<td class="rd8_colt" align="center" colspan="8">
+							将选中的章节 
+							<label for="rd8_acd"><input type="radio" name="action" id="rd8_acd" value="delete" onclick="if(!confirm('此操作不可恢复，确实要删除所选章节吗？')) return false;" /> 删除 </label>
+<!-- IF vip -->
+							<label for="rd8_acp"><input type="radio" name="action" id="rd8_acp" value="public" /> 解禁 VIP </label>
+<!-- ENDIF -->
+							<input type="submit" value=" 确定 " /><input type="hidden" name="bid" value="{id}" />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<!-- IF pagelink --><div class="rd8_colt">{pagelink}</div><!-- ENDIF -->
+	</div>
+
+
+
+
+

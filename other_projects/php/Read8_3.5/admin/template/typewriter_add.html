@@ -1,0 +1,73 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>可添加用户成为录入员，并授予其相应的书籍管理权限。</li>
+				<li>作品总管可以管理所有作品。</li>
+				<li>删除的数量限制在 100 以内。</li>
+				<li>具有站长权限的用户不需在此特别设置。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">添加录入员</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">用 户 名:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="20" name="typewriter" value="" /> 请输入需要设置为录入员的前台用户名</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">作品总管:</div>
+			<div style="width: 68%;">
+				<label for="overstep_yes"><input type="radio" name="overstep" id="overstep_yes" value="1" /> 是</label> &nbsp;
+				<label for="overstep_no"><input type="radio" name="overstep" id="overstep_no" value="0" checked="checked" /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新建作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_add_yes"><input type="radio" name="novel_add" id="novel_add_yes" value="1" checked="checked" /> 是</label> &nbsp;
+				<label for="novel_add_no"><input type="radio" name="novel_add" id="novel_add_no" value="0" /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">编辑作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_edit_yes"><input type="radio" name="novel_edit" id="novel_edit_yes" value="1" checked="checked" /> 是</label> &nbsp;
+				<label for="novel_edit_no"><input type="radio" name="novel_edit" id="novel_edit_no" value="0" /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">删除作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_del_yes"><input type="radio" name="novel_del" id="novel_del_yes" value="-1" /> 不限数量</label> &nbsp;
+				<label for="novel_del_limit"><input type="radio" name="novel_del" id="novel_del_limit" value="1" /> 每天最多可删除 </label><input type="text" name="novel_del_num" value="5" size="5" /> 本 &nbsp;
+				<label for="novel_del_no"><input type="radio" name="novel_del" id="novel_del_no" value="0" checked="checked" /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新建章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_add_yes"><input type="radio" name="chapter_add" id="chapter_add_yes" value="1" checked="checked" /> 是</label> &nbsp;
+				<label for="chapter_add_no"><input type="radio" name="chapter_add" id="chapter_add_no" value="0" /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">编辑章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_edit_yes"><input type="radio" name="chapter_edit" id="chapter_edit_yes" value="1" checked="checked" /> 是</label> &nbsp;
+				<label for="chapter_edit_no"><input type="radio" name="chapter_edit" id="chapter_edit_no" value="0" /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">删除章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_del_yes"><input type="radio" name="chapter_del" id="chapter_del_yes" value="-1" /> 不限数量</label> &nbsp;
+				<label for="chapter_del_limit"><input type="radio" name="chapter_del" id="chapter_del_limit" value="1" /> 每天最多可删除 </label><input type="text" name="chapter_del_num" value="5" size="5" /> 章 &nbsp;
+				<label for="chapter_del_no"><input type="radio" name="chapter_del" id="chapter_del_no" value="0" checked="checked" /> 否</label>
+			</div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

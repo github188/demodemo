@@ -1,0 +1,61 @@
+	<div id="rd8_center">
+		<div id="rd8_bdleft">
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">总点击榜</li>
+<!-- BEGIN novel_total_click -->
+					<li class="rd8_subject_news"><a href="{InfoURL}">{title}</a>({click_total})</li>
+<!-- END novel_total_click -->
+			</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">总推荐榜</li>
+<!-- BEGIN novel_total_commend -->
+					<li class="rd8_subject_news"><a href="{InfoURL}">{title}</a>({vote_total})</li>
+<!-- END novel_total_commend -->
+			</div>
+		</div>
+<div id="rd8_bdright">
+			<div id="rd8_detail">
+				<span><strong>《{title}》</strong></span>
+				<span>作者：{author}</span>
+				<span>发表时间：{dateline_DATE_Y-m-d H:i:s}</span>
+				<span>所属类别：{subject}</span>
+				<span class="noborder">已阅读：{click}</span>
+				<span class="noborder">所获票数：{vote}</span>
+                <sapn></span>
+			</div>
+            <div id="rd8_novellib_introduce">
+            	<li class="rd8_introduce_img"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></li>
+                <li class="rd8_introduce">{intro}</li>
+            </div>
+			<p class="rd8_opration">
+            							<div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-left:5px;"><span style="line-height:30px;"><a style="font-weight:bold;color:#FFF;" href="{HTMLURL}">点击阅读</a></span></div> &nbsp;
+						<!-- IF fulltext --><div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-top:-13px;margin-left:12px;*margin-top:-15px;"><span style="line-height:30px;"><a style="font-weight:bold;color:#FFF;" href="fulltext.php?bid={bid}">全文阅读</a></span></div><!-- ENDIF --> &nbsp;
+						<div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-top:-13px;margin-left:12px;*margin-top:-15px;"><strong class="rd8_a" onclick="javascript:favorite('{bid}');" style="line-height:30px;font-weight:bold;color:#FFF;cursor:pointer;">放入书架</strong></div> &nbsp;
+						<!-- IF author_id --> &nbsp;<div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-top:-13px;margin-left:12px;*margin-top:-15px;"><strong style="line-height:30px;"><a style="font-weight:bold;color:#FFF;" href="{AuthorURL}">作家专栏</a></strong> </div>&nbsp;<!-- ENDIF -->
+						<!-- IF download_package --><div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-top:-13px;margin-left:12px;*margin-top:-15px;"><strong style="line-height:30px;"><a style="font-weight:bold;color:#FFF;" href="download.php?bid={bid}&amp;type=zip">打包下载</a></strong> </div>&nbsp;<!-- ENDIF -->
+						<!-- IF download_text --><div style="background:url('images/bg.png') no-repeat;width:70px;height:30px;text-align:center;float:left;margin-top:-13px;margin-left:12px;*margin-top:-15px;"><strong style="line-height:30px;"><a style="font-weight:bold;color:#FFF;" href="download.php?bid={bid}&amp;type=txt">TXT 下载</a></strong></div><!-- ENDIF -->
+
+            </p>
+				<div id="rd8_book_comment">
+					<p><strong>发表书评: </strong><span id="rd8_lengthlimit">可写 {comment_min} - {comment_max} 字</span></p>
+					<form action="comment.php?bid={bid}&amp;story=0" method="post">
+						<input type="text" name="title" size="65" />&lt;&lt;记得在此写上标题哟<br />
+						<textarea name="comment" id="rd8_comment" rows="6" cols="70" onkeyup="javascript:calclen(this.value, {comment_max}, {comment_min});" onblur="javascript:calclen(this.value, {comment_max}, {comment_min});" style="margin-bottom:8px;margin-top:8px;"></textarea><br />
+						<!-- IF comment_secode -->验证码: <input type="text" name="secode" id="rd8_hash" size="8" title="请在该框中输入右图显示的字符" />&nbsp;<img src="download.php?action=gethashimg" alt="请在左框中输入该图显示的字符" align="absmiddle" style="cursor: pointer;" onclick="javascript:this.src='download.php?action=gethashimg&amp;xx='+Math.random();" /> <!-- ENDIF --><input type="submit" id="rd8_refer" value=" 发 表 " /> &nbsp; &nbsp;<input type="reset" value=" 取 消 " />
+					</form>
+<!-- IF comments -->
+					<div class="rd8_all">本书点评</div>
+	<!-- BEGIN comments -->
+					<div class="rd8_commentbox">
+						<div class="rd8_commen_title"><strong>{title}</strong></div>
+						<div class="rd8_commen_content">{content}</div>
+					</div>
+					<div class="rd8_commentfooter">{username} 于 {dateline_DATE_Y-m-d H:i:s}</div>
+	<!-- END comments -->
+<!-- ELSE -->
+						<div class="rd8_all">沙发空缺中，还不快抢？</div>
+<!-- ENDIF -->
+				</div>
+
+		 </div>
+	</div>

@@ -1,0 +1,71 @@
+	<div id="rd8_center">			
+		<h1 class="rd8_subguide">您正在浏览：<acronym>{nc_title}</acronym>频道</h1>
+			<div id="rd8_left" style="margin-top:7px;">
+				<div class="rd8_subnav">
+					<div class="rd8_subject">
+						<li class="rd8_subject_title">按题材</li>
+		<!-- BEGIN subjects -->
+							<li class="rd8_subject_news"><a href="novellib.php?subject={id}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a></li>
+		<!-- END subjects -->
+					</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按内容</li>
+<!-- BEGIN contents -->
+						<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={id}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a> </li>
+<!-- END contents -->
+			</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按首字母</li>
+<!-- BEGIN initial -->
+					<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={ncontent}&amp;initial={v}&amp;words={nwords}"<!-- IF selected -->  class="rd8_currentlink"<!-- ENDIF -->>[{v}]</a></li>
+<!-- END initial -->
+			</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按字数</li>
+<!-- BEGIN words -->
+					<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={v}"<!-- IF selected -->  class="rd8_currentlink"<!-- ENDIF -->>[{v}]</a></li>
+<!-- END words -->
+			</div>			
+		</div>
+	</div>
+
+			<div id="rd8_middle" style="width:58% !important;">
+				<p class="rd8_catetitle">最新上架</p>
+<!-- BEGIN novels -->
+					<li<!-- IF A --> class="rd8_evenrow"<!-- ENDIF -->><span class="rd8_lisubject">[{content}]<a href="{InfoURL}"> 《{title}》 {chapter_title} </a></span><span class="rd8_liauthor">{author}</span><span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span></li>
+<!-- END novels -->
+				<li class="rd8_showallbook"><a href="novellib.php?subject={nc}">查看所有图书&nbsp;&nbsp;</a></li>
+			</div>
+
+			<div id="rd8_subright">
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总推荐榜</dt>
+	<!-- BEGIN novel_total_commend -->
+						<dd><a href="{InfoURL}">{title}</a>({vote_total})</dd>
+	<!-- END novel_total_commend -->
+					</dl>	
+					<span><a href="rank.php?times=total&amp;types=commend&amp;sc={nc}">更多&nbsp;&nbsp;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总点击榜</dt>
+<!-- BEGIN novel_total_click -->
+						<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END novel_total_click -->
+					</dl>
+					<span><a href="rank.php?times=total&amp;types=click&amp;sc={nc}">更多&nbsp;&nbsp;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总收藏榜</dt>
+<!-- BEGIN novel_total_favo -->
+						<dd><a href="{InfoURL}">{title}</a>({favo_total})</dd>
+<!-- END novel_total_favo -->
+					</dl>
+					<span><a href="rank.php?times=total&amp;types=favo&amp;sc={nc}">更多&nbsp;&nbsp;</a></span>
+					</div>	
+				</div>
+		</div>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<title>{G_sitename} - 后台管理</title>
+<base href="{G_siteurl}/admin/" />
+<link href="template/acp.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+	function FindTags(parentobj, tag){
+		if(typeof parentobj.getElementsByTagName != 'undefined') return parentobj.getElementsByTagName(tag);
+		else if(parentobj.all && parentobj.all.tags) return parentobj.all.tags(tag);
+		else return null;
+	}
+	function SetHighLight(n){
+		var dds = FindTags(document, 'dd');
+		for(var i = 1; i < dds.length - 1; i++) {
+			dds[i].className = 'bdd';
+		}
+		dds[1].className = 'bdde';
+		document.getElementById('imgend').src = 'template/images/ttn3.gif';
+		dds[dds.length - 2].className = 'bdds';
+		document.getElementById('imgstart').src = 'template/images/ttn1.gif';
+		if(n <= 1) {
+			n = 1;
+			dds[n].className = 'bdde2';
+			document.getElementById('imgend').src = 'template/images/ttn3_.gif';
+		}else if(n >= dds.length - 2) {
+			n = dds.length - 2;
+			dds[n].className = 'bdds2';
+			document.getElementById('imgstart').src = 'template/images/ttn1_.gif';
+		}else {
+			dds[n].className = 'bdd2';
+		}
+	}
+	function Loading(frame){
+		if(frame == 'left') {
+			Loading('right');
+			var targetdoc = parent.left.document;
+				targetwin = parent.left.window;
+		}else if(frame == 'right') {
+			var targetdoc = parent.right.document;
+				targetwin = parent.right.window;
+		}
+
+		var ie = targetdoc.all && !targetwin.opera;
+			iebody = (targetdoc.compatMode=="CSS1Compat") ? targetdoc.documentElement : targetdoc.body;
+		var docwidth = (ie) ? iebody.clientWidth : targetwin.innerWidth;
+			docheight = (ie) ? iebody.clientHeight : targetwin.innerHeight;
+
+		targetdoc.writeln('<style type="text/css">');
+		targetdoc.writeln('	.loading {');
+		targetdoc.writeln('		position: absolute;');
+		targetdoc.writeln('		top: 0;');
+		targetdoc.writeln('		left: 0;');
+		targetdoc.writeln('		width: '+docwidth+'px;');
+		targetdoc.writeln('		height: '+docheight+'px;');
+		targetdoc.writeln('		text-align: center;');
+		targetdoc.writeln('		line-height: '+docheight+'px;');
+		targetdoc.writeln('		border: 0;');
+		targetdoc.writeln('		border-'+(frame=='left'?'right':'top')+': 1px solid #515C3C;');
+		targetdoc.writeln('		background: #E1E8F3 url(template/images/loading.gif) no-repeat scroll '+Math.floor((docwidth-100)/2)+'px '+Math.floor((docheight-100)/2)+'px;');
+		targetdoc.writeln('	}');
+		targetdoc.writeln('</style>');
+		targetdoc.writeln('<div class="loading">');
+		targetdoc.writeln('	Loading......');
+		targetdoc.writeln('</div>');
+	}
+//--><!]]></script>
+</head>
+
+<body>
+	<div id="main">
+		<div id="ldd2">
+			<div id="sktop">
+				<a href="{G_siteurl}" target="_blank">网站首页</a></td> &nbsp; &nbsp;
+				<td><a href="?action=changepswd" target="_top">修改密码</a></td> &nbsp; &nbsp;
+				<td><a href="?action=logoff" target="_top">安全退出</a> &nbsp; &nbsp;
+			</div>
+			<dl>
+				<dd><img id="imgend" src="template/images/ttn3.gif" width="7" height="26"></dd>
+		<!-- BEGIN C_catblock -->
+				<dd class="bdd" id="d{C_i}"><a href="#" onclick="javascript:SetHighLight({C_i});Loading('left');parent.left.location='?frame=left&amp;ptype={C_ptype}';parent.right.location='?ptype={C_ptype}';return false;">{C_title}</a></dd>
+		<!-- END -->
+				<dd><img id="imgstart" src="template/images/ttn1.gif" width="20" height="26" /></dd>
+			</dl>
+		</div>
+	</div>
+	<div id="ldd1">&nbsp;</div>
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+		SetHighLight(999);
+	//--><!]]></script>
+</body>
+</html>

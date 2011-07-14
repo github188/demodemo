@@ -1,0 +1,218 @@
+/* Global Classes */
+a {
+	text-decoration: none;
+}
+a:link, span:link {
+	color: #333;
+}
+a:visited, span:visited {
+	color: #666;
+}
+a:hover, span:hover {
+	color: #F60;
+}
+
+body {
+	width: 95%;
+	margin: 10px auto;
+	background: #EBF3E6;
+	font: 12px , Arial, Tahoma, Verdana;
+	text-decoration: none;
+	behavior: url(../../../template/basic/csshover.htc);
+}
+
+h1 {
+	clear: both;
+}
+
+hr {
+	width: 100%;
+	float: left;
+	color: #rgb(182, 219, 255);
+	height: 1px;
+	clear: both;
+}
+
+img {
+	border: 0;
+}
+
+span {
+	cursor: pointer;
+}
+
+#page {
+	margin: 0 auto;
+	padding: 0;
+	width: 100%;
+	background: Transparent;
+}
+
+#footannlist {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	clear: both;
+}
+
+#footannlist img{
+	border:none;
+	margin-left:0;
+}
+#footannread {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 60px;
+	clear: both;
+}
+
+#head div,#middle div{
+	float: left;
+	line-height: 24px;
+}
+
+
+#head div.nav_bg {
+	width: 76px;
+	text-align: center;
+	background:url('../../images/top_bg.jpg') no-repeat;
+	margin-left:5px;
+	height:26px;
+	overflow:hidden;
+
+}
+#head div#fontsize, #middle div#fontsize{
+	width: 12%;
+	margin-left:0;
+}
+#head div#pagecolor, #middle div#fontsize {
+	width: 15%;
+}
+#head div#font_lang {
+	width: 6% !important;
+	width: 5%;
+	text-align: right;
+	background:url('../../images/top_bg.jpg') no-repeat;
+}
+#head div#pagelink {
+	width: 76px;
+	text-align: center;
+	background:url('../../images/top_bg.jpg') no-repeat;
+	margin-left:5px;
+	height:26px;
+}
+#head div#fave,#head #rd8_font_lang{
+	width: 76px;
+	text-align: center;
+	background:url('../../images/top_bg.jpg') no-repeat;
+	margin-left:5px;
+	height:26px;
+}
+
+#menu ul li {
+	width: 25%;
+	float: left;
+	list-style: none;
+}
+
+#title {
+	font-size: 16px;
+	text-align: center;
+	font-weight: bold;
+	margin: 15px 0;
+}
+.title {
+	font-size: 16px;
+	text-align: center;
+	font-weight: bold;
+	margin: 15px 0;
+}
+
+#author {
+	font-size: 13px;
+	text-align: center;
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
+.pagelinks {
+	text-align: center;
+	width: 76px;
+	background:url('../../images/top_bg.jpg') no-repeat;
+	margin:5px;
+	height:26px;
+
+}
+
+#copyright {
+	text-align: center;
+	font-size: 14px;
+	line-height: 20px;
+	margin-top: 10px;
+	clear: both;
+}
+
+.content {
+	font-size: 14px;
+	margin: 20px auto;
+}
+#content {
+	font-family: "宋体" serif;
+	font-size: 16px;
+	margin: 20px auto;
+	line-height: 3em;
+	clear: both;
+}
+#content p {
+	text-align: left;
+}
+#content div#vip {
+	text-align: center;
+}
+
+
+#chapterlist {
+	width: 100%;
+	border: 1px solid #E4E9F1;
+	border-left: 0;
+	margin: 20px 0;
+}
+
+#chapterlist, #chapterlist div {
+	float: left;
+}
+
+#chapterlist div {
+	border: 1px solid #E4E9F1;
+	border-right: 0;
+	line-height: 16px;
+}
+
+#chapterlist div.vol {
+	width: 100%;
+	font-size: 16px;
+	text-align: center;
+	padding: 5px 0;
+	background: #B6DBFF;
+}
+
+#chapterlist div.chapter, div.vip {
+	width: 24%;
+	font-size: 13px;
+	padding: 5px 0 5px 5px;
+}
+
+#chapterlist div.vip {
+	color: Red;
+	font-weight: bold;
+	text-decoration: none;
+	background-color: #7FFFD4 !important;
+	background: Aquamarine;
+}
+
+#foot div{
+	float: left;
+	line-height: 24px;
+}

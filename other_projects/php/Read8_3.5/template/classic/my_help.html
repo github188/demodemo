@@ -1,0 +1,44 @@
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">求助投诉</div>
+		<div class="rd8_col0">
+			<form action="my/help_send.php" method="post">
+				<table>
+					<tr class="rd8_col0">
+						<td width="30%" align="right">标 &nbsp;题:&nbsp;</td>
+						<td>&nbsp;<input type="text" name="title" size="60" value="{title}" /></td>
+					</tr>
+					<tr class="rd8_col0">
+						<td align="right">内 &nbsp;容:&nbsp;</td>
+						<td>&nbsp;<textarea rows="5" cols="60" name="content"></textarea></td>
+					</tr>
+					<tr class="rd8_colt">
+						<td align="center" colspan="2"><input type="submit" value=" 提 交 " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div class="rd8_head">我的求助投诉信息</div>
+<!-- BEGIN helps -->
+			<div class="rd8_commentbox rd8_help">
+				<div class="rd8_commen_title"><strong>{title}</strong></div>
+					<div class="rd8_commen_content">{content}</div>
+			</div>
+			<div class="rd8_commentfooter rd8_help rd8_commen_footer">
+				{username} 于 {dateline_DATE_Y-m-d H:i:s}
+			</div>
+
+<!-- IF replytime -->
+			<div class="rd8_commentbox rd8_help">
+				<div class="rd8_commen_title">回复:</div>
+					<div class="rd8_commen_content">{reply}</div>
+			</div>
+			<div class="rd8_commentfooter rd8_help rd8_commen_footer">管理员于{dateline_DATE_Y-m-d H:i:s}回复</div>
+<!-- ELSE -->
+			<div class="rd8_noreply">管理员暂无回复</div>
+<!-- ENDIF -->
+<!-- END helps -->
+
+
+			<div class="rd8_colt" style="padding-left:2px;margin:3px;"><!-- IF pagelink -->{pagelink}<!-- ELSE -->共一页<!-- ENDIF --></div>
+	</div>

@@ -1,0 +1,45 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">新建作品</div>
+		<div class="rd8_col0">
+			<form action="my/story_create.php" method="post">
+				<table id="rd8_typewriter">
+					<tr style="background:#FFF;">
+						<td width="7%" align="center">作品名称</td>
+						<td  style="text-align:left;padding-left:10px;"><input type="text" name="title" /> (不用添加书名号)</td>
+						<td align="center">作 &nbsp; &nbsp;者</td>
+						<td style="text-align:left;padding-left:10px;"><input type="text" name="author" /></td>
+					</tr>
+					<tr>
+						<td align="center">作品类型</td>
+						<td colspan="3" style="text-align:left;padding-left:10px;">
+							<select name="subject" style="border:1px solid #B6DBFF;">
+<!-- BEGIN subjects -->
+								<option value="{id}">{title}</option>
+<!-- END subjects -->
+							</select>
+							<select name="content" style="border:1px solid #B6DBFF;">
+<!-- BEGIN contents -->
+								<option value="{id}">{title}</option>
+<!-- END contents -->
+							</select>
+						</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">内容介绍</td>
+						<td colspan="3" style="text-align:left;padding-left:10px;"><input type="text" name="description" size="55" /> (请使用自然语言描述本书内容，不超过八十四个汉字。)</td>
+					</tr>
+					<tr>
+						<td align="center">关 键 字</td>
+						<td colspan="3" style="text-align:left;padding-left:10px;"><input type="text" name="tag" /> (请填写不超过三个的除作品名称、类型、风格以外与作品内容相关的词语。使用 , 分隔)</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">内 &nbsp; &nbsp;容</td>
+						<td colspan="3" style="text-align:left;padding-left:10px;"><textarea rows="20" cols="90" name="body" style="border:1px solid #B6DBFF;"></textarea></td>
+					</tr>
+					<tr>
+						<td class="rd8_colt" style="text-align:center;" colspan="4"><input type="submit" value=" 申请发表 " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>

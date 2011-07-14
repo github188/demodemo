@@ -1,0 +1,79 @@
+	<div class="adminborder">
+		<div class="adminhead">后 台 首 页</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;font-weight: bold;">欢迎您, {F_username}</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">
+			GMT 时间: <span style="font-family: verdana;font-weight: bold;">{C_servertime}</span>&nbsp;&nbsp;&nbsp;
+			校对:&nbsp;<span style="font-family: verdana;">{C_timedelay}</span> 秒<br />
+			网站时间: <span style="font-family: verdana;font-weight: bold;">{C_thistime}</span>&nbsp;&nbsp;&nbsp;
+			时区:&nbsp;GMT<!-- IF C_timeblock -->{C_timeblock}<!-- ENDIF -->
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">后台在线用户</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">
+		<!-- BEGIN admins -->
+			{C_name} &nbsp;
+		<!-- END admins -->
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">系统信息</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;">PHP &nbsp; &nbsp; &nbsp; 版本</div>
+			<div style="width: 70%;"><span style="color: Blue;">{C_phpver}</span></div>
+		</div>
+		<div class="b1">
+			<div style="width: 28%;padding-left: 1%;">MySQL &nbsp; &nbsp; 版本</div>
+			<div style="width: 70%;"><span style="color: Blue;">{C_dbversion}</span></div>
+		</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;">服务器操作系统</div>
+			<div style="width: 70%;"><span style="color: Blue;">{C_phpos}</span></div>
+		</div>
+		<div class="b1">
+			<div style="width: 28%;padding-left: 1%;">当前数据库大小</div>
+			<div style="width: 70%;"><span style="color: Blue;">{C_dbsize}</span></div>
+		</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;">书 &nbsp;网 &nbsp;版 &nbsp;本</div>
+			<div style="width: 70%;"><span style="color: Blue;">{C_version}</span></div>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">读吧书网 相关信息</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;">书网官站</div>
+			<div style="width: 70%;"><a href="http://www.read8.net" target="_blank">http://www.read8.net</a></div>
+		</div>
+		<div class="b1">
+			<div style="width: 28%;padding-left: 1%;">官方论坛</div>
+			<div style="width: 70%;"><a href="http://bbs.read8.net" target="_blank">http://bbs.read8.net</a> 相关版块: 
+			<a href="http://bbs.read8.net/forum-8-1.html" target="_blank" style="font-weight: bold;">安装使用</a>
+			<a href="http://bbs.read8.net/forum-15-1.html" target="_blank" style="font-weight: bold;">公告区</a>
+			<a href="http://bbs.read8.net/forum-7-1.html" target="_blank" style="font-weight: bold;">商业用户讨论区</a>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;">系统开发设计</div>
+			<div style="width: 70%;">
+				澳柯网信 <a href="http://bbs.read8.net/space.php?action=viewpro&uid=1" target="_blank">书生(规划)</a> &nbsp; &nbsp; 
+				<a href="http://bbs.read8.net/space.php?action=viewpro&uid=2502" target="_blank">rimy(程序)</a> &nbsp; &nbsp; 
+				<a href="http://bbs.read8.net/space.php?action=viewpro&uid=2501" target="_blank">andy(程序)</a> &nbsp; &nbsp; 
+				<a href="http://bbs.read8.net/space.php?action=viewpro&uid=2711" target="_blank">denny(界面)</a> &nbsp; &nbsp; 
+				<a href="http://bbs.read8.net/space.php?action=viewpro&uid=2512" target="_blank">cathy(美工)</a><br />
+				鸣谢: CSDN程序员大本营 &nbsp; &nbsp;小谢
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 28%;padding-left: 1%;"><img src="template/images/logo143x59.jpg" alt="" /></div>
+			<div style="width: 70%;">
+			&nbsp;&nbsp;澳柯网信科技发展有限公司成立于2008年元月，公司位于北京，拥有众多的IT行业软件产品，同时被评为高新科技企业。我们拥有长达七年开发经验的程序构架师和工程师，以及三年服务器维护经验的系统工程师，并拥有专业的美工和策划。我们将在中国IT行业的前沿一路前行，并会继续创造我们的辉煌。<br />
+			&nbsp;&nbsp;更多详情请参考: <a href="http://www.aokosoft.com" target="_blank">http://www.aokosoft.com</a>。
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="http://www.read8.net/checknew.php?hash={C_hash}"></script>

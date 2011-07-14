@@ -1,0 +1,53 @@
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+	function openwin(cbcid) {
+		window.open("bookcase.php?changebcid="rd8_+cbcid,"","width=300px,height=120px,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no")
+	}
+//--><!]]></script>
+
+<div class="rd8_main">
+	<div class="rd8_full">
+		<div class="rd8_fullborder">
+			<div class="rd8_head">书架列表</div>
+			<div class="rd8_category" style="font-weight: bold;">
+				<a href="bookcase.php">全部</a><!-- BEGIN Bookcasesblock --> &nbsp; &nbsp;<a href="bookcase.php?bckindname={C_bckindname}">{C_bckindname}</a><!-- END Bookcasesblock -->
+			</div>
+			<div class="rd8_head">
+				<div style="width: 20px;">&nbsp;</div>
+				<div style="width: 162px;">作品名称</div>
+				<div style="width: 262px;">上次阅读章节</div>
+				<div style="width: 262px;">最新章节</div>
+				<div style="width: 80px;">书架</div>
+				<div style="width: 100px;"><span style="color: Red;">管理</span></div>
+			</div>
+			<!-- BEGIN Bookcaselistblock -->
+			<div class="rd8_col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'"> 
+				<div style="width: 20px;text-align: center;"><!-- IF C_isnew --><span style="color: Red;">新</span><!-- ELSE -->&nbsp;<!-- ENDIF --></div>
+				<div style="width: 162px;text-align: center;"><a href="bookinfo.php?bid={C_bookid}" rel="external" style="color: Green;">{C_booktitle}</a></div>
+				<div style="width: 262px;"><!-- IF C_lastvolumetitle --><span style="color: Gray;">{C_lastvolumetitle} -</span><!-- ENDIF --> <a href="html/{C_typeid}/{C_bookid}/{C_lastorderid}.html" rel="external" title="{C_lastchaptertitle}" style="color: Green;">{C_lastchaptertitlesub}</a></div>
+				<div style="width: 262px;"><!-- IF C_volumetitle --><span style="color: Gray;">{C_volumetitle} -</span><!-- ENDIF --> <a href="html/{C_typeid}/{C_bookid}/{C_orderid}.html" rel="external" title="{C_chaptertitle}" style="color: Green;">{C_chaptertitlesub}</a></div>
+				<div style="width: 80px;text-align: center;"><!-- IF C_bookcasename -->{C_bookcasename}<!-- ELSE -->&nbsp;<!-- ENDIF --></div>
+				<div style="width: 100px;text-align: center;"><a href="bookcase.php?bid={C_bookid}">下架</a> &nbsp;<a href="#" onclick="openwin('{C_bookcaseid}')">修改书架</a></div>
+			</div>
+			<!-- END Bookcaselistblock -->
+			<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+		</div>
+
+		<div class="rd8_fullborder">
+			<div class="rd8_head">书架编辑</div>
+			<div class="rd8_col0">
+				<div style="width: 641px;padding-left: 5px;">增加书架: 只需要在修改书架时手动输入名字即可。</div>
+				<form action="bookcase.php" method="post">
+					<div>
+						删除书架:
+						<select name="delbcname">
+						<!-- BEGIN Bookcasesblock -->
+							<option value="{C_bckindname}"><!-- IF C_bckindname -->{C_bckindname}<!-- ELSE -->默认书架<!-- ENDIF --></option>
+						<!-- END Bookcasesblock -->
+						</select>
+						<input type="submit" value="删除" onclick="if(!confirm('确认删除此书架吗？删除之后此书架的书籍将自动移动至默认书架。')) return false;" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

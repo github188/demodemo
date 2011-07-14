@@ -1,0 +1,370 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+<title>插入图片</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="robots" content="noindex, nofollow">
+<style type="text/css">
+table{
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+body{
+	overflow:hidden;
+	margin:0px;
+	padding:0px;
+	padding-top:1px;
+	background-color:#373737;
+	color:#FFFFFF;
+}
+.BtnReset
+{
+	float: left;
+	background-position: center center;
+	background-image: url(images/reset.gif);
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+	border: 1px none;
+	font-size: 1px ;
+}
+
+.BtnLocked, .BtnUnlocked
+{
+	float: left;
+	background-position: center center;
+	background-image: url(images/locked.gif);
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+	border: 1px none;
+	font-size: 1px ;
+}
+
+.BtnUnlocked
+{
+	background-image: url(images/unlocked.gif);
+}
+.BtnOver
+{
+	border: 1px outset;
+	cursor: pointer;
+	cursor: hand;
+}
+.title{
+	width:100%;
+	background-color:#212121;
+	font-size:13px;
+	color:#FFF;
+	magin:auto;
+	height:16px;
+	padding-top:2px;
+	padding-left:4px;
+}
+input{
+	border-left:1px solid #808080;
+	border-top:1px solid #808080;
+	border-bottom:1px solid #D4D1CA;
+	border-right:1px solid #D1D0CC;
+	height:18px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+.BtnUnlocked1 {	float: left;
+	background-position: center center;
+	background-image: url(images/locked.gif);
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+	border: 1px none;
+	font-size: 1px ;
+}
+</style>
+<script type="text/javascript">
+function $(s){return document.getElementById(s);} 
+function checkUpload(){
+	if( $('txtUploadFile').value == '' ) 
+	{
+		ErrorMsg(3);
+		$('txtUploadFile').focus();
+		return false;
+	}
+	var exName = $('txtUploadFile').value.substring($('txtUploadFile').value.lastIndexOf('.')+1).toLowerCase();
+	if ( !/gif|jpeg|jpg|png/.test(exName) ) {
+		ErrorMsg(1);
+		$('txtUploadFile').focus();
+		return false;
+	}
+}
+function ErrorMsg( N , Url , previewpic , basicpic )
+{
+	switch ( N )
+	{
+		case 0 :	// No errors
+			alert( '上传成功' ) ;
+			break ;
+		case 1 :
+		    alert( '请选择图片文件。（扩展名为“jpg”、“gif”、“png”）') ;
+		    return ;
+		case 2 :
+			alert( '请输入图象地址' ) ;
+			return ;
+		case 3 :
+			alert( '"请先选择您要上传的文件"');
+			return ;
+		case 4 :
+			alert( '您所上传的文件太大了' );
+			return ;
+		case 5 :
+			alert( '上传失败');
+			return ;
+		case 6 :
+			alert( '尚未登录');
+			return ;
+	}
+	$('txtUrl').value = Url+previewpic;
+	$('basictxtUrl').value = Url+basicpic;
+	UpdatePreview();
+}
+function insetImg() {
+	if ($('txtUrl').value == '') { ErrorMsg(2) ; return ;}
+	var html = "<a href='"+ $('basictxtUrl').value +"' target='_blank'><img alt='查看完整图片' src='"+ $('txtUrl').value + "' ";
+	if($('txtAlt').value)  html += "alt='"+$('txtAlt').value+"'";
+	if($('txtWidth').value && !isNaN($('txtWidth').value)) html += "width='" +$('txtWidth').value+ "'";
+	if($('txtHeight').value && !isNaN($('txtHeight').value)) html += "height='" +$('txtHeight').value+ "'";
+	if($('txtBorder').value && !isNaN($('txtBorder').value)) html += "border='" +$('txtBorder').value+ "'";
+
+	if($('txtHSpace').value && !isNaN($('txtHSpace').value)) html += "hspace='" +$('txtHSpace').value+ "'";
+	if($('txtVSpace').value && !isNaN($('txtVSpace').value)) html += "vspace='" +$('txtVSpace').value+ "'";
+	if($('cmbAlign').value) html += "align='" +$('cmbAlign').value+ "'";
+	html +=" /></a>";
+
+	if(window.Event){
+		var oRTE = opener.getFrameNode(opener.sRTE);
+		oRTE.document.execCommand('insertHTML', false, html);
+	}
+	else {
+		var oRTE = dialogArguments.getFrameNode(dialogArguments.sRTE);
+		oRTE.focus();
+		var oRng = oRTE.document.selection.createRange();
+		oRng.pasteHTML(html);
+		oRng.collapse(false);
+		oRng.select();
+	}
+	window.close();
+}
+function _cancel() {
+	window.close();
+}
+/*----------------------------------------------------*/
+var eImgPreview ;
+var eImgPreviewLink ;
+function SetPreviewElements( imageElement, linkElement )
+{
+	eImgPreview = imageElement ;
+	eImgPreviewLink = linkElement ;
+	UpdatePreview() ;
+	UpdateOriginal() ;
+	bPreviewInitialized = true ;
+}
+function UpdatePreview()
+{
+	if ( !eImgPreview || !eImgPreviewLink ) return ;
+	if ( $('txtUrl').value.length == 0 ) 
+		eImgPreviewLink.style.display = 'none' ;
+	else
+	{
+		UpdateImage( eImgPreview ) ;
+		SetAttribute( eImgPreviewLink, 'href', '' ) ;
+		eImgPreviewLink.style.display = '' ;
+	}
+}
+function UpdateImage( e )
+{
+	e.src = $('txtUrl').value ;
+	SetAttribute( e, "_fcksavedurl", $('txtUrl').value ) ;
+	SetAttribute( e, "alt"   , $('txtAlt').value ) ;
+	SetAttribute( e, "width" , $('txtWidth').value ) ;
+	SetAttribute( e, "height", $('txtHeight').value ) ;
+	SetAttribute( e, "vspace", $('txtVSpace').value ) ;
+	SetAttribute( e, "hspace", $('txtHSpace').value ) ;
+	SetAttribute( e, "border", $('txtBorder').value ) ;
+	SetAttribute( e, "align" , $('cmbAlign').value ) ;
+}
+function SetAttribute( element, attName, attValue )
+{
+	if ( attValue == null || attValue.length == 0 )
+		element.removeAttribute( attName, 0 ) ;			
+	else
+		element.setAttribute( attName, attValue, 0 ) ;	
+}
+var oImageOriginal ;
+function UpdateOriginal( resetSize )
+{
+	if ( !eImgPreview )
+		return ;
+	oImageOriginal = document.createElement( 'IMG' ) ; 
+	if ( resetSize )
+	{
+		oImageOriginal.onload = function()
+		{
+			this.onload = null ;
+			ResetSizes() ;
+		}
+	}
+
+	oImageOriginal.src = eImgPreview.src ;
+}
+var bLockRatio = true ;
+function OnSizeChanged( dimension, value )
+{
+	if ( oImageOriginal && bLockRatio )
+	{
+		var e = dimension == 'Width' ? $('txtHeight') : $('txtWidth') ;
+		if ( value.length == 0 || isNaN( value ) )
+		{
+			e.value = '' ;
+			return ;
+		}
+		if ( dimension == 'Width' )
+			value = value == 0 ? 0 : Math.round( oImageOriginal.height * ( value  / oImageOriginal.width ) ) ;
+		else
+			value = value == 0 ? 0 : Math.round( oImageOriginal.width  * ( value / oImageOriginal.height ) ) ;
+		if ( !isNaN( value ) )
+			e.value = value ;
+	}
+
+	UpdatePreview() ;
+}
+function ResetSizes()
+{
+	if ( ! oImageOriginal ) return ;
+	$('txtWidth').value  = oImageOriginal.width ;
+	$('txtHeight').value = oImageOriginal.height ;
+	UpdatePreview() ;
+}
+function SwitchLock( lockButton )
+{
+	bLockRatio = !bLockRatio ;
+	lockButton.className = bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ;
+	lockButton.title = bLockRatio ? 'Lock sizes' : 'Unlock sizes' ;
+	if ( bLockRatio )
+	{
+		if ( $('txtWidth').value.length > 0 )
+			OnSizeChanged( 'Width', $('txtWidth').value ) ;
+		else
+			OnSizeChanged( 'Height', $('txtHeight').value ) ;
+	}
+}
+</script>
+</head>
+	<body>
+	<div class="title"><strong>插入图片信息</strong></div>
+	<input type="hidden" name="basictxtUrl">
+			<table cellspacing="1" cellpadding="1" border="0" width="90%" align="center">
+				<tr>
+				  <td valign="top">
+						<table cellspacing="0" cellpadding="0" width="100%" border="0">
+							<tr>
+								<td width="100%" height="20px">
+									图片文件地址
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" height="20px">
+									<input  id="txtUrl" style="WIDTH: 100%" type="text" onBlur="UpdatePreview();">
+								</td>
+							</tr>				
+							<tr>
+								<td width="100%" height="20px">
+									描述
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" height="20px">
+									<input id="txtAlt" style="WIDTH: 100% ;" type="text">
+								</td>
+							</tr>							
+							<!--form id="frmUpload" method="post" target="UploadWindow" enctype="multipart/form-data" action="InsertImg.php" onSubmit="return checkUpload();">
+							<tr>
+								<td height="20">
+
+							本地上传
+								</td>
+							</tr>
+							<tr>
+								<td height="20">
+							<input id="txtUploadFile" style="WIDTH: 85%;" type="file" size="50" name="NewFile" />&nbsp;&nbsp;&nbsp;&nbsp;	
+							<input id="btnUpload" type="submit" value="提交"  />
+
+								</td>
+							</tr>							
+							<iframe name="UploadWindow" style="display:none;"></iframe> 
+							</form-->
+						</table>
+					    <table cellspacing="0" cellpadding="0" width="100%" border="0">
+						<tr><td height="20"></td></tr>
+                          <tr>
+                            <td valign="top">
+                                <table cellspacing="0" cellpadding="0" border="0">
+                                  <tr><br />
+                                    <td nowrap height="22">宽度&nbsp;</td>
+                                    <td><input name="text" type="text" id="txtWidth" style="width:40px;" onKeyUp="OnSizeChanged('Width',this.value);" size="3"></td>
+                                    <td nowrap rowspan="2"><div id="btnLockSizes" class="BtnLocked" onMouseOver="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';" onMouseOut="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );" title="Lock Sizes" onClick="SwitchLock(this);"></div>
+                                        <div id="btnResetSize" class="BtnReset" onMouseOver="this.className='BtnReset BtnOver';" onMouseOut="this.className='BtnReset';" title="恢复尺寸" onClick="ResetSizes();"></div></td>
+                                  </tr>
+                                  <tr>
+                                    <td nowrap height="22">高度&nbsp;</td>
+                                    <td><input name="text" type="text" id="txtHeight" style="width:40px;" onKeyUp="OnSizeChanged('Height',this.value);" size="3"></td>
+                                  </tr>
+                                </table>
+                              <br />
+                                <table cellspacing="0" cellpadding="0" border="0">
+                                  <tr>
+                                    <td nowrap height="22">边框大小&nbsp;</td>
+                                    <td><input name="text" type="text" id="txtBorder" style="width:40px;" onKeyUp="UpdatePreview();" value="" size="2"></td>
+                                  </tr>
+                                  <tr>
+                                    <td nowrap height="22">水平间距&nbsp;</td>
+                                    <td><input name="text" type="text" id="txtHSpace" style="width:40px;" onKeyUp="UpdatePreview();" size="2"></td>
+                                  </tr>
+                                  <tr>
+                                    <td nowrap height="22">垂直间距&nbsp;</td>
+                                    <td><input name="text" type="text" id="txtVSpace" style="width:40px;" onKeyUp="UpdatePreview();" size="2"></td>
+                                  </tr>
+                                  <tr>
+                                    <td nowrap height="25">对齐方式&nbsp;</td>
+                                    <td><select name="select" id="cmbAlign" style="width:60px;" onChange="UpdatePreview();">
+                                        <option value="" selected></option>
+                                        <option value="left">左对齐</option>
+                                        <option value="absBottom">绝对底边</option>
+                                        <option value="absMiddle">绝对居中</option>
+                                        <option value="baseline">基线</option>
+                                        <option value="bottom">底边</option>
+                                        <option value="middle">居中</option>
+                                        <option value="right">右对齐</option>
+                                        <option value="textTop">文本上方</option>
+                                        <option value="top">顶端</option>
+                                      </select>
+                                    </td>
+                                  </tr>
+                              </table></td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td width="100%">
+									<fieldset><legend accesskey="F" style="color:#FFFFFF;">预览</legend>
+									<div style="padding:5px;"><iframe src="image_preview.html" frameborder="0" marginheight="0" marginwidth="0" ></iframe></div>
+									</fieldset>
+							</td>
+                          </tr>
+                        </table></td>
+				</tr>
+				<tr>
+					<td align="center"><br><br><a onClick="insetImg();"><img src="images/tools_bt_ok.gif" width="42" height="19" border="0"></a>&nbsp;&nbsp;<a onClick="_cancel();"><img src="images/tools_bt_no.gif" width="42" height="19" border="0"></a>
+					</td>
+				</tr>
+	</table>
+			
+
+	</body>
+</html>

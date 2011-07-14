@@ -1,0 +1,63 @@
+<script type="text/javascript">
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = '';
+			$('sh3').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = 'none';
+			$('sh3').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">用户基本设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">注册:</span><br />
+				<span class="smalltxt">选中“关闭”选项将禁止游客注册成为网站会员，但不影响已注册会员继续使用网站相关功能。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="popen_1"><input type="radio" name="popen" id="popen_1" value="1"{C_open_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="popen_0"><input type="radio" name="popen" id="popen_0" value="0"{C_open_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">注册审核:</span><br />
+				<span class="smalltxt">选中“开启”选项后，新注册用户需要经过管理员的审核方可成为正式注册会员。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="verify_1"><input type="radio" name="pverify" id="verify_1" value="1"{C_verify_yes} />开启</label> &nbsp;
+				<label for="verify_0"><input type="radio" name="pverify" id="verify_0" value="0"{C_verify_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b0" id="sh2"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">用户名最小长度:</span><br />
+				<span class="smalltxt">注册用户名的最小长度，一个汉字长度为2，默认值为4。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pminlength" value="{C_minlength}" /></div>
+		</div>
+		<div class="b1" id="sh3"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">用户名最大长度:</span><br />
+				<span class="smalltxt">通常此值不应超过所有整合的系统(如:Discuz!、PHPWind等)允许用户名的最长值，例如整合的系统允许用户名长度最大值分别为15、20，则此值不应超过15，否则将可能导致部分通行证系统无法正常注册。当前可设置的最大值为200，默认值为12。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pmaxlength" value="{C_maxlength}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">普通用户书架本数:</span><br />
+				<span class="smalltxt">普通用户书架的书籍收藏量上限,即最多允许收藏的书籍本数。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pfavorite" value="{C_favorite}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

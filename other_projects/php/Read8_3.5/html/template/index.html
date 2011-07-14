@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset={G_encode}" />
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Widow-Target" content="_top" />
+<title>{C_booktitle} - {C_authorname} - {G_sitename}</title>
+<meta name="Keywords" content="{C_booktitle},{C_authorname},{G_sitename}" />
+<meta name="Author" content="{C_authorname}" />
+<link href="../../../../html/template/book.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+	var G_siteurl = '{G_siteurl}';
+//--><!]]></script>
+<script src="../../../../include/js/common.js" type="text/javascript"></script>
+<script src="../../../../include/js/ajax.js" type="text/javascript"></script>
+<script src="../../../../include/js/read.js" type="text/javascript"></script>
+<script src="../../../../include/js/xmlhttp.js" type="text/javascript"></script>
+<script src="../../../../include/js/favorite.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="page">
+	<div id="head">
+		<div class="nav_bg"><a href="../../../../" target="_blank">{G_sitename}</a></div> 
+		<div class="nav_bg"><a href="../../../../novellib.php" target="_blank">总书库</a></div>
+		<div class="nav_bg"><a href="../../../../novel.php?bid={C_bookid}" target="_blank">{C_booktitle}</a></div>
+		<!--<div id="pagecolor"></div>-->
+		<div id="rd8_font_lang" style="margin-left:49% !important; margin-left:37%;"></div>
+		<div id="pagelink"><span onclick="javascript:vote('{C_bookid}');">投票</span></div>
+		<div id="fave"><span onclick="javascript:favorite('{C_bookid}', '1');">收藏书签</span></div>
+	</div>
+	<hr />
+	<div id="pagecolor" style="float:right;margin-right:8px;"></div>
+	<h1 id="title">{C_booktitle}</h1>
+	<h2 id="author">作者: {C_authorname}</h2>
+	<div id="info">
+	</div>
+	
+	<div id="chapterlist">
+		<!-- BEGIN chapterlist -->
+			<!-- IF volume_title --><div class="vol">{volume_title}</div><!-- ENDIF -->
+			<div<!-- IF vip --> class="vip"<!-- ELSE --> class="chapter"<!-- ENDIF -->><a href="{priority}.html" title="{title}">{title}</a></div>
+		<!-- END chapterlist -->
+	</div>
+	<hr />
+	<div id="footannlist">
+		<div style="float:left;overflow:hidden;">{CAD_read_1}</div>
+		<div style="float:right;overflow:hidden;">{CAD_read_2}</div>
+
+	</div>
+	<div id="copyright">Copyright&nbsp;&copy;&nbsp;2008 {G_sitename} All Rights Reserved<br />本作品系网友发表，仅代表作者本人观点，与本站立场无关。<br />如有章节错误、排版不齐或版权疑问、作品内容有违相关法律等情况，请联系管理员。</div>
+</div>
+<script src="../../../../click.php?ajax=1&amp;bid={C_bookid}" type="text/javascript"></script>
+<script src="../../../../include/js/lang.js" type="text/javascript"></script>
+<script src="../../../../include/js/f_lang.js" type="text/javascript"></script>
+</body>
+</html>

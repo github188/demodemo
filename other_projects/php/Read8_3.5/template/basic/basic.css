@@ -1,0 +1,2056 @@
+/*-- 读吧书网首页CSS */
+/*-- 全局 */
+body {
+    color: #666666;
+	margin:0;
+	font-size: 12px;
+}
+a:link {
+	font-size: 12px;
+	color: #003366;
+	text-decoration: none;
+}
+a:visited {
+	font-size: 12px;
+	color: #003366;
+	text-decoration: none;
+}
+a:hover {
+	font-size: 12px;
+	color:#FF7F50;
+	text-decoration: underline;
+}
+p {
+	line-height: 1.9;
+}
+img {
+	margin-right: 4px;
+	margin-bottom: 2px;
+	padding: 2px;
+	border:none;
+
+}
+form {
+	margin: 0px;
+}
+input, textarea {
+	border: 1px solid #CCCCCC;
+}
+table {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	border-collapse: collapse;
+}
+
+
+hr {
+    width: 100%;
+	height: 2px;
+	background-color: #CCCCCC;
+}
+
+
+.rd8_a {
+	cursor: pointer;
+}
+.rd8_b{
+	cursor:pointer;
+	color:#000;
+}
+.rd8_evenrow {
+    background-color: #EDF7FF;
+}
+
+#rd8_main {
+	position:relative;
+	width: 1004px;
+	margin: 0 auto;
+}
+#rd8_header {
+	position:relative;
+	width: 100%;
+	clear: both;
+	margin-top: 27px;
+}
+#rd8_userstate {
+	position: absolute;
+	top: -23px;
+	*top:0;
+	/*top:-108px;
+	*top: -105px;*/
+	margin: 0;
+	padding: 0;
+	height: 23px;
+	line-height: 23px;
+	overflow: hidden;
+	background-color:#B6DBFF;
+	width:1004px;
+}
+#rd8_userstate img {
+	border: 0;
+}
+#rd8_userlogin {
+	float: left;
+	margin-left:50px;
+}
+#rd8_userlogin input[type="submit"] {
+	height: 18px;
+}
+#rd8_userlogin input[type="text"], #rd8_userlogin input[type="password"] {
+	height: 14px;
+	margin: 0;
+}
+#rd8_wap {
+	float: right;
+	margin-right: 28px;
+	*margin-right: 28px !important;
+}
+#rd8_favorite, #rd8_homepage, #rd8_font_lang {
+	float: right;
+	margin-right: 26px;
+}
+
+
+#rd8_wap .rd8_a,#rd8_favorite .rd8_a,#rd8_homepage .rd8_a,#rd8_font_lang .rd8_a{
+	cursor:pointer;
+}
+/*-- LOGO */
+img.rd8_logo {
+	float:left;
+	margin-left:10px;
+	border-style: none;
+}
+/*-- 首页导航 */
+.rd8_nav {
+	float: left;
+	color: #003366;
+	margin: 0 0 0 30px;
+	padding: 4px 0;
+	font-size: 12px;
+	line-height: 1.8;
+	font-family: "宋体" serif ;
+}
+.rd8_nav a, .rd8_nav a:link, .rd8_nav a:hover, .rd8_nav a:visited {
+	font-size: 12px;
+}
+.rd8_nav form{
+	margin-top: 0;
+	margin-right: 0;
+	margin-bottom: 4px;
+	margin-left: 0;
+}
+input.rd8_login {
+	border: 1px solid #CCCCCC;
+}
+/*-- 设为首页、加入收藏 */
+.rd8_topguide {
+	float:left;
+	color: #003366;
+	margin: 0 0 0 15px;
+	padding: 0;
+}
+.rd8_rd8_topguide img {
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+/*-- 广告栏 */
+img.rd8_banner{
+	width:49.2%;
+	float: left;
+	margin: 0px;
+	padding-top: 10px;
+	padding-right: 4px;
+	padding-bottom: 10px;
+	padding-left: 4px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+#rd8_center {
+    position:relative;
+	width: 100%;
+	clear:both;
+	margin-bottom: 8px;
+}
+/*-- 封面图片、FLASH部分 */
+.rd8_images {
+	width: 100%;
+	margin-bottom: 10px;
+	float: left;
+}
+/*-- 封面图片部分 */
+.rd8_imagesleft {
+	float: left;
+	width: 686px !important;
+	width: 690px;
+}
+/*-- FLASH */
+.rd8_imagesright {
+	float: left;
+	width: 305px !important;
+	width: 301px;
+	margin-left: 12px !important;
+	margin-left: 9px;
+	height: 178px;
+	text-align: center;
+}
+/*-- 封面图片 */
+.rd8_book {
+	float: left;
+	border: 1px solid #698CC3;
+	clear: both;
+	width: 100%;
+	overflow: hidden;
+	height: 165px;
+}
+
+.rd8_book img {
+	margin: 0 !important;
+}
+.rd8_booklinkbox {
+	height:130px;
+	width: 100px;
+	float: left;
+	margin: 16px 0 0 10px;
+	margin: 16px 0 0 8px !important;
+}
+.rd8_book a:link {
+	margin: 0px;
+	background-color: #FFFFFF;
+}
+.rd8_book a:visited {
+	margin: 0px;
+	background-color: #FFFFFF;
+}
+.rd8_book a:hover {
+	margin: 0px;
+	background-color: #FFFFFF;
+}
+.rd8_book a:hover img {
+	border: 1px solid blue;
+}
+/*-- 强力推荐榜 玄幻魔法标签切换 编辑推荐栏 部分 */
+.rd8_recommend {
+	width: 100%;
+	*margin: 0 auto;
+}
+/*-- 强力推荐榜 编辑推荐栏共同使用的样式 */
+.rd8_recommendlist {
+	width: 230px;
+	border: 1px solid #698CC3;
+	padding: 2px;
+	height: 460px;
+	overflow: hidden;
+	margin-bottom:6px;
+}
+.rd8_recommendlist dl {
+	margin: 0;
+	width: 100%;
+}
+.rd8_recommendlist dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin:0 0 10px;
+
+}
+.rd8_recommendlist dd {
+	margin: 0;
+	float: left;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+	padding-left: 4px;
+}
+.rd8_recommendlist b {
+	font-size: 14px;
+}
+.rd8_recommendlist a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_recommendlist a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_recommendlist a:hover {
+	font-size: 12px;
+	color: #666666;
+	background-color: #FFFFFF;
+	text-decoration: underline;
+}
+/*-- 玄幻魔法标签切换 最新公告 */
+.rd8_recommendmiddle {
+	float: left;
+	width: 516px;
+	margin-left:6px;
+}
+/*-- 玄幻魔法标签切换 */
+#rd8_recommendcontent {
+	width: 100% !important;
+	width: 100%;
+	height: 507px;
+	border: 1px solid #698CC3;
+	float: left;
+	overflow: hidden;
+	margin-left:0;
+
+}
+/*-- 玄幻魔法标签切换 标签条 */
+#rd8_rectabs
+{
+	float: left;
+	width: 476px;
+	*width: 516px;
+	background-color: #698CC3;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 6px;
+	margin-left: 0px;
+	list-style-type: none;
+}
+
+#rd8_rectabs li
+{
+	float: left;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 5px 10px;
+	border: 2px solid #FFFFFF;
+	text-decoration: none;
+	color: #FFFFFF;
+	cursor: pointer;
+}
+#rd8_rectabs li.rd8_selectedtab
+{
+
+	background: #FFFFFF;
+	color: #000000;
+	height: 100%;
+}
+/*-- 玄幻魔法标签切换 每个标签所对应的内容 */
+.rd8_rectabcon {
+	width: 100%;
+}
+.rd8_rectabcon a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_rectabcon a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_rectabcon a:hover {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: underline;
+	background-color: #FFFFFF;
+}
+p.rd8_imgtxt {
+	margin-bottom: 4px;
+	padding-right: 4px;
+	padding-left: 4px;
+	float: left;
+	width: 100%;
+}
+.rd8_imgtxt img {
+	margin: -38px 4px 2px 0;*margin: -26px 4px 2px 0;
+	z-index: 2;
+	position: relative;
+}
+p.rd8_imgtxttit {
+	width: 100%;
+	float: left;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 4px;
+	margin-left: 0px;
+	z-index: 1;
+	position: relative;
+}
+.rd8_imgtxttit strong {
+	float: left;
+	font-size: 14px;
+	line-height: 26px;
+	height: 26px;
+	text-indent: 11pc;
+}
+.rd8_imgtxttit span {
+	font-size: 12px;
+	color: #000000;
+	float: right;
+	line-height: 26px;
+	height: 26px;
+	padding-right: 2px;
+}
+/*-- 最新公告 */
+.rd8_notice {
+	width: 100%;
+	margin-top: 6px;
+	border: 1px solid #698CC3;
+	float: left;
+	height: 334px;
+	overflow: hidden;
+	margin-left:0;
+}
+.rd8_g {
+	font-size: 14px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	text-indent: 1pc;
+	line-height: 30px;
+	height: 30px;
+	margin:2px 2px 6px;
+}
+.rd8_notice h1 a:link {
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+.rd8_notice h1 a:visited {
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+.rd8_notice h1 a:hover{
+	font-size: 12px;
+	font-weight: bold;
+	background-color: #698CC3;
+	color: #FFFFFF;
+	text-decoration: underline;
+}
+.rd8_notice ul {
+	float: left;
+	margin: 0px;
+	padding-left: 10px;
+}
+.rd8_notice li {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	background-image: url(../images/list1.gif);
+	background-repeat: no-repeat;
+	list-style-type: none;
+	background-position: left top;
+	text-indent: 1pc;
+	float: left;
+}
+.rd8_notice li a{
+	float: left;
+}
+.rd8_notice li span {
+	float: right;
+	font-size: 12px;
+	margin-right: 16px;
+	text-align: right;
+	width: 100px;
+}
+/*-- 总点击榜 玄幻科幻奇幻阁 武侠仙侠阁部分，总投票榜 都市言情网游阁 军事历史体育阁部分共同使用 events 这个样式 */
+.rd8_events {
+	width: 100%;
+	margin: 0 auto 10px;
+	*margin:0 auto 6px;
+	clear: both;
+}
+/*-- 所有的排行榜都用到 Canada 这个样式 */
+.rd8_Canada {
+	float: left;
+	width: 230px;
+	border: 1px solid #698CC3;
+	padding: 2px;
+	margin-bottom: 6px;
+	height: 271px;
+	overflow: hidden;
+}
+.rd8_Canada dl {
+	margin: 0px;
+	width: 100%;
+
+}
+.rd8_Canada dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin:0 0 10px;
+}
+.rd8_Canada dd {
+
+	margin: 0;
+	padding-top: 4px;*padding-top:3px;
+	padding-right: 0;
+	padding-bottom: 3px;
+	padding-left: 24px;
+	background-image: url(../../images/sign.jpg);
+	background-repeat: no-repeat;
+	background-position: 4px 6px;
+}
+.rd8_Canada dl {
+	float: left;
+}
+.rd8_Canada span {
+	text-align: right;
+	width: 100%;
+	float: left;
+}
+/*-- 玄幻科幻奇幻阁 武侠仙侠阁 都市言情网游阁 军事历史体育阁共同使用 fiction 这个样式 */
+.rd8_fiction {
+	float: left;
+	width: 376px;
+	border: 1px solid #698CC3;
+	margin-left: 6px;
+	height: 275px;
+	overflow: hidden;
+}
+.rd8_fiction  a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_fiction a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_fiction a:hover {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: underline;
+	background-color: #FFFFFF;
+}
+/*-- fiction 框内的标题 */
+.rd8_title {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin:2px 2px 6px;
+	width: 99%;
+}
+/*-- fiction 框内的图文并排，*号之前是ff的样式，之后是IE的样式 */
+p.rd8_ficimgtxt {
+	width: 46%;*width: 48%;
+	margin-bottom: 4px;
+	padding-right: 4px;
+	padding-left: 4px;
+	float: left;
+	margin-top: 4px;
+	line-height: 1.5;
+}
+/*-- 最新入库作品 最近更新 最新全本 小说点击榜 总收藏榜 小说推荐榜部分 */
+.rd8_news {
+	width: 1002px;
+	margin: 0 auto 6px;
+	clear: both;
+}
+.rd8_newsleft {
+    float: left;
+	width: 236px;
+	margin-bottom:6px;
+	*margin-bottom:0;
+}
+#rd8_newsmiddle {
+	float: left;
+	width: 516px;
+	margin-left: 6px;
+	border: 1px solid #698CC3;
+	padding-bottom: 35px;
+	height: 523px;
+}
+.rd8_newsright {
+	float: left;
+	width: 236px;
+	margin-left: 6px;
+}
+/*-- 最近更新 最新全本标签切换 */
+#rd8_newstabs
+{
+	float: left;
+	width: 92.5%;*width: 100%;
+	background-color: #698CC3;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 6px;
+	margin-left: 0px;
+	list-style-type: none;
+}
+#rd8_newstabs li
+{
+	float: left;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 5px 10px 5px 10px;
+	border: 2px solid #FFFFFF;
+	text-decoration: none;
+	color: #FFFFFF;
+	cursor: pointer;
+}
+#rd8_newstabs li.rd8_selectedtab
+{
+	background: #FFFFFF;
+	color: #000000;
+	height: 100%;
+}
+/*-- 最近更新 最新全本标签切换每个标签对应的内容 */
+.rd8_newscon {
+	width: 100%;
+	height: 480px;
+	overflow: hidden;
+}
+.rd8_newscon ul {
+	margin-left: -40px;*margin-left: 0px;
+	width: 97%;
+	list-style-type: none;
+}
+.rd8_newscon li {
+	width: 100%;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 20px;
+	float: left;
+}
+.rd8_newscon ul a:link{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+.rd8_newscon ul a:visited{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+.rd8_newscon ul a:hover{
+	font-size: 12px;
+	text-decoration: underline;
+	float: left;
+}
+/*-- 最近更新 最新全本列表中的时间 */
+.rd8_lisubject {
+	float: left;
+}
+.rd8_lidate {
+	float: right;
+	width: 70px;
+	color: #9E9E9D;
+	text-align: right;
+}
+/*-- 最近更新 最新全本列表中的作者 */
+.rd8_liauthor {
+	float: right;
+	width: 80px;
+	color: #003366;
+	text-align: right;
+}
+.rd8_newscon dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 2pc;
+	height: 26px;
+	margin-bottom: 6px;
+}
+.rd8_newscon li {
+	margin: 0;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+	padding-left: 10px;
+}
+/*-- 一级分类示例图书标签切换部分 */
+#rd8_catetabs {
+	width: 1001px;
+	height: 138px;
+	margin: 0 auto 6px;
+	border: 1px solid #698CC3;
+	clear: both;
+}
+/*-- 一级分类示例图书标签条 */
+#rd8_tabs
+{
+	float: left;
+	width: 100px;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+#rd8_tabs li
+{
+	font-size: 12px;
+	line-height: 14px;
+	font-weight: bold;
+	margin-right: 4px;
+	border: 1px solid #FFF;
+	text-decoration: none;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	width: 100%;
+	padding-top: 5px;
+	padding-bottom: 2px;
+	text-align: center;
+	cursor: pointer;
+}
+#rd8_tabs li.rd8_selectedtab
+{
+	border-right: 1px solid #FFFFFF;
+	background: #FFFFFF;
+	color: #000000;
+}
+/*-- 一级分类示例图书标签切换每个标签对应的内容 */
+.rd8_catecon {
+	float: left;
+	width: 888px;
+	margin-left: 8px;
+}
+/*-- 一级分类示例图书标签切换每个标签对应的内容里面的图文并排 */
+p.rd8_typeimgtxt {
+	width: 32%;
+	margin-bottom: 4px;
+	padding-right: 5px;
+	padding-left: 5px;
+	float: left;
+	margin-top: 4px;
+}
+.rd8_typeimgtxt a:link {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_typeimgtxt a:visited {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+.rd8_typeimgtxt a:hover {
+	font-size: 12px;
+	color: #666666;
+	text-decoration: underline;
+	background-color: #FFFFFF;
+}
+.rd8_bookname {
+	font-size: 14px;
+	color: #FF6600;
+}
+
+.rd8_bookname a:link,.rd8_bookname a:visited{
+	font-size:14px;
+	color:#FF6600;
+	text-decoration:none;
+}
+.rd8_bookname a:hover{
+	text-decoration:underline;
+	color:#FF6600;
+}
+.rd8_detail {
+	font-size: 12px;
+	color: #000000;
+}
+/*-- 最新加入作者 最新评论部分 */
+.rd8_authorcomment {
+	width: 1002px;
+	margin: 0 auto 10px;
+	*margin:0 auto 6px;
+	clear: both;
+}
+/*-- 最新评论部分 最新加入作者没有？它仍然使用了 Canada 这个样式*/
+.rd8_comment {
+	float: left;
+	width: 754px;
+	height: 271px;
+	margin-left: 6px;
+	padding: 2px;
+	border: 1px solid #698CC3;
+}
+.rd8_comment dl {
+	float: left;
+	margin: 0px;
+	width: 100%;
+}
+.rd8_comment dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin-bottom:0 0 6px;
+	width:100%;;
+}
+.rd8_comment dd {
+	margin: 0;
+	padding: 0;
+	height: 22px;
+	width: 90%;
+	float: left;
+	overflow: hidden;
+}
+.rd8_comment dd span {
+	position: relative;
+	top: -8px;
+}
+.rd8_comment a:link{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+.rd8_comment a:visited{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+.rd8_comment a:hover{
+	font-size: 12px;
+	text-decoration: underline;
+	float: left;
+}
+.rd8_commenttime {
+	float: right;
+	color: #9E9E9D;
+	font-size: 12px;
+}
+/*-- 友情链接部分 */
+.rd8_unionwebsite {
+	border: 1px solid #698CC3;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	width: 1002px;
+	margin-top: 0;
+	margin-bottom: 10px;
+	clear: both;
+	position: relative;
+	float: left;
+	text-align: center;
+}
+.rd8_unionwebsite a:link {
+	width: 110px;
+	float: left;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+.rd8_unionwebsite a:visited {
+	width: 110px;
+	float: left;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+.rd8_unionwebsite a:hover {
+	width: 110px;
+	float: left;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	text-decoration: none;
+	background-color: #FFFFFF;
+	color: #FF7F50;
+}
+#rd8_footer{
+    position:relative;
+	width: 100%;
+	clear:both;
+}
+.rd8_aboutus {
+	text-align: center;
+	width: 100%;
+	float: left;
+}
+
+
+/* ******  sublist.html  alllist.html  content.html  booklib.html paihang.html 共同使用的样式表文件  ****** */
+
+/* 小首页向导栏 */
+.rd8_subguide{
+	font-size: 14px;
+	line-height: 30px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	text-indent: 4px;
+	float: left;
+	height: 30px;
+	width: 100%;
+    margin: 0px auto 0;
+}
+.rd8_subguide acronym {
+	font-size: 16px;
+	color: #F7CD67;
+}
+/* 小首页，大众书库导航栏 */
+.rd8_subnav {
+	float: left;
+	width: 100%;
+	font-family: "宋体";
+}
+.rd8_subnav a:link,.rd8_subnav a:visited {
+	text-decoration: none;
+	color:#003366;
+}
+.rd8_subnav a:hover {
+	color: #FF7F50;
+	text-decoration: underline;
+
+}
+/* 当前链接的样式 */
+a:visited.rd8_currentlink {
+	color: #FF7F50;
+	text-decoration: none;
+}
+#rd8_left {
+	width: 230px;
+	position:relative;
+	float: left;
+	margin-bottom: 10px;
+	margin-top:26px;
+}
+#rd8_middle {
+	width: 508px;
+	position:relative;
+	float: left;
+	margin-left: 12px;
+	padding: 2px;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 10px;
+	margin-top: 6px;
+}
+
+#rd8_right {
+	width: 755px !important;
+	width: 750px;
+	position:relative;
+	float: left;
+	margin-left: 18px;
+	margin-bottom: 10px;
+}
+#rd8_subright {
+	width: 230px;
+	position:relative;
+	float: left;
+	margin-left: 12px !important;
+	margin-left:6px;
+	margin-bottom: 10px;
+	margin-top: 6px;
+}
+#rd8_eventscolumn {
+	width: 230px;
+	position:relative;
+	float: left;
+	margin-left: 28px;*margin-left: 20px;
+	margin-bottom: 10px;
+}
+/* 小首页中最新上架，最新评论的标题 */
+.rd8_catetitle {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-align: center;
+	height: 26px;
+	width: 100%;
+	margin: 0 0 8px;
+	float: left;
+}
+/* 小首页中最新上架，最新评论列表的样式 */
+#rd8_middle ul {
+	width: 97%;
+	float: left;
+	margin-left: -30px;*margin-left: 4px;
+}
+#rd8_middle li {
+	width: 96%;
+	margin-top: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 20px;
+	float: left;
+	margin-right: 0px;
+	margin-left: 0px;
+	background-image: url(../images/list.gif);
+	background-repeat: no-repeat;
+	list-style-type: none;
+	background-position: left 2px;
+}
+#rd8_middle ul a:link{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+#rd8_middle ul a:visited{
+	font-size: 12px;
+	text-decoration: none;
+	float: left;
+}
+#rd8_middle ul a:hover{
+	font-size: 12px;
+	text-decoration: underline;
+	float: left;
+}
+/* 更多 */
+#rd8_middle small {
+	text-align: right;
+	width: 100%;
+	float: left;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+/* alllist.html，content.html，booklib.html的向导栏 */
+.rd8_guide{
+	white-space: pre;
+	width: 100%;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+	border-bottom-width: 3px;
+	border-bottom-style: solid;
+	border-bottom-color: #5B82BE;
+	font-size: 14px;
+	color: #698CC3;
+	font-weight: bold;
+	margin-top: 0px;
+
+}
+
+.rd8_guide a:link,.rd8_guide a:visited{
+	font-size: 14px;
+	color: #698CC3;
+	font-weight: bold;
+	text-decoration:none;
+}
+.rd8_guide a:hover{
+	font-size: 14px;
+	color: #FF7F50;
+	font-weight: bold;
+	text-decoration:underline;
+
+}
+
+/* 表格 */
+#rd8_right table{
+	width: 100%;
+	margin: 0 auto 10px;
+	border-collapse :collapse;
+	border: 1px solid #CCCCCC;
+}
+
+#rd8_right table td {
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	text-align: center;
+}
+/* 表格第一行 */
+.rd8_texture {
+	font-size: 14px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	height: 30px;
+}
+/* 从表格第二行算起，奇数行用oddtablerow，偶数行用eventablerow */
+.rd8_oddtablerow {
+	height: 26px;
+	background-color:#CCC;
+}
+.rd8_eventablerow {
+	height: 26px;
+	background-color:#FFF;
+}
+/* 鼠标移上去的样式 */
+.rd8_selectedrow {
+	height: 26px;
+	background-color:#B6DBFF;
+}
+/* 表格最后一行：分页条 */
+.rd8_tablebottom {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+.rd8_tablebottom b {
+	color: #000000;
+}
+.rd8_tablebottom font {
+	color: #FF0000;
+	font-size: 12px;
+	font-weight: bold;
+}
+.rd8_tablebottom a:link {
+	color: #698CC3;
+	font-size: 14px;
+	padding: 4px 8px;
+	margin-right: 4px;
+	border: 1px solid #B5C6E1;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.rd8_tablebottom a:visited {
+	color: #698CC3;
+	font-size: 14px;
+	padding: 4px 8px;
+	margin-right: 2px;
+	border: 1px solid #B5C6E1;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.rd8_tablebottom a:hover {
+	color: #000033;
+	font-size: 14px;
+	padding: 4px 8px;
+	margin-right: 2px;
+	border: 1px solid #698CC3;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #FFFFFF;
+}
+/* 选中的那一页的样式 */
+.rd8_currentpage {
+	color: #FFFFFF!important;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 4px 8px;
+	margin-right: 2px;
+	background-color: #698CC3!important;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.current{
+	border:1px solid #B5C6E1;
+	color:#698CC3;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14px;
+	margin-right:4px;
+	padding:4px 8px;
+	text-decoration:none;
+	background-color:#CCCCCC;
+}
+.other{
+	border:1px solid #B5C6E1;
+	color:#698CC3;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14px;
+	margin-right:2px;
+	padding:4px 8px;
+	text-decoration:none;
+
+}
+/* content.html右边内容 */
+.rd8_content {
+	padding: 2px;
+	width: 99%;
+	margin-right: auto;
+	margin-left: auto;
+	border: 1px solid #CCCCCC;
+	color: #000000;
+}
+
+.rd8_content .rd8_a{
+	font-size:13px;
+	color:#036;
+	font-weight:normal;
+	cursor: pointer;
+}
+.rd8_content .rd8_a:visited {
+	cursor: pointer;
+	color:#036;
+}
+
+.rd8_content .rd8_a:hover {
+	cursor: pointer;
+	color:#F00;
+	text-decoration:underline;
+}
+
+.rd8_content h1{
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-align: center;
+	height: 26px;
+	width: 100%;
+	margin: 0 0 8px;
+	float: left;
+}
+.rd8_content p{
+	width: 99%;
+	margin-right: auto;
+	margin-bottom: 15px;
+	margin-left: auto;
+	margin-top: 0px;
+}
+/* 内容简介 */
+.rd8_introduction {
+	clear: both;
+	background-color: #DAE3F0;
+}
+/* 作品名，点击阅读，全文阅读共同使用的样式 */
+.rd8_content span {
+	font-size: 13px;
+	color: #036;
+}
+/* 点击阅读，全文阅读的链接样式 */
+.rd8_content span a:link {
+	font-size: 13px;
+	color: #036;
+	text-decoration: none;
+}
+.rd8_content span a:visited {
+	font-size: 13px;
+	color: #036;
+	text-decoration: none;
+}
+.rd8_content span a:hover {
+	font-size: 13px;
+	color: #F00;
+	text-decoration: underline;
+}
+/* 放入书架 打包下载 TXT下载的链接样式 */
+strong a:link{
+	font-size: 13px;
+	color: #036;
+	text-decoration: none;
+}
+strong a:visited{
+	font-size: 13px;
+	color: #036;
+	text-decoration: none;
+}
+strong a:hover{
+	font-size: 13px;
+	color: #F00;
+	text-decoration: underline;
+}
+#rd8_subcategory {
+	width: 100%;
+	margin: 10px auto;
+}
+
+
+
+
+/* ******  用户中心所有文件的CSS  ****** */
+
+
+/* 导航栏 */
+#rd8_usernav {
+	width: 100%;
+	margin-top: 10px;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+	padding: 1px;
+	border: 1px solid #CCCCCC;
+}
+#rd8_usernav p {
+	width: 100%;
+	text-align: center;
+	background-color: #698CC3;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border: 1px solid #FFFFFF;
+	float: left;
+	font-weight: bold;
+}
+#rd8_usernav a:link {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-weight: normal;
+}
+#rd8_usernav a:visited {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-weight: normal;
+}
+#rd8_usernav a:hover {
+	font-size: 12px;
+	color: #698CC3;
+	font-weight: bold;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+/* 中间内容 */
+#rd8_usercenter {
+	position:relative;
+	width: 100%;
+	clear:both;
+	margin-bottom: 8px;
+	border: 1px solid #DAE3F0;
+	padding: 2px;
+}
+/* 所有标题，比如：书架列表 */
+.rd8_usertitle {
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+	background-color: #698CC3;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	clear: both;
+	position: relative;
+}
+/* 普通行 */
+.rd8_userrow {
+	text-align: center;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	background-color: #FFFFFF;
+}
+.rd8_evenuserrow {
+	text-align: center;
+	background-color: #DAE3F0;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+}
+.rd8_scuserrow {
+	text-align: center;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	background-color: #FFFFFF;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin: 0px;
+}
+.rd8_scevenuserrow {
+	text-align: center;
+	background-color: #DAE3F0;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin: 0px;
+}
+.rd8_userrowleft {
+	text-align: right;
+	width: 300px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_userrowright {
+	text-align: left;
+	text-indent: 6px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_userrowbottom {
+	text-align: center;
+	font-size: 12px;
+	background-color: #5C85BD;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	width: 100%;
+	float: left;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+	margin: 0px;
+}
+input.rd8_submit {
+	width: 80px;
+}
+/* 表格 */
+#rd8_usercenter table {
+	width: 100%;
+	margin: 6px auto 6px;
+	border-collapse :collapse;
+}
+#rd8_usercenter table td {
+	text-align: center;
+}
+/* 表格第一行 */
+.rd8_tabletexture {
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	height: 30px;
+}
+/* 表格行 */
+.rd8_usertablerow {
+	font-size: 12px;
+	background-color: #FFFFFF;
+	height: 26px;
+	text-align: left;
+}
+.rd8_evenusertablerow {
+	background-color: #DAE3F0;
+	font-size: 12px;
+	height: 26px;
+}
+/* 表格最后一行 */
+.rd8_usertablebottom {
+	text-align: center;
+	font-size: 12px;
+	background-color: #5C85BD;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+}
+/* 发送求助投诉信息 发短信 */
+.rd8_sendpm {
+	width: 42%;
+	margin: 10px auto;
+	text-align: left;
+}
+.rd8_pmcon {
+	float: left;
+}
+.rd8_pmtxt {
+	float: left;
+}
+.rd8_pmtxt textarea {
+	width: 368px;
+	height: 200px;
+}
+
+
+
+
+
+
+
+/* 导航栏 */
+#rd8_authornav {
+	width: 100%;
+	margin-top: 10px;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+	padding: 1px;
+	border: 1px solid #CCCCCC;
+}
+#rd8_authornav p {
+	width: 100%;
+	text-align: center;
+	background-color: #698CC3;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border: 1px solid #FFFFFF;
+	float: left;
+	font-weight: bold;
+}
+#rd8_authornav a:link {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-weight: normal;
+}
+#rd8_authornav a:visited {
+	font-size: 12px;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-weight: normal;
+}
+#rd8_authornav a:hover {
+	font-size: 12px;
+	color: #698CC3;
+	font-weight: bold;
+	text-decoration: none;
+	background-color: #FFFFFF;
+}
+/* 中间内容 */
+#rd8_authorcenter {
+	position:relative;
+	width: 100%;
+	clear:both;
+	margin-bottom: 8px;
+	border: 1px solid #DAE3F0;
+	padding: 2px;
+}
+/* 所有标题，比如：我的信息 */
+.rd8_authortitle {
+	width: 100%;
+	text-align: center;
+	background-color: #698CC3;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	position: relative;
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+}
+/* 普通行 */
+.rd8_authorrow {
+	text-align: center;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	background-color: #FFFFFF;
+}
+.rd8_evenauthorrow {
+	text-align: center;
+	background-color: #DAE3F0;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+}
+.rd8_scauthorrow {
+	text-align: center;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	background-color: #FFFFFF;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_scevenauthorrow {
+	text-align: center;
+	background-color: #DAE3F0;
+	font-size: 12px;
+	width: 100%;
+	float: left;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_authorrowleft {
+	text-align: right;
+	width: 300px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_authorrowright {
+	text-align: left;
+	text-indent: 6px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_authorrownewleft {
+	text-align: right;
+	width: 100px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.rd8_authorrownewright {
+	text-align: left;
+	text-indent: 6px;
+	float: left;
+	margin: 0px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	white-space: pre;
+}
+
+.rd8_authorrowright textarea {
+	width: 368px;
+	height: 80px;
+	border: 1px solid #CCCCCC
+}
+.rd8_authorrownewright textarea {
+	width: 368px;
+	height: 100px;
+	border: 1px solid #CCCCCC
+}
+.rd8_authorrowbottom {
+	text-align: center;
+	font-size: 12px;
+	background-color: #5C85BD;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	width: 100%;
+	float: left;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+}
+.rd8_authorrowbottom2 {
+	text-align: center;
+	font-size: 12px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	width: 100%;
+	float: left;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+}
+/* 表格 */
+#rd8_authorcenter table {
+	width: 100%;
+	margin: 6px auto 0;
+	border-collapse :collapse;
+}
+#rd8_authorcenter table td {
+	text-align: center;
+}
+/* 表格第一行 */
+.rd8_tabletexture {
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #698CC3;
+	height: 30px;
+}
+/* 表格行 */
+.rd8_authortablerow {
+	font-size: 12px;
+	background-color: #FFFFFF;
+	height: 26px;
+}
+.rd8_evenauthortablerow {
+	background-color: #DAE3F0;
+	font-size: 12px;
+	height: 26px;
+}
+/* 表格最后一行1 */
+.rd8_authortablebottom {
+	text-align: center;
+	font-size: 12px;
+	background-color: #5C85BD;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+}
+/* 表格最后一行2 */
+.rd8_authortablebottom2 {
+	text-align: center;
+	font-size: 12px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	white-space: pre;
+	font-weight: bold;
+	color: #000000;
+}
+
+
+
+
+.rd8_navigation, #rd8_navigation_ucp, #rd8_navigation_aucp {
+	color: White;
+	background: #698CC3;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+	text-align: center;
+}
+.rd8_navigation a, #rd8_navigation_ucp a, #rd8_navigation_aucp a {
+	color: White;
+	text-decoration: none;
+}
+.rd8_navigation a:hover, #rd8_navigation_ucp a:hover, #rd8_navigation_aucp a:hover {
+	color: #698CC3;
+	background: White;
+	font-weight: bold;
+	text-decoration: none;
+}
+.rd8_navigation span, #rd8_navigation_ucp span, #rd8_navigation_aucp span {
+	color: White;
+	font-weight: bold;
+}
+
+.rd8_fullborder {
+	width: 100%;
+	float:left;
+	border: 1px solid #CCC;
+	padding: 0;
+	margin-bottom: 10px;
+}
+.rd8_category {
+	height: 30px;
+	background: #D5D5D5;
+	line-height: 30px;
+	font-weight: bold;
+	width: 100%;
+	margin-top: 1px;
+	text-align: center;
+}
+.rd8_col0 {
+	width: 100%;
+	line-height: 30px;
+	margin: 1px 0 0;
+}
+.rd8_col1 {
+	width: 100%;
+	line-height: 30px;
+	margin: 1px 0 0;
+	background: #ECF8FF;
+}
+.rd8_col2 {
+	width: 100%;
+	line-height: 30px;
+	background: #CCFFCC;
+	margin: 1px 0 0;
+}
+.rd8_colt {
+	height: 28px;
+	width: 100%;
+	line-height: 28px;
+	margin: 1px 0 0;
+	font-weight: bold;
+}
+
+.rd8_head {
+	color: White;
+	background: #698CC3;
+	font-weight: bold;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+	text-align: center;
+	clear:both;
+}
+
+
+
+#rd8_bookinfo {
+	float: left;
+	width: 547px;
+}
+#rd8_bookinfo img {
+	float: right;
+}
+#rd8_bookinfo p {
+	line-height: 1;
+}
+
+#rd8_book_comment p {
+	line-height: 1;
+}
+
+
+#rd8_error {
+    position:relative;
+	clear:both;
+	width: 60%;
+	border: 1px solid #698CC3;
+	padding: 1px;
+	background: Transparent;
+	margin: 10px auto;
+}
+
+#rd8_errorinfo {
+	width: 100%;
+	line-height: 30px;
+	text-align: center;
+	background: #F7F7F7;
+	font-weight: normal;
+	font-size: 20px;
+	color: #D2691E;
+}
+.rd8_errorlink {
+	width: 100%;
+	line-height: 16px;
+	background: #EBEEDB;
+	font-weight: normal;
+	text-align: center;
+}
+.all{
+	background-color:#698CC3;
+	height:26px;
+	line-height:26px;
+	clear:both;
+	color:#FFFFFF;
+	font-weight:bold;
+	padding-left:3px;
+}
+.rd8_all{
+	margin-top:6px;
+	margin-left:3px;
+}
+.rd8_behavior{
+	height:259px;
+	border:1px solid #698CC3;
+	float:left;
+	width:230px;
+	padding: 2px;
+}
+.rd8_behavior dl,.rd8_talk dl {
+	margin: 0;
+	width: 100%;
+}
+.rd8_behavior dt,.rd8_talk dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 1pc;
+	height: 26px;
+	margin:0 0 10px;
+
+}
+.rd8_behavior dd,.rd8_talk dd {
+	margin: 0;
+	float: left;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+	padding-left: 4px;
+}
+.rd8_behavior span,.rd8_talk span{
+	float:right;
+	padding-top:4px;*padding:0;
+	padding-right:2px;
+}
+
+.rd8_talk{
+	height:373px;
+	border:1px solid #698CC3;
+	float:left;
+	width:230px;
+	padding: 2px;
+	overflow:hidden;
+}
+
+
+.rd8_interview{
+	text-align:left;
+	line-height:26px;
+	height:26px;
+	background-color:#698CC3;
+	color:#FFF;
+	font-weight:bold;
+}
+
+.rd8_interview span{
+	padding-left:3px;
+}
+
+.rd8_inter{
+	width: 99%;
+	padding-left: 1%;
+	margin-top:4px;
+	margin-bottom:4px;
+}
+
+.rd8_inter span{
+	font-size:14px;
+	font-weight:bold;
+}
+
+.rd8_ad_position{
+	width: 1000px;
+	height: 60px;
+	margin-top:3px;
+	margin-bottom:14px;
+}
+
+.rd8_ad_position img{
+	margin-left:15px;
+	border:none;
+}
+
+.rd8_n{
+	width:700px;
+	height:30px;
+}
+
+.rd8_subject,.rd8_word{
+	margin-bottom:5px;
+	border:1px solid #5B82BE;
+	height:125px;
+}
+.rd8_initial{
+	margin-bottom:5px;
+	border:1px solid #5B82BE;
+	height:180px;
+
+}
+.rd8_subject dl,.rd8_contents dl,.rd8_initial dl,.rd8_word dl{
+	margin:2px;
+}
+
+.rd8_subject dt,.rd8_contents dt,.rd8_initial dt,.rd8_word dt{
+	background-color:#5B82BE;
+	color:#FFF;
+	font-weight:bold;
+	font-size:14px;
+	text-align:center;
+	height:30px;
+	line-height:30px;
+	margin-bottom:5px;
+}
+
+.rd8_subject .current_dd,.rd8_contents current_dd,.rd8_initial current_dd{
+	float:left;
+	margin-left:2px;
+	padding-left:10px;
+}
+
+.rd8_subject dd,.rd8_initial dd{
+	float:left;
+	margin-left:2px;
+	padding-left:10px;
+	padding-bottom:10px;
+}
+.rd8_word dd{
+	float:left;
+	margin-left:2px;
+	padding-left:2px;
+	padding-bottom:10px;
+
+}
+.rd8_contents{
+	margin-bottom:5px;
+	border:1px solid #5B82BE;
+	clear:both;
+	height:265px;
+}
+
+.rd8_contents dd{
+	float:left;
+	margin-left:0;
+	padding-left:8px;
+	padding-bottom:10px;
+
+}
+#rd8_dig{
+	color:#0000FF;
+}
+.current_digg{
+	border:1px solid #B5C6E1;
+	color:#698CC3;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14px;
+	margin-right:10px;
+	padding:4px 8px;
+	text-decoration:none;
+	background-color:#FFFFCC;
+	cursor:pointer;
+}
+#rd8_bookinfo table{
+	border:none;
+}
+#rd8_bookinfo table td{
+	text-align:left;
+	border:none;
+}
+
+.rd8_td a{
+	border:1px solid #698CC3;
+	padding:4px;
+	margin-left:3px;
+}
+.rd8_td a:hover{
+	background-color:#CCC;
+}
+
+#rd8_userpanel{
+	width:98%;
+	float:left;
+}
+#rd8_userpanel li{
+	list-style:none;
+}
+.rd8_userpanel_title{
+	font-weight:bolder;
+	font-size:13px;
+	letter-spacing:5px;
+	width:100%;
+	text-align:center;
+	line-height:26px;
+	border-bottom:1px dashed #636C81;
+	margin-bottom:10px;
+	float:left;
+}
+.rd8_myhelp{
+	width:100%;
+	height:100%;
+	float:left;
+}
+.rd8_userpanel_msg{
+	width:100%;
+	line-height:26px;
+	border-bottom:0px solid #636C81;
+	float:left;
+}
+.rd8_userpanel_msg form{
+	width:100%;
+	float:left;
+}
+.rd8_userpanel_pay{
+	display:block;
+	line-height:26px;
+	margin:5px 10px;
+	padding:5px;
+	float:left;
+	border:1px solid #636C81;
+}
+.rd8_userpanel_pay a:hover{
+	color:red;
+}
+/* author_book.html start 	*/
+		.rd8_author_book table{border:1px solid #CCC;border-collapse:collapse;float:left;margin:0pt;width:100%;border-collapse:collapse;}
+		.rd8_author_book td {border-bottom:1px solid #CCC;border-right:1px solid #CCC;line-height:26px;text-align:center;}
+	.rd8_myauthor{width:98%;height:300px;text-align:center;padding:10px;}
+	.rd8_myauthor li{width:98%;height:26px;line-height:26px;float:left;margin:3px;}
+	
+
+/* author_book.html end */	
+
+.rd8_mysearch{
+	width:100%;
+	float:left;
+}
+.rd8_mysearch form{
+	float:left;
+
+}
+.rd8_mysearch input,.rd8_mysearch select{
+	border:1px solid #698CC3;
+	float:left;
+	margin:3px;
+	padding:0;
+
+}

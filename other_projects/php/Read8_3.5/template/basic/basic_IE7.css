@@ -1,0 +1,17 @@
+/* Side */
+.rd8_main div.rd8_side ul {
+	width: 150px !important;
+}
+.rd8_main div.rd8_side li {
+	margin: 0 !important;
+}
+/* Mid */
+.rd8_main div.rd8_mid ul {
+	width: 540px !important;
+}
+.rd8_main div.rd8_mid li {
+	margin: 0 auto !important;
+}
+.rd8_main div.rd8_mid div.mr {
+	margin-right: 3px !important;
+}

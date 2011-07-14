@@ -1,0 +1,130 @@
+<!-- IF C_user_id -->
+<!-- ELSE -->
+	<link rel="stylesheet" type="text/css" media="all" href="../template/basic/calendar/calendar-win2k-cold-1.css" title="win2k-cold-1" />
+	<script type="text/javascript" src="../template/basic/calendar/calendar.js"></script>
+	<script type="text/javascript" src="../template/basic/calendar/lang/calendar-zh.js"></script>
+	<script type="text/javascript" src="../template/basic/calendar/calendar-setup.js"></script>
+
+	<table>
+		<tr>
+			<td width="65%" valign="top">
+	<div class="adminborder" style="width: 100%;background:none;border:none;">
+		<div class="admin_about" style="width: 97%;margin-top:0px;">
+			<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+			<div class="b0">
+				<ul>
+					<li>可编辑已注册用户的相关资料。</li>
+					<li>输入关键词可进行模糊查询。</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+			</td>
+			<td width="1%">&nbsp;</td>
+			<td>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder" style="width:100%;background:none;border:none;">
+		<div class="adminhead2" style="width:100%;"><li class="img_sleft">查找用户</li><li class="img_right"></li></div>
+		<div class="b0" style="width:99.2%;border-left:1px solid #CCEBFD;border-right:1px solid #CCEBFD;margin-top:-14px;">
+			<div style="width: 40%;padding-left: 1%;">用户名:</div>
+			<div style="width: 58%;"><input type="text" name="thename" size="20" maxlength="20" value="{thename}" /></div>
+		</div>
+		<div class="b0" style="width:99.2%;border-left:1px solid #CCEBFD;border-right:1px solid #CCEBFD;margin-top:0px;">
+			<div style="width: 40%;padding-left: 1%;">注册时间介于:</div>
+			<div style="width: 58%;"><input type="text" name="regf" size="8" value="{regf}" id="regf" onclick="regfs();" readonly="readonly" /> - <input type="text" name="regt" size="8" value="{regt}" id="regt" onclick="regts();" readonly="readonly" /></div>
+		</div>
+		<div class="b0" style="width:73.5%;text-align:cener;border:1px solid #CCEBFD;margin-top:0px;padding-left:70px;">
+				<input style="float:left" type="submit" value=" 提 交 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " />
+		</div>
+<!-- 		<div class="bt" style="border:1px solid #CCEBFD;"><input type="submit" value=" 提 交 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " /></div>
+ -->	</div>
+	</form>
+
+	<script type="text/javascript">
+		function regfs(){
+			Calendar.setup({
+				inputField     :    "regf",     // id of the input field
+				ifFormat       :    "%Y-%m-%d",     // format of the input field (even if hidden, this format will be honored)
+				range          :    [1970, 2031],
+			});
+		}
+		function regts(){
+			Calendar.setup({
+				inputField     :    "regt",     // id of the input field
+				ifFormat       :    "%Y-%m-%d",     // format of the input field (even if hidden, this format will be honored)
+				range          :    [1970, 2031],
+			});
+		}
+		Calendar.setup({
+			inputField     :    "regf",     // id of the input field
+			ifFormat       :    "%Y-%m-%d",     // format of the input field (even if hidden, this format will be honored)
+			range          :    [1970, 2031],
+		});
+		Calendar.setup({
+			inputField     :    "regt",     // id of the input field
+			ifFormat       :    "%Y-%m-%d",     // format of the input field (even if hidden, this format will be honored)
+			range          :    [1970, 2031],
+		});
+	</script>
+
+			</td>
+		</tr>
+	</table>
+<!-- ENDIF -->
+
+<!-- IF C_user_id -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">编辑用户</div>
+		<div class="cat" style="text-align: center;">-==必填内容==-</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">用 户 名:</div>
+			<div style="width: 68%;"><input type="hidden" name="puser_id" value="{uid}" /><input type="text" name="pusername" id="uname" value="{username}" disabled="disabled" /> 如不是特别需要，请不要修改用户名 <input type="button" value="修改" onclick="javascript:if(this.value=='修改') {this.value='取消';$('uname').disabled=false;}else {this.value='修改';$('uname').disabled=true;}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新 密 码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="pnewpswd" /> 如果不更改密码此处请留空</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">重复密码:</div>
+			<div style="width: 68%;"><input type="password" size="20" maxlength="75" name="pnewpswd2" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">电子邮件:</div>
+			<div style="width: 68%;"><input type="text" size="20" maxlength="75" name="pemail" value="{email}" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="<!-- IF C_user_id -->update<!-- ELSE -->delete<!-- ENDIF -->" /> &nbsp;<input type="reset" value=" 重 置 " /> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></div>
+	</div>
+	</form>
+<!-- ELSE -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="user">
+	<div class="adminborder">
+		<div class="adminhead">用户列表</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />删?</td>
+					<td>用户ID</td>
+					<td align="left">&nbsp;用户名</td>
+					<td align="left">&nbsp;电子邮件</td>
+					<td>注册时间</td>
+					<td>管理选项</td>
+				</tr>
+	<!-- BEGIN itemlist -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+					<td><input type="checkbox" name="ids[]" value="{uid}" /></td>
+					<td>{uid}</td>
+					<td align="left">&nbsp;{username}</td>
+					<td align="left">&nbsp;{email}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=edit&amp;id={uid}">编辑</a> | <a href="?ptype={ptype}&amp;pfile=user_ban&amp;id={uid}">禁止</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;ids[]={uid}" onclick="if(!confirm('确认删除？')) return false;">删除</a></td>
+				</tr>
+	<!-- END itemlist -->
+			</table>
+		</div>
+	<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="<!-- IF C_user_id -->update<!-- ELSE -->delete<!-- ENDIF -->" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

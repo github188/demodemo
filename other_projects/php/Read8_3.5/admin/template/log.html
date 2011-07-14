@@ -1,0 +1,35 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>出于系统安全考虑本日志仅供查看，不可操作。</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">查看日志</div>
+		<div class="col0">
+			<table>
+				<tr align="center" class="colt">
+<!-- BEGIN cols -->
+					<td>{col}</td>
+<!-- END -->
+				</tr>
+<!-- IF logs -->
+	<!-- BEGIN logs -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+		<!-- BEGIN log -->
+					<td>&nbsp;{val}&nbsp;</td>
+		<!-- END -->
+				</tr>
+	<!-- END -->
+<!-- ELSE -->
+				<tr class="col0" colspan="100">
+					<td>&nbsp;暂无&nbsp;</td>
+				</tr>
+<!-- ENDIF -->
+			</table>
+		</div>
+	</div>
+

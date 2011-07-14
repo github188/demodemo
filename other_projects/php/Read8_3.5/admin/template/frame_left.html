@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<title>{G_sitename} - 后台管理</title>
+<base href="{G_siteurl}/admin/" />
+<link href="template/acp.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+	var ie = document.all && !window.opera;
+		iebody = (document.compatMode=="CSS1Compat") ? document.documentElement : document.body;
+	var docwidth = (ie) ? iebody.clientWidth : window.innerWidth;
+		docheight = (ie) ? iebody.clientHeight : window.innerHeight;
+	function showHide(objId){
+		var obj = document.getElementById(objId);
+		if(obj.style.display == "none") {
+			obj.style.display = "block";
+		}else {
+			obj.style.display = "none";
+		}
+	}
+	function Loading(){
+		var targetdoc = parent.right.document;
+			targetwin = parent.right.window;
+
+		var ie = targetdoc.all && !targetwin.opera;
+			iebody = (targetdoc.compatMode=="CSS1Compat") ? targetdoc.documentElement : targetdoc.body;
+		var docwidth = (ie) ? iebody.clientWidth : targetwin.innerWidth;
+			docheight = (ie) ? iebody.clientHeight : targetwin.innerHeight;
+
+		targetdoc.writeln('<style type="text/css">');
+		targetdoc.writeln('	.loading {');
+		targetdoc.writeln('		position: absolute;');
+		targetdoc.writeln('		top: 0;');
+		targetdoc.writeln('		left: 0;');
+		targetdoc.writeln('		width: '+docwidth+'px;');
+		targetdoc.writeln('		height: '+docheight+'px;');
+		targetdoc.writeln('		text-align: center;');
+		targetdoc.writeln('		line-height: '+docheight+'px;');
+		targetdoc.writeln('		border: 0;');
+		targetdoc.writeln('		border-top: 1px solid #515C3C;');
+		targetdoc.writeln('		background: #E1E8F3 url(template/images/loading.gif) no-repeat scroll '+Math.floor((docwidth-100)/2)+'px '+Math.floor((docheight-100)/2)+'px;');
+		targetdoc.writeln('	}');
+		targetdoc.writeln('</style>');
+		targetdoc.writeln('<div class="loading">');
+		targetdoc.writeln('	Loading......');
+		targetdoc.writeln('</div>');
+	}
+//--><!]]></script>
+</head>
+<body style="background: #86C1FF;">
+<div style="width: 95%;margin: 0 auto;">
+<!-- BEGIN lists -->
+	<div class="topitem" onclick="showHide('items{I}')"> 
+		<div class="topl"><img src="template/images/mtimg1.gif" alt="" /></div>
+		<div class="topr">{C_name}</div>
+	</div>
+	<div style="clear: both;"></div>
+	<div style="display: block;" id="items{I}" class="itemsct"> 
+	<!-- BEGIN funclist -->
+		<dl class="itemem"> 
+			<dd class="tdl"><img src="template/images/newitem.gif" alt="" /></dd>
+			<dd class="tdr"><a href="?ptype={C_ptype}&amp;pfile={C_pfile}" target="right" onclick="javascript:Loading();">{C_name}</a></dd>
+		</dl>
+	<!-- END -->
+	</div>
+<!-- END -->
+
+</div>
+</body>
+</html>

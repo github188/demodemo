@@ -1,0 +1,69 @@
+	<div class="rd8_fullborder">
+		<script type="text/javascript"><!--//--><![CDATA[//><!--
+			var pswd1 = '';
+			var pswd2 = '';
+			function checkpswd(key, val) {
+				if(key == 'pswd1') {
+					pswd1 = val;
+				}
+				if(key == 'pswd2') {
+					pswd2 = val;
+				}
+				if(pswd1 && pswd2) {
+					if(pswd1 != pswd2) {
+						$('msgPassword').innerHTML = '<span style="color: Red;">两次输入的密码不一样</span>';
+					}else {
+						$('msgPassword').innerHTML = '<span style="color: Green;">两次输入一致</span>';
+					}
+				}
+			}
+		//--><!]]></script>
+		<script type="text/javascript" src="template/{G_tpldir}/pswdsafe.js"></script>
+
+		<form action="my/profile_update.php" method="post">
+			<div class="rd8_head">信息资料管理中心 - 修改</div>
+			<div class="rd8_col0">
+				<table align="center">
+					<tr class="rd8_col0">
+						<td width="12%" align="right">用户名:&nbsp;</td>
+						<td style="text-align:left;padding-left:5px;">{F_username}</td>
+					</tr>
+					<tr class="rd8_col0">
+						<td align="right">原密码:&nbsp;</td>
+						<td style="text-align:left;padding-left:5px;"><input type="password" size="40" maxlength="75" name="pswd" /> &nbsp;(不改请留空)</td>
+					</tr>
+					<tr class="rd8_col0">
+						<td align="right">新密码:&nbsp;</td>
+						<td style="text-align:left;padding-left:5px;"><input type="password" size="40" maxlength="75" name="newpswd" onblur="checkpswd('pswd1',this.value);" onkeyup="EvalPwdStrength(document.forms[0],this.value);" /> &nbsp;
+							<div style="float: left;width: 215px;font-weight: bold;height: 16px;line-height: 16px;background: White;position: relative;top: -22px !important;top: -17px;left: 315px;*left: 285px;">
+								<div class="rd8_pwdChkCon0" id="rd8_idSM1">
+									<span id="rd8_idSMT1" style="display: none;">弱</span>
+								</div>
+								<div class="rd8_pwdChkCon0" id="rd8_idSM2" style="border-left: White 1px solid;">
+									<span id="rd8_idSMT0" style="display: inline;font-weight: normal;color: #666;">未评级</span>
+									<span id="rd8_idSMT2" style="display: none;">中等</span>
+								</div>
+								<div class="rd8_pwdChkCon0" id="rd8_idSM3" style="border-left: White 1px solid;">
+									<span id="rd8_idSMT3" style="display: none;">强</span>
+								</div>
+								<div class="rd8_pwdChkCon0" id="rd8_idSM4" style="border-left: White 1px solid;">
+									<span id="rd8_idSMT4" style="display: none;">最佳</span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr class="rd8_col0">
+						<td align="right">重复密码:&nbsp;</td>
+						<td style="text-align:left;padding-left:5px;"><input type="password" size="40" maxlength="75" name="newpswd2" onblur="checkpswd('pswd2',this.value);" /> &nbsp;<span id="rd8_msgPassword"></span> (如需修改密码请填写原密码)</td>
+					</tr>
+					<tr class="rd8_col0">
+						<td align="right">E-mail:&nbsp;</td>
+						<td style="text-align:left;padding-left:5px;"><input type="text" size="40" maxlength="75" name="email" value="{email}" /></td>
+					</tr>
+					<tr class="rd8_colt">
+						<td align="center" colspan="2"><input type="submit" value=" 提  交 " /></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>

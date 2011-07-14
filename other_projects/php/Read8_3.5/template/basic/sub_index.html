@@ -1,0 +1,81 @@
+	<div id="rd8_center">			
+		<h1 class="rd8_subguide">您正在浏览：<acronym>{sc_title}</acronym>频道</h1>
+			<div id="rd8_left" style="margin-top:7px;">
+				<div class="rd8_subnav">
+					<div class="rd8_subject">
+						<dl>
+							<dt>按&nbsp;题&nbsp;材</dt>
+<!-- BEGIN subjects -->
+							<dd><a href="index.php?sc={id}"<!-- IF selected --> <!-- ENDIF -->>{title}</a></dd>
+<!-- END subjects -->
+						</dl>
+					</div>
+					<div class="rd8_contents">
+						<dl>
+							<dt>按&nbsp;内&nbsp;容</dt>
+<!-- BEGIN contents -->
+							<dd><a href="category.php?subject={sc}&amp;content={id}">{title}</a></dd>
+<!-- END contents -->
+						</dl>
+					</div>
+					<div class="rd8_initial" style="clear:both;">
+						<dl>
+							<dt>按&nbsp;首&nbsp;字&nbsp;母：</dt>
+<!-- BEGIN initial -->
+							<dd><a href="category.php?subject={sc}&amp;initial={v}">[{v}]</a></dd>
+<!-- END initial -->
+						</dl>
+					</div>
+					<div class="rd8_subject" style="clear:both;">
+						<dl>
+							<dt>按&nbsp;字&nbsp;数：</dt>
+<!-- BEGIN words -->
+							<dd><a href="category.php?subject={sc}&amp;words={v}">[{v}]</a></dd>
+<!-- END words -->
+						</dl>
+					</div>
+				</div>
+			</div>
+
+			<div id="rd8_middle">
+				<p class="rd8_catetitle">最新上架</p>
+					<ul>
+<!-- BEGIN novels -->
+						<li<!-- IF A --> class="rd8_evenrow"<!-- ENDIF -->><span class="rd8_lisubject">[{content}]</span><a href="{InfoURL}"> 《{title}》 {chapter_title} </a><span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span><span class="rd8_liauthor">{author}</span></li>
+<!-- END novels -->
+					</ul>
+					<small><a href="category.php?subject={sc}">查看所有图书&gt;&gt</a></small>
+			</div>
+
+			<div id="rd8_subright">
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总推荐榜</dt>
+	<!-- BEGIN novel_total_commend -->
+						<dd><a href="{InfoURL}">{title}</a>({vote_total})</dd>
+	<!-- END novel_total_commend -->
+					</dl>	
+					<span><a href="rank.php?rid=4&amp;sc={sc}">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总点击榜</dt>
+<!-- BEGIN novel_total_click -->
+						<dd><a href="{InfoURL}">{title}</a>({click_total})</dd>
+<!-- END novel_total_click -->
+					</dl>
+					<span><a href="rank.php?rid=3&amp;sc={sc}">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总收藏榜</dt>
+<!-- BEGIN novel_total_favo -->
+						<dd><a href="{InfoURL}">{title}</a>({favo_total})</dd>
+<!-- END novel_total_favo -->
+					</dl>
+					<span><a href="rank.php?rid=16&amp;sc={sc}">更多&gt;&gt;</a></span>
+					</div>	
+				</div>
+		</div>

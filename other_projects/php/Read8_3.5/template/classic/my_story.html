@@ -1,0 +1,31 @@
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">书籍列表 - - - <a href="my/story_new.php">点击此处发表随笔</a></div>
+		<div class="rd8_col0">
+			<table>
+				<tr class="rd8_category">
+					<td>书名</td>
+					<td>作者</td>
+					<td>类别</td>
+					<td>状态</td>
+					<td>时间</td>
+					<td>最后更新</td>
+					<td>管理</td>
+				</tr>
+<!-- IF stories -->
+<!-- BEGIN stories -->
+				<tr class="rd8_col{A}" align="center" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'"> 
+					<td><a href="story.php?bid={id}">《{title}》</a></td>
+					<td>{author}</td>
+					<td>{subject} - {content}</td>
+					<td>{state}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF lastupdate -->{lastupdate_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td><!-- IF state=="冻结" -->--<!-- ELSE --><a href="my/story_edit.php?bid={id}">编辑</a> &nbsp;<a href="my/story_delete.php?bid={id}">删除</a><!-- ENDIF --></td>
+				</tr>
+<!-- END stories -->
+<!-- ELSE --><tr style="background:#FFF;border:none;"><td style="background:#FFF;border:none;">当前没有任何记录</td></tr><!-- ENDIF -->
+			</table>
+		</div>
+		<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+	</div>

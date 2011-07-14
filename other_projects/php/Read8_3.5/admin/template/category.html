@@ -1,0 +1,159 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>如果采集时没有任何分类匹配，可以在此将任何未分类书籍指定分类。</li>
+				<li>如果改动了分类，请注意更新采集站点规则中的书籍分类书签，以免采集自动书籍分类对应错误。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;class=subject" method="post">
+		<div class="adminborder">
+			<div class="adminhead">书籍类别操作</div>
+			<div class="col0">
+				<table>
+					<tr>
+						<td>
+							<label for="del_subject"><input type="radio" name="action" id="del_subject" value="delete" /> 删除分类: </label>
+							<select name="delete_id">
+<!-- BEGIN subjects -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END subjects -->
+							</select>
+							
+						</td>
+					</tr>
+					<tr class="col1">
+						<td>
+							<label for="add_subject"><input type="radio" name="action" id="add_subject" value="add" /> 新增分类: </label>
+							名称: <input type="text" name="title" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="edit_subject"><input type="radio" name="action" id="edit_subject" value="edit" /> 编辑分类: </label>
+							<select name="edit_id">
+<!-- BEGIN subjects -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END subjects -->
+							</select>
+							 为 <input type="text" name="new_title" />
+						</td>
+					</tr>
+					<tr class="col1">
+						<td>
+							<label for="recover_subject"><input type="radio" name="action" id="recover_subject" value="recover" /> 恢复分类: </label>
+							<select name="recover_id">
+<!-- BEGIN subjects -->
+	<!-- IF active=="0" -->
+								<option value="{id}">{title} (删除时间 {deltime_DATE_Y-m-d H:i:s})</option>
+	<!-- ENDIF -->
+<!-- END subjects -->
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="move_subject"><input type="radio" name="action" id="move_subject" value="move" /> 批量移动: </label>
+							将 <select name="move_from">
+								<option value="0">未分类</option>
+<!-- BEGIN subjects -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END subjects -->
+							</select> 的书全部改为
+							<select name="move_to">
+<!-- BEGIN subjects -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END subjects -->
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="bt"><input type="submit" value="  提   交  " /></div>
+		</div>
+	</form>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;class=content" method="post">
+		<div class="adminborder">
+			<div class="adminhead">书籍类别操作</div>
+			<div class="col0">
+				<table>
+					<tr>
+						<td>
+							<label for="del_content"><input type="radio" name="action" id="del_content" value="delete" /> 删除分类: </label>
+							<select name="delete_id">
+<!-- BEGIN contents -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END contents -->
+							</select>
+							
+						</td>
+					</tr>
+					<tr class="col1">
+						<td>
+							<label for="add_content"><input type="radio" name="action" id="add_content" value="add" /> 新增分类: </label>
+							名称: <input type="text" name="title" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="edit_content"><input type="radio" name="action" id="edit_content" value="edit" /> 编辑分类: </label>
+							<select name="edit_id">
+<!-- BEGIN contents -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END contents -->
+							</select>
+							 为 <input type="text" name="new_title" />
+						</td>
+					</tr>
+					<tr class="col1">
+						<td>
+							<label for="recover_content"><input type="radio" name="action" id="recover_content" value="recover" /> 恢复分类: </label>
+							<select name="recover_id">
+<!-- BEGIN contents -->
+	<!-- IF active=="0" -->
+								<option value="{id}">{title} (删除时间 {deltime_DATE_Y-m-d H:i:s})</option>
+	<!-- ENDIF -->
+<!-- END contents -->
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="move_content"><input type="radio" name="action" id="move_content" value="move" /> 批量移动: </label>
+							将 <select name="move_from">
+								<option value="0">未分类</option>
+<!-- BEGIN contents -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END contents -->
+							</select> 的书全部改为
+							<select name="move_to">
+<!-- BEGIN contents -->
+	<!-- IF active -->
+								<option value="{id}">{title}</option>
+	<!-- ENDIF -->
+<!-- END contents -->
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="bt"><input type="submit" value="  提   交  " /></div>
+		</div>
+	</form>

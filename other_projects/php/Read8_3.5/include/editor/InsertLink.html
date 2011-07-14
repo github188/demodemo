@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>超链接</TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<style type="text/css">
+table{
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+body{
+	overflow:hidden;
+	margin:0px;
+	padding:0px;
+	padding-top:1px;
+	color:#FFFFFF;
+	background-color:#373737;
+}
+.title{
+	width:100%;
+	background-color:#212121;
+	font-size:13px;
+	color:#FFF;
+	magin:auto;
+	height:16px;
+	padding-top:2px;
+	padding-left:4px;
+}
+input{
+	border-left:1px solid #808080;
+	border-top:1px solid #808080;
+	border-bottom:1px solid #D4D1CA;
+	border-right:1px solid #D1D0CC;
+	height:18px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+</style>
+</HEAD>
+<BODY>
+<div class="title"><strong>超链接信息</strong></div>
+<table border="0" cellpadding="0" cellspacing="0" align="center">
+  <tr><td colspan="2" height="15px"></td></tr>
+  <tr>
+    <td width="60" height="18">链接地址:</td>
+    <td width="124" ><input id="wordEditer_Link_ADS" value="http://"></td>
+  </tr>
+  <tr><td colspan="2" height="10px"></td></tr>
+  <tr>
+    <td height="18">链接文字:</td>
+    <td><input id="wordEditer_Link_TEXT" ></td>
+  </tr>
+    <tr><td colspan="2" height="15px"></td></tr>
+  <tr align="center">
+    <td height="30" colspan="2"><a onClick="insertLink();"><img src="images/tools_bt_ok.gif" width="42" height="19" border="0"></a>&nbsp;&nbsp;<a onClick="_cancel();"><img src="images/tools_bt_no.gif" width="42" height="19" border="0"></a></td>
+  </tr>
+</table>
+<script type="text/javascript">
+function _cancel() {
+	window.close();
+}
+var oRTE = dialogArguments.getFrameNode(dialogArguments.sRTE);
+function insertLink() {
+	var t = "_blank";
+	var a = document.getElementById("wordEditer_Link_ADS").value;
+	var v = document.getElementById("wordEditer_Link_TEXT").value;
+	if(a == "") return;	
+	if(v == "") v = a;
+	var html = "<a href='" + a + "' target=\"" + t + "\">" + v + "</a>";
+	if(window.Event){
+		var oRTE = opener.getFrameNode(opener.sRTE);
+		oRTE.document.execCommand('insertHTML', false, html);
+	}
+	else {
+		var oRTE = dialogArguments.getFrameNode(dialogArguments.sRTE);
+		oRTE.focus();
+		var oRng = oRTE.document.selection.createRange();
+		oRng.pasteHTML(html);
+		oRng.collapse(false);
+		oRng.select();
+	}
+	
+	window.close();
+}
+function init(){
+	if (document.all) {
+		var selection = oRTE.document.selection; 
+		if (selection != null) {
+			rng = selection.createRange();
+		}
+	} else {
+		var selection = oRTE.getSelection();
+		rng = selection.getRangeAt(selection.rangeCount - 1).cloneRange();
+		rng.text = rng.toString();
+	}
+	document.getElementById('wordEditer_Link_TEXT').value = rng.text;
+}
+init();
+</script>
+</BODY>
+</HTML>

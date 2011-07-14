@@ -1,0 +1,112 @@
+
+	<div class="adminborder">
+		<div class="adminhead">常见出错信息</div>
+		<div class="b0">
+			<ul>
+				<li><span style="color: green;">Bad Request. Lack of required parameters.</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;参数错误</li>
+				<li><span style="color: green;">Bad Request. Illegal request.</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;校验码错误</li>
+				<li><span style="color: green;">Bad Request. Please choose a method.</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 书籍类型与书籍分类均未定义</li>
+				<li><span style="color: green;">Bad Request. Please limit a number.</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;调用数量未定义</li>
+				<li><span style="color: green;">Can't write cache file. Please check your permission.</span> &nbsp;写入缓存失败</li>
+				<li><span style="color: green;">Can't read cache file. Please check your permission.</span> &nbsp; 读取缓存失败</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=getjscode" method="post">
+	<div class="adminborder">
+		<div class="adminhead" >JS调用向导</div>
+	<!-- IF C_emsg -->
+		<div class="b0" style="color: blue;"><ul>{C_emsg}</ul></div>
+	<!-- ENDIF -->
+	<!-- IF C_warn -->
+		<div class="b0" style="color: red;"><ul>{C_warn}</ul></div>
+	<!-- ENDIF -->
+	<!-- IF C_code -->
+		<div class="b0" style="text-align: center;"><textarea rows="5" style="width: 99%;" onMouseOver="this.focus();" onFocus="this.select();">{C_code}</textarea></div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">{C_code}</div>
+	<!-- ENDIF -->
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍类型:</span><br />
+				<span class="smalltxt">书籍类型与书籍分类至少设定一种。</span>
+			</div>
+			<div style="width: 38%;">
+				<select name="pkind">
+					<option value="">不&nbsp;&nbsp;&nbsp;&nbsp;限</option>
+					<option value="vip">VIP&nbsp;更新</option>
+					<option value="original">原创更新</option>
+					<option value="copied">转载更新</option>
+				</select>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍分类:</span><br />
+				<span class="smalltxt">书籍类型与书籍分类至少设定一种。</span>
+			</div>
+			<div style="width: 38%;">
+				<select name="psubject">
+					<option value="">不限</option>
+				<!-- BEGIN novel_subject -->
+					<option value="novel_subject_{id}">小说: {title}</option>
+				<!-- END novel_subject -->
+				<!-- BEGIN novel_content -->
+					<option value="novel_content_{id}">小说: {title}</option>
+				<!-- END novel_content -->
+				<!-- BEGIN story_subject -->
+					<option value="story_subject_{id}">短篇: {title}</option>
+				<!-- END story_subject -->
+				<!-- BEGIN story_content -->
+					<option value="story_content_{id}">短篇: {title}</option>
+				<!-- END story_content -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">调用数量:</span><br />
+				<span class="smalltxt">设置调用多少条数据，必填。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="plimit" value="10" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">页面编码:</span><br />
+				<span class="smalltxt">如调用的页面不是utf-8编码且出现乱码则需设置此项，通常为gbk。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pcharset" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">缓存更新时间(单位秒):</span><br />
+				<span class="smalltxt">
+					如未在常规选项中设置统一缓存时间请务必设置该项，否则将非常消耗服务器资源。<br />
+					如已在常规选项中设置统一缓存时间则该项设置无效。
+				</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pcachetime" value="1800" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">在新窗口打开页面:</span><br />
+				<span class="smalltxt">是否在新窗口打开链接，默认为是</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="popeninewindow" value="1" checked="checked" />是</label> &nbsp;
+				<label><input type="radio" name="popeninewindow" value="0" />否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">打开新窗口方式:</span><br />
+				<span class="smalltxt">如果您明确知道您的页面符合 XHTML 1.1 或 XHTML 1.0 Strict 标准请选择标准方式，否则请使用默认兼容模式</span>
+			</div>
+			<div style="width: 38%;">
+				<label><input type="radio" name="pnewindowmethod" value="1" />标准</label> &nbsp;
+				<label><input type="radio" name="pnewindowmethod" value="0" checked="checked" />兼容</label>
+			</div>
+		</div>
+		<div class="bt"><input type="submit" value=" 生成代码 " /></div>
+	</div>
+	</form>

@@ -1,0 +1,38 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>此功能仅在用户基本设置中开启注册审核方能生效。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="user">
+	<div class="adminborder">
+		<div class="adminhead">用户审核</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />删?</td>
+					<td>用户ID</td>
+					<td align="left">&nbsp;用户名</td>
+					<td align="left">&nbsp;电子邮件</td>
+					<td>注册时间</td>
+					<td>审核选项</td>
+				</tr>
+<!-- BEGIN itemlist -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+					<td><input type="checkbox" name="ids[]" value="{uid}" /></td>
+					<td>{uid}</td>
+					<td align="left">&nbsp;{username}</td>
+					<td align="left">&nbsp;{email}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={uid}">通过</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;ids[]={uid}" onclick="if(!confirm('确认删除该用户？？')) return false;">删除</a></td>
+				</tr>
+<!-- END itemlist -->
+			</table>
+		</div>
+<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="delete" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

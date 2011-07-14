@@ -1,0 +1,95 @@
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">站点基本设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站名称:</span><br />
+				<span class="smalltxt">网站名称，将显示在导航条和标题中。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pSITE_NAME" value="{C_SITE_NAME}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站地址:</span><br />
+				<span class="smalltxt">部分跳转页面和导航条、静态阅读页面中显示。<br />地址需要包含“http://”，结尾不要带“/”。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pSITE_ADDR" value="{C_SITE_ADDR}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">论坛地址:</span><br />
+				<span class="smalltxt">显示于用户导航菜单中。<br />相对或绝对路径均可。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pBBS_URL" value="{C_BBS_URL}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站版权信息:</span><br />
+				<span class="smalltxt">支持 HTML 代码。其中，&#123;SITE_NAME}将被替换成网站名称，&#123;SITE_ADDR}将被替换成网站地址，&#123;BBS_URL}将被替换成论坛地址，&#123;NOW_YEAR}将被替换成当前年份。若要显示版权符“&copy;” 请使用 “&amp;copy;”标记。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pcopyright" value="{C_copyright}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">程序版权信息:</span><br />
+				<span class="smalltxt">在此输入程序的版权信息,支持 HTML 代码，如下所示：<br />例1: 填写“本站由&#123;read8cn}提供技术支持”将显示“本站由读吧书网提供技术支持”<br />例2: 填写“Powered by &#123;read8en} &#123;read8ver}”将显示“Powered by Read8.Net 3.5 Beta 1”</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pcopyright_system" value="{C_copyright_system}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">去除程序版权信息授权码:</span><br />
+				<span class="smalltxt">读吧书网版权所有，未经允许严禁删除官方版权信息，违者我们保留诉诸法律的权利。<br />如果您购买了官方授权去除读吧书网版权信息的服务，请<a href="?ptype=official&pfile=official_info">点击这里到官方互动</a>获得相应的授权码。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pcopyright_system_sn" value="{C_copyright_system_sn}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站备案:</span><br />
+				<span class="smalltxt">填入备案号显示于页脚，留空即不显示。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmiibeian" value="{C_miibeian}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">默认时区:</span><br />
+				<span class="smalltxt">网站所使用的时区，与服务器时区无关，北京时间为GMT+8，当前时区: <span style="color: Blue;">GMT<!-- IF time_zone -->{time_zone}<!-- ENDIF --></span>。</span>
+			</div>
+			<div style="width: 38%;">
+				<select name="pTIME_ZONE">
+<!-- BEGIN timezone -->
+					<option value="{v}"{selected}>&nbsp;{t}&nbsp;</option>
+<!-- END timezone -->
+				</select>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">时间校对(单位秒):</span><br />
+				<span class="smalltxt">服务器时间不准确时使用它来校对时间，当前网站时间: <span style="color: Blue;">GMT<!-- IF time_zone -->{time_zone}<!-- ENDIF --> {TIMESTAMP_DATE_Y-m-d H:i:s}</span>。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pTIME_DELAY" value="{C_TIME_DELAY}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站开启:</span><br />
+				<span class="smalltxt">选中“关闭”选项，可将网站暂时将关闭，其他人无法访问，站长不受限制。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="popen_1"><input type="radio" name="popen" id="popen_1" value="1"{C_open_yes} />开启</label> &nbsp;
+				<label for="popen_0"><input type="radio" name="popen" id="popen_0" value="0"{C_open_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">网站关闭原因:</span><br />
+				<span class="smalltxt">网站关闭时的显示信息，支持 HTML 代码。</span>
+			</div>
+			<div style="width: 38%;"><textarea name="pmessage" rows="5" cols="30">{C_message}</textarea></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

@@ -1,0 +1,26 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+					<li>删除所有的缓存。</li>
+					<li>通常不需要使用此管理，仅当需要强制更新所有缓存时使用。效果等同删除 服务器 FTP 的对应目录下的文件。</li>
+			</ul>
+		</div>
+	</div>
+	<div class="adminborder">
+		<div class="adminhead">站内基本缓存管理</div>
+		<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+			<div class="b0">
+				<ul style="list-style-type: none;">
+					<li><label for="c0"><input type="radio" name="prefix" id="c0" value="" checked="checked" /> 所有缓存 &nbsp; (“data/cache/*”)</label></li>
+					<li><label for="c1"><input type="radio" name="prefix" id="c1" value="cache" /> 基本缓存 &nbsp; (“data/cache/cache*”)</label></li>
+					<li><label for="c2"><input type="radio" name="prefix" id="c2" value="config" /> 配置缓存 &nbsp; (“data/cache/config*”)</label></li>
+					<li><label for="c3"><input type="radio" name="prefix" id="c3" value="class" /> 分类缓存 &nbsp; (“data/cache/class*”)</label></li>
+					<li><label for="c4"><input type="radio" name="prefix" id="c4" value="template" /> 模板缓存 &nbsp; (“data/cache/template/*”)</label></li>
+					<li><label for="c5"><input type="radio" name="prefix" id="c5" value="collect" /> 采集缓存 &nbsp; (“data/cache/collect*”)</label></li>
+					<li><label for="c6"><input type="radio" name="prefix" id="c6" value="rank" /> 排行榜缓存 (“data/cache/rank*”)</label></li>
+				</ul>
+			</div>
+			<div class="bt"><input type="submit" value=" 更新缓存 " /><input type="hidden" name="action" value="clear" /></div>
+		</form>
+	</div>

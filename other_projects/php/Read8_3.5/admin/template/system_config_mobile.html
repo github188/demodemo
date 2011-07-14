@@ -1,0 +1,48 @@
+
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>澳信通短信平台是由澳柯网信科技发展有限公司精心研发的专业短信平台，旨在打造中小企业用户的客户沟通中心，帮助企业与全国3亿手机用户建立快速沟通平台，把握移动商机。通过澳信通短信平台企业与客户之间的信息沟通，比普通的电话和电子邮件更具有准确性、及时性以及高效性。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">手机短信设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">澳信通网站帐号:</span><br />
+				<span class="smalltxt"><a href="http://my.aokosms.com/register.php" target="_blank">立即注册澳信通帐号。</a></span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pusername" value="{C_username}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">澳信通网站密码:</span><br />
+				<span class="smalltxt">显示为已加密的密码，不改勿动。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="ppassword" value="{C_password}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍更新订阅:</span><br />
+				<span class="smalltxt">开启此项，如果用户订阅书籍更新，在书籍更新的时候他将收到手机短信提醒。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pnovel_update_1"><input type="radio" name="pnovel_update" id="pnovel_update_1" value="1"{C_novel_update_yes} />开启</label> &nbsp;
+				<label for="pnovel_update_0"><input type="radio" name="pnovel_update" id="pnovel_update_0" value="0"{C_novel_update_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh3"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍评论订阅:</span><br />
+				<span class="smalltxt">开启此项，如果作家订阅书籍评论，在有新评论发表时他将收到手机短信提醒。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pnovel_comment_1"><input type="radio" name="pnovel_comment" id="pnovel_comment_1" value="1"{C_novel_comment_yes} />开启</label> &nbsp;
+				<label for="pnovel_comment_0"><input type="radio" name="pnovel_comment" id="pnovel_comment_0" value="0"{C_novel_comment_no} />关闭</label>
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

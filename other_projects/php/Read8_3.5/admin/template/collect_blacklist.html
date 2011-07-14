@@ -1,0 +1,17 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>请填写书名，不要书名号，每行一个。</li>
+			</ul>
+		</div>
+	</div>
+
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">采集黑名单</div>
+		<div class="b1" style="text-align: center;"><textarea name="blacklist" rows="20" cols="110">{list}</textarea></div>
+		<div class="bt"><input type="submit" value=" 编 辑 " /><input type="hidden" name="action" value="update" /></div>
+	</div>
+	</form>

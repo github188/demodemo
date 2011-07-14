@@ -1,0 +1,80 @@
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+		function setattach(id,action) {
+			$('cover'+id).disabled = action;
+		}
+		function editor_submit(){
+			editor.save();
+			if($('article_textarea').value == '') {
+				alert('内容为空');
+				return false;
+			}
+			if($('rd8_title').value == '') {
+				$('rd8_title').focus();
+				alert('标题为空');
+				return false;
+			}
+			$('rd8_submit').value = "提交中";
+			$('rd8_submit').disabled = true;
+		}
+		var _attach = 0;
+		function append_attach(){
+			var li = document.createElement('li');
+				li.id = 'newattach_' + _attach;
+				li.innerHTML = '新附件: <input type="file" name="newattach[]" id="newattachfile_' + _attach + '" size="36" \/> <label for="newattachdelete_' + _attach + '"><input type="checkbox" id="newattachdelete_' + _attach + '" onclick="javascript:attach_change(\'' + _attach + '\');" \/> 删除<\/label>';
+
+			$('rd8_newattach').appendChild(li);
+
+			_attach++;
+		}
+		function attach_change(_attach){
+			var state = $('newattachdelete_' + _attach).checked;
+			$('newattach_' + _attach).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('newattachfile_' + _attach).disabled = state;
+		}
+	//--><!]]></script>
+
+	<div class="rd8_fullborder">
+		<form action="author/book_chapter_edit_update.php?bid={bid}&cid={cid}" id="rd8_chapteredform" method="post" enctype="multipart/form-data" onsubmit="return editor_submit();">
+			<div class="rd8_head">《{book.title}》 <a href="author/book_info.php?bid={bid}">修改作品信息</a> <a href="author/book_chapter.php?bid={bid}">更新</a> 章节管理</div>
+			<div class="rd8_col0">
+				<table>
+					<tr>
+						<td width="15%" align="center"><strong>章节标题</strong></td>
+						<td width="35%"><input type="text" name="title" id="rd8_title" value="{title}" /></td>
+						<td width="15%" align="center"><strong>内容提要</strong></td>
+						<td width="35%"><input type="text" name="description" value="{description}" /></td>
+					</tr>
+					<tr>
+						<td align="center"><strong>章节内容</strong></td>
+						<td colspan="3">{editor}</td>
+					</tr>
+<!-- IF vip=="" -->
+<!-- IF upload -->
+					<tr class="rd8_col1">
+						<td align="center"><strong>上传附件</strong></td>
+						<td colspan="3">
+							<strong>技巧提示:</strong> 您可以使用 [attach]编号[/attach] 标签将附件显示于文章内容中的任意位置，而不是按照默认的方式排列在文章内容的尾部<br />
+							(最大允许 {upload}, 允许附件类型: {formats})<br />
+							<ul style="list-style-type: none;margin: 0;padding: 0; color: Blue;" id="rd8_newattach">
+							</ul>
+							<span class="rd8_a" onclick="javascript:append_attach();">[+]</span>
+						</td>
+					</tr>
+				<script type="text/javascript">
+<!-- BEGIN attachs -->
+					append_attach_with_value('{f}', '{t}', {s});
+<!-- END attachs -->
+					append_attach();
+				</script>
+<!-- ENDIF -->
+<!-- ENDIF -->
+				</table>
+			</div>
+			<div class="rd8_colt" style="text-align: center;">
+				<input type="submit" value=" 编 辑 " id="rd8_submit" title="提交中" />
+				<input type="hidden" name="update" value="1" />
+				<input type="reset" value=" 返 回 " name="history.back(-1)" />
+			</div>
+		</form>
+	</div>
+

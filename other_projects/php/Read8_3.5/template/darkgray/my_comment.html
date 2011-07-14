@@ -1,0 +1,20 @@
+<div class="rd8_fullborder">
+	<div id="rd8_userpanel">
+		<div class="rd8_userpanel_title">我的评论</div>
+		<div class="rd8_userpanel_msg">
+<!-- IF comments -->
+	<!-- BEGIN comments -->
+			<div class="rd8_commentbox rd8_help">
+				<div class="rd8_commen_title"><!-- IF title --><strong>{title}</strong><!-- ENDIF --></div>
+					<div class="rd8_commen_content">{content}</div>
+			</div>
+			<div class="rd8_commentfooter rd8_help">
+					{username} 于 {dateline_DATE_Y-m-d H:i:s} 对 <a href="{InfoURL}">《{novel_title}》</a><!-- IF chapter_title --> 的 {chapter_title}<!-- ENDIF --> 发表的评论
+			</div>
+	<!-- END comments -->
+<!-- ELSE -->
+			<div class="rd8_all">当前没有任何记录</div>
+<!-- ENDIF -->
+		</div>
+	</div>
+</div>

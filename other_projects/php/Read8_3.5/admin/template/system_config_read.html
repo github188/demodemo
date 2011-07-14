@@ -1,0 +1,92 @@
+<script type="text/javascript">
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+		}
+	}
+	function showhide2(show){
+		if(show) {
+			$('sh2').style.display = '';
+		}else {
+			$('sh2').style.display = 'none';
+		}
+	}
+	function showhide3(show){
+		if(show) {
+			$('sh3').style.display = '';
+		}else {
+			$('sh3').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">书籍阅读设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<strong>全文阅读</strong><br />
+				<span class="smalltxt">如该功能被频繁使用，将会轻微加重服务器负担。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pfulltext_1"><input type="radio" name="pfulltext" id="pfulltext_1" value="1"{C_fulltext_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="pfulltext_0"><input type="radio" name="pfulltext" id="pfulltext_0" value="0"{C_fulltext_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_fulltext_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>全文阅读对游客开放</strong><br />
+				 &nbsp;<span class="smalltxt">当全文阅读开启时，启用该项将允许未登录用户使用全文阅读功能。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pfulltext_guest_1"><input type="radio" name="pfulltext_guest" id="pfulltext_guest_1" value="1"{C_fulltext_guest_yes} />开启</label> &nbsp;
+				<label for="pfulltext_guest_0"><input type="radio" name="pfulltext_guest" id="pfulltext_guest_0" value="0"{C_fulltext_guest_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<strong>打包下载</strong><br />
+				<span class="smalltxt">如该功能被频繁使用，将会轻微加重服务器负担。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pdownload_package_1"><input type="radio" name="pdownload_package" id="pdownload_package_1" value="1"{C_download_package_yes} onclick="javascript:showhide2(1);" />开启</label> &nbsp;
+				<label for="pdownload_package_0"><input type="radio" name="pdownload_package" id="pdownload_package_0" value="0"{C_download_package_no} onclick="javascript:showhide2(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh2"<!-- IF C_download_package_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>打包下载对游客开放</strong><br />
+				 &nbsp;<span class="smalltxt">当打包下载开启时，启用该项将允许未登录用户使用打包下载功能。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pdownload_package_guest_1"><input type="radio" name="pdownload_package_guest" id="pdownload_package_guest_1" value="1"{C_download_package_guest_yes} />开启</label> &nbsp;
+				<label for="pdownload_package_guest_0"><input type="radio" name="pdownload_package_guest" id="pdownload_package_guest_0" value="0"{C_download_package_guest_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<strong>TXT 下载</strong><br />
+				<span class="smalltxt">如该功能被频繁使用，将会轻微加重服务器负担。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pdownload_text_1"><input type="radio" name="pdownload_text" id="pdownload_text_1" value="1"{C_download_text_yes} onclick="javascript:showhide3(1);" />开启</label> &nbsp;
+				<label for="pdownload_text_0"><input type="radio" name="pdownload_text" id="pdownload_text_0" value="0"{C_download_text_no} onclick="javascript:showhide3(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b0" id="sh3"<!-- IF C_download_text_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>TXT 下载对游客开放</strong><br />
+				 &nbsp;<span class="smalltxt">当TXT 下载开启时，启用该项将允许未登录用户使用TXT 下载功能。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pdownload_text_guest_1"><input type="radio" name="pdownload_text_guest" id="pdownload_text_guest_1" value="1"{C_download_text_guest_yes} />开启</label> &nbsp;
+				<label for="pdownload_text_guest_0"><input type="radio" name="pdownload_text_guest" id="pdownload_text_guest_0" value="0"{C_download_text_guest_no} />关闭</label>
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

@@ -1,0 +1,46 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>这里设置首页显示的焦点图，焦点图最多显示5个。</li>
+		<li>焦点图的长宽建议使用：303*164。</li>
+		
+		</ul></div>
+	</div>
+	<form action="?ptype={ptype}&pfile={pfile}" method="post" enctype="multipart/form-data">
+	<div class="adminborder">
+		<div class="adminhead">添加焦点图</div>
+		<div class="b0">
+			<table>
+				<tr><td width="20%" align="right">图片(格式为jpg): &nbsp; &nbsp; &nbsp; &nbsp;</td><td> &nbsp; &nbsp; &nbsp; &nbsp;<input type="file" name="upload" size="60" /></td></tr>
+				<tr class="col1"><td width="20%" align="right">说明: &nbsp; &nbsp; &nbsp; &nbsp;</td><td> &nbsp; &nbsp; &nbsp; &nbsp;<input type="text" name="description" size="60" /></td></tr>
+				<tr><td width="20%" align="right">链接(需要http://): &nbsp; &nbsp; &nbsp; &nbsp;</td><td> &nbsp; &nbsp; &nbsp; &nbsp;<input type="text" name="link" size="60" /></td></tr>
+				<tr align="center" class="colt"><td colspan="2"><input type="submit" value="  提 交  " />&nbsp;<input type="hidden" name="submit" value="1" />&nbsp;<input type="reset" value="  重 写  " /></td></tr>
+			</table>
+		</div>
+	</div>
+	</form>
+	<div class="adminborder">
+		<div class="adminhead">焦点图管理</div>
+<!-- IF booklist -->
+		<div class="b0">
+			<table>
+				<tr class="category">
+					<td>图片</td>
+					<td>图片说明</td>
+					<td>图片链接</td>
+					<td>管理</td>
+				</tr>
+	<!-- BEGIN booklist -->
+				<tr class="col{A}" align="center">
+					<td><img src="../{url}" alt="" width="250" /></td>
+					<td>{description}</td>
+					<td>{link}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;submit=1&amp;delete={id}" onclick="return confirm('确定删除吗？');">删除</a></td>
+				</tr>
+	<!-- END booklist -->
+			</table>
+		</div>
+			<!-- IF C_pagelink --><div class="cat">{C_pagelink}</div><!-- ENDIF -->
+<!-- ENDIF -->
+	</div>
+
+

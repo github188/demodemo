@@ -1,0 +1,90 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head"><a href="typewriter/">作品管理</a> => 《{title}》修改作品信息</div>
+		<div class="rd8_author_book">
+			<form action="typewriter/?bid={id}&action=novel_edit" method="post">
+				<table id="rd8_typewriter">
+					<tr>
+						<td width="6%" align="center">作品名称</td>
+						<td width="35%" style="text-align:left;padding-left:5px;"><input type="text" name="title" value="{title}" /> (不用添加书名号)</td>
+						<td width="6%" align="center">作 &nbsp; &nbsp;者</td>
+						<td width="35%"><!-- IF author_id -->{author}<!-- ELSE --><input type="text" name="author" value="{author}" /><!-- ENDIF --></td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">作品状态</td>
+						<td>
+							<select name="state">
+<!-- BEGIN states -->
+								<option value="{id}"{selected}>{title}</option>
+<!-- END states -->
+							</select>
+						</td>
+						<td align="center">录 &nbsp; &nbsp;入</td>
+						<td><!-- IF typepriv.overstep --><input type="text" name="typewriter" value="{typewriter}" /><!-- ELSE -->{typewriter}<!-- ENDIF --></td>
+					</tr>
+					<tr>
+						<td align="center">作品类型</td>
+						<td>
+							<select name="subject">
+<!-- BEGIN subjects -->
+								<option value="{id}"{selected}>{title}</option>
+<!-- END subjects -->
+							</select>
+							<select name="content">
+<!-- BEGIN contents -->
+								<option value="{id}"{selected}>{title}</option>
+<!-- END contents -->
+							</select>
+						</td>
+						<td align="center">作品风格</td>
+						<td>
+							<select name="style">
+<!-- BEGIN styles -->
+								<option value="{id}"{selected}>{title}</option>
+<!-- END styles -->
+							</select>
+						</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">作品主角</td>
+						<td><input type="text" name="role_lead" value="{role_lead}" /></td>
+						<td align="center">主要配角</td>
+						<td><input type="text" name="role_support" value="{role_support}" /></td>
+					</tr>
+					<tr>
+						<td align="center">内容介绍</td>
+						<td colspan="3"><input type="text" name="description" value="{description}" size="55" /> (请使用自然语言描述本书内容，不超过八十四个汉字。)</td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">关 键 字</td>
+						<td colspan="3"><input type="text" name="tag" value="{tag}" /> (请填写不超过三个的除作品名称、类型、风格以外与作品内容相关的词语。使用 , 分隔)</td>
+					</tr>
+					<tr>
+						<td align="center">作品简介</td>
+						<td colspan="3">将显示在书籍信息页面<br /><textarea rows="10" cols="90" name="intro">{intro}</textarea></td>
+					</tr>
+					<tr>
+						<td class="rd8_colt" style="text-align:center;" colspan="4"><input type="submit" value=" 保存修改 " />&nbsp;&nbsp;<input type="hidden" name="update" value="1" /><input type="button" value="  返  回  " onclick="location.href='typewriter/'" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">修改封面</div>
+		<div class="rd8_author_book">
+			<form action="typewriter/?bid={id}&action=novel_edit" method="post" enctype="multipart/form-data">
+				<table>
+					<tr>
+						<td width="15%" align="center">现有封面</td>
+						<td width="35%"><img src="{HTMLURL}/bookface.jpg" alt="" width="100" height="125" /></td>
+						<td width="15%" align="center">新 封 面</td>
+						<td width="35%"><input type="file" name="cover" /></td>
+					</tr>
+					<tr>
+						<td class="rd8_colt" align="center" colspan="4"><input type="submit" value="  上  传  " /> <input type="hidden" name="update" value="2" /> <input type="button" value="  返  回  " onclick="location.href='typewriter/'" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>

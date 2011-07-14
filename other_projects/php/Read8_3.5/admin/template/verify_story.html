@@ -1,0 +1,56 @@
+	<script type="text/javascript">
+		function openwin(cbcid) {
+			window.open("?ptype={ptype}&pfile={pfile}&action=view&bid="+cbcid,"","width=500,height=400,toolbar=no,menubar=no,scrollbars=yes, resizable=yes,location=no, status=no")
+		}
+		function submit_d(a){
+			if(a == 1) {
+				$('action').value = "delete";
+			}else {
+				$('action').value = "accept";
+			}
+		}
+	</script>
+
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>此功能仅在短篇文学设置中开启短篇审核方能生效。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="story">
+	<div class="adminborder">
+		<div class="adminhead">短篇审核</div>
+		<div class="col0">
+			<table>
+				<tr class="category">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);">全</td>
+					<td>书名</td>
+					<td>作者</td>
+					<td>类别</td>
+					<td>状态</td>
+					<td>时间</td>
+					<td>最后更新</td>
+					<td>操作</td>
+				</tr>
+<!-- BEGIN books -->
+				<tr class="col{A}" align="center" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'"> 
+					<td><input type="checkbox" name="bids[]" value='{id}'></td>
+					<td>{title}</td>
+					<td>{author}</td>
+					<td>{subject} - {content}</td>
+					<td>{state}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF lastupdate -->{lastupdate_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+					<td><a href="javascript:openwin('{id}');">查看</a> &nbsp;<a href="javascript:cfmoption('您确认同意此文发表吗？','?ptype={ptype}&amp;pfile={pfile}&amp;action=accept&amp;bids[]={id}')"><span style="color: Blue;">通过</span></a> &nbsp;<a href="javascript:cfmoption('您确认删除该文吗？','?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;bids[]={id}')"><span style="color: Red;">删除</span></a></td>
+				</tr>
+<!-- END books -->
+			</table>
+		</div>
+<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+		<div class="bt"><input type="hidden" name="action" id="action" value="" /><input type="submit" value=" 通 过 " onclick="if(!confirm('你确认同意所选文章发表吗？')) return false;else submit_d(2);"> <input type="submit" value=" 删 除 " onclick="if(!confirm('你确认删除所选文章吗？')) return false;else submit_d(1);"></div>
+	</div>
+	</form>
+

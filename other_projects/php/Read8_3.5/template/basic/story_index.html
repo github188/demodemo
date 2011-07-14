@@ -1,0 +1,65 @@
+	<div id="rd8_center">			
+		<h1 class="rd8_subguide">您正在浏览：<acronym>{sc_title}</acronym>频道</h1>
+			<div id="rd8_left" style="margin-top:7px;">
+				<div class="rd8_subnav">
+					<div class="rd8_subject">
+						<dl>
+							<dt>按&nbsp;题&nbsp;材</dt>
+<!-- BEGIN subjects -->
+							<dd><a href="index.php?sc={id}">{title}</a></dd>
+<!-- END subjects -->
+						</dl>
+					</div>
+					<div class="rd8_contents">
+						<dl>
+							<dt>按&nbsp;内&nbsp;容</dt>
+<!-- BEGIN contents -->
+							<dd><a href="storylib.php?subject={sc}&amp;content={id}">{title}</a></dd>
+<!-- END contents -->
+						</dl>
+					</div>
+				</div>
+			</div>
+
+			<div id="rd8_middle">
+				<p class="rd8_catetitle">最新上架</p>
+					<ul>
+<!-- BEGIN stories -->
+						<li<!-- IF A --> class="rd8_evenrow"<!-- ENDIF -->><span class="rd8_lisubject">[{content}]</span><a href="{URL}"> 《{title}》</a><span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span><span class="rd8_liauthor">{author}</span></li>
+<!-- END stories -->
+					</ul>
+					<small><a href="storylib.php?subject={sc}">查看所有图书&gt;&gt</a></small>
+			</div>
+
+			<div id="rd8_subright">
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总推荐榜</dt>
+	<!-- BEGIN story_total_commend -->
+						<dd><a href="{URL}">{title}</a>({vote_total})</dd>
+	<!-- END story_total_commend -->
+					</dl>	
+					<span><a href="rank.php?times=total&amp;types=commend&amp;sc={sc}&amp;story=1">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总点击榜</dt>
+<!-- BEGIN story_total_click -->
+						<dd><a href="{URL}">{title}</a>({click_total})</dd>
+<!-- END story_total_click -->
+					</dl>
+					<span><a href="rank.php?times=total&amp;types=click&amp;sc={sc}&amp;story=1">更多&gt;&gt;</a></span>
+				</div>
+
+				<div class="rd8_Canada">
+					<dl>
+						<dt>本类总收藏榜</dt>
+<!-- BEGIN story_total_favo -->
+						<dd><a href="{URL}">{title}</a>({favo_total})</dd>
+<!-- END story_total_favo -->
+					</dl>
+					<span><a href="rank.php?times=total&amp;types=favo&amp;sc={sc}&amp;story=1">更多&gt;&gt;</a></span>
+					</div>	
+				</div>
+		</div>

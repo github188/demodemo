@@ -1,0 +1,23 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>地址中请加“http://”开头。</li>
+				<li>私钥请设置为目标整合系统中的私钥。</li>
+			</ul>
+		</div>
+	</div>
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">编辑通行证<input type="hidden" name="id" value="{id}" /></div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">地 &nbsp; &nbsp;址:</div>
+			<div style="width: 68%;"><input type="text" name="address" value="{address}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">私 &nbsp; &nbsp;钥:</div>
+			<div style="width: 68%;"><input type="text" name="code" value="{code}" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

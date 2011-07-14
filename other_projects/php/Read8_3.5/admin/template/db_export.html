@@ -1,0 +1,144 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>数据库备份功能根据您的选择备份相应的数据表和数据，导出的文件可用“数据库恢复”功能或 phpMyAdmin 等 MySQL 数据库管理软件导入。</li>
+				<li>本备份功能仅为备份 MySQL 数据库，如需备份书籍章节内容和附件文件，请使用“书籍导入导出”功能。</li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function setTables(tables){
+			var read8_tables = new Array(
+	<!-- BEGIN read8_tables -->
+				'{Name}',
+	<!-- END read8_tables -->
+				''
+			);
+			var db_prefix = '{db_prefix}';
+			var db_prefix_length = db_prefix.length;
+
+			$('tbl_chk').checked = false;
+			switch(tables) {
+				case 'full':
+					$('tbl_chk').checked = true;
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						$('tbl_rdo_' + read8_tables[i]).checked = true;
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+				case 'novel':
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						$('tbl_rdo_' + read8_tables[i]).checked = (read8_tables[i].substr(db_prefix_length, 11) == 'read8_novel' ? true : false);
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+				case 'story':
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						$('tbl_rdo_' + read8_tables[i]).checked = (read8_tables[i].substr(db_prefix_length, 11) == 'read8_story' ? true : false);
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+				case 'user':
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						$('tbl_rdo_' + read8_tables[i]).checked = ((read8_tables[i].substr(db_prefix_length, 10) == 'read8_user' || read8_tables[i].substr(db_prefix_length, 16) == 'read8_typewriter' || read8_tables[i].substr(db_prefix_length, 12) == 'read8_author' || read8_tables[i].substr(db_prefix_length, 14) == 'read8_favorite') ? true : false);
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+				case 'config':
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						$('tbl_rdo_' + read8_tables[i]).checked = ((read8_tables[i].substr(db_prefix_length, 12) == 'read8_system' || read8_tables[i].substr(db_prefix_length, 11) == 'read8_class') ? true : false);
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+				case 'custom':
+					break;
+				case 'none':
+					for(var i = 0; i < read8_tables.length - 1; i++) {
+						HighLight.change('tbl_row_' + read8_tables[i], 'tbl_rdo_' + read8_tables[i]);
+					}
+					break;
+			}
+		}
+		function setCustom(){
+			$('tables_custom').checked = true;
+		}
+	</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="db_export">
+		<div class="adminborder">
+			<div class="adminhead">数据库备份</div>
+			<div class="b0">
+				<div style="width: 60%;padding-left: 1%;">
+					<span style="font-weight: bold;">备份类型:</span><br />
+					<span class="smalltxt">
+						点击不同的备份类型，将自动选中对应的数据表。<input type="hidden" name="action" value="export" />
+					</span>
+				</div>
+				<div style="width: 38%;">
+					<label for="tables_full"><input type="radio" name="tables" id="tables_full" value="full"{tables_full} onclick="setTables(this.value);" /> 书网所有数据</label><br />
+					<label for="tables_novel"><input type="radio" name="tables" id="tables_novel" value="novel"{tables_novel} onclick="setTables(this.value);" /> 长篇小说数据</label><br />
+					<label for="tables_story"><input type="radio" name="tables" id="tables_story" value="story"{tables_story} onclick="setTables(this.value);" /> 短篇小说数据</label><br />
+					<label for="tables_user"><input type="radio" name="tables" id="tables_user" value="user"{tables_user} onclick="setTables(this.value);" /> 所有用户数据</label><br />
+					<label for="tables_config"><input type="radio" name="tables" id="tables_config" value="config"{tables_config} onclick="setTables(this.value);" /> 系统设置数据</label><br />
+					<label for="tables_custom"><input type="radio" name="tables" id="tables_custom" value="custom"{tables_custom} onclick="setTables(this.value);" /> 自定义</label>
+				</div>
+			</div>
+			<div class="b1">
+				<div style="width: 60%;padding-left: 1%;">
+					<span style="font-weight: bold;">文件名:</span><br />
+					<span class="smalltxt">备份的文件将保存在“data/backup”，文件名可用数字、英文字母和下划线。</span>
+				</div>
+				<div style="width: 38%;"><input type="text" name="file" value="{C_file}" size="15" /> .<span id="file_ext">{file_ext}</span></div>
+			</div>
+			<!--div class="b0">
+				<div style="width: 60%;padding-left: 1%;">
+					<span style="font-weight: bold;">压缩:</span><br />
+					<span class="smalltxt">开启对应的扩展即可使用压缩，使备份文件占用更小的空间。</span>
+				</div>
+				<div style="width: 38%;">
+					<label for="compress_none"><input type="radio" name="compress" id="compress_none" value="none" onclick="$('file_ext').innerHTML = 'sql';"{compress_none} /> 无</label><br />
+					<label for="compress_zip"><input type="radio" name="compress" id="compress_zip" value="zip" onclick="$('file_ext').innerHTML = 'zip';"{compress_zip} /> zip 压缩</label><br />
+					<label for="compress_gzip"><input type="radio" name="compress" id="compress_gzip" value="gzip" onclick="$('file_ext').innerHTML = 'tar.gz';"{compress_gzip} /> gzip 压缩</label><br />
+					<label for="compress_bzip2"><input type="radio" name="compress" id="compress_bzip2" value="bzip" onclick="$('file_ext').innerHTML = 'tar.bz2';"{compress_bzip} /> bzip 压缩</label>
+				</div>
+			</div-->
+			<div class="bt"><input type="submit" value=" 备 份 " /></div>
+		</div>
+
+		<div class="adminborder">
+			<div class="adminhead">书网数据表 <label for="read8_table_display"><input type="checkbox" id="read8_table_display" onclick="$('read8_tables').style.display = this.checked ? 'none' : '';" /> 隐藏</div>
+			<div class="col0" id="read8_tables">
+				<table>
+					<tr class="category">
+						<td><input type="checkbox" id="tbl_chk" onclick="javascript:checkall(this.form.id, this, 'tbl_');$('tables_' + (this.checked ? 'full' : 'custom')).checked = true;setTables(this.checked ? 'full' : 'none');" />全选</td>
+						<td align="left">&nbsp;数据表</td>
+						<td>类型</td>
+						<td align="right">记录数&nbsp;</td>
+						<td align="right">数据大小&nbsp;</td>
+						<td align="right">索引大小&nbsp;</td>
+						<td align="right">碎片大小&nbsp;</td>
+						<td align="left">&nbsp;备注</td>
+					</tr>
+<!-- BEGIN read8_tables -->
+					<tr class="col0" id="tbl_row_{Name}" align="center" onclick="javascript:HighLight.click('tbl_rdo_{Name}');setCustom();" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'tbl_rdo_{Name}');">
+						<td><input type="checkbox" name="tbl_read8[]" id="tbl_rdo_{Name}" value="{Name}" onclick="HighLight.click(this.id);setCustom();" onchange="javascript:HighLight.change('tbl_row_{Name}', this.id);" /></td>
+						<td align="left">&nbsp;{Name}</td>
+						<td>{Engine}</td>
+						<td align="right">{Rows}&nbsp;</td>
+						<td align="right">{Data_length}&nbsp;</td>
+						<td align="right">{Index_length}&nbsp;</td>
+						<td align="right">{Data_free}&nbsp;</td>
+						<td align="left">&nbsp;{Comment}</td>
+					</tr>
+<!-- END read8_tables -->
+				</table>
+			</div>
+			<div class="bt"><input type="submit" value=" 备 份 " /></div>
+		</div>
+
+		<script type="text/javascript">
+			setTables('{export_tables}');
+		</script>
+	</form>

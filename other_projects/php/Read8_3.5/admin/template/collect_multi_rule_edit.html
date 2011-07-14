@@ -1,0 +1,76 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>熟悉本规则后可制作任意网站的阅读采集。</li>
+				<li>在可以使用变量的选项中，点击左侧对应变量名即可自动填入光标处。</li>
+				<li>更多正则和站点恢复请参看官方论坛说明文档。</li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">/*<![CDATA[*/
+		function insert_var(obj, str){
+			if(typeof document.selection == 'object') {
+				obj.focus();
+				sr = document.selection.createRange();
+				sr.text = str;
+			}else if(typeof obj.selectionStart == 'number') {
+				var startPos = obj.selectionStart;
+				var endPos   = obj.selectionEnd;
+				prefix = obj.value.substring(0, startPos);
+				suffix = obj.value.substring(endPos, obj.value.length);
+				obj.value = prefix + str + suffix;
+				obj.focus();
+				obj.setSelectionRange(startPos, startPos + str.length);
+			}else {
+				obj.value += str;
+				obj.focus();
+			}
+		}
+	/*]]>*/</script>
+
+	<div class="adminborder">
+		<div class="adminhead">批量采集规则编辑</div>
+		<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post">
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">规则名称:</span><br />
+					<span class="smalltxt">用作当前规则在采集中的显示，可以使用中文。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="title" value="{title}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">基础规则:</span><br />
+					<span class="smalltxt">本规则所取得的书籍编号将提供给基础规则执行具体的书籍采集行为。</span>
+				</div>
+				<div style="width: 51%;"><select name="parent"><!-- BEGIN sites --><option value="{mark}"{selected}>{title} (标识: {mark})</option><!-- END sites --></select> </div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">目标页面:</span><br />
+					<span class="smalltxt">可用来取得书籍编号的书籍列表页面，可用<input type="button" class="a" onclick="javascript:insert_var($('page_list'), '{' + 'read8page}');" onfocus="this.blur();" value="&#123;read8page}" />代替页码。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="page_list" id="page_list" value="{page_list}" /></div>
+			</div>
+			<div class="b1">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">起始与结束页码:</span><br />
+					<span class="smalltxt">若目标地址不需要使用页码请留空，若只有一页只需填写起始页码。</span>
+				</div>
+				<div style="width: 51%;">
+					<input size="25" type="text" name="page_start" value="{page_start}" />
+					<input size="25" type="text" name="page_end" value="{page_end}" />
+				</div>
+			</div>
+			<div class="b0">
+				<div style="width: 47%;padding-left: 1%;">
+					<span style="font-weight: bold;">匹配正则 - 书籍编号:</span><br />
+					<span class="smalltxt">使用该选项在目标页面中取得一系列书籍编号用于基础规则执行采集，书籍编号为第一个匹配。</span>
+				</div>
+				<div style="width: 51%;"><input size="60" type="text" name="bid_regexp" value="{bid_regexp}" /></div>
+			</div>
+			<div class="bt"><input type="submit" value=" 完 成 " /><input type="hidden" name="id" value="{id}" /> &nbsp;<input type="reset" value=" 重 置 " /> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></div>
+		</form>
+	</div>

@@ -1,0 +1,35 @@
+<div class="rd8_fullborder">
+	<div id="rd8_userpanel">
+		<div class="rd8_userpanel_title">在线充值 - - 点击金额转到充值页面</div>
+		<div class="rd8_userpanel_msg">
+<!-- BEGIN pays -->
+			<li class="rd8_userpanel_pay">
+				<a href="my/pay.php?price={k}" target="_blank">{k} 元充 {v} {t}</a>
+			</li>
+<!-- END pays -->
+		</div>
+		<div class="rd8_userpanel_title">充值记录</div>
+		<div class="rd8_author_book">
+			<table>
+				<tr class="rd8_texture">
+					<td>金额</td>
+					<td>虚拟币</td>
+					<td>时间</td>
+					<td>状态</td>
+				</tr>
+<!-- IF records -->
+<!-- BEGIN records -->
+				<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+					<td>{price}</td>
+					<td>{vmoney}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td><!-- IF suctime -->成功于 {suctime_DATE_Y-m-d H:i:s}<!-- ELSE -->尚未成功<!-- ENDIF --></td>
+				</tr>
+<!-- END records -->
+<!-- ELSE -->
+				<tr style="background:#FFF;border:none;"><td style="background:#FFF;border:none;">当前没有任何记录</td></tr><!-- ENDIF -->
+			</table>
+		</div>
+		<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+	</div>
+</div>

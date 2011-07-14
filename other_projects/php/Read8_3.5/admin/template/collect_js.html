@@ -1,0 +1,93 @@
+	<script type="text/javascript">
+		function create_progress(multi, text){
+			var div = document.createElement('div');
+				div.className = 'col1';
+
+			var table = document.createElement('table');
+
+			var tbody = document.createElement('tbody');
+
+			var tr = document.createElement('tr');
+
+			var td = document.createElement('td');
+				td.style.width = '15%';
+				td.innerHTML   = ' &nbsp; &nbsp;' + text;
+
+				tr.appendChild(td);
+
+			var td = document.createElement('td');
+				td.style.width = '75%';
+
+			var img = document.createElement('img');
+				img.id            = (multi ? 'multi' : 'single') + '_progress_bar';
+				img.style.cssText = 'height: 10px;width: 0;';
+				img.src           = 'template/images/' + (multi ? 'multi' : 'single') + '.gif';
+
+				td.appendChild(img);
+				tr.appendChild(td);
+
+			var td = document.createElement('td');
+				td.id        = (multi ? 'multi' : 'single') + '_progress';
+				td.innerHTML = '0 %';
+
+				tr.appendChild(td);
+				tbody.appendChild(tr);
+				table.appendChild(tbody);
+				div.appendChild(table);
+
+			$('progress_info').appendChild(div);
+		}
+		function display_pause(info){
+			$('pause_info').innerHTML = ' &nbsp; &nbsp;' + info;
+		}
+		function refresh_progress(multi, progress){
+			$((multi ? 'multi' : 'single') + '_progress_bar').style.cssText = 'height: 10px;width: ' + progress + '%;';
+			$((multi ? 'multi' : 'single') + '_progress').innerHTML         = progress + ' %';
+		}
+		function volume_info(title, update){
+			var div = document.createElement('div');
+				div.className = 'col0';
+				div.innerHTML = ' &nbsp; &nbsp;' + (update ? '更新' : '新增') + '卷: ' + title;
+
+			$('_info').appendChild(div);
+		}
+		function insert_chapter(insert){
+			var div = document.createElement('div');
+				div.className = 'col1';
+				div.innerHTML = ' &nbsp; &nbsp;以下 ' + insert + ' 章预插入整理';
+
+			$('_info').appendChild(div);
+		}
+		function display_info(title, id){
+			var div = document.createElement('div');
+				div.id        = '_info_' + id;
+				div.className = 'col1';
+				div.innerHTML = ' &nbsp; &nbsp;' + title;
+
+			$('_info').appendChild(div);
+
+			var childs = $('_info').childNodes;
+			if(childs.length > 10) {
+				$('_info').removeChild(childs[0]);
+			}
+		}
+		function update_info(title, state, id, color){
+			$('_info_' + id).innerHTML = ' &nbsp; &nbsp;' + title + ' <span style="color: ' + color + '">' + state + '</span>';
+		}
+		function tick(second, url){
+			if(second == 5) {
+				var div = document.createElement('div');
+					div.id        = 'jstick';
+					div.className = 'col1';
+
+				$('_info').appendChild(div);
+			}
+			if(second > 0) {
+				$('jstick').innerHTML = ' &nbsp; &nbsp;' + '等待 <span style="color: Red;">' + second + '</span> 秒后继续......';
+				second--;
+				setTimeout('tick(' + second + ', "' + url + '")',1000);
+			}else {
+				self.location = url;
+			}
+		}
+	</script>

@@ -1,0 +1,167 @@
+<script type="text/javascript">
+	function setValue(objId, value){
+		$(objId).value = value;
+	}
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = '';
+			$('sh3').style.display = '';
+			$('sh4').style.display = '';
+			$('sh5').style.display = '';
+			$('sh6').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = 'none';
+			$('sh3').style.display = 'none';
+			$('sh4').style.display = 'none';
+			$('sh5').style.display = 'none';
+			$('sh6').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">网站安全设置</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">验证码:</span><br />
+				<span class="smalltxt">可以通过设置使用验证码限制用户频繁使用某一功能。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="secode_1"><input type="checkbox" name="psecode[]" id="secode_1" value="1"{C_secode_1} /> 用户注册</label><br />
+				<label for="secode_2"><input type="checkbox" name="psecode[]" id="secode_2" value="2"{C_secode_2} /> 用户登录</label><br />
+				<label for="secode_4"><input type="checkbox" name="psecode[]" id="secode_4" value="4"{C_secode_4} /> 发表评论</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">验证码长度:</span><br />
+				<span class="smalltxt">可设置验证码长度。友情提示：验证码设置过长将导致用户体验下降。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="psecode_length" value="{C_secode_length}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">后台登录有效期(单位: 分钟):</span><br />
+				<span class="smalltxt">用户登录后台不活动时间过长将要求重新登录(默认值15，设为0即使用默认值)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pacp_expire" value="{C_acp_expire}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">后台密码长度最小值:</span><br />
+				<span class="smalltxt">后台密码的最小长度，站长不受限制(默认值8，设为0即无限制)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pacp_pswd_minlength" value="{C_acp_pswd_minlength}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">后台密码有效期(单位: 天):</span><br />
+				<span class="smalltxt">超过设定天数后访问后台将被要求修改密码，站长不受限制(默认值30，设为0即密码永不过期)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pacp_pswd_expire" value="{C_acp_pswd_expire}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">后台密码限制修改期(单位: 天):</span><br />
+				<span class="smalltxt">在修改后台密码后的多少天内不得再次修改，与下一项配合使用，避免用户多次修改从而仍旧使用旧的登录密码。站长不受限制(默认值2，设为0即可以立即修改密码)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pacp_pswd_change" value="{C_acp_pswd_change}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">后台密码历史(单位: 个):</span><br />
+				<span class="smalltxt">记录历史密码的个数，新密码不得与历史密码相同，与上一项配合使用，合理设置保留个数可以避免用户使用历史密码做当前的后台密码，从而更好的提高安全性。站长不受限制(默认值20，设为0即不记录任何历史，但修改的密码仍不得与原密码相同)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pacp_pswd_history" value="{C_acp_pswd_history}" /></div>
+		</div>
+		<script type="text/javascript"><!--//--><![CDATA[//><!--
+			function calcmod(prefix){
+				var user = 0;
+				var group = 0;
+				var other = 0;
+				for(var i = 1; i <= 3; i++) {
+					if(i == 1) v = 4;
+					else if(i == 2) v = 2;
+					else v = 1;
+					if($(prefix + '_user'+i).checked) user = user + v;
+					if($(prefix + '_group'+i).checked) group = group + v;
+					if($(prefix + '_other'+i).checked) other = other + v;
+				}
+				$(prefix + '_mod').value = '' + user + group + other;
+			}
+		//-><!]]></script>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">修改目录权限:</span><br />
+				<span class="smalltxt">对Windows服务器无效，部分UNIX/Linux类服务器需要使用，由于ftp和运行网站服务器的用户权限差异导致文件访问有问题时，可尝试使用该项修改采集、附件上传等新建目录权限使二者均可访问、控制。建议设置为ftpd和httpd运行用户均可完全访问的最小权限，若ftpd和httpd用户为同一用户，通常此项无需启用，若为不同用户但在同一组，可以设为770，以此类推，如对此不熟悉，请设为777。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="pchmod_dir" id="d_mod" value="{C_chmod_dir}" readonly="readonly" />
+				<table>
+					<tr><td>所有者</td><td>组</td><td>其他人</td></tr>
+					<tr>
+						<td><label for="d_user1"><input type="checkbox" id="d_user1" value="4" onclick="javascript:calcmod('d');"{dur} />读取</label></td>
+						<td><label for="d_group1"><input type="checkbox" id="d_group1" value="4" onclick="javascript:calcmod('d');"{dgr} />读取</label></td>
+						<td><label for="d_other1"><input type="checkbox" id="d_other1" value="4" onclick="javascript:calcmod('d');"{dor} />读取</label></td>
+					</tr>
+					<tr>
+						<td><label for="d_user2"><input type="checkbox" id="d_user2" value="2" onclick="javascript:calcmod('d');"{duw} />写入</label></td>
+						<td><label for="d_group2"><input type="checkbox" id="d_group2" value="2" onclick="javascript:calcmod('d');"{dgw} />写入</label></td>
+						<td><label for="d_other2"><input type="checkbox" id="d_other2" value="2" onclick="javascript:calcmod('d');"{dow} />写入</label></td>
+					</tr>
+					<tr>
+						<td><label for="d_user3"><input type="checkbox" id="d_user3" value="1" onclick="javascript:calcmod('d');"{dux} />执行</label></td>
+						<td><label for="d_group3"><input type="checkbox" id="d_group3" value="1" onclick="javascript:calcmod('d');"{dgx} />执行</label></td>
+						<td><label for="d_other3"><input type="checkbox" id="d_other3" value="1" onclick="javascript:calcmod('d');"{dox} />执行</label></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">修改文件权限:</span><br />
+				<span class="smalltxt">对Windows服务器无效，部分UNIX/Linux类服务器需要使用，由于ftp和运行网站服务器的用户权限差异导致文件访问有问题时，可尝试使用该项修改采集、附件上传等新建目录权限使二者均可访问、控制。建议设置为ftpd和httpd运行用户均可完全访问的最小权限，若ftpd和httpd用户为同一用户，通常此项无需启用，若为不同用户但在同一组，可以设为770，以此类推，如对此不熟悉，请设为777。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="pchmod_file" id="f_mod" value="{C_chmod_file}" readonly="readonly" />
+				<table>
+					<tr><td>所有者</td><td>组</td><td>其他人</td></tr>
+					<tr>
+						<td><label for="f_user1"><input type="checkbox" id="f_user1" value="4" onclick="javascript:calcmod('f');"{fur} />读取</label></td>
+						<td><label for="f_group1"><input type="checkbox" id="f_group1" value="4" onclick="javascript:calcmod('f');"{fgr} />读取</label></td>
+						<td><label for="f_other1"><input type="checkbox" id="f_other1" value="4" onclick="javascript:calcmod('f');"{for} />读取</label></td>
+					</tr>
+					<tr>
+						<td><label for="f_user2"><input type="checkbox" id="f_user2" value="2" onclick="javascript:calcmod('f');"{fuw} />写入</label></td>
+						<td><label for="f_group2"><input type="checkbox" id="f_group2" value="2" onclick="javascript:calcmod('f');"{fgw} />写入</label></td>
+						<td><label for="f_other2"><input type="checkbox" id="f_other2" value="2" onclick="javascript:calcmod('f');"{fow} />写入</label></td>
+					</tr>
+					<tr>
+						<td><label for="f_user3"><input type="checkbox" id="f_user3" value="1" onclick="javascript:calcmod('f');"{fux} />执行</label></td>
+						<td><label for="f_group3"><input type="checkbox" id="f_group3" value="1" onclick="javascript:calcmod('f');"{fgx} />执行</label></td>
+						<td><label for="f_other3"><input type="checkbox" id="f_other3" value="1" onclick="javascript:calcmod('f');"{fox} />执行</label></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">Cookie 前缀:</span><br />
+				<span class="smalltxt">多个书网安装在同一域名下请确保此变量值不同。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pprefix" id="cookieprefix" value="{C_prefix}" disabled="disabled" /> <input type="button" value="修改" onclick="javascript:if(this.value=='修改') {this.value='取消';$('cookieprefix').disabled=false;}else {this.value='修改';$('cookieprefix').disabled=true;}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">安全码:</span><br />
+				<span class="smalltxt">如未出现安全危机请勿随意修改。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcode" id="safecode" value="{C_code}" disabled="disabled" /> <input type="button" value="修改" onclick="javascript:if(this.value=='修改') {this.value='取消';$('safecode').disabled=false;}else {this.value='修改';$('safecode').disabled=true;}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

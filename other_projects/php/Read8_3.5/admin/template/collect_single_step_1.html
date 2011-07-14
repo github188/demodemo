@@ -1,0 +1,35 @@
+	<script type="text/javascript">
+		var sites = new Array();
+<!-- BEGIN sites -->
+			sites[{id}] = '{address}';
+<!-- END sites -->
+
+		function changeText(id){
+			$('address').innerHTML = '<a href="' + sites[id] + '" target="_blank">' + sites[id] + '<\/a>';
+		}
+	</script>
+	
+	<div class="adminborder">
+		<div class="adminhead">选择目标站点和书籍</div>
+		<div class="col1">
+			<form action="?" method="get">
+				<table>
+					<tr>
+						<td width="30%" align="center">目标站点</td>
+						<td>&nbsp;<select name="target" id="target" onchange="javascript:changeText(this.value);"><!-- BEGIN sites --><option value="{id}"{selected}>{title} (标识: {mark})</option><!-- END sites --></select> <span id="address"></span></td>
+					</tr>
+					<tr>
+						<td width="30%" align="center">目标书籍</td>
+						<td>&nbsp;<input type="text" name="read8bid" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /><input type="hidden" name="step" value="2" /></td>
+					</tr>
+					<tr class="colt">
+						<td align="center" colspan="2"><input type="submit" value="   下一步   " /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		changeText($('target').value);
+	</script>

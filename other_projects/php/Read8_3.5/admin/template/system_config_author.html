@@ -1,0 +1,52 @@
+<script type="text/javascript">
+	function setValue(objId, value){
+		$(objId).value = value;
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">作家基本设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">审核:</span><br />
+				<span class="smalltxt">已注册用户申请成为作家时，是否需要通过审核。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="verify_1"><input type="radio" name="pverify" id="verify_1" value="1"{C_verify_yes} />开启</label> &nbsp;
+				<label for="verify_0"><input type="radio" name="pverify" id="verify_0" value="0"{C_verify_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">书籍封面大小(单位: Byte(s)):</span><br />
+				<span class="smalltxt">设置允许上传籍封面的最大限制，1024 Bytes 为 1 KBtyes，当前服务器上传最大限制为<span style="color: Blue;">{upload_max_filesize}</span>。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="psize" id="psize" value="{C_size}" />
+				<select onchange="javascript:setValue('psize', this.value);">
+<!-- BEGIN size -->
+					<option value="{v}">{t}</option>
+<!-- END size -->
+				</select>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">作者推文数量:</span><br />
+				<span class="smalltxt">作者最多可推荐多少本书。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pcommend" value="{C_commend}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">友情链接数量(暂无用):</span><br />
+				<span class="smalltxt">作者最多可设置多少友情链接。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="plink" value="{C_link}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

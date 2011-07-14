@@ -1,0 +1,28 @@
+	<div class="rd8_fullborder">
+		<form action="author/column_update.php" method="post">
+			<div class="rd8_head"><!-- IF column_name -->{column_name}设置<!-- ELSE -->{pseudonym}的专栏设置<!-- ENDIF --></div>
+			<div >
+				<table class="rd8_new_book">
+					<tr >
+						<td align="right" width="15%">专栏名称&nbsp;</td>
+						<td>&nbsp;<input type="text" name="column_name" value="{column_name}" /></td>
+					</tr>
+					<tr>
+						<td align="right">作者自白&nbsp;</td>
+						<td>&nbsp;<textarea name="intro" rows="5" cols="60">{intro}</textarea></td>
+					</tr>
+					<tr >
+						<td align="right">作者公告&nbsp;</td>
+						<td>&nbsp;<textarea name="announcement" rows="5" cols="60">{announcement}</textarea></td>
+					</tr>
+					<tr>
+						<td align="right">我的头像&nbsp;</td>
+						<td>&nbsp;<input type="text" name="avatar" value="{avatar}" size="40" /></td>
+					</tr>
+					<tr class="rd8_colt">
+						<td align="center" colspan="2"><input type="submit" value=" 提  交 " /></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>

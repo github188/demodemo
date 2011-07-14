@@ -1,0 +1,25 @@
+	<div class="adminborder">
+		<div class="adminhead">说明</div>
+		<div class="b0"><ul><li>已有标识为: <span style="font-weight: bold;"><!-- BEGIN txtmarklist -->{C_name} &nbsp;<!-- END txtmarklist --></span>。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update&amp;subtxttorr={C_edittxttorr}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">文本式批量采集任务修改/新增</div>
+		<div class="b0">
+			<div style="width: 47%;padding-left: 1%;">
+				<span style="font-weight: bold;">批量采集名称:</span><br />
+				<span class="smalltxt">可用中文，用来作为在“批量采集”中显示的中文辨识名。</span>
+			</div>
+			<div style="width: 51%;"><input size="60" type="text" name="subcfgtxtname" value="{C_txtname}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 47%;padding-left: 1%;">
+				<span style="font-weight: bold;">任务内容:</span><br />
+				<span class="smalltxt">设定采集的内容，格式为“标识名|书籍编号”，多个以换行隔开。</span>
+			</div>
+			<div style="width: 51%;"><textarea name="txtcon" rows="25" cols="60">{C_txtcon}</textarea></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 完 成 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

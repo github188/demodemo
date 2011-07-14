@@ -1,0 +1,42 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head"><!-- IF column_name -->{column_name}<!-- ELSE -->{pseudonym}的专栏<!-- ENDIF --></div>
+		<div class="rd8_col0">
+			<table>
+				<tr class="rd8_col1">
+<!-- IF avatar -->
+					<td width="15%" align="center" valign="top"><img src="{avatar}" alt="{pseudonym}的头像" /></td>
+<!-- ENDIF -->
+					<td class="rd8_content">
+						<strong>作者自白</strong><br />
+						<!-- IF intro -->{intro}<!-- ELSE -->我很懒，什么都不写。<!-- ENDIF --><br /><br />
+						<strong>作者公告</strong><br />
+						<!-- IF announcement -->{announcement}<!-- ELSE -->没啥说的了，都来我家喝酒吧<!-- ENDIF -->
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">最新作品</div>
+		<div class="rd8_col0">
+			<table>
+				<tr class="rd8_category">
+					<td>作品</td>
+					<td>类型</td>
+					<td>风格</td>
+					<td>状态</td>
+					<td>发表时间</td>
+				</tr>
+<!-- BEGIN Newbookblock -->
+				<tr class="rd8_col0" align="center" id="rd8_nn{I}" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id);">
+					<td>{title}</td>
+					<td>{subject} - {content}
+					<td>{style}</td>
+					<td>{state}</td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+				</tr>
+<!-- END Newbookblock -->
+			</table>
+		</div>
+	</div>

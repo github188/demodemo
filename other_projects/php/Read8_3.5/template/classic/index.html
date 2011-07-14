@@ -1,0 +1,161 @@
+	<div id="rd8_center">	
+		<div class="rd8_ad_position">
+			<div style="float:left;overflow:hidden;">{CAD_index_1}</div>
+			<div style="float:right;overflow:hidden;">{CAD_index_2}</div>
+
+		</div>
+		<div id="rd8_left">
+			<div id="rd8_inleft">
+         		<div id="rd8_flash_top">
+				<a target="_self" href="javascript:goUrl()"> 
+					<script type="text/javascript">/*<![CDATA[*/
+						var focus_width=240;
+						var focus_height=150;
+						var text_height=18;
+						var swf_height = focus_height+text_height;
+
+						var pics='{pics}';
+						var links='{links}';
+						var texts='{texts}';
+							 
+						document.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="'+ focus_width +'" height="'+ swf_height +'">');
+						document.write('<param name="allowScriptAccess" value="sameDomain"><param name="movie" value="include/flash/focus.swf"><param name="quality" value="high"><param name="bgcolor" value="#CCCCCC">');
+						document.write('<param name="menu" value="false"><param name=wmode value="opaque">');
+						document.write('<param name="FlashVars" value="pics='+pics+'&links='+links+'&texts='+texts+'&borderwidth='+focus_width+'&borderheight='+focus_height+'&textheight='+text_height+'">');
+						document.write('<embed src="include/flash/focus.swf" wmode="opaque" FlashVars="pics='+pics+'&links='+links+'&texts='+texts+'&borderwidth='+focus_width+'&borderheight='+focus_height+'&textheight='+text_height+'" menu="false" bgcolor="#F0F0F0" quality="high" width="'+ focus_width +'" height="'+ focus_height +'" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />');  document.write('</object>');
+					/*]]>*/</script>
+				</a>
+				</div>
+				<div id="rd8_announce">
+						<li class="rd8_list_first"><span class="rd8_list_title">本站公告</span><span class="rd8_list_more"><a href="announcement.php">更多</a></span></li>
+<!-- BEGIN Announceblock -->
+						<li><a href="announcement.php?id={id}">{title}</a><span>（{dateline_DATE_y-m-d}）</span></li>
+<!-- END Announceblock -->
+				</div>
+			</div>
+			<div id="rd8_highlights">
+<!-- BEGIN custom_fmtj -->
+			<li class="rd8_recommended_book">
+				<span class="rd8_recommended_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" align="left" width="100" height="125"/></a></span>
+				<span class="rd8_recommended_title">{title}</span>
+			</li>
+<!-- END custom_fmtj -->
+			</div>
+			<div class="rd8_books">
+					<li class="rd8_books_first"><span class="rd8_books_title">言情</span><span class="rd8_books_more"><a  href="index.php?nc=1">更多</a></span></li>
+<!-- BEGIN custom_yq -->
+					<li class="rd8_books_detail">
+						<span class="rd8_books_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></span>
+						<span class="rd8_books_titles"><strong><a href="{InfoURL}">{title}</a></strong></span>
+						<span class="rd8_books_author">作者：{author}</span>
+						<span class="rd8_books_contents">{intro}</span>
+					</li>
+<!-- END custom_yq -->
+			</div>
+
+			<div class="rd8_books rd8_books_clear">
+					<li class="rd8_books_first"><span class="rd8_books_title">历史</span><span class="rd8_books_more"><a  href="index.php?nc=5">更多</a></span></li>
+<!-- BEGIN custom_ls -->
+					<li class="rd8_books_detail">
+						<span class="rd8_books_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></span>
+						<span class="rd8_books_titles"><strong><a href="{InfoURL}">{title}</a></strong></span>
+						<span class="rd8_books_author">作者：{author}</span>
+						<span class="rd8_books_contents">{intro}</span>
+					</li>
+<!-- END custom_ls -->
+			</div>
+			<div class="rd8_books">
+					<li class="rd8_books_first"><span class="rd8_books_title">{cnt}武侠</span><span class="rd8_books_more"><a  href="index.php?nc=2">更多</a></span></li>
+<!-- BEGIN custom_wx -->
+					<li class="rd8_books_detail">
+						<span class="rd8_books_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></span>
+						<span class="rd8_books_author"><strong><a href="{InfoURL}">{title}</a></strong></span>
+						<span class="rd8_books_author">作者：{author}</span>
+						<span class="rd8_books_contents">{intro}</span>
+					</li>
+<!-- END custom_wx -->
+			</div>
+			<div class="rd8_books rd8_books_clear">
+					<li class="rd8_books_first"><span class="rd8_books_title">科幻</span><span class="rd8_books_more"><a  href="index.php?nc=4">更多</a></span></li>
+<!-- BEGIN custom_kh -->
+					<li class="rd8_books_detail">
+						<span class="rd8_books_img"><a href="{InfoURL}"><img src="{HTMLURL}/bookface.jpg" alt="{title}" /></a></span>
+						<span class="rd8_books_titles"><strong><a href="{InfoURL}">{title}</a></strong></span>
+						<span class="rd8_books_author">作者：{author}</span>
+						<span class="rd8_books_contents">{intro}</span>
+					</li>
+<!-- END custom_kh -->
+			</div>
+			<div class="rd8_books">
+					<li class="rd8_books_first"><span class="rd8_books_title">编辑推荐栏</span><span class="rd8_books_more"><a  href="rank.php?times=total&types=commend">更多</a></span></li>
+<!-- BEGIN custom_bjtjl -->
+					<li><a href="{InfoURL}">{title}</a></li>
+<!-- END custom_bjtjl -->
+			</div>
+			<div class="rd8_books rd8_books_clear">
+					<li class="rd8_books_first"><span class="rd8_books_title">最近更新</span><span class="rd8_books_more"><a  href="novellib.php?oderbycreate=1">更多</a></span></li>
+<!-- BEGIN lastupdate -->
+						<li<!-- IF A --> class="rd8_books_update"<!-- ENDIF -->>&nbsp;&nbsp;[{subject}]<a href="{InfoURL}">《{title}》{chapter_title}</a>&nbsp;{author}&nbsp;[{lastupdate_DATE_m-d}]</li>
+<!-- END lastupdate -->
+			</div>
+		</div>
+
+	<div id="rd8_right">
+		<div class="rd8_rank" style="height:100px;">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">搜索</span></li>
+				<li>
+				<form method="get" style="margin-top:10px;float:left;" action="search.php" onsubmit="return this.value && this.value != '在此输入关键字'">
+					<select name="by" style="magin-top:0;margin-left:15px;">
+						<option value="title"selected="selected">按书名</option>
+						<option value="author">按作者</option>
+					</select>
+					<input type="text" name="kw" style="width:100px;height:18px;border:1px solid #698CC3;" value="在此输入关键字" onfocus="if(this.value == '在此输入关键字') this.value = '';" onblur="if(this.value == '') this.value = '在此输入关键字'" />
+					<input type="submit" value="搜索" style="width:50px;height:20px;margin-left:80px;border:1px solid #698CC3;" />
+				</form></li>
+		</div>
+
+		<div class="rd8_rank">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">总点击榜</span><span class="rd8_rank_more"><a  href="rank.php?times=total&types=click">更多</a></span></li>
+<!-- BEGIN custom_zdjb -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({click_total})</li>
+<!-- END custom_zdjb -->
+		</div>
+		<div class="rd8_rank">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">月点击榜</span><span class="rd8_rank_more"><a  href="rank.php?times=month&types=click">更多</a></span></li>
+<!-- BEGIN custom_ydjb -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({click_month})</li>
+<!-- END custom_ydjb -->
+		</div>
+		<div class="rd8_rank">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">总推荐榜</span><span class="rd8_rank_more"><a  href="rank.php?times=total&types=commend">更多</a></span></li>
+<!-- BEGIN custom_ztjb -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({commend_total})</li>
+<!-- END custom_ztjb -->
+		</div>
+		<div class="rd8_rank" style="height:200px;">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">月推荐榜</span><span class="rd8_rank_more"><a  href="rank.php?times=month&types=commend">更多</a></span></li>
+<!-- BEGIN custom_ytjb -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({commend_month})</li>
+<!-- END custom_ytjb -->
+		</div>
+		<div class="rd8_rank">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">总收藏榜</span><span class="rd8_rank_more"><a  href="novellib.php?finished=1">更多</a></span></li>
+<!-- BEGIN custom_zscb -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({favo_total})</li>
+<!-- END custom_zscb -->
+		</div>
+		<div class="rd8_rank rd8_short" style="height:154px;">
+			<li class="rd8_rank_first"><span class="rd8_rank_title">DIGG</span><span class="rd8_rank_more"><a  href="my/comment.php">更多</a></span></li>
+<!-- BEGIN custom_digg -->
+			<li class="rd8_news"><a href="{InfoURL}">{title}</a>({digg_today})</li>
+<!-- END custom_digg -->
+		</div>
+		
+	</div>
+      <div class="unionwebsite">
+<!-- BEGIN friendlinks -->
+			<a href="http://{url}" target="_blank">{name}</a>
+<!-- END friendlinks -->
+	  </div>
+	</div>
+	

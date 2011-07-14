@@ -1,0 +1,57 @@
+	<div class="admin_about">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>点击书名可直接查看。</li></ul></div>
+	</div>
+
+	<form action="" method="get">
+	<div class="admin_search">
+		<div class="adminhead"><li class="img_sleft">书名搜索</li><li class="img_right"></li></div>
+		<div class="b0" style="width: 99%;padding-left: 1%;text-align:center;">书名关键字: <input type="text" name="thename" value="{C_thename}" /> <input type="submit" value="搜索" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /></div>
+	</div>
+	</form>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete" method="post" id="work">
+	<div class="adminborder">
+		<div class="adminhead">作品总列表管理</div>
+<!-- IF stories -->
+		<div class="b0">
+			<table>
+				<tr class="category">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" title="全选" />全</td>
+					<td>书名</td>
+					<td>时间</td>
+					<td>作家</td>
+					<td>类型</td>
+					<td>状态</td>
+					<td>操作</td>
+				</tr>
+	<!-- BEGIN stories -->
+				<tr class="col{A}" align="center" id="bk{id}" onclick="javascript:HighLight.click('bki{id}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'bki{id}');">
+					<td><input type="checkbox" name="bids[]" id="bki{id}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('bk{id}', this.id);" /></td>
+					<td><a href="{URL}" target="_blank">{title}</a></td>
+					<td><span title="发表于{dateline_DATE_Y-m-d H:i:s}">{lastupdate_DATE_Y-m-d H:i:s}</span></td>
+					<td>{author}</td>
+					<td>{subject} - {content}</td>
+					<td>{state}</td>
+					<td>
+						<a href="?ptype={ptype}&amp;pfile=story_commend_face&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认将该作品设为封面推荐吗？')) return false;">封推</a>/<a href="?ptype={ptype}&amp;pfile=story_commend_subject&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认将该作品设为分类封面推荐吗？')) return false;">分推</a>/<a href="?ptype={ptype}&amp;pfile=story_commend_strong&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认将该作品设为强力推荐吗？')) return false;">强推</a>/<a href="?ptype={ptype}&amp;pfile=story_commend_editor&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认将该作品设为编辑推荐吗？')) return false;">推荐</a>/<a href="?ptype={ptype}&amp;pfile=story_commend_vip&amp;action=commend&amp;bid={id}" onclick="if(!confirm('确认将该作品设为VIP 推荐吗？')) return false;">电推</a> 
+						<a href="javascript:cfmoption('你确认删除这本书么？','?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;bids[]={id}')"><span style="color: Red;">删除</span></a>
+					</td>
+				</tr>
+	<!-- END stories -->
+			</table>
+		</div>
+			<div class="bt"><input type="submit" value=" 删 除 " onclick="if(!confirm('你确认批量删除这些选定的书吗？')) return false;"></div>
+			<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">当前没有书籍数据</div>
+<!-- ENDIF -->
+	</div>
+	</form>
+	
+<!-- 	<form action="" method="get">
+	<div class="adminborder">
+		<div class="adminhead">书名搜索</div>
+		<div class="b0" style="width: 99%;padding-left: 1%;">请输入要搜索的书名: <input type="text" name="thename" value="{C_thename}" /> <input type="submit" value="搜索" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /></div>
+	</div>
+	</form> -->

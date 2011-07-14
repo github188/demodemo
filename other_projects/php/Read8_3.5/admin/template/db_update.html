@@ -1,0 +1,25 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>请确保您的升级语句来源于读吧书网官方发布并且用途正确，以免造成您网站的异常。</li>
+				<li>请将数据库升级语句粘贴至此，为确保成功，请勿修改SQL语句的任何部分。</li>
+				<li>注意: 为保障网站安全，如果不存在“{sqlsff}”文件则数据库升级不可用。如果需要修改请自行创建此文件。建议您在运行命令升级完毕后到FTP上删除此文件。</li>
+<!-- IF sqlrun -->
+				<li class="warning">注意: 当前可以运行 SQL 语句。 <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=disable">点此禁止运行</a></li>
+<!-- ELSE -->
+				<li>注意: 当前不可以运行SQL命令。</li>
+<!-- ENDIF -->
+			</ul>
+		</div>
+	</div>
+
+<!-- IF sqlrun -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">数据库升级</div>
+		<div class="b0" style="text-align: center;"><textarea name="queries" value="{queries}" rows="20" style="width: 90%;"></textarea></div>
+		<div class="bt"><input type="submit" value=" 升 级 " />&nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

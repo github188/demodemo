@@ -1,0 +1,35 @@
+	<div class="adminborder">
+		<div class="adminhead">风格选择--当前模板</div>
+		<div id="rd8_current">
+			<li class="rd8_current_img"><img src="../template/{tplname}/{pic}"  width="180" height="135" /></li>
+			<li class="rd8_current_title">{title} <input type="button" value="备份当前模板缓存数据" onclick="location.href='?ptype={ptype}&pfile={pfile}&action=export'" /></li>
+			<li class="rd8_current_author">{author}</li>
+			<li class="rd8_current_intro">{info}</li>
+		</div>
+	</div>
+	<div class="adminborder">
+		<div class="adminhead">风格选择--可选模板</div>
+<!-- BEGIN tplArr -->
+		<div id="rd8_current">
+			<li class="rd8_current_img">
+				<a href="../template/{tplname}/{pic}" target="_blank"><img src="../template/{tplname}/{pic}" width="180" height="135" /></a>
+			</li>
+			<li class="rd8_current_title">{title} <input type="button" value="使用该模板" onclick="cfmoption('启用新模板将覆盖现有缓存设置，建议您先备份当前模板设置，是否继续？', '?ptype={ptype}&pfile={pfile}&action=change&id={tplname}');" /></li>
+			<li class="rd8_current_author">{author}</li>
+			<li class="rd8_current_intro">{info}</li>
+		</div>
+<!-- END -->
+	</div>
+	<div class="adminborder">
+		<div class="adminhead">风格选择--不可用模板</div>
+		<div id="rd8_current">
+			<li class="rd8_disable_title">由于以下模板的“_template_data.php”格式不正确，导致当前模板不可用。</li>
+<!-- IF errTplArr -->
+	<!-- BEGIN errTplArr -->
+			<li class="rd8_disable_list">{title}</li>
+	<!-- END -->
+<!-- ELSE -->
+			<li class="rd8_disable_list">暂无</li>
+<!-- ENDIF -->
+		</div>
+	</div>

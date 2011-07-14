@@ -1,0 +1,86 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>图片链接将显示在文字链接之前。</li>
+				<li>同类链接中顺序号小的将显示在前面，可使用“上移”或“下移”来改变链接的显示顺序。</li>
+				<li>将鼠标置于“申请链接列表”中的通过上即可查看申请人信息及站点简介。</li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+		function edit_link(id, name, url, logo){
+			$('linkid').value = id;
+			$('sitename').value = name;
+			$('siteurl').value = url;
+			$('sitelogo').value = logo;
+		}
+	//--><!]]></script>
+
+	<div class="adminborder">
+		<div class="adminhead">已有链接列表</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td>链接名称</td>
+					<td>链接地址</td>
+					<td>图片</td>
+					<td>操作</td>
+				</tr>
+<!-- BEGIN links -->
+				<tr class="col{A}" align="center">
+					<td>{name}</td>
+					<td><a href="http://{url}" target="_blank">{url}</a></td>
+					<td><!-- IF logo --><img src="../{logo}" alt="" /><!-- ELSE -->--<!-- ENDIF --></td>
+					<td><a href="javascript:edit_link('{id}', '{name}', '{url}', '{logo}');">编辑</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=move&amp;linkid={id}&amp;move=-1">上移</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=move&amp;linkid={id}&amp;move=1">下移</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;linkid={id}" onclick="if(!confirm('确认删除此链接吗？')) return false;">删除</a></td>
+				</tr>
+<!-- END links -->
+			</table>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">申请链接列表</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td>申请人</td>
+					<td>链接名称</td>
+					<td>链接地址</td>
+					<td>图片</td>
+					<td>附言</td>
+					<td>操作</td>
+				</tr>
+<!-- BEGIN apply -->
+				<tr class="col{A}" align="center">
+					<td>{username}</td>
+					<td>{name}</td>
+					<td><a href="http://{url}">{url}</a></td>
+					<td><!-- IF logo --><img src="http://{logo}" alt="" /><!-- ELSE -->--<!-- ENDIF --></td>
+					<td>{ps}</td>
+					<td><a href="admin.php?ptype={ptype}&amp;pfile={pfile}&amp;action=verify&amp;linkid={id}">通过</a> | <a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;linkid={id}" onclick="if(!confirm('确认删除此申请吗？')) return false;">删除</a></td>
+				</tr>
+<!-- END apply -->
+			</table>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=add" method="post">
+	<div class="adminborder">
+		<div class="adminhead">添加/修改链接</div>
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">网站名称: </div>
+			<div style="width: 84%;"><input type="text" name="sitename" id="sitename" size="40" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 14%;padding-left: 1%;">网站url:</div>
+			<div style="width: 84%;">http://<input type="text" name="siteurl" id="siteurl" size="33" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 14%;padding-left: 1%;">网站logo(可省): </div>
+			<div style="width: 84%;">http://<input type="text" name="sitelogo" id="sitelogo" size="33" /></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="linkid" id="linkid" value="0" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

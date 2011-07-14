@@ -1,0 +1,58 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>点击相应的名称即可删除。</li></ul></div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">关键字禁止:(用来封禁一些广告留言中的关键字)</div>
+	<!-- IF wordlist -->
+		<div class="b0">
+			<div style="width: 99%;padding-left: 1%;">
+			<!-- BEGIN wordlist -->
+				<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=del&amp;delid={C_id}" onclick="if(!confirm('真的要删除此条记录吗？')) return false;">{C_wordname}</a>&nbsp;&nbsp;&nbsp;
+			<!-- END -->
+			</div>
+		</div>
+	<!-- ENDIF -->
+		<div class="cat" style="width: 99%;padding-left: 1%;">
+			<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=add" method="post">
+				添加关键字: <input type="text" name="banword" /> <input type="submit" value="提 交" />
+			</form>
+		</div>
+	</div> 
+
+	<div class="adminborder">
+		<div class="adminhead">禁止注册用户名</div>
+	<!-- IF namelist -->
+		<div class="b0">
+			<div style="width: 99%;padding-left: 1%;">
+			<!-- BEGIN namelist -->
+				<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=del&amp;delid={C_id}" onclick="if(!confirm('真的要删除此条记录吗？')) return false;">{C_wordname}</a>&nbsp;&nbsp;&nbsp;
+			<!-- END -->
+			</div>
+		</div>
+	<!-- ENDIF -->
+		<div class="cat" style="width: 99%;padding-left: 1%;">
+			<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=add" method="post">
+				添加禁止名: <input type="text" name="banname" /> <input type="submit" value="提 交" />
+			</form>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">IP禁止</div>
+	<!-- IF iplist -->
+		<div class="b0">
+			<div style="width: 99%;padding-left: 1%;">
+			<!-- BEGIN iplist -->
+				<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=del&amp;delid={C_id}" onclick="if(!confirm('真的要删除此条记录吗？')) return false;">{C_wordname}</a>&nbsp;&nbsp;&nbsp;
+			<!-- END  -->
+			</div>
+		</div>
+	<!-- ENDIF -->
+		<div class="cat" style="width: 99%;padding-left: 1%;">
+			<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=add" method="post">
+				封禁新的ip: <input type="text" name="banip" /> <input type="submit" value="提 交" />
+			</form>
+		</div>
+	</div>

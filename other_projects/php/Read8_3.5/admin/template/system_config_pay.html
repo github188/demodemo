@@ -1,0 +1,48 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>需要正确填写在线支付信息才能使用如手机短信通知等需要在线支付的相关功能。</li></ul></div>
+	</div>
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">在线支付设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">支付宝注册帐号:</span><br />
+				<span class="smalltxt">请填写您开通及时到帐交易的支付宝邮件。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pali_seller_email" value="{C_ali_seller_email}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">支付宝合作号:</span><br />
+				<span class="smalltxt">开通支付宝即时到帐交易后获得的合作者号码。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pali_partner" value="{C_ali_partner}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">支付宝验证码:</span><br />
+				<span class="smalltxt">用于交易中的签名以验证交易的合法性，与支付宝合作号成对出现。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pali_sign" value="{C_ali_sign}" /></div>
+		</div>
+
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">虚拟币单位:</span><br />
+				<span class="smalltxt">虚拟币的名称。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="punit" value="{C_unit}" /></div>
+		</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">虚拟币兑换比:</span><br />
+				<span class="smalltxt">1 元人民币兑换多少虚拟币(默认为 100)。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="prate" value="{C_rate}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

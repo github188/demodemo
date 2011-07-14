@@ -1,0 +1,47 @@
+	<div id="rd8_center">
+		<div id="rd8_left">
+			<div class="rd8_Canada">
+				<dl>
+					<dt>总点击榜</dt>
+<!-- BEGIN nc3 -->
+					<dd><a href="{InfoURL}">{title}</a>({click})</dd>
+<!-- END nc3 -->
+				</dl>
+				<span><a href="rank.php?rid=3">更多&gt;&gt;</a></span>
+			</div>
+
+			<div class="rd8_Canada">
+				<dl>
+					<dt>最新入库作品</dt>
+<!-- BEGIN nc11 -->
+					<dd><a href="{InfoURL}">{title}</a>({dateline_DATE_m-d})</dd>
+<!-- END nc11 -->
+				</dl>
+				<span><a href="rank.php?rid=11">更多&gt;&gt;</a></span>
+			</div>
+
+			<div class="rd8_Canada">
+				<dl>
+					<dt>强力推荐榜</dt>
+<!-- BEGIN nc1 -->
+					<dd><a href="{InfoURL}">{title}</a></dd>
+<!-- END nc1 -->
+				</dl>
+				<span><a href="rank.php?rid=1">更多&gt;&gt;</a></span>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="include/js/xmlhttp.js"></script>
+		<script type="text/javascript" src="include/js/favorite.js"></script>
+
+		<div id="rd8_right">
+			<p class="rd8_guide">  当前所在位置：<a href="http://pma.aokostar.cn/demo/upload">首页</a> &gt;&gt; <a href="category.php">{subject}</a> &gt;&gt;<a href="{HTMLURL}">{title}</a></p>
+			
+					<div class="all">所有书评</div>
+<!-- BEGIN comments -->
+					<div class="rd8_all">{username} 于 {dateline_DATE_Y-m-d H:i:s}: </div>
+					<div class="rd8_all"><strong>{title}</strong></div>
+					<div class="rd8_all" style="border-bottom:1px solid #698CC3;width:600px;">{content}</div>
+<!-- END comments -->
+		</div>
+	</div>

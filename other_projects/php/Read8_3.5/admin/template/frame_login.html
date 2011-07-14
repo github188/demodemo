@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>{G_sitename} - 后台管理</title>
+<base href="{G_siteurl}/admin/" />
+<link href="template/acp.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+<!-- IF U_adminname!="" -->
+		var pwd1 = '';
+		var pwd2 = '';
+		function checkpswd(key,val) {
+			if(key == 'pwd1') {
+				pwd1 = val;
+			}
+			if(key == 'pwd2') {
+				pwd2 = val;
+			}
+			if(pwd1 && pwd2) {
+				if(pwd1 != pwd2) {
+					alert('<span style="color: Red;">两次输入的密码不一样</span>');
+				}
+			}
+		}
+<!-- ENDIF -->
+//--><!]]></script>
+<!-- IF U_adminname!="" --><script type="text/javascript" src="../template/basic/pswdsafe.js"></script><!-- ENDIF -->
+</head>
+<body style="background: #9EB6D8;">
+<div id="page">
+	<form action="" method="post">
+	<div class="adminborder" style="margin: 100px 250px 0 !important;margin: 100px 125px 0;width: 400px;">
+		<div class="adminhead" style="width: 396px;"><!-- IF U_adminname!="" --><!-- IF C_forcechange -->您必须修改密码才能登录后台<!-- ELSE -->后台密码修改<!-- ENDIF --><!-- ELSE -->请输入您的管理员用户名和密码<!-- ENDIF --></div>
+		<div class="b0">
+			<div style="width: 28%;padding-right: 2%;text-align: right;">用<!-- IF U_adminname!="" -->&nbsp;<!-- ENDIF -->户<!-- IF U_adminname!="" -->&nbsp;<!-- ENDIF -->名:</div>
+			<div style="width: 70%;"><input type="text" name="admin_name" size="34" value="{U_adminname}"<!-- IF U_adminname!="" --> readonly="readonly"<!-- ENDIF --> /></div>
+		</div>
+	<!-- IF U_adminname!="" -->
+		<div class="b0" style="height: 50px;">
+			<div style="width: 28%;padding-right: 2%;text-align: right;">新&nbsp;密&nbsp;码:</div>
+			<div style="width: 70%;"><input type="password" name="admin_new_pswd" size="34" style="ime-mode: disabled;" onblur="checkpswd('pwd1',this.value);" /><!--onkeyup="EvalPwdStrength(document.forms[0],this.value);" /> &nbsp;
+				<div style="width: 215px;font-weight: bold;height: 16px;line-height: 16px;background: White;position: relative;">
+					<div class="pwdChkCon0" id="idSM1">
+						<span id="idSMT1" style="display: none;">弱</span>
+					</div>
+					<div class="pwdChkCon0" id="idSM2" style="border-left: White 1px solid;">
+						<span id="idSMT0" style="display: inline;font-weight: normal;color: #666;">未评级</span>
+						<span id="idSMT2" style="display: none;">中等</span>
+					</div>
+					<div class="pwdChkCon0" id="idSM3" style="border-left: White 1px solid;">
+						<span id="idSMT3" style="display: none;">强</span>
+					</div>
+					<div class="pwdChkCon0" id="idSM4" style="border-left: White 1px solid;">
+						<span id="idSMT4" style="display: none;">最佳</span>
+					</div>
+				</div-->
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 28%;padding-right: 2%;text-align: right;">重复密码:</div>
+			<div style="width: 70%;"><input type="password" name="admin_repeat_pswd" size="34" style="ime-mode: disabled;" onblur="checkpswd('pwd2',this.value);" /> <!--span id="msgPassword"></span--></div>
+		</div>
+	<!-- ELSE -->
+		<div class="b0">
+			<div style="width: 28%;padding-right: 2%;text-align: right;">密&nbsp;&nbsp;码:</div>
+			<div style="width: 70%;"><input type="password" name="admin_pswd" size="34" style="ime-mode: disabled;" /></div>
+		</div>
+	<!-- ENDIF -->
+		<noscript>
+		<div class="b0">
+			<div style="width: 98%;padding-right: 2%;text-align: center;color: Red;">您需要开启浏览器的JavaScript支持才能正常使用后台</div>
+		</div>
+		</noscript>
+		<div class="bt"><input type="hidden" name="requestring" value="{C_querystring}" /><input type="submit" value=" 提  交 " /></div>
+	</div>
+	</form>

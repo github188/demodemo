@@ -1,0 +1,25 @@
+	<div id="rd8_center">
+
+		<div id="rd8_right" style="margin-left:15%;">
+			<p class="rd8_guide"><a href="/demo/upload">返回首页</a></p>
+			<table>
+				<tr class="rd8_texture">
+					<td>作品名称</td>
+					<td>最新章节</td>
+					<td>作者</td>
+					<td>更新时间</td>
+				</tr>
+<!-- BEGIN lists -->
+				<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+					<td><a href="{InfoURL}">《{title}》</a></td>
+					<td><a href="{ChapterURL}">{chapter_title}</a></td>
+					<td>{author}</td>
+					<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+				</tr>
+<!-- END lists -->
+				<tr>
+					<td colspan="8" class="rd8_tablebottom">{pagelink}</td>
+				</tr>
+			</table>
+		</div>
+	</div>

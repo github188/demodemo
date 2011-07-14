@@ -1,0 +1,35 @@
+
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">作者推文</div>
+		<div class="rd8_col0">
+			<form action="author/commend_update.php" method="post">
+				<table>
+					<tr class="rd8_head">
+						<td>删除</td>
+						<td align="left">名称</td>
+						<td align="left">作者</td>
+						<td>类型</td>
+						<td>最后更新</td>
+					</tr>
+<!-- BEGIN maclist -->
+					<tr class="rd8_col0" id="rd8_acrow{bid}" align="center" onclick="javascript:HighLight.click('acs{bid}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'acs{bid}');">
+						<td><input type="checkbox" name="acs[]" id="rd8_acs{bid}" value="{bid}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('acrow{bid}', this.id);" /></td>
+						<td align="left"><a href="{InfoURL}" rel="external" style="color: Green;">{title}</a></td>
+						<td align="left"><!-- IF author_id --><a href="{AuthorURL}" rel="external"><!-- ENDIF -->{author}<!-- IF author_id --></a><!-- ENDIF --></td>
+						<td>{subject} - {content}</td>
+						<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+					</tr>
+<!-- END maclist -->
+					<tr class="rd8_colt">
+						<td colspan="5" align="center">
+							将选中的推荐(如果有) 
+							 删除 
+							 并推荐《<input type="text" name="actitle" size="12" />》这本书 
+							<input type="submit" value=" 确定 " />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>

@@ -1,0 +1,71 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">书架列表</div>
+		<div class="rd8_category" style="font-weight: bold;background-color:#FFF;">
+			<a href="my/favorite.php">全部</a><!-- BEGIN favcats --> &nbsp; &nbsp;<a href="my/favorite.php?gid={gid}">{category}</a><!-- END favcats -->
+		</div>
+		<div class="rd8_col0">
+			<form action="my/favorite_update.php" method="post">
+				<table>
+					<tr class="rd8_head">
+						<td>管理</td>
+						<td align="left">作品名称</td>
+						<td align="left">上次阅读章节</td>
+						<td>最后更新</td>
+						<td>书架</td>
+					</tr>
+<!-- BEGIN favlist -->
+					<tr align="center" class="rd8_col{A}" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'">
+						<td><input type="checkbox" name="favs[]" id="favs{fid}" value="{fid}"  /></td>
+						<td align="left"><a href="{BookInfoURL}" rel="external" style="color: Green;">{book_title}</a></td>
+						<td align="left"><a href="{ChapterURL}" rel="external" style="color: Green;">{chapter_title}</a></td>
+						<td<!-- IF update --> style="color: Red;"<!-- ENDIF -->><!-- IF lastupdate -->{lastupdate_DATE_Y-m-d H:i:s}<!-- ELSE -->--<!-- ENDIF --></td>
+						<td><!-- IF category -->{category}<!-- ELSE -->尚未分类<!-- ENDIF --></td>
+					</tr>
+<!-- END favlist -->
+					<tr class="rd8_colt">
+						<td colspan="5" align="center">
+							将选中的收藏 
+							<label for="rd8_acd"><input type="radio" name="delete" id="rd8_acd" value="1" onclick="if(!confirm('此操作不可恢复，确实要删除所选收藏吗？')) return false;" /> 删除 </label>
+							<label for="rd8_acm"><input type="radio" name="delete" id="rd8_acm" checked="checked" value="0" /> 移动到 </label>
+							<select name="favm" onchange="javascript:$('acm').checked = true;">
+								<option value="0">尚未分类</option>
+<!-- BEGIN favcats -->
+								<option value="{gid}">{category}</option>
+<!-- END favcats -->
+							</select>
+							<input type="submit" value=" 确定 " />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+	</div>
+
+	<div class="rd8_fullborder">
+		<div class="rd8_head">书架管理</div>
+		<div class="rd8_col0">
+			<form action="my/favorite_category.php" method="post">
+				<table>
+					<tr class="rd8_head">
+						<td>管理</td>
+						<td>书架名称编辑</td>
+						<td>删除书架</td>
+					</tr>
+<!-- BEGIN favcats -->
+					<tr align="center" class="rd8_col{A}" onmouseover="this.className='rd8_col2'" onmouseout="this.className='rd8_col{A}'" onclick="javascript:HighLight.click('rd8_favcd{gid}');">
+						<td><input type="checkbox" name="favcd[]" id="rd8_favcd{gid}" value="{gid}" onchange="javascript:$('favc{gid}').disabled = this.checked;" /></td>
+						<td><input type="text" name="favc[{gid}]" id="rd8_favc{gid}" value="{category}" size="12" maxlength="6" /></td>
+						<td><a href="my/favorite_category.php?favcd[]={gid}" onclick="if(!confirm('确认删除此书架吗？删除之后此书架的书籍为尚未分类。')) return false;">删除</a></td>
+					</tr>
+<!-- END favcats -->
+					<tr class="rd8_col0" align="center">
+						<td>新建</td>
+						<td><input type="text" name="newfavc" size="12" maxlength="6" /></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr class="rd8_colt"><td colspan="3" align="center"><input type="submit" value=" 确定 " /></td></tr>
+				</table>
+			</form>
+		</div>
+	</div>

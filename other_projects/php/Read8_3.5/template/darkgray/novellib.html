@@ -1,0 +1,56 @@
+	<div id="rd8_center">
+		<div id="rd8_left">
+			<div class="rd8_subnav">
+					<div class="rd8_subject">
+						<li class="rd8_subject_title">按题材</li>
+		<!-- BEGIN subjects -->
+							<li class="rd8_subject_news"><a href="novellib.php?subject={id}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a></li>
+		<!-- END subjects -->
+					</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按内容</li>
+<!-- BEGIN contents -->
+						<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={id}&amp;initial={ninitial}&amp;words={nwords}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a> </li>
+<!-- END contents -->
+			</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按首字母</li>
+<!-- BEGIN initial -->
+					<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={ncontent}&amp;initial={v}&amp;words={nwords}"<!-- IF selected -->  class="rd8_currentlink"<!-- ENDIF -->>[{v}]</a></li>
+<!-- END initial -->
+			</div>
+			<div class="rd8_subject">
+				<li class="rd8_subject_title">按字数</li>
+<!-- BEGIN words -->
+					<li class="rd8_subject_news"><a href="novellib.php?subject={nsubject}&amp;content={ncontent}&amp;initial={ninitial}&amp;words={v}"<!-- IF selected -->  class="rd8_currentlink"<!-- ENDIF -->>[{v}]</a></li>
+<!-- END words -->
+			</div>			
+		</div>
+	</div>
+
+		<div id="rd8_right1">
+			<p class="rd8_guide">  当前所在位置：大众书库</p>
+<!-- IF novels -->
+			<table>
+				<tr class="rd8_texture">
+					<td>作品名称</td>
+					<td>最新章节</td>
+					<td>类别</td>
+					<td>作者</td>
+					<td>更新时间</td>
+				</tr>
+<!-- BEGIN novels -->
+				<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+					<td><a href="{InfoURL}">《{title}》</a></td>
+					<td><a href="{ChapterURL}">{chapter_title}</a></td>
+					<td>{subject} - {content}</td>
+					<td>{author}</td>
+					<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+				</tr>
+<!-- END novels -->
+			</table>
+			<div class="rd8_tablebottom">{pagelink}</div>
+		</div>
+<!-- ELSE --><center>暂无相关书籍</center>
+<!-- ENDIF -->
+	</div>

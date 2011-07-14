@@ -1,0 +1,256 @@
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+		function setattach(id,action) {
+			$('cover'+id).disabled = action;
+		}
+		function editor_submit(){
+			editor.save();
+			if($('article_textarea').value == '') {
+				alert('请填写内容');
+				return false;
+			}
+			if($('rd8_title').value == '') {
+				$('rd8_title').focus();
+				alert('请填写标题');
+				return false;
+			}
+			$('rd8_submit').value = "提交中";
+			$('rd8_submit').disabled = true;
+		}
+		var _attach = 0;
+		function append_attach(){
+			var li = document.createElement('li');
+				li.id = 'newattach_' + _attach;
+				li.innerHTML = '新附件: <input type="file" name="newattach[]" id="newattachfile_' + _attach + '" size="36" \/> <label for="newattachdelete_' + _attach + '"><input type="checkbox" id="newattachdelete_' + _attach + '" onclick="javascript:attach_change(\'' + _attach + '\');" \/> 删除<\/label>';
+
+			$('rd8_newattach').appendChild(li);
+
+			_attach++;
+		}
+		function attach_change(_attach){
+			var state = $('newattachdelete_' + _attach).checked;
+			$('newattach_' + _attach).style.cssText = 'text-decoration: ' + (state ? 'line-through' : 'none') + ';';
+			$('newattachfile_' + _attach).disabled = state;
+		}
+	//--><!]]></script>
+
+	<div class="rd8_fullborder">
+		<form id="rd8_chapteredform" method="post" action="author/book_chapter_new.php" enctype="multipart/form-data" onsubmit="return editor_submit();">
+			<div class="rd8_head">《{title}》 <a href="author/book_info.php?bid={bid}">修改作品信息</a> 更新 <a href="author/book_manage.php?bid={bid}">章节管理</a></div>
+			<div class="rd8_col0">
+				<table>
+					<tr>
+						<td width="15%" align="center">章节标题</td>
+						<td width="35%"><input type="text" name="title" id="rd8_title" /></td>
+						<td width="15%" align="center">内容提要</td>
+						<td width="35%"><input type="text" name="description" /></td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">插入章节</td>
+						<td>
+							在
+							<select name="insertbefore">
+									<option value="0">无</option>
+<!-- BEGIN chapters -->
+									<option value="{priority}">{title}</option>
+<!-- END chapters -->
+							</select>
+							之前
+						</td>
+						<td align="center">插入卷标</td>
+						<td><input type="text" name="volumetitle" /></td>
+					</tr>
+					<tr>
+						<td align="center">定时发布</td>
+						<td>
+							<select name="timer[d]">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+								<option value="32">32</option>
+								<option value="33">33</option>
+								<option value="34">34</option>
+								<option value="35">35</option>
+								<option value="36">36</option>
+								<option value="37">37</option>
+								<option value="38">38</option>
+								<option value="39">39</option>
+								<option value="40">40</option>
+								<option value="41">41</option>
+								<option value="42">42</option>
+								<option value="43">43</option>
+								<option value="44">44</option>
+								<option value="45">45</option>
+								<option value="46">46</option>
+								<option value="47">47</option>
+								<option value="48">48</option>
+								<option value="49">49</option>
+								<option value="50">50</option>
+								<option value="51">51</option>
+								<option value="52">52</option>
+								<option value="53">53</option>
+								<option value="54">54</option>
+								<option value="55">55</option>
+								<option value="56">56</option>
+								<option value="57">57</option>
+								<option value="58">58</option>
+								<option value="59">59</option>
+							</select>
+							天
+							<select name="timer[h]">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+							</select>
+							小时
+							<select name="timer[m]">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+								<option value="32">32</option>
+								<option value="33">33</option>
+								<option value="34">34</option>
+								<option value="35">35</option>
+								<option value="36">36</option>
+								<option value="37">37</option>
+								<option value="38">38</option>
+								<option value="39">39</option>
+								<option value="40">40</option>
+								<option value="41">41</option>
+								<option value="42">42</option>
+								<option value="43">43</option>
+								<option value="44">44</option>
+								<option value="45">45</option>
+								<option value="46">46</option>
+								<option value="47">47</option>
+								<option value="48">48</option>
+								<option value="49">49</option>
+								<option value="50">50</option>
+								<option value="51">51</option>
+								<option value="52">52</option>
+								<option value="53">53</option>
+								<option value="54">54</option>
+								<option value="55">55</option>
+								<option value="56">56</option>
+								<option value="57">57</option>
+								<option value="58">58</option>
+								<option value="59">59</option>
+							</select>
+							分钟 后发表
+						</td>
+						<td align="center">VIP 章节</td>
+						<td><label for="vip"><input type="checkbox" name="vip" id="vip" value="1"<!-- IF vip --> onclick="$('rd8_attachtr').style.display = this.checked ? 'none' : '';"<!-- ELSE --> disabled="disabled"<!-- ENDIF --> /> 是</label></td>
+					</tr>
+					<tr class="rd8_col1">
+						<td align="center">章节内容</td>
+						<td colspan="3">{editor}</td>
+					</tr>
+<!-- IF upload -->
+					<tr id="rd8_attachtr">
+						<td align="center"><strong>上传附件</strong></td>
+						<td colspan="3">
+							(最大允许 {upload}, 允许附件类型: {formats}, 不合法附件将自动忽略)<br />
+							<ul style="list-style-type: none;margin: 0;padding: 0; color: Blue;" id="rd8_newattach">
+							</ul>
+
+							
+							<span class="rd8_a" onclick="javascript:append_attach();">[+]</span>
+						</td>
+					</tr>
+				<script type="text/javascript">
+<!-- BEGIN attachs -->
+					append_attach_with_value('{f}', '{t}', {s});
+<!-- END attachs -->
+					append_attach();
+				</script>
+<!-- ENDIF -->
+				</table>
+			</div>
+			<div class="rd8_colt" style="text-align: center;">
+				发表本章然后
+				<label for="rd8_tolist"><input type="radio" name="gotonext" id="rd8_tolist" value="0" checked="checked" />返回到列表</label>
+				<label for="rd8_tonew"><input type="radio" name="gotonext" id="rd8_tonew" value="1" />继续更新</label>
+				<input type="submit" value=" 执 行 " id="rd8_submit" title="提交中" />
+				<input type="hidden" name="bid" value="{bid}" />
+				<input type="reset" value=" 取 消 " name="reset" />
+			</div>
+		</form>
+	</div>

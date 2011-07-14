@@ -1,0 +1,1034 @@
+/* main */
+body { font-family :宋体,sans-serif;font-size:12px;	margin:0;}
+a:link {font-size:12px;color:#000000;text-decoration:none;}
+a:visited {	font-size:12px;	color:#000000;text-decoration:none;}
+a:hover			  {font-size:12px;color:#8D9294;}
+li				  {list-style:none;margin:0;padding:0;}
+input,textarea    { border:1px solid #DDD;}
+select			  {  background:#F6F9FD;}
+#rd8_main		  {	width:990px;margin-top:0;margin-right:auto;	margin-bottom:0;margin-left:auto;	position:relative;}
+#rd8_header       {	width:100%;	margin-top:26px;}
+.rd8_login        {	height:26px;position:absolute;top:-26px;*top:0;left:10px;}
+.rd8_login form   {float:left; line-height:26px;  margin:0;  height:26px;  text-indent:.1em;}
+.rd8_login p	  { line-height:26px;  float:right;  margin:0;  height:26px;}
+input#rd8_txtinput{  width:75px;}
+input.rd8_loginput{  border:none;}
+img#rd8_logo {	float:left;}
+#rd8_logo{	 float:left;	margin:0;	padding:0;	position:relative;	top:5px;	left:10px;	width:120px;	height:70px;}
+#rd8_logo span{width:120px;height:70px;float:left;cursor:pointer;}
+img.rd8_banner{  width:49.6%;	float:left;	margin:0 0 0 7px;}
+img.clear {  margin:0;}
+.rd8_nav {  background:url("images/logo.gif") no-repeat left top;	float:left;	width:100%;	height:80px;}
+.rd8_nav p {  line-height:2.2;	float:right;	margin:0;}
+
+.rd8_subguide{	font-size:13px;	line-height:26px;	font-weight:bold;	color:#6C778E;	background-color:#DBDBDB;	text-indent:5px;	float:left;	height:26px;	width:99.7%;  margin:0px auto 0;  border:1px solid #727272;}
+.rd8_subguide acronym {	font-size:16px;}
+#rd8_center {	width:100%;	float:left;	clear:both;	margin-top:6px;	position:relative;}
+
+.rd8_ad_position{
+	width: 1000px;
+	height: 60px;
+	margin-top:3px;
+	margin-bottom:14px;
+}
+
+#rd8_left {	width:20%;   float:left;}
+#rd8_right {	width:20%;   float:left;   margin:0 0 0 12px;}
+.rd8_subnav {	line-height:2;	text-align:left;	float:left;	width:100%;	padding-top:0;	padding-bottom:10px;}
+.rd8_subnav a:link {	text-decoration:none;}
+.rd8_subnav a:visited {	text-decoration:none;}
+.rd8_subnav a:hover {
+	color:#6C778E;
+	text-decoration:none;
+	background-color:#DBDBDB;
+	border:1px solid #727272;
+	padding:2px;
+}
+a.currentlink {
+	color:#FF0000!important;
+	text-decoration:none;
+}
+#rd8_middle {
+	width:57.1%;*width:56.9%;
+	float:left;
+	margin-left:6px;
+	border:1px solid #DCDEE4;
+	margin-top:6px;background:#FFF;
+	overflow:hidden;
+}
+#rd8_middle .rd8_showallbook {
+	width:100%;
+	text-align:right;
+}
+.rd8_canada {
+	margin:6px 0 0 0 ;
+	float:left;
+	width:100%;
+	border:1px solid #DCDEE4;
+}
+.rd8_evenrow {
+    background-color: #EDF7FF;
+}
+.rd8_canada dl {
+	margin:0px;
+	width:100%;
+	height:270px;
+}
+.rd8_canada dt {
+	background-color:#DBDBDB;
+	text-indent:2pt;
+	line-height:26px;
+	color:#6C778E;
+	font-size:13px;
+	font-weight:bold;
+	letter-spacing:1px;
+	margin-bottom:6px;
+	height:26px;
+}
+.rd8_canada dd {
+	text-indent:10px;
+	font-size:12px;
+	float:left;
+	margin-top:0px;
+	margin-right:0px;
+	margin-bottom:2px;
+	margin-left:0px;
+	padding-top:4px;
+	padding-bottom:4px;
+	clear:both;
+	width:100%;
+}
+.rd8_canada span {
+	width:98%;
+	float:left;
+	text-align:right;
+}
+#rd8_bdleft {
+	width:23%;
+  float:left;
+	border:1px solid #ACACAC;
+}
+#rd8_bdleft dl {
+	float:left;
+	width:100%;
+	height:255px;
+	margin:0 0 6px 0;
+}
+#rd8_bdleft dt {
+	background-color:#636C81;
+	line-height:26px;
+	color:#FFFFFF;
+	font-size:13px;
+	font-weight:bold;
+	margin-bottom:6px;
+	height:26px;
+	text-align:center;
+}
+#rd8_bdleft dd {
+	text-indent:1.5pc;
+	font-size:12px;
+	float:left;
+	margin-top:0px;
+	margin-right:0px;
+	margin-left:0px;
+	padding-top:4px;
+	padding-bottom:4px;
+	clear:both;
+	width:100%;
+	background-image:url(images/list.gif);
+	background-repeat:no-repeat;
+	background-position:12px 1px;
+}
+#rd8_bdleft address {
+	float:left;
+	padding-top:4px;
+	padding-bottom:4px;
+	clear:both;
+	width:100%;
+	text-align:right;
+	margin-top:-16px;
+}
+#rd8_bdright {
+	width:74.5%;
+  float:left;
+  margin:0 0 0 12px
+}
+#rd8_detail {
+	float:left;
+	width:100%;
+	border:1px solid #878787;
+	margin-top:0px;
+	margin-right:0px;
+	margin-bottom:10px;
+	margin-left:0px;
+	background:#E9EAEB;
+}
+		#rd8_detail span {float:left;	width:50%;*width:49%;line-height:26px;height:26px;text-indent:7px;border-bottom:1px dashed #000000;margin:0px;}
+		.noborder {	border-style:none!important;}
+		#rd8_detail strong {  font-size:1.5em;}
+		.rd8_introduce { border-bottom:1px dashed #CCC;float:left;	height:160px;	padding:10px 0 20px 0;width:100%;line-height:20px;margin-bottom:10px;overflow:hidden;}
+		.rd8_introduce img {height:160px;width:120px;margin-right:8px;margin-bottom:2px;}
+		.rd8_opration {	float:left;	width:100%;	line-height:1.8;margin-top:0px;	margin-right:0px;	margin-bottom:10px;	margin-left:0px;}
+		a.read { color:#FF0000!important;font-weight:600;}
+		a.add { color:#636C81!important;font-weight:600;}
+		a.latest {	font-weight:600;}
+		form.comment {	float:left;	width:100%;	margin-top:0px;	margin-right:0px;	margin-bottom:10px;	margin-left:0px;	border:1px solid #DDD;	background-color:#FAFAFA;}
+		.comment div {	width:90%;	margin-top:8px;	margin-right:auto;	margin-bottom:8px;	margin-left:auto;}
+		.comment span {	width:50px;	float:left;	margin:4px 0 0 0;}
+		.comment input {   background:#FFF!important;	width:200px;	border:1px solid #DDDDDD;}
+		.comment textarea {	width:450px;height:100px;border:1px solid #DDDDDD;}
+		input.annouce { line-height:20px; letter-spacing:1px;width:75px;height:22px;border:1px solid #DDDDDD;}
+			.rd8_col0 table{border:1px solid #CCCCCC;border-collapse:collapse;margin:0 auto 10px;width:100%;}
+			.rd8_col0 table td{border-bottom:1px solid #CCC;border-right:1px solid #CCC;text-align:center;}
+
+		#rd8_typewriter tr td{ padding-left:5px;text-align:left;background:#FFF;} 
+			.rd8_typewriter_action a{border:1px solid #636C81;padding:4px;}
+			.rd8_typewriter_action a:hover{background:#636C81;color:#FFF;}
+		/* 表格 */
+		#rd8_center table{width:100%;margin:0;border-collapse :collapse;border:1px solid #A1A7B7;float:left;}
+
+#rd8_center table td {
+	border-right-width:1px;
+	border-bottom-width:1px;
+	border-right-style:solid;
+	border-bottom-style:solid;
+	border-right-color:#A1A7B7;
+	border-bottom-color:#A1A7B7;
+	text-align:center;
+}
+/* 表格第一行 */
+.rd8_texture {
+  color:#FFF;
+	font-size:12px;
+	font-weight:bold;
+	background-color:#838CA0;
+	height:26px;
+}
+.rd8_texture td {
+  border-right:1px solid #FFF!important;
+}
+
+/* 从表格第二行算起，奇数行用oddtablerow，偶数行用eventablerow */
+
+/* 表格最后一行：分页条 */
+.rd8_tablebottom {
+	padding-top:14px;
+	padding-bottom:14px;
+}
+
+
+
+/* 选中的那一页的样式 */
+a.currentpage {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:13px;
+	font-weight:bold;
+	color:#5E5E5E!important;
+	border:none!important;
+}
+#rd8_center table acronym {
+    color:#FF0000;
+}
+
+dl.clear,div.clear {
+  margin:0;
+}
+/* index.html start */
+	.rd8_section1			  { width:100%;height:276px;*height:276px;margin:0 auto;}
+		.rd8_left			  { width:20.5%;height:100%;float:left;}
+			.rd8_bang		  { width:100%;height:100%;float:left;padding:0;margin:0 0 6px 0;border:1px solid #B0B3B6;}
+				.rd8_bang dt  { font-size:13px;background-color:#636C81;line-height:26px;color:#FFF;font-weight:bold;margin-bottom:6px;	letter-spacing:5px;width:100%;height:26px;float:left;text-align:center;}
+				.rd8_bang dd  { text-indent:10px;font-size:12px;float:left;margin:0;padding-top:3px;line-height:18px;width:100%;}
+
+		.rd8_middle			  { overflow:hidden;border:1px solid #DBDBDB;width:57%;*width:56.9%;height:100%; float:left; margin:0 0 0 6px;}
+			.rd8_toprec		  { overflow:hidden;float:left;height:100%;margin:0;padding:0;width:100%;}
+				.rd8_imgtxtrow{ background:#FFF;width:100%;float:left;margin-top:1px;}
+
+		.rd8_right			  { width:20.5%;height:100%; float:left; margin-left:6px;}
+
+		.rd8_lrtit			  { font-size:13px;color:#FFF;background-color:#636C81;margin:0;line-height:26px;font-weight:bold;margin-bottom:6px;letter-spacing:5px;text-align:center;width:100%;height:26px;float:left;}
+
+	.rd8_section2							 { width:100%;height:380px;margin:6px auto 0;}
+		.rd8_section2 .rd8_middle			 { border:none;}
+			.rd8_hot						 { width:100%;height:100%;*height:103.2%;border:1px solid #B0B3B6;float:left;}
+				.rd8_himgtxtrow				 { background:#FFF;width:100%;float:left;padding:0;}
+				.rd8_midtit					 { font-size:13px;color:#FFF;background-color:#636C81;text-indent:10pt;line-height:26px;font-weight:bold;margin:0 0 4px 0;letter-spacing:5px; width:100%;height:26px;float:left;}
+				p.rd8_hotimgtxt				 { border:1px solid red;line-height:20px;width:48%;float:left;padding:0 4px;margin:0 auto 4px;}
+				.rd8_hotimgtxt img			 { width:80px; height:100px; margin:0 4px 2px 0;}
+				.rd8_hotimgtxt span			 { display:block;width:120px;height:20px;line-height:20px;float:left;border:1px solid red; font-weight:normal;color:#FF0000;}
+				.rd8_hotimgtxt span a:link   { font-size:12px;	color:#FF0000;text-decoration:none;}
+				.rd8_hotimgtxt span a:visited{ font-size:12px;color:#FF0000;text-decoration:none;}
+				.rd8_hotimgtxt span a:hover  { font-size:12px;color:#FF0000;text-decoration:underline;}
+
+	.rd8_section3			{ width:100%;height:380px;*height:387px;margin:6px auto 0;}
+		.rd8_latest			{ overflow:hidden;}
+			.rd8_latest dl  { margin:0 ;float:left;width:100%;}
+			.rd8_latest dt  { font-size:13px;background-color:#E9EAEB;letter-spacing:5px;text-indent:10pt;line-height:26px;color:#10111C;font-weight:bold;margin-bottom:6px;height:26px;width:100%;float:left;}
+			.rd8_latest dd  { line-height:18px;text-indent:10px;font-size:12px;float:left;margin:0;padding-top:1px;width:100%;}
+			.rd8_latest dd a{ float:left;}
+
+	.rd8_section4			 { width:100%;height:380px;margin:6px auto 0;}
+		.rd8_comment		 { width:100%;float:left;height:564px;margin:0;padding:0;}
+			.rd8_comment dl  { margin:0;float:left;width:100%;}
+			.rd8_comment dt  { background-color:#E9EAEB;letter-spacing:5px;text-indent:10pt;line-height:26px;color:#10111C;font-size:13px;font-weight:bold;margin-bottom:6px;height:26px;width:100%;float:left;}
+			.rd8_comment dd  { text-indent:10px;font-size:12px;float:left;	margin:0;padding-top:1px;width:100%;}
+			.rd8_comment dd a{ float:left;}
+
+	.rd8_unionwebsite		 { background:#E9EAEB;border:1px solid #636C81;text-align:center;padding-top:10px;padding-bottom:10px;width:99.2%;margin-top:6px;	clear:both;	position:relative;float:left;}
+		.rd8_unionwebsite p  { width:95%;text-align:center;margin-top:0px;margin-right:auto;margin-bottom:0px;margin-left:auto;line-height:normal;}
+		.rd8_unionwebsite p a{ float:left;padding-top:4px;padding-bottom:4px;width:110px;}
+
+/* index.html end */
+
+/* myprofile.html start */
+	.rd8_fullborder			   { width:100%;float:left;padding: 0;margin-bottom: 10px;}
+		.rd8_main			   { float:left;}
+		.rd8_head			   { width:100%;float:left;margin-bottom:5px;border-bottom:1px dashed #636C81;padding:0;letter-spacing:5px;font-size:13px;height:26px;line-height:26px;text-align:center;color:#6C778E;font-weight:bold;}
+		.rd8_userinfo          { width:100%;height:100%;border:1px solid #FFF;margin:0 auto;}
+			.rd8_userinfo tr   { height:26px;line-height:26px;margin:0;padding:0;} 
+
+		.rd8_favorite		   { width:100%;height:100%;border:1px solid red;}
+		.rd8_favorite_tab	   { width:100%;height:100%;border:1px solid red;float:left;margin-top:10px;}
+		
+		.rd8_col0			   { width:100%;line-height:26px;margin-top:0px;padding:0;border:1px solid #FFF;}
+		.rd8_col0 td		   { height:26px;line-height:26px;float:left;}
+		.rd8_favorite .rd8_col0{ float:left;}
+		.rd8_col1			   { width:100%;	line-height:26px;	margin:1px 0 0;	background:#DBDBDB;}
+		.rd8_col2			   { width:100%;	line-height:26px;	background:#CCFFFF;	margin:1px 0 0;}
+		.rd8_colt			   { height:28px;	width:100%;	line-height:28px;	margin:0;	font-weight:bold;}
+		.rd8_category		   { background:#636C81;color:#FFF;line-height:26px;font-weight:bold;width:100%;margin-top:1px;text-align:center;float:left;}
+		.pages a,.pages a:link { border:1px solid #B5C6E1;color:#698CC3;font-family:Arial,Helvetica,sans-serif;font-size:13px;margin-right:4px;padding:4px 8px;text-decoration:none;}
+		.pages a:hover		   { background-color:#FFFFFF;border:1px solid #698CC3;color:#000033;font-family:Arial,Helvetica,sans-serif;font-size:13px;margin-right:4px;padding:4px 8px;text-decoration:none;}
+/* myprofile.html end */
+
+/* novel_index.html start */
+	#rd8_novellib_left					  {width:25%;float: left;}
+		.rd8_subject					  {float:left;width:100%;margin-bottom:8px;border:1px solid #DBDBDB;}
+			.rd8_subject li				  {padding:0;margin:0;*float:left;*width:100%;}
+			.rd8_subject_title			  {border:1px solid #FFF;background:#636C81;text-align:center;height:26px;line-height:26px;font-size:13px;color:#FFF;font-weight:bold;letter-spacing:3px;}
+			.rd8_subject .rd8_subject_news{width:61px;height:20px;float:left;padding:5px 0 0 5px;line-height:20px;}
+
+			.rd8_lisubject				  {float: left;}
+			.rd8_lidate					  { color:#666;float:left;text-align:left;margin:0;}
+			.rd8_liauthor				  {float:left;text-align:left;padding:0;}
+			.rd8_allbook				  {clear:left;width:99%;float:left;height:20px;line-height:20px;margin:0;padding:0;position:relative;text-align:right;}
+		.rd8_catetitle					  { border:1px solid #FFFFFF;background-color:#636C81;	font-size:13px;	line-height:26px;	font-weight:bold;	color:#FFF;	text-align:center;	height:26px;	width:99.6%;	margin:0 0 8px;	float:left;	letter-spacing:5px;}
+
+	#rd8_middle li						  { width:100%;margin:0px;	padding-top:4px;text-indent:1pc;float:left;	line-height:20px;	height:20px;}
+		.rd8_lidate						  {	float:right;color:#9E9E9D;text-align:right;	margin:0 4px 0 0;}
+/* novel_index.html end */
+
+/* mycommetn.html start*/
+	#rd8_book_comment{ width:90%;float:left;margin-top:10px;}
+		#rd8_book_comment .rd8_all{background:#FDFBF7;line-height:26px;margin:8px 0;font-size:13px;font-weight:bolder;color:#000;border-bottom:1px dashed #636C81;}
+
+		.rd8_commentbox{font-size:12px;background-color: #ececec;padding:10px;line-height:26px;}
+		.rd8_commen_title{font-weight:bolder;letter-spacing:2px;}
+		.rd8_commen_content{padding:0 10px;letter-spacing:1px;}
+		.rd8_commentfooter{background: url(../darkgray/images/arrow.gif) 20px -5px no-repeat;padding:1px 0 0 58px;margin-bottom:25px;font-size:90%;color:#4A4A4A;}
+/* mycommetn.html end*/
+
+/* my_help.html start */
+	.rd8_help{width:60%;margin:0 auto;}
+	.rd8_commen_footer{margin-bottom:25px;}
+	.rd8_noreply{color:#4A4A4A;width:150px;height:40px;margin:-38px 0 0 600px;*margin:-35px 0 0 600px!important;}
+/* my_help.html end */
+
+		.rd8_full{width:990px;float:left;margin-top:5px;}
+
+span.more {
+  font-family :Verdana;
+  text-align:right;
+  width:100%;*width:94.5%;
+  float:left;
+}
+
+p.rd8_imgtxttit {
+	width:98%;
+	height:26px;
+	margin:0 auto 4px;
+	z-index:1;
+	position:relative;
+	border:1px solid red;
+}
+.rd8_imgtxttit strong {
+	float:left;
+	line-height:26px;
+	height:26px;
+	text-indent:7pc;
+}
+.rd8_imgtxttit strong a:link {
+	font-size:13px;
+	color:#000000;
+	text-decoration:none;
+}
+.rd8_imgtxttit strong a:visited {
+	font-size:13px;
+	color:#000000;
+	text-decoration:none;
+}
+.rd8_imgtxttit strong a:hover {
+	font-size:13px;
+	color:#000000;
+	text-decoration:underline;
+}
+.rd8_imgtxttit span {
+	font-size:12px;
+	color:#000000;
+	float:right;
+	line-height:26px;
+	height:26px;
+	padding-right:4px;
+}
+.rd8_imgtxttit span a:link {
+	font-size:12px;
+	color:#000000;
+	text-decoration:none;
+}
+.rd8_imgtxttit span a:visited {
+	font-size:12px;
+	color:#000000;
+	text-decoration:none;
+}
+.rd8_imgtxttit span a:hover {
+	font-size:12px;
+	color:#000000;
+	text-decoration:underline;
+}
+p.rd8_imgtxt {
+  line-height:1.5;
+	margin:0 auto 4px;
+	width:98%;
+}
+.rd8_imgtxt img {
+  width:100px;
+  height:125px;
+	margin:-26px 6px 2px 0;
+	z-index:2;
+	position:relative;
+}
+.rd8_notice {
+	width:100%;
+	float:left;
+	padding:0;
+	margin:0;
+	border:1px solid #B0B3B6;
+}
+
+.rd8_notice p {
+	text-indent:10px;
+	font-size:12px;
+	float:left;
+	margin:0;
+	padding-top:4px;
+	padding-bottom:4px;
+	clear:both;
+	width:100%;
+}
+.rd8_notice span {
+  text-align:right;
+  width:100%;*width:95.7%;
+  float:left;
+  padding:4px 0;
+}
+
+.clear1 {
+  height:auto;
+}
+
+#rd8_scrollWrap {
+  width:100%;
+  height:70px;*height:113px;
+  float:left;
+  overflow:hidden;
+}
+#rd8_scrollMsg {
+  width:100%;
+  height:100%;
+  float:left;
+  padding:6px 0;
+}
+.rd8_type {
+  line-height:27px;
+  font-weight:bold;
+  text-align:center;
+  width:10%;*width:10%;
+  height:50px;
+  float:left;
+  padding:6px 0;
+  margin:0;
+  border-bottom:1px dashed #636C81;
+}
+#rd8_scrollMsg ul {
+  width:89%;*width:89.9%;
+  height:50px;
+  float:left;
+  margin:0;
+  padding:6px 0;
+  border-bottom:1px dashed #636C81;
+}
+#rd8_scrollMsg li {
+  background:url(../images/list.gif) no-repeat left top;
+  text-indent:.6pc;
+  display:inline;
+  width:49%;
+  float:left;
+  padding:2px 0;
+  list-style:none;
+}
+.rd8_bang p {
+  line-height:1.5;
+  width:90%;
+  margin:6px auto;
+}
+.rd8_bang p img {
+  width:60px;
+  height:75px;
+  margin:0 4px 2px 0;
+}
+.rd8_bang p span {
+  color:#636C81;
+  font-weight:bold;
+}
+.rd8_bang small {
+  text-align:right;
+  width:100%;*width:95.7%;
+  float:left;
+  padding:4px 0;
+}
+
+.rd8_lisubject {float: left;}
+.rd8_lidate { color:#666;float:left;text-align:left;margin:0;}
+.rd8_liauthor {float:left;text-align:left;padding:0;}
+
+
+.rd8_newscon dt {
+	background-color: #698CC3;
+	font-size: 14px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-indent: 2pc;
+	height: 26px;
+	margin-bottom: 6px;
+}
+.rd8_newscon li {
+	margin: 0;
+	padding-top: 4px;
+	padding-right: 4px;
+	padding-bottom: 4px;
+	padding-left: 10px;
+}
+
+span.more1 {
+  font-family :Verdana;
+  text-align:right;
+  width:100%;
+  float:left;
+  padding:6px 0;
+}
+#rd8_footer{
+	width:100%;
+	height:120px;
+	float:left;
+	clear:both;
+	margin-top:6px;
+	padding-top:10px;
+	padding-bottom:10px;
+	border-top:1px solid #636C81;
+	position:relative;
+}
+.rd8_aboutus {
+	text-align:center;
+	width:100%;
+	float:left;
+	line-height:1.5;
+}
+
+.rd8_subject,.rd8_word{
+	margin-bottom:5px;
+	border:1px solid #DBDBDB;
+	/*height:127px;*/
+}
+.rd8_initial{
+	margin-bottom:5px;
+	border:1px solid #DBDBDB;
+	height:195px;
+
+}
+.rd8_subject dl,.rd8_contents dl,.rd8_initial dl,.rd8_word dl{
+	margin:2px;
+}
+
+.rd8_subject dt,.rd8_contents dt,.rd8_initial dt,.rd8_word dt{
+	background-color:#636C81;
+	color:#FFF;
+	font-weight:bold;
+	font-size:13px;
+	text-align:center;
+	height:26px;
+	line-height:26px;
+	margin-bottom:5px;
+}
+
+.rd8_subject .current_dd,.rd8_contents current_dd,.rd8_initial current_dd{
+	float:left;
+	margin-left:2px;
+	padding-left:10px;
+}
+
+.rd8_subject dd{
+	float:left;
+	margin-left:2px;
+	padding-left:5px;*padding-left:2px;
+	padding-bottom:3px;*padding-bottom:10px;
+}
+
+.rd8_initial dd{
+	float:left;
+	margin-left:2px;*margin-left:0;
+	padding-left:5px;*padding-left:5px;
+	padding-bottom:3px;*padding-bottom:3px;
+}
+
+
+.rd8_word dd{
+	float:left;
+	margin-left:2px;
+	padding-left:2px;
+	padding-bottom:10px;
+
+}
+.rd8_contents{
+	margin-bottom:5px;
+	border:1px solid #DBDBDB;
+	clear:both;
+	height:405px;
+}
+
+.rd8_contents dd{
+	float:left;
+	margin-left:0;
+	padding-left:8px;
+	*padding-left:10px;
+	padding-bottom:10px;
+
+}
+
+/*-- 所有的排行榜都用到 Canada 这个样式 */
+.rd8_Canada{
+	float:left;
+	width:100%;
+	border:1px solid #DBDBDB;
+	padding:2px;
+	margin-bottom:6px;
+	height:271px;
+	overflow:hidden;
+	margin-left:0px;
+}
+.rd8_rank{
+	float:left;
+	width:98%;
+	border:1px solid #DBDBDB;
+	padding:2px;
+	margin-bottom:6px;
+	height:271px;
+	overflow:hidden;
+	margin-left:0px;
+}
+.rd8_latest{
+	float:left;
+	width:99.3%;
+	border:1px solid #DBDBDB;
+	padding:2px;
+	margin-bottom:6px;
+	height:99%;
+	overflow:hidden;
+	margin-left:0px;
+}
+
+
+.rd8_Canada dl ,.rd8_rank dl{
+	margin:0px;
+	width:100%;
+	float:left;
+
+}
+.rd8_Canada dt,.rd8_rank dt ,.rd8_latest dt{
+	background-color:#636C81;
+	font-size:13px;
+	letter-spacing:5px;
+	line-height:26px;
+	font-weight:bold;
+	color:#FFF;
+	height:26px;
+	margin:0 0 10px;
+	text-align:center;
+}
+.rd8_Canada dd ,.rd8_rank dd{
+	margin:0;
+	padding-top:4px;*padding-top:3px;
+	padding-right:0;
+	padding-bottom:3px;
+	padding-left:10px;
+}
+.rd8_Canada span ,.rd8_rank span,.rd8_latest span{
+	text-align:right;
+	width:100%;
+	float:left;
+}
+#rd8_subright {
+	width:198px;
+	*width:194px;
+	position:relative;
+	float:left;
+	margin-left:6px;
+	margin-bottom:10px;
+	margin-top:6px;
+}
+
+#rd8_navigation_ucp{
+	height:26px;
+	line-height:26px;
+	background-color:#636C81;
+	margin:0px;
+	padding:0;
+}
+
+#rd8_navigation_ucp a:link,#rd8_navigation_ucp a:visited{
+	color:#FFF;
+	font-weight:bold;
+}
+#rd8_navigation_ucp a:hover{
+	color:#FFF;
+	text-decoration:underline;
+}
+.t1 a:link,.t1 a:visited{
+	font-weight:bold;
+}
+.t1 a:hover{
+	color:#6C778E;
+	text-decoration:underline;
+}
+
+#rd8_right1 {
+	width:79%;
+	*width:78.5%;
+	position:relative;
+	float:left;
+	margin-left:8px;
+	margin-bottom:10px;
+}
+
+.rd8_guide{
+	white-space:pre;
+	width:100%;
+	margin-right:auto;
+	margin-bottom:10px;
+	margin-left:auto;
+	border-bottom-width:3px;
+	border-bottom-style:solid;
+	border-bottom-color:#DBDBDB;
+	font-size:13px;
+	color:#6C778E;
+	font-weight:bold;
+	margin-top:0px;
+
+}
+
+/* 表格 */
+#rd8_right1 table{
+	width:100%;
+	margin:0 auto 10px;
+	border-collapse :collapse;
+	border:1px solid #CCCCCC;
+}
+
+#rd8_right1 table td {
+	border-right-width:1px;
+	border-bottom-width:1px;
+	border-right-style:solid;
+	border-bottom-style:solid;
+	border-right-color:#CCCCCC;
+	border-bottom-color:#CCCCCC;
+	text-align:center;
+}
+/* 表格第一行 */
+.rd8_texture {
+	font-size:13px;
+	font-weight:bold;
+	color:#FFFFFF;
+	background-color:#636C81;
+	height:26px;
+}
+/* 从表格第二行算起，奇数行用oddtablerow，偶数行用eventablerow */
+.rd8_oddtablerow {
+	height:26px;
+	background-color:#DBDBDB;
+	margin:0;
+	padding:0;
+}
+.rd8_eventablerow {/* 鼠标移上去的样式 */
+	height:26px;
+	background-color:#FFF;
+	margin:0;
+	padding:0;
+}
+
+.rd8_selectedrow {/* 鼠标离开的样式 */
+	height:26px;
+	background-color:#CCFFFF;
+	margin:0;
+	padding:0;
+}
+
+#rd8_right1 tr{height:26px;line-height:26px;}
+
+/* 表格最后一行：分页条 */
+.rd8_tablebottom {
+	padding-top:14px;
+	padding-bottom:14px;
+}
+.rd8_tablebottom b {
+	color:#000000;
+}
+.rd8_tablebottom font {
+	color:#FF0000;
+	font-size:12px;
+	font-weight:bold;
+}
+.rd8_tablebottom a:link {
+	color:#698CC3;
+	font-size:13px;
+	padding:4px 8px;
+	margin-right:4px;
+	border:1px solid #B5C6E1;
+	text-decoration:none;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.pages{float:left;padding:5px;width:300px;height:40px;}
+.rd8_tablebottom a:visited {
+	color:#698CC3;
+	font-size:13px;
+	padding:4px 8px;
+	margin-right:4px;
+	border:1px solid #B5C6E1;
+	text-decoration:none;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.rd8_tablebottom a:hover {
+	color:#000033;
+	font-size:13px;
+	padding:4px 8px;
+	margin-right:4px;
+	border:1px solid #698CC3;
+	text-decoration:none;
+	font-family:Arial, Helvetica, sans-serif;
+	background-color:#FFFFFF;
+}
+/* 选中的那一页的样式 */
+.rd8_currentpage {
+	color:#FFFFFF!important;
+	font-size:13px;
+	font-weight:bold;
+	padding:4px 8px;
+	margin-right:2px;
+	background-color:#698CC3!important;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.current{
+	border:1px solid #B5C6E1;
+	color:#698CC3;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:13px;
+	margin-right:4px;
+	padding:4px 8px;
+	text-decoration:none;
+	background-color:#CCCCCC;
+}
+.other{
+	border:1px solid #B5C6E1;
+	color:#698CC3;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:13px;
+	margin-right:4px;
+	padding:4px 8px;
+	text-decoration:none;
+}
+/* 排行榜显示页 */
+/* author_book.html start 	*/
+		.rd8_author_book table{border:1px solid #CCC;border-collapse:collapse;float:left;margin:0pt;width:100%;border-collapse:collapse;}
+		.rd8_author_book td {border-bottom:1px solid #CCC;border-right:1px solid #CCC;line-height:26px;text-align:center;}
+	.rd8_myauthor{width:98%;height:300px;text-align:center;padding:10px;}
+	.rd8_myauthor li{width:98%;height:26px;line-height:26px;float:left;margin:3px;}
+	
+
+/* author_book.html end */	
+
+
+
+.rd8_style a:link,.rd8_style a:visited{
+	font-weight:bold;
+	text-decoration:none;
+}
+.rd8_style a:hover{
+	text-decoration:underline;
+}
+.all{
+	background-color:#DBDBDB;
+	height:26px;
+	line-height:26px;
+	clear:both;
+	font-weight:bold;
+	padding-left:3px;
+	text-align:center;
+	color:#6C778E;
+	margin-top:8px;
+}
+
+
+
+/*--用户登陆注册部分 */
+
+#rd8_userstate {
+	position: absolute;
+	top: 0px;
+	*top:1px;
+	left:10px;
+	margin: 0 auto;
+	padding: 0;
+	height: 23px;
+	line-height: 23px;
+	overflow: hidden;
+	background-color:#E9EAEB;
+	width:1004px;
+	
+}
+
+#rd8_userstate img {
+	border: 0;
+}
+#rd8_userlogin {
+	float: left;
+	margin-left:50px;
+}
+#rd8_userlogin input[type="submit"] {
+	height: 18px;
+}
+#rd8_userlogin input[type="text"], #rd8_userlogin input[type="password"] {
+	height: 14px;
+	margin: 0;
+}
+#rd8_wap {
+	float: right;
+	margin-right: 28px;
+	*margin-right: 28px !important;
+}
+#rd8_favorite, #rd8_homepage, #rd8_font_lang {
+	float: right;
+	margin-right: 26px;
+}
+
+#rd8_wap .rd8_a,#rd8_favorite .rd8_a,#rd8_homepage .rd8_a,#rd8_font_lang .rd8_a{
+	cursor:pointer;
+}
+#rd8_userpanel{
+	width:98%;
+	float:left;
+}
+.rd8_userpanel_title{
+	font-weight:bolder;
+	font-size:13px;
+	letter-spacing:5px;
+	width:100%;
+	text-align:center;
+	line-height:26px;
+	border-bottom:1px dashed #636C81;
+	margin-bottom:10px;
+	float:left;
+}
+.rd8_myhelp{
+	width:100%;
+	height:100%;
+	float:left;
+}
+.rd8_userpanel_msg{
+	width:100%;
+	line-height:26px;
+	border-bottom:0px solid #636C81;
+	float:left;
+}
+.rd8_userpanel_msg form{
+	width:100%;
+	float:left;
+}
+.rd8_userpanel_pay{
+	line-height:26px;
+	margin:5px 10px;
+	padding:0 10px;
+	float:left;
+	border:1px solid #636C81;
+}
+.rd8_userpanel_pay a:hover{
+	color:red;
+}
+
+img{
+border:none;
+}
+
+		.rd8_books_detail{ margin:0;padding-top:3px;width:100%;height:50%;}
+			.rd8_books_detail a{margin:0;padding:0;}	
+			.rd8_books_img{ margin:0;padding:0;border:none;width:15%;height:66px;float:left;display:block;}
+			.rd8_books_titles,.rd8_books_author{ margin-left:25px;width:75%;height:20px;float:left;padding:0 3px;}
+			.rd8_books_contents{ width:75%;margin-left:25px;float:left;padding:0 3px;line-height:15px;overflow:hidden;}
+			.rd8_books_update{ margin-bottom:2px;background-color:#EDF7FF;}
+
+
+
+.rd8_topbook{
+	width:100%;
+	height:320px;
+	float:left;
+}
+.rd8_topbook ul{
+	width:100%;
+	height:50%;
+	float:left;
+	margin:0;
+	padding-top:3px;
+	overflow:hidden;
+	color:#000;
+	font-weight:normal;
+}
+.rd8_topbook ul li{
+	text-align:left;
+	font-size:12px;
+	
+}
+.rd8_topbook_img{
+margin:0px;padding-left:15px;border:none;width:15%;height:66px;float:left;display:block;
+}
+.rd8_topbook_title,.rd8_topbook_author{ margin-left:25px;width:70%;height:20px;float:left;padding:0 3px;}
+.rd8_topbook_intro{ width:70%;margin-left:25px;float:left;padding:0 3px;line-height:15px;overflow:hidden;}
+
+.rd8_latest span{
+	display:block;
+	margin-top:0px;
+float:left;
+}
+.rd8_guide{
+	white-space: pre;
+	width: 100%;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+	border-bottom-width: 3px;
+	border-bottom-style: solid;
+	border-bottom-color: #636C81;
+	font-size: 14px;
+	color: #698CC3;
+	font-weight: bold;
+	margin-top: 0px;
+
+}

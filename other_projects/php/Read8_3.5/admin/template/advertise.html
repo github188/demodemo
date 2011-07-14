@@ -1,0 +1,38 @@
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>内容可采用html代码,可放置内容如图片广告、JS广告等等。</li>
+			</ul>
+		</div>
+	</div>	
+	<div class="adminborder">
+		<div class="adminhead">广告设置</div>
+		<div class="b0">
+			<div style="width: 20%;padding-left: 1%;">
+				<span>首页左侧广告</span>
+			</div>
+			<div style="width: 78%;"><textarea name="index_1" rows="8" style="width: 90%;">{C_index_1}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 20%;padding-left: 1%;">
+				<span>首页右侧广告</span>
+			</div>
+			<div style="width: 78%;"><textarea name="index_2" rows="8" style="width: 90%;">{C_index_2}</textarea></div>
+		</div>
+		<div class="b0">
+			<div style="width: 20%;padding-left: 1%;">
+				<span>阅读列表底部左侧广告</span>
+			</div>
+			<div style="width: 78%;"><textarea name="read_1" rows="8" style="width: 90%;">{C_read_1}</textarea></div>
+		</div>
+		<div class="b1">
+			<div style="width: 20%;padding-left: 1%;">
+				<span>阅读列表底部右侧广告</span>
+			</div>
+			<div style="width: 78%;"><textarea name="read_2" rows="8" style="width: 90%;">{C_read_2}</textarea></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

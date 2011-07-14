@@ -1,0 +1,61 @@
+<script type="text/javascript">
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = 'none';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = '';
+		}
+	}
+</script>
+
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>如果误删采集规则，可以到“官方互动”中的“采集规则下载”重新下载。</li>
+				<li style="color: Red;">导入采集规则时，如果英文标识名和现有采集规则相同，则会自动更新该采集规则。</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">批量采集设置</div>
+		<div class="b0">
+		<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=insert" method="post">
+			<table>
+				<tr class="col1" align="center">
+					<td>编号</td>
+					<td align="left">&nbsp;名称</td>
+					<td align="left">&nbsp;基础规则标识</td>
+					<td>最后更新</td>
+					<td>操作</td>
+				</tr>
+<!-- BEGIN rules -->
+				<tr align="center" class="col{A}" onmouseover="javascript:this.className = 'col2';" onmouseout="javascript:this.className = 'col{A}';">
+					<td>{id}</td>
+					<td align="left">&nbsp;{title}</td>
+					<td align="left">&nbsp;{parent}</td>
+					<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=edit&amp;id={id}">编辑</a> &nbsp;<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=export&amp;id={id}">导出</a> &nbsp;<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;id={id}" onclick="return confirm('确实要删除该规则吗？');">删除</a></td>
+				</tr>
+<!-- END rules -->
+				<tr class="col1" align="center">
+					<td>新增</td>
+					<td align="left" colspan="4">&nbsp;<input type="text" name="title" size="30" /> &nbsp;<input type="submit" value=" 新增采集规则 " /></td>
+				</tr>
+			</table>
+		</form>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=import" method="post" enctype="multipart/form-data">
+	<div class="adminborder">
+		<div class="adminhead">导入采集规则</div>
+		<div class="b1" style="text-align: center;"><label for="import_0"><input type="radio" name="import_method" id="import_0" value="1" onclick="showhide1(this.value);" checked="checked" /> 从文件导入</label> &nbsp;<label for="import_1"><input type="radio" name="import_method" id="import_1" value="0" onclick="showhide1(!this.value);" /> 从文本导入</label> &nbsp;<label for="ignore_parent"><input type="checkbox" name="ignore_parent" id="ignore_parent" value="1" /> 不检查基础规则是否存在</label></div>
+		<div class="b1" id="sh1" style="text-align: center;"><input type="file" name="import_file" /></div>
+		<div class="b1" id="sh2" style="text-align: center;display: none;"><textarea name="import_text" rows="20" cols="110"></textarea></div>
+		<div class="bt"><input type="submit" value=" 导 入 " /></div>
+	</div>
+	</form>

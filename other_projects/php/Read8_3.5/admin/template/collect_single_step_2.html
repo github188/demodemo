@@ -1,0 +1,109 @@
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;step=3" method="post">
+		<div class="adminborder">
+			<div class="adminhead">本书基本信息</div>
+			<div class="col0">
+				<table>
+					<tr>
+						<td width="11%" align="center">
+							书 &nbsp; &nbsp;名
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;<input type="text" name="title" value="{title}"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF --> /><input type="hidden" name="target" value="{target}" /><input type="hidden" name="read8bid" value="{read8bid}" />
+						</td>
+						<td width="11%" align="center">
+							作 &nbsp; &nbsp;者
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;<input type="text" name="author" value="{author}"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF --> />
+						</td>
+						<td width="11%" align="center">
+							录&nbsp;入&nbsp;员
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;<input type="text" name="typewriter" value="{typewriter}"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF --> />
+						</td>
+					</tr>
+					<tr class="col1">
+						<td width="11%" align="center">
+							类 &nbsp; &nbsp;型
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;<select name="subject"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF -->>
+<!-- BEGIN subjects -->
+								<option value="{v}"{s}>{t}</option>
+<!-- END subjects -->
+							</select>
+							&nbsp;<select name="content"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF -->>
+<!-- BEGIN contents -->
+								<option value="{v}"{s}>{t}</option>
+<!-- END contents -->
+							</select>
+						</td>
+						<td width="11%" align="center">
+							封面图片
+						</td>
+						<td width="55%" colspan="5">
+							&nbsp;<input type="text" name="cover" value="{cover}" size="60"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF --> />
+						</td>
+					</tr>
+					<tr>
+						<td width="11%" align="center">
+							书籍简介
+						</td>
+						<td width="55%" colspan="5">
+							&nbsp;<textarea name="intro" rows="10" cols="60"<!-- IF novel_exists --> disabled="disabled"<!-- ENDIF -->>{intro}</textarea>
+						</td>
+						<td width="33%" colspan="3" align="center" valign="middle">
+							<img src="{cover}" alt="{title}" />
+						</td>
+					</tr>
+					<tr class="col1">
+						<td width="11%" align="center">
+							跳 &nbsp; &nbsp;转
+						</td>
+						<td width="22%" colspan="2">
+							&nbsp;每 <input type="text" name="jump" value="{jump}" size="14" /> 章
+						</td>
+						<td width="11%" align="center">
+							数 &nbsp; &nbsp;据
+						</td>
+						<td width="55%" colspan="5">
+							&nbsp;<label for="clear_0"><input type="radio" name="clear" id="clear_0" value="0" checked="checked" /> <!-- IF novel_exists -->更新 (本站有该书数据)</label> &nbsp;<label for="clear_1"><input type="radio" name="clear" id="clear_1" value="1"<!-- IF clear --> checked="checked"<!-- ENDIF --> /> 覆盖 (更新前清除该书的原有数据)<!-- ELSE -->新建 (本站无此书数据)<!-- ENDIF --></label>
+						</td>
+					</tr>
+					<tr class="colt">
+						<td align="center" colspan="9"><input type="submit" value="   开始采集   " /> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div class="adminborder">
+			<div class="adminhead">本书章节信息</div>
+			<div class="col0">
+				<table>
+<!-- BEGIN chapter_list -->
+	<!-- IF volume -->
+					<tr class="colt">
+						<td colspan="3" align="center">
+							{volume}
+						</td>
+					</tr>
+	<!-- ENDIF -->
+	<!-- IF chapter_info -->
+					<tr class="col1">
+						<td colspan="3">
+		<!-- BEGIN chapter_info -->
+							<div class="<!-- IF exists -->exists<!-- ELSE -->chapter<!-- ENDIF -->">{title}</div>
+		<!-- END chapter_info -->
+						</td>
+					</tr>
+	<!-- ENDIF -->
+<!-- END chapters -->
+					<tr class="colt">
+						<td align="center" colspan="3"><input type="submit" value="   开始采集   " /> &nbsp;<input type="button" value=" 返 回 " onclick="history.go(-1)"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>

@@ -1,0 +1,135 @@
+<script type="text/javascript">
+	function setValue(objId, value){
+		$(objId).value = value;
+	}
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = '';
+			$('sh3').style.display = '';
+			$('sh4').style.display = '';
+			$('sh5').style.display = '';
+			$('sh6').style.display = '';
+			$('sh7').style.display = '';
+			$('sh8').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = 'none';
+			$('sh3').style.display = 'none';
+			$('sh4').style.display = 'none';
+			$('sh5').style.display = 'none';
+			$('sh6').style.display = 'none';
+			$('sh7').style.display = 'none';
+			$('sh8').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">图片上传设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">图片上传:</span><br />
+				<span class="smalltxt">是否允许作家在发表作品的时候上传图片。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="popen_1"><input type="radio" name="popen" id="popen_1" value="1"{C_open_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="popen_0"><input type="radio" name="popen" id="popen_0" value="0"{C_open_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">图片大小(单位: Byte(s)):</span><br />
+				 &nbsp;<span class="smalltxt">设置允许上传图片的最大限制，1024 Bytes 为 1 KBtyes，当前服务器上传最大限制为<span style="color: Blue;">{upload_max_filesize}</span>。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="psize" id="psize" value="{C_size}" />
+				<select onchange="javascript:setValue('psize', this.value);">
+<!-- BEGIN size -->
+					<option value="{v}">{t}</option>
+<!-- END size -->
+				</select>
+			</div>
+		</div>
+		<div class="b0" id="sh2"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">图片类型:</span><br />
+				 &nbsp;<span class="smalltxt">设置允许上传图片的格式，可多选。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pformat_1"><input type="checkbox" name="pformat[]" id="pformat_1" value="1"{C_format_1} /> PNG 格式图片</label><br />
+				<label for="pformat_2"><input type="checkbox" name="pformat[]" id="pformat_2" value="2"{C_format_2} /> GIF 格式图片</label><br />
+				<label for="pformat_3"><input type="checkbox" name="pformat[]" id="pformat_3" value="4"{C_format_3} /> JPEG 格式图片</label><br />
+				<label for="pformat_4"><input type="checkbox" name="pformat[]" id="pformat_4" value="8"{C_format_4} /> BMP 格式图片</label><br />
+			</div>
+		</div>
+		<div class="b1" id="sh3"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印:</span><br />
+				 &nbsp;<span class="smalltxt">对上传的图片附件自动加水印，并可设置水印的位置。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pwatermark_0"><input type="radio" name="pwatermark" id="pwatermark_0" value="0"{C_watermark_0} />关闭</label><br />
+				<label for="pwatermark_1"><input type="radio" name="pwatermark" id="pwatermark_1" value="1"{C_watermark_1} />左上</label> &nbsp;
+				<label for="pwatermark_2"><input type="radio" name="pwatermark" id="pwatermark_2" value="2"{C_watermark_2} />正上</label> &nbsp;
+				<label for="pwatermark_3"><input type="radio" name="pwatermark" id="pwatermark_3" value="3"{C_watermark_3} />右上</label><br />
+				<label for="pwatermark_4"><input type="radio" name="pwatermark" id="pwatermark_4" value="4"{C_watermark_4} />正左</label> &nbsp;
+				<label for="pwatermark_5"><input type="radio" name="pwatermark" id="pwatermark_5" value="5"{C_watermark_5} />正中</label> &nbsp;
+				<label for="pwatermark_6"><input type="radio" name="pwatermark" id="pwatermark_6" value="6"{C_watermark_6} />正右</label><br />
+				<label for="pwatermark_7"><input type="radio" name="pwatermark" id="pwatermark_7" value="7"{C_watermark_7} />左下</label> &nbsp;
+				<label for="pwatermark_8"><input type="radio" name="pwatermark" id="pwatermark_8" value="8"{C_watermark_8} />正下</label> &nbsp;
+				<label for="pwatermark_9"><input type="radio" name="pwatermark" id="pwatermark_9" value="9"{C_watermark_9} />右下</label>
+			</div>
+		</div>
+		<div class="b0" id="sh4"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印方式:</span><br />
+				 &nbsp;<span class="smalltxt">使用文字或图片作为水印。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pwatermark_type_1"><input type="radio" name="pwatermark_type" id="pwatermark_type_1" value="1"{C_watermark_type_yes} />文字</label> &nbsp;
+				<label for="pwatermark_type_0"><input type="radio" name="pwatermark_type" id="pwatermark_type_0" value="0"{C_watermark_type_no} />图片</label>
+			</div>
+		</div>
+		<div class="b1" id="sh5"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印文字:</span><br />
+				 &nbsp;<span class="smalltxt">该文字将附加在上传的图片上。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pwatermark_text" value="{C_watermark_text}" /></div>
+		</div>
+		<div class="b0" id="sh6"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印文字颜色:</span><br />
+				 &nbsp;<span class="smalltxt">水印文字的颜色。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="pwatermark_color" id="pwatermark_color" value="{C_watermark_color}" />
+				<select onchange="$('pwatermark_color').value = this.value;">
+					<option value="{C_watermark_color}">&nbsp;恢复当前设置&nbsp;</option>
+<!-- BEGIN color -->
+					<option value="{C_color}" style="background: {C_hexcolor};">&nbsp;{C_colorname}&nbsp;</option>
+<!-- END color -->
+				</select>
+			</div>
+		</div>
+		<div class="b1" id="sh7"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印图片:</span><br />
+				 &nbsp;<span class="smalltxt">该图片将附加在上传的图片上。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pwatermark_image" value="{C_watermark_image}" /></div>
+		</div>
+		<div class="b0" id="sh8"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<span style="font-weight: bold;">水印图片透明度:</span><br />
+				 &nbsp;<span class="smalltxt">水印图片的透明度。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" name="pwatermark_alpha" value="{C_watermark_alpha}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

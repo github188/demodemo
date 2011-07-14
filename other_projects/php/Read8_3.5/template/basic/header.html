@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset={G_encode}" />
+<meta name="Keywords" content="{keywords}" />
+<!-- IF description --><meta name="Description" content="{description}" /><!-- ENDIF -->
+<meta name="Author" content="Read8 Group & AOKOSOFT" />
+<meta name="Copyright" content="Copyright (C) 2004 - 2008 AOKOSOFT Inc." />
+<title>{title}</title>
+<base href="{G_siteurl}/" />
+<link rel="icon" href="favicon.ico" />
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="Bookmark" href="favicon.ico" /> 
+<link rel="stylesheet" type="text/css" media="all" href="template/{G_tpldir}/basic.css" />
+<script type="text/javascript" src="include/js/common.js"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+	var G_siteurl = '{G_siteurl}';
+
+	function setTab(area,id1,id2) {
+		var tabArea=document.getElementById(area);
+		var contents=tabArea.childNodes;
+		for(i=0; i<contents.length; i++) {
+			if(contents[i].className=='rd8_catecon'){contents[i].style.display='none';}
+		}
+		document.getElementById(id1).style.display='block';
+	
+		var tabs=document.getElementById('rd8_tabs').getElementsByTagName('li');
+		for(i=0; i<tabs.length; i++) {tabs[i].className='';}
+		document.getElementById(id2).className='rd8_selectedtab';
+	}	
+	function recsetTab(area,id1,id2) {
+		var tabArea=document.getElementById(area);
+		var contents=tabArea.childNodes;
+		for(i=0; i<contents.length; i++) {
+			if(contents[i].className=='rd8_rectabcon'){contents[i].style.display='none';}
+		}
+		document.getElementById(id1).style.display='block';
+	
+		var tabs=document.getElementById('rd8_rectabs').getElementsByTagName('li');
+		for(i=0; i<tabs.length; i++) {tabs[i].className='';}
+		document.getElementById(id2).className='rd8_selectedtab';
+	}
+	function newssetTab(area,id1,id2) {
+		var tabArea=document.getElementById(area);
+		var contents=tabArea.childNodes;
+		for(i=0; i<contents.length; i++) {
+			if(contents[i].className=='rd8_newscon'){contents[i].style.display='none';}
+		}
+		document.getElementById(id1).style.display='block';
+	
+		var tabs=document.getElementById('rd8_newstabs').getElementsByTagName('li');
+		for(i=0; i<tabs.length; i++) {tabs[i].className='';}
+		document.getElementById(id2).className='rd8_selectedtab';
+	}
+//--><!]]></script>
+</head>
+
+<body>
+<!--主体开始 -->
+<div id="rd8_main">	
+	<!--头部开始 -->
+	<div id="rd8_header">
+		<!--网站LOGO -->
+		<a href=""><img src="images/logo.png" class="rd8_logo" alt="{G_sitename}" /></a>
+		<div class="rd8_nav">
+			<!--网站导航栏 -->
+			<a href="">网站首页</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="viplib.php">电子书店</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="novellib.php">大众书库</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="my/profile.php">用户面板</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="my/favorite.php">我的书架</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="my/pay.php">帐户充值</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="author/new.php">新建作品</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="author/book.php">我的作品</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="author/column.php">会 客 室</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{G_bbsurl}">交流论坛</a><br />
+			<!-- BEGIN novel_cats --><!-- IF II<="14" --><a href="index.php?nc={id}">{title}</a><!-- IF B -->&nbsp;&nbsp;|&nbsp;&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- END novel_cats --><!-- BEGIN story_cats --><a href="index.php?sc={id}">{title}</a><!-- IF B --><!-- IF II<"6" -->&nbsp;&nbsp;|&nbsp;&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- END story_cats --><br />
+			<a href="novellib.php?finished=1">全本文章</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=total&amp;types=click">总点击榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=month&amp;types=click">月点击榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=week&amp;types=click">周点击榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=total&amp;types=commend">总推荐榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=month&amp;types=commend">月推荐榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="rank.php?times=week&amp;types=commend">周推荐榜</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="novellib.php?oderbycreate=1">最新入库</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#">最近更新</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#">字数排行</a>
+		</div>
+	</div>
+	<!--头部结束 -->
+		<!--广告栏 -->
+		<!--img src="images/banner.gif" class="rd8_banner"/>
+		<img src="images/banner.gif" class="rd8_banner"/-->

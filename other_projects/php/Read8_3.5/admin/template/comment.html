@@ -1,0 +1,36 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>为了预防恶意评论，可在后台过滤设定中增加相应关键词，或在常规选项中增加评论验证码限制。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="cmt">
+	<div class="adminborder">
+		<div class="adminhead">评论列表</div>
+<!-- IF comments -->
+		<div class="col0">
+			<table>
+				<tr class="colt" style="text-align: center;">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />删?</td>
+					<td align="left">&nbsp;评论标题 (鼠标悬停查看内容)</td>
+					<td>评论人</td>
+					<td>所评书籍</td>
+					<td>评论时间</td>
+				</tr>
+	<!-- BEGIN comments -->
+				<tr class="col{A}" id="crow{I}" align="center" onclick="javascript:HighLight.click('comment{I}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'comment{I}');">
+					<td><input type="checkbox" name="cids[{I}]" id="comment{I}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('crow{I}', this.id);" /><input type="hidden" name="bids[{I}]" value="{bid}" /></td>
+					<td align="left"><a href="{InfoURL}#comment{id}" title="{content}" target="_blank"><!-- IF title -->{title}<!-- ELSE -->无标题评论<!-- ENDIF --></a></td>
+					<td>{username}</td>
+					<td><a href="{InfoURL}" target="_blank">《{book_title}》</a></td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+				</tr>
+	<!-- END comments -->
+			</table>
+		</div>
+			<div class="bt"><input type="submit" value=" 删 除 " /></div>
+			<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">尚未有用户发表评论</div>
+<!-- ENDIF -->
+	</div>
+	</form>

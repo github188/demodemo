@@ -1,0 +1,56 @@
+	<div id="rd8_center">			
+		<h1 class="rd8_subguide">您正在浏览：<acronym>{sc_title}</acronym>频道</h1>	
+			<div id="rd8_left">
+				<div class="rd8_subnav">
+<!-- BEGIN contents -->
+					<a href="category.php?subject={sc}&amp;content={id}">{title}</a> &nbsp;
+<!-- END contents -->
+					<br />
+					<strong>按首字母：</strong><br />
+<!-- BEGIN initial -->
+					<a href="category.php?subject={sc}&amp;initial={v}">[{v}]</a>&nbsp;
+<!-- END initial -->
+					<br />
+					<strong>按字数：</strong><br />
+<!-- BEGIN words -->
+					<a href="category.php?subject={sc}&amp;words={v}">[{v}]</a>&nbsp;
+<!-- END words -->
+				</div>				
+			</div>
+			<div id="rd8_middle">
+				<p class="rd8_catetitle">最新上架</p>
+					<ul>
+<!-- BEGIN novels -->
+						<li><a href="{InfoURL}">{title}</a>      <span class="rd8_lidate">[{lastupdate_DATE_m-d}]</span><span class="rd8_liauthor">{author}</span></li>
+<!-- END novels -->
+					</ul>
+					<small><a href="#">查看所有图书>></a></small>						
+<!--				<p class="rd8_catetitle">最新评论</p>
+					<ul>
+
+						<li><a href="#">[古典] 文学长廊 第一季 《三国演义》 第九十九.. </a>      <span class="rd8_lidate">[03-25]</span>  <span class="rd8_liauthor"> 信周</span></li>
+
+					</ul>	
+					<small><a href="#">查看所有评论>></a></small>	-->
+			</div>
+			<div id="rd8_right">
+				<div class="rd8_canada">
+					<dl>
+						<dt>本类总推荐榜 </dt>
+<!-- BEGIN nc4 -->
+					<dd><a href="{InfoURL}">{title}</a>({vote})</dd>
+<!-- END nc4 -->
+					</dl>
+					<span><a href="rank.php?rid=4">更多&gt;&gt;</a></span>		
+				</div>	
+				<div class="rd8_canada">
+					<dl>
+						<dt>本类总点击榜</dt>
+<!-- BEGIN nc3 -->
+					<dd><a href="{InfoURL}">{title}</a>({click})</dd>
+<!-- END nc3 -->
+					</dl>
+					<span><a href="rank.php?rid=3">更多&gt;&gt;</a></span>
+				</div>	
+			</div>
+	</div>

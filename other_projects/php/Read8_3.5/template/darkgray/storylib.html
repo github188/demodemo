@@ -1,0 +1,45 @@
+	<div id="rd8_center">
+		<div id="rd8_left">
+			<div class="rd8_subnav">
+				<div class="rd8_subject">
+					<dl>
+						<dt>按&nbsp;题&nbsp;材</dt>
+						<!--<dd class="current_dd"><a href="storylib.php?subject=0&amp;content={ncontent}">全部</a></dd>-->
+<!-- BEGIN subjects -->
+						<dd><a href="storylib.php?subject={id}&amp;content={ncontent}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a></dd>
+<!-- END subjects -->
+					</dl>
+				</div>
+				<div class="rd8_contents">
+					<dl>
+						<dt>按&nbsp;内&nbsp;容</dt>
+						<!--<dd class="current_dd"><a href="storylib.php?subject={nsubject}&amp;content=0">全&nbsp;&nbsp;&nbsp;&nbsp;部</a></dd>-->
+<!-- BEGIN contents -->
+						<dd><a href="storylib.php?subject={nsubject}&amp;content={id}"<!-- IF selected --> class="rd8_currentlink" <!-- ENDIF -->>{title}</a> </dd>
+<!-- END contents -->
+					</dl>
+				</div>
+			</div>
+		</div>
+
+		<div id="rd8_right1">
+			<p class="rd8_guide">  当前所在位置：大众书库</p>
+			<table>
+				<tr class="rd8_texture">
+					<td>作品名称</td>
+					<td>类别</td>
+					<td>作者</td>
+					<td>更新时间</td>
+				</tr>
+<!-- BEGIN novels -->
+				<tr class="<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->" onmouseover="this.className='rd8_selectedrow'" onmouseout="this.className='<!-- IF A -->rd8_oddtablerow<!-- ELSE -->rd8_eventablerow<!-- ENDIF -->'">
+					<td><a href="{InfoURL}">《{title}》</a></td>
+					<td>{subject} - {content}</td>
+					<td>{author}</td>
+					<td>{lastupdate_DATE_Y-m-d H:i:s}</td>
+				</tr>
+<!-- END novels -->
+			</table>
+			<div class="rd8_tablebottom">{pagelink}</div>
+		</div>
+	</div>

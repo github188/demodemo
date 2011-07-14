@@ -1,0 +1,39 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>这里可以自定义首页的缓存调用。</li>
+				<li>在 “标识” 文本框中输入一个标示名(只能使用字母或数字),如:qltj ,在“说明”框对该标识进行简要描述,如:强力推荐。然后点击“新增自定义缓存”即可。</li>
+				<li>然后，再输入相应的SQL语句,并根据实际应用选择生成一维或二维数组。点击“完成”即可成功创建该缓存。</li>
+				<li>该自定义缓存状态为“使用中”和“已停用”，点击可相互切换。相应的循环用的模板变量则为“custom_qltj”。</li>
+			</ul>
+		</div>
+	</div>
+
+
+	<form action="?ptype={ptype}&pfile={pfile}&action=insert" method="post">
+	<div class="adminborder">
+		<div class="adminhead">自定义缓存</div>
+		<div class="b0">
+			<table>
+				<tr class="category">
+					<td>标识</td>
+					<td>说明</td>
+					<td>状态</td>
+					<td>管理</td>
+				</tr>
+	<!-- BEGIN caches -->
+				<tr class="col{A}" align="center">
+					<td>{id}</td>
+					<td>{title}</td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=lock&id={id}"><!-- IF active --><span style="color: Green;">使用中</span><!-- ELSE --><span style="color: Red;">已停用</span><!-- ENDIF --></a></td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=edit&id={id}">编辑</a> &nbsp;<a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;id={id}" onclick="return confirm('确定删除吗？');">删除</a></td>
+				</tr>
+	<!-- END caches -->
+				<tr class="col1" align="center">
+					<td align="left" colspan="4">&nbsp;<strong>新增</strong>&nbsp;标识: <input type="text" name="cache" size="10" />&nbsp;说明: <input type="text" name="title" size="30" /> &nbsp;<input type="submit" value=" 新增自定义缓存 " /></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	</form>

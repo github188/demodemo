@@ -1,0 +1,68 @@
+<!-- IF action=="start" -->
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>导入过程由于需要添加静态数据，故耗时与所导入的书籍总容量有关，请耐心等待。</li>
+				<li>程序智能覆盖，故本页可刷新。</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">导入状态</div>
+		<div class="b0"><div id="test" style="font-size: 24px;"></div><div id="dl_info">正在解压并辨识索引文件...</div></div>
+	</div>
+<!-- ELSE -->
+	<div class="adminborder">
+		<div class="adminhead">说明</div>
+		<div class="b0">
+			<ul>
+				<li>本程序可将自己备份或他人提供的读吧zip备份文件导入书库。</li>
+				<li>凡是本站已有同名的书籍，本程序将自动选择二者中章节数多的书籍。</li>
+			</ul>
+		</div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=start&amp;obnocallback=1" method="post">
+	<div class="adminborder">
+		<div class="adminhead">书籍导入</div>
+		<div class="b0">
+			<div style="width: 40%;padding-left: 1%;"><label><input type="radio" name="from" value="server" checked="checked" onclick="this.form.datafile_server.disabled=!this.checked;this.form.datafile.disabled=this.checked" />从服务器(填写文件名,位于data/backup下):</div>
+			<div style="width: 58%;"><input type="text" size="40" name="datafile_server" value="" /></label></div>
+		</div>
+		<div class="b1">
+			<div style="width: 40%;padding-left: 1%;"><label><input type="radio" name="from" value="local" onclick="this.form.datafile_server.disabled=this.checked;this.form.datafile.disabled=!this.checked" />从本地文件:</div>
+			<div style="width: 58%;"><input type="file" size="29" name="datafile" disabled="disabled" /></label></div>
+		</div>
+		<div class="bt"><input type="submit" value=" 导 入 " /></div>
+	</div>
+	</form>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete" method="post" id="{pfile}">
+	<div class="adminborder">
+		<div class="adminhead">书籍备份记录</div>
+		<div class="cat" style="text-align: center;">
+			<div style="width: 10%;"><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" />全选</div>
+			<div style="width: 20%;">文件名</div>
+			<div style="width: 15%;">版本</div>
+			<div style="width: 20%;">时间</div>
+			<div style="width: 15%;">类型</div>
+			<div style="width: 12%;">大小</div>
+			<div style="width: 7%;">操作</div>
+		</div>
+		<!-- BEGIN backuplist -->
+			<div class="b{A}" onmouseover="this.className='b2'" onmouseout="this.className='b{A}'" style="text-align: center;">
+				<div style="width: 10%;"><input type="checkbox" name="delfilearr[]" value="{C_filename}" /></div>
+				<div style="width: 20%;"><a href="data/backup/{C_filename}">{C_filename}</a></div>
+				<div style="width: 15%;">{C_version}</div>
+				<div style="width: 20%;">{C_dateline}</div>
+				<div style="width: 15%;">{C_type}</div>
+				<div style="width: 12%;">{C_size}</div>
+				<div style="width: 7%;"><a href="?ptype={ptype}&amp;pfile={pfile}&amp;action=start&amp;obnocallback=1&amp;from=server&amp;datafile_server={C_filename}">导入</a></div>
+			</div>
+		<!-- END backuplist -->
+		<div class="bt"><input type="submit" value=" 删 除 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

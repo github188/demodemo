@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>字体</TITLE>
+<META content="MSHTML 6.00.2900.2995" name=GENERATOR>
+<META content="" name=Author>
+<META content="" name=Keywords>
+<META content="" name=Description>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<STYLE type=text/css>BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; OVERFLOW: hidden; PADDING-TOP: 1px
+}
+.Aout {
+	BORDER-RIGHT: #fff 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #fff 1px solid; PADDING-LEFT: 2px; FONT-SIZE: 14px; PADDING-BOTTOM: 2px; BORDER-LEFT: #fff 1px solid; WIDTH: 98%; COLOR: #555; PADDING-TOP: 2px; BORDER-BOTTOM: #fff 1px solid
+}
+.Aover {
+	BORDER-RIGHT: #999 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #999 1px solid; PADDING-LEFT: 2px; FONT-SIZE: 14px; BACKGROUND: #eee; PADDING-BOTTOM: 2px; BORDER-LEFT: #999 1px solid; WIDTH: 98%; COLOR: #000; PADDING-TOP: 2px; BORDER-BOTTOM: #999 1px solid
+}
+</STYLE>
+
+<SCRIPT type=text/javascript>
+function setCmd(_sSort, _sFont){
+	if(window.Event){
+		var oRTE = opener.getFrameNode(opener.sRTE);
+	}else {
+		var oRTE = dialogArguments.getFrameNode(dialogArguments.sRTE);
+	}
+	oRTE.focus();
+	oRTE.document.execCommand(_sSort, false, _sFont);
+	oRTE.focus();
+	window.close();
+}
+function _over(o) {
+	o.className="Aover";
+}
+function _out(o) {
+	o.className="Aout";
+}
+</SCRIPT>
+</HEAD>
+<BODY>
+<CENTER>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: 黑体" 
+onclick="setCmd('FontName', '黑体')" onmouseout=_out(this)>黑体</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: 隶书" 
+onclick="setCmd('FontName', '隶书')" onmouseout=_out(this)>隶书</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: 宋体" 
+onclick="setCmd('FontName', '宋体')" onmouseout=_out(this)>宋体</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: 楷体_GB2312" 
+onclick="setCmd('FontName', '楷体_GB2312')" onmouseout=_out(this)>楷体</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: 幼圆" 
+onclick="setCmd('FontName', '幼圆')" onmouseout=_out(this)>幼圆</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: Arial" 
+onclick="setCmd('FontName', 'Arial')" onmouseout=_out(this)>Arial</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: Courier New" 
+onclick="setCmd('FontName', 'Courier New')" onmouseout=_out(this)>Courier 
+New</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: Georgia" 
+onclick="setCmd('FontName', 'Georgia')" onmouseout=_out(this)>Georgia</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: Times New Roman" 
+onclick="setCmd('FontName', 'Times New Roman')" onmouseout=_out(this)>Times New 
+Roman</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: Verdana" 
+onclick="setCmd('FontName', 'Verdana')" onmouseout=_out(this)>Verdana</DIV>
+<DIV class=Aout onmouseover=_over(this) style="FONT-FAMILY: impact" 
+onclick="setCmd('FontName', 'impact')" 
+onmouseout=_out(this)>impact</DIV></CENTER></BODY></HTML>

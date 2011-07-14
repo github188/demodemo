@@ -1,0 +1,105 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0">
+			<ul>
+				<li>作品总管可以管理所有作品。</li>
+				<li>删除的数量限制在 100 以内。</li>
+			</ul>
+		</div>
+	</div>
+
+<!-- IF C_user_id -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder">
+		<div class="adminhead">编辑录入员<input type="hidden" name="id" value="{C_user_id}" /></div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">作品总管:</div>
+			<div style="width: 68%;">
+				<label for="overstep_yes"><input type="radio" name="overstep" id="overstep_yes" value="1"<!-- IF overstep=="1" --> checked="checked"<!-- ENDIF --> /> 是</label> &nbsp;
+				<label for="overstep_no"><input type="radio" name="overstep" id="overstep_no" value="0"<!-- IF overstep=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新建作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_add_yes"><input type="radio" name="novel_add" id="novel_add_yes" value="1"<!-- IF novel_add=="1" --> checked="checked"<!-- ENDIF --> /> 是</label> &nbsp;
+				<label for="novel_add_no"><input type="radio" name="novel_add" id="novel_add_no" value="0"<!-- IF novel_add=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">编辑作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_edit_yes"><input type="radio" name="novel_edit" id="novel_edit_yes" value="1"<!-- IF novel_edit=="1" --> checked="checked"<!-- ENDIF --> /> 是</label> &nbsp;
+				<label for="novel_edit_no"><input type="radio" name="novel_edit" id="novel_edit_no" value="0"<!-- IF novel_edit=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">删除作品:</div>
+			<div style="width: 68%;">
+				<label for="novel_del_yes"><input type="radio" name="novel_del" id="novel_del_yes" value="-1"<!-- IF novel_del=="-1" --> checked="checked"<!-- ENDIF --> /> 不限数量</label> &nbsp;
+				<label for="novel_del_limit"><input type="radio" name="novel_del" id="novel_del_limit" value="1"<!-- IF novel_del>"0" --> checked="checked"<!-- ENDIF --> /> 每天最多可删除 </label><input type="text" name="novel_del_num" value="<!-- IF novel_del>"0" -->{novel_del}<!-- ELSE -->5<!-- ENDIF -->" size="5" /> 本 &nbsp;
+				<label for="novel_del_no"><input type="radio" name="novel_del" id="novel_del_no" value="0"<!-- IF novel_del=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">新建章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_add_yes"><input type="radio" name="chapter_add" id="chapter_add_yes" value="1"<!-- IF chapter_add=="1" --> checked="checked"<!-- ENDIF --> /> 是</label> &nbsp;
+				<label for="chapter_add_no"><input type="radio" name="chapter_add" id="chapter_add_no" value="0"<!-- IF chapter_add=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">编辑章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_edit_yes"><input type="radio" name="chapter_edit" id="chapter_edit_yes" value="1"<!-- IF chapter_edit=="1" --> checked="checked"<!-- ENDIF --> /> 是</label> &nbsp;
+				<label for="chapter_edit_no"><input type="radio" name="chapter_edit" id="chapter_edit_no" value="0"<!-- IF chapter_edit=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 30%;padding-right: 1%;text-align: right;">删除章节:</div>
+			<div style="width: 68%;">
+				<label for="chapter_del_yes"><input type="radio" name="chapter_del" id="chapter_del_yes" value="-1"<!-- IF chapter_del=="-1" --> checked="checked"<!-- ENDIF --> /> 不限数量</label> &nbsp;
+				<label for="chapter_del_limit"><input type="radio" name="chapter_del" id="chapter_del_limit" value="1"<!-- IF chapter_del>"0" --> checked="checked"<!-- ENDIF --> /> 每天最多可删除 </label><input type="text" name="chapter_del_num" value="<!-- IF chapter_del>"0" -->{chapter_del}<!-- ELSE -->5<!-- ENDIF -->" size="5" /> 章 &nbsp;
+				<label for="chapter_del_no"><input type="radio" name="chapter_del" id="chapter_del_no" value="0"<!-- IF chapter_del=="0" --> checked="checked"<!-- ENDIF --> /> 否</label>
+			</div>
+		</div>
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ELSE -->
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="user">
+	<div class="adminborder">
+		<div class="adminhead">录入员列表</div>
+		<div class="col0">
+			<table>
+				<tr class="category" align="center">
+					<td align="left">&nbsp;用户名</td>
+					<td>作品总管</td>
+					<td>新建书籍</td>
+					<td>编辑书籍</td>
+					<td>删除书籍</td>
+					<td>新建章节</td>
+					<td>编辑章节</td>
+					<td>删除章节</td>
+					<td>管理选项</td>
+				</tr>
+	<!-- BEGIN itemlist -->
+				<tr class="col{A}" onmouseover="this.className='col2'" onmouseout="this.className='col{A}'" style="text-align: center;">
+					<td align="left">&nbsp;{username}</td>
+					<td><!-- IF overstep --><span style="color: Red;">是</span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF novel_add --><span style="color: Red;">是</span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF novel_edit --><span style="color: Red;">是</span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF novel_del --><span style="color: Red;"><!-- IF novel_del>"0" -->每天最多 {novel_del} 本<!-- ELSE --><span style="text-decoration: blink;">不限数量</span><!-- ENDIF --></span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF chapter_add --><span style="color: Red;">是</span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF chapter_edit --><span style="color: Red;">是</span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><!-- IF chapter_del --><span style="color: Red;"><!-- IF chapter_del>"0" -->每天最多 {chapter_del} 章<!-- ELSE --><span style="text-decoration: blink;">不限数量</span><!-- ENDIF --></span><!-- ELSE --><span style="color: Green;">否</span><!-- ENDIF --></td>
+					<td><a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}">编辑</a> &nbsp;<a href="javascript:cfmoption('确实要删除该录入员吗？', '?ptype={ptype}&pfile={pfile}&id={id}&action=delete');">删除</a></td>
+				</tr>
+	<!-- END itemlist -->
+			</table>
+		</div>
+	<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="<!-- IF C_user_id -->update<!-- ELSE -->delete<!-- ENDIF -->" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>
+<!-- ENDIF -->

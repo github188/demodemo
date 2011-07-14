@@ -1,0 +1,73 @@
+<script type="text/javascript">
+	function showhide1(show){
+		if(show) {
+			$('sh1').style.display = '';
+			$('sh2').style.display = '';
+			$('sh3').style.display = '';
+		}else {
+			$('sh1').style.display = 'none';
+			$('sh2').style.display = 'none';
+			$('sh3').style.display = 'none';
+		}
+	}
+</script>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">书籍评论设置</div>
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<strong>评论功能</strong><br />
+				<span class="smalltxt">开启评论功能，以下设置才能生效，关闭该功能，不影响原有评论的显示。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="popen_1"><input type="radio" name="popen" id="popen_1" value="1"{C_open_yes} onclick="javascript:showhide1(1);" />开启</label> &nbsp;
+				<label for="popen_0"><input type="radio" name="popen" id="popen_0" value="0"{C_open_no} onclick="javascript:showhide1(0);" />关闭</label>
+			</div>
+		</div>
+		<div class="b1" id="sh1"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>章节评论(暂无用)</strong><br />
+				 &nbsp;<span class="smalltxt">当开启该功能时，在每章下也可以对本章节进行评论，这些评论也会显示在书籍的评论中。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pchapter_1"><input type="radio" name="pchapter" id="pchapter_1" value="1"{C_chapter_yes} />开启</label> &nbsp;
+				<label for="pchapter_0"><input type="radio" name="pchapter" id="pchapter_0" value="0"{C_chapter_no} />关闭</label>
+			</div>
+		</div>
+		<div class="b0" id="sh2"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>游客评论</strong><br />
+				 &nbsp;<span class="smalltxt">是否允许游客对书籍或章节发表评论。</span>
+			</div>
+			<div style="width: 38%;">
+				<label for="pguest_1"><input type="radio" name="pguest" id="pguest_1" value="1"{C_guest_yes} />开启</label> &nbsp;
+				<label for="pguest_0"><input type="radio" name="pguest" id="pguest_0" value="0"{C_guest_no} />关闭</label>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function checkLength(){
+				var minlength = intval($('minlength').value);
+				var maxlength = intval($('maxlength').value);
+				if(minlength < maxlength) {
+					$('lengthinfo').innerHTML = '';
+				}else {
+					$('lengthinfo').innerHTML = '最少字数应小于最多字数';
+				}
+			}
+		</script>
+		<div class="b1" id="sh3"<!-- IF C_open_no --> style="display: none;"<!-- ENDIF -->>
+			<div style="width: 60%;padding-left: 1%;">
+				 &nbsp;<strong>评论字数限制</strong><br />
+				 &nbsp;<span class="smalltxt">评论的字数将被限制于 最少 - 最多 之间，可简单防止无意义评论，一个汉字按2个长度处理。</span>
+			</div>
+			<div style="width: 38%;">
+				<input type="text" name="pminlength" id="minlength" value="{C_minlength}" onchange="javascript:checkLength();" onkeyup="javascript:checkLength();" onblur="javascript:this.value = intval(this.value);checkLength();" size="10" /> - <input type="text" name="pmaxlength" id="maxlength" value="{C_maxlength}" onchange="javascript:checkLength();" onkeyup="javascript:checkLength();" onblur="javascript:this.value = intval(this.value);checkLength();" size="10" /><br />
+				<span id="lengthinfo" style="color: Red;"></span>
+			</div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div>
+	</form>

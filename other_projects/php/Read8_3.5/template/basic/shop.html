@@ -1,0 +1,38 @@
+	<div class="rd8_fullborder">
+		<div class="rd8_head">收银台</div>
+		<div class="rd8_col0">
+			<form action="shop.php" method="post">
+				<table>
+					<tr class="rd8_category" align="center">
+						<td>章节名称</td>
+						<td>发布时间</td>
+						<td>字数</td>
+						<td>价格</td>
+						<td>操作</td>
+					</tr>
+<!-- BEGIN chapters -->
+					<tr class="rd8_col{A}" align="center">
+						<td>{chapter.title}</td>
+						<td>{chapter.dateline_DATE_Y-m-d H:i:s}</td>
+						<td>{chapter.words}</td>
+						<td>{price}</td>
+						<td class="rd8_td">
+							<a href="cart.php?buyID={buyID}">删除</a>
+						</td>
+					</tr>
+<!-- END chapters -->
+					<tr>
+						<td class="rd8_colt" align="center" colspan="8">
+							<input type="submit" value=" 购买并开始阅读 " /><input type="hidden" name="buy" value="1" />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<!-- IF pagelink --><div class="rd8_colt">{pagelink}</div><!-- ENDIF -->
+	</div>
+
+
+
+
+

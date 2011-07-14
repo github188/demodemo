@@ -1,0 +1,65 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>如该作品的作家是驻站作家可点击进入作家专栏。</li></ul></div>
+	</div>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=update" method="post">
+	<div class="adminborder">
+		<div class="adminhead"><!-- IF id -->编辑<!-- ELSE -->新增<!-- ENDIF -->作家访谈</div>
+		<div class="b1">
+			<div style="width: 15%;padding-left: 1%;font-weight: bold;">笔名:</div>
+			<div style="width: 83%;">
+				<!-- IF id -->{pseudonym}<!-- ELSE --><input type="text" name="pseudonym" value="{pseudonym}" /><!-- ENDIF -->
+			</div>
+		</div>
+		<div class="b0">
+			<div style="width: 15%;padding-left: 1%;font-weight: bold;">标题:</div>
+			<div style="width: 83%;">
+				<input type="text" name="title" value="{title}" style="width: 80%;" />
+			</div>
+		</div>
+		<div class="b1">
+			<div style="width: 15%;padding-left: 1%;font-weight: bold;">内容:</div>
+			<div style="width: 83%;">
+				<textarea name="content" rows="15" style="width: 90%;">{content}</textarea><br />
+			</div>
+		</div>
+		<div class="bt">
+			<div style="text-align: center;"><input type="hidden" name="id" value="{id}" /><input type="submit" value=" <!-- IF id -->编辑<!-- ELSE -->新增<!-- ENDIF --> " /></div>
+		</div>
+	</div>
+	</form>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}&amp;action=delete" method="post" id="interview">
+	<div class="adminborder">
+		<div class="adminhead">作家访谈管理</div>
+<!-- IF interviews -->
+		<div class="b0">
+			<table>
+				<tr class="category">
+					<td><input type="checkbox" onclick="javascript:checkall(this.form.id,this);" title="全选" />全</td>
+					<td>作家</td>
+					<td>标题</td>
+					<td>时间</td>
+					<td>操作</td>
+				</tr>
+	<!-- BEGIN interviews -->
+				<tr class="col{A}" align="center" id="iv{id}" onclick="javascript:HighLight.click('ivi{id}');" onmouseover="javascript:HighLight.over(this.id);" onmouseout="javascript:HighLight.out(this.id, 'ivi{id}');">
+					<td><input type="checkbox" name="ivs[]" id="ivi{id}" value="{id}" onclick="javascript:HighLight.click(this.id);" onchange="javascript:HighLight.change('iv{id}', this.id);" /></td>
+					<td><a href="../author.php?aid={author_id}" target="_blank">{pseudonym}</a></td>
+					<td><a href="../interview.php?id={id}" target="_blank">{title}</a></td>
+					<td>{dateline_DATE_Y-m-d H:i:s}</td>
+					<td>
+						<a href="?ptype={ptype}&amp;pfile={pfile}&amp;id={id}"><span style="color: Blue;">编辑</span></a> &nbsp;<a href="javascript:cfmoption('你确认删除此访谈吗？','?ptype={ptype}&amp;pfile={pfile}&amp;action=delete&amp;ivs[]={id}')"><span style="color: Red;">删除</span></a>
+					</td>
+				</tr>
+	<!-- END interviews -->
+			</table>
+		</div>
+			<div class="bt"><input type="submit" value=" 删 除 " onclick="if(!confirm('你确认批量删除这些选定的书吗？')) return false;"></div>
+			<!-- IF pagelink --><div class="cat">{pagelink}</div><!-- ENDIF -->
+<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">当前没有访谈数据</div>
+<!-- ENDIF -->
+	</div>
+	</form>

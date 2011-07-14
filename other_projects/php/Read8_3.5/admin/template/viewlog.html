@@ -1,0 +1,36 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>出于安全考虑，此日志仅供查看不可删除。</li></ul></div>
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">日志列表</div>
+		<!-- IF itemlist -->
+			<div class="cat" style="text-align: center;">
+				<div style="width: 15%;">操作人</div>
+				<div style="width: 55%;">操作内容</div>
+				<div style="width: 15%;">时间</div>
+				<div style="width: 14%;">IP</div>
+			</div>
+			<!-- BEGIN itemlist -->
+				<div class="b{A}" onmouseover="this.className='b2'" onmouseout="this.className='b{A}'">
+					<div style="width: 14%;padding-left: 1%;"><a href="profile.php?target={C_username}" title="点击查看资料" target="_blank">{C_username}</a></div>
+					<div style="width: 55%;">{C_actlog_act}</div>
+					<div style="width: 15%;">{C_actlog_time}</div>
+					<div style="width: 14%;">{C_actlog_ip}</div>
+				</div>
+			<!-- END itemlist -->
+			<!-- IF C_pagelink --><div class="cat">{C_pagelink}</div><!-- ENDIF -->
+		<!-- ELSE -->
+			<div class="b0" style="width: 99%;padding-left: 1%;">没有日志记录</div>
+		<!-- ENDIF -->
+	</div>
+
+	<div class="adminborder">
+		<div class="adminhead">操作人搜索</div>
+		<div class="b0">
+			<form action="" method="get">
+				<div style="width: 99%;padding-left: 1%;">请输入要搜索的人名: <input type="text" name="thename" value="{C_thename}" /> <input type="submit" value="搜索" /><input type="hidden" name="ptype" value="{ptype}" /><input type="hidden" name="pfile" value="{pfile}" /></div>
+			</form>
+		</div>
+	</div>
