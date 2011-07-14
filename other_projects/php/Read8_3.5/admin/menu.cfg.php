@@ -22,6 +22,7 @@ function acpcategorys(){
 		'story',
 		//'database',
 		'user',
+                'financial',
 		//'style',
 		'tools',
 		'external',
@@ -194,7 +195,19 @@ function acpmenu(){
 				'download_rule',
 			),
 		),
-	);
+		'financial' => array(
+			'income' => array(
+				'income_error_fix',
+				'income_pay_list',
+				'income_user_pay',
+			),
+                       'spend' => array(
+				'author_charge',
+				'author_balance',
+			),
+
+		),
+);
 }
 
 function acpdefaultmenu(){

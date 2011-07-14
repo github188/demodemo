@@ -18,6 +18,7 @@ $Lang = array(
 	'admin_category_tools' => '系统工具',
 	'admin_category_external' => '扩展设置',
 	'admin_category_official' => '官方互动',
+	'admin_category_financial' => '财务管理',
 
 	'admin_menu_key_shortcut' => '快捷操作',
 	'admin_menu_key_sysfunc' => '系统功能',
@@ -42,6 +43,14 @@ $Lang = array(
 	'admin_menu_key_api' => '通行证设置',
 	'admin_menu_key_modules' => '模块管理',
 	'admin_menu_key_official' => '官方互动',
+	'admin_menu_key_income' => '收入管理',
+	'admin_menu_key_spend' => '支出管理',
+
+	'admin_menu_income_user_pay' => '用户消费记录',
+	'admin_menu_income_pay_list' => '用户充值记录',
+	'admin_menu_income_error_fix' => '用户充值处理',
+	'admin_menu_author_charge' => '作家收入',
+	'admin_menu_author_balance' => '作家结帐',
 
 	'admin_menu_home' => '后台首页',
 
