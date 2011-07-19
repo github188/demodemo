@@ -265,6 +265,11 @@ public class MasterServerServlet extends BaseRouteServlet{
 		static_serve("org/goku/master/statics/help_doc.txt", TEXT, response);
 	}
 
+	public void help_tables(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		static_serve("org/goku/master/statics/db_tables.txt", TEXT, response);
+	}
+	
 	public void version(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().println(Version.getName() + " " + Version.getVersion());
