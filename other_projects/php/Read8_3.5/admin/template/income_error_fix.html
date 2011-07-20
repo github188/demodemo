@@ -1,0 +1,66 @@
+	<table>
+		<tr>
+			<td width="65%" valign="top">
+	<div class="adminborder" style="width: 100%;background:none;border:none;">
+		<div class="admin_about" style="width: 97%;margin-top:0px;">
+			<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+			<div class="b0">
+				<ul>
+					<li>处理用户充值的异常情况。</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+			</td>
+			<td width="1%">&nbsp;</td>
+			<td>
+
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post">
+	<div class="adminborder" style="width:100%;background:none;border:none;">
+		<div class="adminhead2" style="width:100%;"><li class="img_sleft">查找用户</li><li class="img_right"></li></div>
+		<div class="b0" style="width:99.2%;border-left:1px solid #CCEBFD;border-right:1px solid #CCEBFD;margin-top:-14px;">
+			<div style="width: 40%;padding-left: 1%;">用户名:</div>
+			<div style="width: 58%;"><input type="text" name="thename" size="20" maxlength="20" value="{thename}" /></div>
+		</div>
+		<div class="b0" style="width:73.5%;text-align:cener;border:1px solid #CCEBFD;margin-top:0px;padding-left:70px;">
+				<input style="float:left" type="submit" value=" 提 交 " /> &nbsp; &nbsp;<input type="reset" value=" 重 置 " />
+		</div>
+
+        </div>
+	</form>
+
+			</td>
+		</tr>
+	</table>
+
+
+<div class='adminborder'>
+               <div class="adminhead">异常充值记录</div>
+                <div class="col0">
+                        <table>
+                                <tr class="category" align="center">
+                                        <td>金额</td>
+                                        <td>虚拟币</td>
+                                        <td>操作时间</td>
+                                        <td>状态</td>
+                                        <td>操作</td>
+                                </tr>
+<!-- IF records -->
+<!-- BEGIN records -->
+                                <tr class="col{A}" align='center'> 
+                                        <td>{price}</td>
+                                        <td>{vmoney}</td>
+                                        <td>{dateline_DATE_Y-m-d H:i:s}</td>
+                                        <td><!-- IF suctime -->成功于 {suctime_DATE_Y-m-d H:i:s}<!-- ELSE -->尚未成功<!-- ENDIF --></td>
+                                        <td>
+                                          <a href="">手动充值</a>&nbsp;&nbsp;
+                                          <a href="">忽略</a>&nbsp;&nbsp;
+                                        </td>
+                                </tr>
+<!-- END records -->
+<!-- ELSE -->
+                                <tr style="background:#FFF;border:none;"><td style="background:#FFF;border:none;">当前没有任何记录</td></tr><!-- ENDIF -->
+                        </table>
+                </div>
+                <!-- IF C_pagelink --><div class="rd8_colt">{C_pagelink}</div><!-- ENDIF -->
+</div>

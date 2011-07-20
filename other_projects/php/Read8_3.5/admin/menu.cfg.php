@@ -221,6 +221,7 @@ function acpdefaultmenu(){
 		'tools' => 'cache',
 		'external' => 'js',
 		'official' => 'official_site',
+                'financial' => 'income_pay_list',
 	);
 }
 
