@@ -39,6 +39,7 @@
                 <div class="col0">
                         <table>
                                 <tr class="category" align="center">
+                                        <td>用户ID</td>
                                         <td>金额</td>
                                         <td>虚拟币</td>
                                         <td>操作时间</td>
@@ -48,13 +49,14 @@
 <!-- IF records -->
 <!-- BEGIN records -->
                                 <tr class="col{A}" align='center'> 
+                                        <td>{uid}</td>
                                         <td>{price}</td>
                                         <td>{vmoney}</td>
                                         <td>{dateline_DATE_Y-m-d H:i:s}</td>
                                         <td><!-- IF suctime -->成功于 {suctime_DATE_Y-m-d H:i:s}<!-- ELSE -->尚未成功<!-- ENDIF --></td>
                                         <td>
-                                          <a href="">手动充值</a>&nbsp;&nbsp;
-                                          <a href="">忽略</a>&nbsp;&nbsp;
+                                          <a href="?ptype={ptype}&pfile={pfile}&action=ok&id={id}">手动充值</a>&nbsp;&nbsp;
+                                          <a href="?ptype={ptype}&pfile={pfile}&action=ignore&id={id}">忽略</a>&nbsp;&nbsp;
                                         </td>
                                 </tr>
 <!-- END records -->
