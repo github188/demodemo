@@ -10,9 +10,9 @@
 */
 //初始化程序
 
-function_exists('ini_set') && ini_set('display_errors', 0);
-function_exists('ini_set') && ini_set('log_errors', 0);
-error_reporting(0);
+function_exists('ini_set') && ini_set('display_errors', 1);
+function_exists('ini_set') && ini_set('log_errors', 1);
+error_reporting(1);
 define('ROOT', str_replace(array('\\', 'include/init.php'), array('/', ''), __FILE__));
 //function_exists('ini_set') && ini_set('error_log', ROOT.'data/log/systemerror.log.php');
 

@@ -43,6 +43,7 @@ if($price && in_array($price, $prs)) {
 		'uid'      => $Global['F_uid'],
 		'price'    => $price,
 		'vmoney'   => $vmoney,
+                'state'    => 1, #1.开始充值, 2. 充值成功， 3.忽略处理。
 		'dateline' => TIMESTAMP,
 	), __TAB_PAY__);
 	$tradeno = 'RD8'.gmdate('YmdHis', TIMESTAMP).$pid;
