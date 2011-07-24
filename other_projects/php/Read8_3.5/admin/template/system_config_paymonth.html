@@ -1,0 +1,73 @@
+	<div class="admin_about_full">
+		<div class="adminhead"><li class="img_left"></li><li class="img_right"></li></div>
+		<div class="b0"><ul><li>设置包月的计费方式。</li></ul></div>
+	</div>
+	<form action="?ptype={ptype}&amp;pfile={pfile}" method="post" id="config">
+	<div class="adminborder">
+		<div class="adminhead">设置包月的计费方式</div>
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月一个月费用:</span><br />
+				<span class="smalltxt">虚拟币</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth1_pay" value="{C_month1_pay}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月一个月字节数:</span><br />
+				<span class="smalltxt">可以阅读的字节数量。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth1_read_bytes" value="{C_month1_read_bytes}" /></div>
+		</div>
+
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月三个月费用:</span><br />
+				<span class="smalltxt">虚拟币</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth3_pay" value="{C_month3_pay}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月三个月字节数:</span><br />
+				<span class="smalltxt">可以阅读的字节数量。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth3_read_bytes" value="{C_month3_read_bytes}" /></div>
+		</div>
+
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月半年费用:</span><br />
+				<span class="smalltxt">虚拟币</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth6_pay" value="{C_month6_pay}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月半年字节数:</span><br />
+				<span class="smalltxt">可以阅读的字节数量。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth6_read_bytes" value="{C_month6_read_bytes}" /></div>
+		</div>
+        
+
+		<div class="b0">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月一年费用:</span><br />
+				<span class="smalltxt">虚拟币</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth12_pay" value="{C_month12_pay}" /></div>
+		</div>
+		<div class="b1">
+			<div style="width: 60%;padding-left: 1%;">
+				<span style="font-weight: bold;">包月一年字节数:</span><br />
+				<span class="smalltxt">可以阅读的字节数量。</span>
+			</div>
+			<div style="width: 38%;"><input type="text" size="40" name="pmonth_read_bytes" value="{C_month_read_bytes}" /></div>
+		</div>
+
+		<div class="bt"><input type="submit" value=" 提 交 " /> &nbsp;<input type="hidden" name="action" value="update" /> &nbsp;<input type="reset" value=" 重 置 " /></div>
+	</div> 
+	</form>

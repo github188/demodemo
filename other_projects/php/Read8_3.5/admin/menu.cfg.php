@@ -66,6 +66,7 @@ function acpmenu(){
 			),
 			'config_com' => array(
 				'config_pay',
+				'config_paymonth',
 				'config_vip',
 				'config_mobile',
 			),

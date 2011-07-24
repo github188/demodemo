@@ -28,7 +28,7 @@ function _config_update($cacheName = '', $prefix = 'config_'){
 	if($cacheName) {
 		$caches = array($cacheName);
 	}else {
-		$caches = array('system', 'user', 'author', 'story', 'display', 'read', 'comment', 'upload', 'fopen', 'seo', 'safe', 'info', 'rank', 'official', 'pay', 'vip', 'mobile');
+		$caches = array('system', 'user', 'author', 'story', 'display', 'read', 'comment', 'upload', 'fopen', 'seo', 'safe', 'info', 'rank', 'official', 'paymonth', 'pay', 'vip', 'mobile');
 	}
 
 	foreach($caches as $cacheName) {
@@ -60,6 +60,7 @@ function _config_generate($cacheName){
 				'guide',
 				'contact',
 				'pay',
+                                'paymonth',
 				'fee',
 				'novel',
 				'author',

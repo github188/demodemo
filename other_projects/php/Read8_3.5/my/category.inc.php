@@ -26,6 +26,7 @@ $_SYSTEM['CATEGORY'] = array(
 	'expend'   => '消费记录',
 	'balance'  => '我的余额',
 	'pay'      => '在线充值',
+	'pay_month' => '包月订购',
 	'mobile'   => '手机短信',
 	'comment'  => '我的评论',
 	'pm'       => '站内短信',

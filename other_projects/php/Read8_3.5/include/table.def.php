@@ -77,6 +77,8 @@ define('__TAB_AD__',			$C_MySQL['_prefix_'].'read8_advertise');
 
 define('__TAB_PAY__',			$C_MySQL['_prefix_'].'read8_pay');
 define('__TAB_SHOP__',			$C_MySQL['_prefix_'].'read8_shop');
+define('__TAB_SHOP_MONTH__',			$C_MySQL['_prefix_'].'read8_shop_month');
+define('__TAB_ACCOUNT_BOOK__',			$C_MySQL['_prefix_'].'read8_account_book');
 
 
 define('__TAB_COLLECT_SINGLE_RULE__',		$C_MySQL['_prefix_'].'read8_collect_rule_single');

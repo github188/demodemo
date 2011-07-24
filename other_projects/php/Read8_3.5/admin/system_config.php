@@ -14,7 +14,9 @@ if(!defined('IN_Read8') || !defined('IN_Read8_ACP') || !defined('IN_Read8_ACP_SY
 
 $config = strtoupper($ps);
 
-if(!in_array($config, array('SYSTEM', 'USER', 'AUTHOR', 'STORY', 'DISPLAY', 'READ', 'COMMENT', 'UPLOAD', 'FOPEN', 'SEO', 'SAFE', 'INFO', 'RANK', 'OFFICIAL', 'PAY', 'VIP', 'MOBILE'))) {
+echo "---------$config--------------";
+
+if(!in_array($config, array('SYSTEM', 'USER', 'AUTHOR', 'STORY', 'DISPLAY', 'READ', 'COMMENT', 'UPLOAD', 'FOPEN', 'SEO', 'SAFE', 'INFO', 'RANK', 'OFFICIAL', 'PAYMONTH', 'PAY', 'VIP', 'MOBILE'))) {
 	back('未知分类');
 }
 

@@ -80,6 +80,7 @@ $Lang = array(
 	'admin_menu_style_cache' => '风格缓存设置',
 
 	'admin_menu_config_pay' => '在线支付设置',
+        'admin_menu_config_paymonth' => '包月支付设置', 
 	'admin_menu_config_vip' => 'VIP 功能设置',
 	'admin_menu_config_mobile' => '手机短信设置',
 

@@ -435,6 +435,7 @@ function acpfile($pfile){
 		case 'config_official':
 
 		case 'config_pay':
+		case 'config_paymonth':
 		case 'config_vip':
 		case 'config_mobile':
 			$admfile = 'system';
