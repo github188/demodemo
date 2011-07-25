@@ -137,6 +137,10 @@ public class MenuToolbar {
 			throw new Error("Not found action by name '" + name + "'");
 		return actions.get(name);
 	}
+	
+	public MenuToolbar(){
+		this(null);
+	}
 
 	public MenuToolbar(EventQueue eventQueue){
 		this.eventQueue = eventQueue;
@@ -176,6 +180,10 @@ public class MenuToolbar {
 		$(ORDERBY_CREATEDATE, "", 0);	
 		$(ORDERBY_UPDATEDATE, "", 0);
 		$(ABOUT, "", 0);
+	}
+	
+	public void setEventQueue(EventQueue eventQueue){
+		this.eventQueue = eventQueue;
 	}
 		
 	public JMenuBar getMenuBar(){

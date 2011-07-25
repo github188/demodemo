@@ -12,7 +12,7 @@ import org.junit.Test;
 public class TestEventQueue {
 	
 	@Test
-	public void testRegisterAction(){		
+	public void testRegisterAction(){
 		Action baseAction = new AbstractAction(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

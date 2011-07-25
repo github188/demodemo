@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+	<win name='main' class='org.notebook.gui.MainFrame'>
+		<layout class='java.awt.BorderLayout' />
+		<size x='600' y='400' />
+		<title>在线升级管理系统</title>
+		<toolBar class='org.notebook.gui.MenuToolbar'>
+			<eventQueue ref="eventQueue"/>
+		</toolBar>
+		
+		<pane align='CENTER' class='javax.swing.JSplitPane'>
+			<rightComponent class='javax.swing.JScrollPane'>
+				<viewport>
+					<add name='print_pane' class='org.notebook.gui.editor.SimplePrintPanel' />
+				</viewport>
+			</rightComponent>
+
+				<!--
+			<leftComponent class='javax.swing.JScrollPane'>
+				<add class='QQStylePane'>
+					<item class='ListPane'>
+						<item arg1='证明1' arg2=''  /> 
+					</item>
+				</add>
+				<size w='' h='' />
+			</leftComponent>
+				-->
+		</pane>
+	</win>
+</root> 

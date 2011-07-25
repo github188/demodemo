@@ -57,6 +57,10 @@ public class MainFrame extends JFrame {
 	private MainFrame mainFrame = null;
 	//private LookAndFeelSelector laf
 	
+	public MainFrame(){
+		super();
+	}
+	
 	public MainFrame(EventQueue eventQueue){
 		super();
 		this.setTitle("动物免疫公文打印&查询系统");
@@ -97,12 +101,16 @@ public class MainFrame extends JFrame {
     	
     	return pane;
     }
+    
+    public void addToolBar(MenuToolbar bar){
+    	menu = new MenuToolbar(events);
+    	this.getRootPane().setJMenuBar(menu.getMenuBar());
+    }
 
 	public void initGui() {
 		setLayout(new BorderLayout());
-		menu = new MenuToolbar(events);
-		this.getRootPane().setJMenuBar(menu.getMenuBar());
 		
+		//this.getRootPane().setJMenuBar(menu.getMenuBar());		
 		//editor = new DocumentEditor();
 		//menu.addExtraToolBar(editor.getToolBar());
 
@@ -121,7 +129,7 @@ public class MainFrame extends JFrame {
 		splitPanel.setDividerLocation(0.35);
 		splitPanel.setOneTouchExpandable(true);
 		splitPanel.setLeftComponent(getNavigationBar());
-		splitPanel.setRightComponent(_panel);		
+		splitPanel.setRightComponent(_panel);
 		
 		statusBar = new StatusBar();
 		mainPanel.bar = statusBar;
@@ -133,6 +141,7 @@ public class MainFrame extends JFrame {
 		//contentPane.add(_panel, BorderLayout.CENTER);
 		
 		contentPane.add(statusBar, BorderLayout.SOUTH);
+		
 		
 		//controller = createPrivilegedProxy(new DefaultBookController(this));
 		
