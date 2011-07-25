@@ -7,7 +7,7 @@ public final class Version {
 	}
 	
 	public static String getName(){
-		return "蓝星打印";
+		return "系统升级";
 	}
 	
 	public static String getVerName(){

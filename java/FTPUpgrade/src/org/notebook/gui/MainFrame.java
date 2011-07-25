@@ -17,18 +17,12 @@
  
 package org.notebook.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,8 +30,6 @@ import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
 import org.notebook.events.EventQueue;
 import org.notebook.gui.editor.SimplePrintPanel;
-import org.notebook.gui.widget.ListPane;
-import org.notebook.gui.widget.QQStylePane;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -67,111 +59,12 @@ public class MainFrame extends JFrame {
 		this.events = eventQueue;
 		this.mainFrame = this;
 	}
-	
-    protected QQStylePane getNavigationBar(){
-    	QQStylePane pane = new QQStylePane();    	
-    	pane.setAnimated(true);
-    	
-		ListPane p = new ListPane();
-		p.addItem("证明1", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.addItem("证明2", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.setSize(185, 74);
-    	
-		pane.addPane("免疫证明1", MenuToolbar.icon("org/notebook/gui/images/editor.gif"), p);
-		
-		p = new ListPane();
-		p.addItem("证明21", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.addItem("证明22", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.setSize(185, 74);		
-		pane.addPane("免疫证明2", MenuToolbar.icon("org/notebook/gui/images/editor.gif"), p);
-		
-		p = new ListPane();
-		p.addItem("申请材料11", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.addItem("申请材料12", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.setSize(185, 74);				
-		pane.addPane("免疫申请材料1", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), p);
-
-		p = new ListPane();
-		p.addItem("申请材料21", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.addItem("申请材料22", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), null);
-		p.setSize(185, 74);						
-		pane.addPane("免疫申请材料2", MenuToolbar.icon("org/notebook/gui/images/file_obj.gif"), p);
-		
-		pane.setSelectedPane(0);
-    	
-    	return pane;
-    }
-    
+	    
     public void addToolBar(MenuToolbar bar){
     	menu = new MenuToolbar(events);
     	this.getRootPane().setJMenuBar(menu.getMenuBar());
     }
 
-	public void initGui() {
-		setLayout(new BorderLayout());
-		
-		//this.getRootPane().setJMenuBar(menu.getMenuBar());		
-		//editor = new DocumentEditor();
-		//menu.addExtraToolBar(editor.getToolBar());
-
-		//JScrollPane leftTree = new JScrollPane(tree);
-		Dimension minSize = new Dimension(150, 400);
-		
-		mainPanel = new SimplePrintPanel();	
-		events.registerAction(mainPanel.getEventsHandler());
-		_panel = new JScrollPane(mainPanel);
-		_panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 		
-		
-		JSplitPane splitPanel; 
-		splitPanel = new JSplitPane();
-		splitPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-		//splitPanel.setAutoscrolls(true);
-		splitPanel.setDividerLocation(0.35);
-		splitPanel.setOneTouchExpandable(true);
-		splitPanel.setLeftComponent(getNavigationBar());
-		splitPanel.setRightComponent(_panel);
-		
-		statusBar = new StatusBar();
-		mainPanel.bar = statusBar;
-		
-		Container contentPane = getContentPane();
-		contentPane.add(menu.getToolBar(), BorderLayout.NORTH);
-		
-		contentPane.add(splitPanel, BorderLayout.CENTER);
-		//contentPane.add(_panel, BorderLayout.CENTER);
-		
-		contentPane.add(statusBar, BorderLayout.SOUTH);
-		
-		
-		//controller = createPrivilegedProxy(new DefaultBookController(this));
-		
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setIconImage(appIcon16());
-
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		final MainFrame mainFrame = this;
-
-	    addWindowListener(new WindowAdapter(){
-	    	//窗口关闭，
-	    	public void windowClosing(WindowEvent e){
-	    		events.fireEvent(MenuToolbar.EXIT, mainFrame);
-	    	}
-	    	
-	    	//窗口打开，触发初始化加载事件。
-	    	public void windowOpened(WindowEvent e){
-	    		events.fireEvent(MenuToolbar.LOADED, mainFrame);
-	    	}
-	    });
-	    
-		//触发菜单创建成功事件，其他控件，可以响应事件并更新自己特有的菜单。
-		events.fireEvent(MenuToolbar.GUI_INITED, this);
-		
-	    events.registerAction(this);
-	    	    	    	    
-		pack(); 
-		setSize(670,548);
-	    
-	}
 	
 	public void showSettings(){
 		//NoteBookSettings settings = new NoteBookSettings(this, controller);		

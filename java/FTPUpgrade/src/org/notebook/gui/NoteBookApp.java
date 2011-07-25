@@ -1,8 +1,5 @@
 package org.notebook.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -12,20 +9,18 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.Version;
-import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventQueue;
-import org.notebook.gui.widget.LookAndFeelSelector;
 import org.notebook.services.BookController;
 import org.notebook.services.DefaultBookController;
 import org.notebook.services.SingleInstance;
 import org.notebook.services.SocketSingleInstance;
+import org.notebook.xui.XUIContainer;
 
 public class NoteBookApp {
 	private Log log = LogFactory.getLog("app");
@@ -34,7 +29,7 @@ public class NoteBookApp {
 	private MainFrame main = null;
 	private EventQueue eventQueue = null;
 	private BookController services = null;
-	private LookAndFeelSelector lafManager = null;
+	private XUIContainer xui = new XUIContainer();
 	
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args){
@@ -68,11 +63,13 @@ public class NoteBookApp {
 	
 	public void startup(){
 		eventQueue = new EventQueue(null);		
-		lafManager = new LookAndFeelSelector();		
-		lafManager.setLookAndFeel(LookAndFeelSelector.DEFAULT_SKIN); 
+		//lafManager = new LookAndFeelSelector();		
+		//lafManager.setLookAndFeel(LookAndFeelSelector.DEFAULT_SKIN); 
 		
 		//把界面风格相关的事件注册。
-		eventQueue.registerAction(lafManager);		
+		//eventQueue.registerAction(lafManager);
+		
+		
 		services = createPrivilegedProxy(new DefaultBookController(runingJNLP(),
 	 			runningSandbox()));	
 		
@@ -83,9 +80,10 @@ public class NoteBookApp {
 		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run(){
-				main = new MainFrame(eventQueue);				
+				xui.load(this.getClass().getClassLoader().getResource("org.netbook.gui.layout.xml"));				
+				main = (MainFrame)xui.getByName("main");			
 				services.setTopWindow(main);
-				main.initGui();
+				//main.initGui();
             	//窗口居中.
             	main.setLocationRelativeTo(null);
             	main.setVisible(true);

@@ -109,6 +109,7 @@
                  	     <fileset dir="src" includes="**/*.jpg" /> 
                          <fileset dir="src" includes="**/*.gif" /> 
                          <fileset dir="src" includes="**/*.png" /> 
+                 		 <fileset dir="src" includes="**/*.xml" /> 
                          <fileset dir="src" includes="**/*.properties" /> 
                  </copy>
          </target>           
@@ -122,8 +123,10 @@
 						  <attribute name="Main-Class" value="org.notebook.gui.NoteBookApp"/>
 					</manifest>
                     <zipfileset src="lib/commons-logging-1.1.1.jar" />
-                    <zipfileset src="lib/json_simple-1.1.jar" />         
-                    <zipfileset src="lib/substance-5.2_01.jar" />                    
+                    <zipfileset src="lib/json_simple-1.1.jar" />     
+                 	<!--
+                    <zipfileset src="lib/substance-5.2_01.jar" />
+                    -->                    
 				</jar>
     		<signjar destDir="${dist.dir}"
     		    alias="${name}" keystore="test_key"
