@@ -12,8 +12,9 @@ import java.security.PrivilegedExceptionAction;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,6 +73,13 @@ public class NoteBookApp {
 		//把界面风格相关的事件注册。
 		//eventQueue.registerAction(lafManager);
 		
+		xui.setEventQueue(eventQueue);
+		try{
+			UIManager.setLookAndFeel(
+		            UIManager.getSystemLookAndFeelClassName());
+		}catch(Exception e){
+			System.out.println(e.toString());
+		}	
 		
 		services = createPrivilegedProxy(new DefaultBookController(runingJNLP(),
 	 			runningSandbox()));	
@@ -86,24 +94,7 @@ public class NoteBookApp {
 				URL layout = this.getClass().getClassLoader().getResource("org/notebook/gui/layout.xml");
 				if(layout != null) {
 					xui.load(layout);				
-					main = (MainFrame)xui.getByName("main");	
-					
-					JSplitPane l1 = (JSplitPane)xui.getByName("l1");
-					//JSplitPane.VERTICAL_SPLIT;
-					l1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-					l1.setDividerLocation(100);
-					l1.setDividerSize(0);
-
-					JSplitPane l2 = (JSplitPane)xui.getByName("l2");
-					//JSplitPane.VERTICAL_SPLIT;
-					l2.setOrientation(JSplitPane.VERTICAL_SPLIT);
-					l2.setDividerLocation(200);
-					l2.setDividerSize(0);
-					l2.setResizeWeight(1.0);
-					
-					//JPanel status = (JPanel)xui.getByName("status");
-					//status.setre
-					
+					main = (MainFrame)xui.getByName("main");
 					
 					services.setTopWindow(main);
 					//main.initGui();

@@ -5,7 +5,13 @@
 		<title value="在线升级管理系统" />
 		
 		<!--<layout ref='null' /> -->
+		<add name="padding" align="Center" class="javax.swing.JPanel">
+		<layout class='java.awt.BorderLayout' />	
+		
 		<add name="l1" align="Center" class="javax.swing.JSplitPane">
+		<orientation value="VERTICAL" />
+		<dividerLocation value="100" />
+		<DividerSize value="0" />
 				
 		<topComponent align1='Center' class='javax.swing.JPanel'>
 			<minimumSize w="200" h="80" />
@@ -36,6 +42,11 @@
 		</topComponent>
 		
 		<bottomComponent name='l2' class='javax.swing.JSplitPane' >
+			<orientation value="VERTICAL" />
+			<dividerLocation value="200" />
+			<DividerSize value="0" />
+			<ResizeWeight value="1.0" />
+			
 			<topComponent class='javax.swing.JScrollPane'>
 				<viewport>
 					<add class="org.notebook.gui.MainTable" />
@@ -69,6 +80,7 @@
 						
 			</bottomComponent>			
 		</bottomComponent>
+		</add>
 		</add>
 	</win>
 </root> 

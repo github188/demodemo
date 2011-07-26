@@ -1,8 +1,5 @@
 package org.notebook.services;
 
-import java.awt.Image;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,7 +10,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,9 +21,9 @@ import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.LocalFileStorage;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
-import org.notebook.gui.AboutDialog;
 import org.notebook.gui.MainFrame;
 import org.notebook.gui.MenuToolbar;
+import org.notebook.xui.XUIContainer;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog("services");
@@ -152,77 +150,12 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@EventAction(order=1)
-		public void DataPre(BroadCastEvent event){
-			if(dataCursor - 1 < 0){
-				JOptionPane.showMessageDialog(mainFrame,
-					    "没有找到上一条记录.",
-					    "消息",
-					    JOptionPane.INFORMATION_MESSAGE);			
-			}else {
-				dataCursor--;
-				if(dataCursor >= _cur.size())
-					dataCursor = _cur.size() - 1; 
-				
-				Map<String, Object> param = new HashMap<String, Object>();
-				param.put(MenuToolbar.EVENT_DATA_DOC_DATA, _cur.get(dataCursor));			
-				event.fireNewEvent(MenuToolbar.LOAD_DOC_DATA, mainFrame,  param);
-			}
-		}		
-		
-		@EventAction(order=1)		
-		public void DataNext(BroadCastEvent event){
-			if(dataCursor + 1 >= _cur.size()){
-				JOptionPane.showMessageDialog(mainFrame,
-					    "没有找到下一条记录.",
-					    "消息",
-					    JOptionPane.INFORMATION_MESSAGE);			
-			}else {
-				dataCursor++;				
-				Map<String, Object> param = new HashMap<String, Object>();
-				param.put(MenuToolbar.EVENT_DATA_DOC_DATA, _cur.get(dataCursor));			
-				event.fireNewEvent(MenuToolbar.LOAD_DOC_DATA, mainFrame,  param);
-			}
-		}
-
-		@EventAction(order=100)
-		public void Save(BroadCastEvent event){
-			Object data = event.get(MenuToolbar.EVENT_DATA_DOC_DATA); 
-			if(data != null && data instanceof Document){
-				_cur.add((Document) data);
-				JOptionPane.showMessageDialog(mainFrame,
-					    "打印文档数据保存成功!",
-					    "消息",
-					    JOptionPane.INFORMATION_MESSAGE);
-				dataCursor = _cur.size();
-			}else {
-				JOptionPane.showMessageDialog(mainFrame,
-					    "没有找到需要保存的数据",
-					    "错误",
-					    JOptionPane.ERROR_MESSAGE);				
-			}		
-		}
-		
-		@EventAction(order=100)
-		public void Print(BroadCastEvent event){
-			//mainFrame.showSettings();		
-			log.info("print view...");	
-			Object data = event.get(MenuToolbar.EVENT_DATA_PRINT); 
-			if(data != null && data instanceof List){
-				PrinterJob printJob = PrinterJob.getPrinterJob();				
-			    printJob.setPrintable(new ImagePrintable((List<Image>)data));
-			    if (printJob.printDialog()){
-			    	try {
-				        printJob.print();
-				    } catch(PrinterException pe) {
-				    	log.error(pe.toString());
-				    }
-			    }
-			}else {
-				JOptionPane.showMessageDialog(mainFrame,
-					    "没有找到需要可以打印的数据",
-					    "错误",
-					    JOptionPane.ERROR_MESSAGE);				
-			}
+		public void XuiLoaded(BroadCastEvent event){
+			XUIContainer xui = (XUIContainer)event.getSource();			
+			JPanel padding = (JPanel)xui.getByName("padding");
+			padding.setBorder(new EmptyBorder(10,10,10,10));
+			log.error("xxxxxxxxx: update border;");
+			
 		}
 		
 		public String toString(){

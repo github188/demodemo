@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.swing.JSplitPane;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.events.EventQueue;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -36,6 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XUIContainer {
 	private Log log = LogFactory.getLog("xui");
 	private Map<String, Object> cache = new HashMap<String, Object>();
+	private EventQueue eventQueue = null;
 	
 	public void load(URL resource){
 		SAXParserFactory saxfac = SAXParserFactory.newInstance();
@@ -51,6 +54,9 @@ public class XUIContainer {
 			Context root = new Context();
 			root.parent = this;
 			parser.parse(in, new XUISAXHandler(root));
+			if(this.eventQueue != null){
+				this.eventQueue.fireEvent("XuiLoaded", this);
+			}
 		}catch (Exception e) {
 			log.error(e.toString(), e);
 		}finally{
@@ -62,6 +68,10 @@ public class XUIContainer {
 				}
 			}
 		}
+	}
+	
+	public void setEventQueue(EventQueue eq){
+		this.eventQueue = eq;
 	}
 
 	public Object getByName(String name){
@@ -98,9 +108,9 @@ public class XUIContainer {
 								 String qName, 
 								 Attributes attributes){
 			//System.out.println("start uri:" + uri + ", localName:"+ localName + ", qName:" + qName);
-			if(log.isDebugEnabled()){
-				log.debug("start tag:" + qName);
-			}
+			//if(log.isDebugEnabled()){
+			//	log.debug("start tag:" + qName);
+			//}
 			Context newContext = new Context();
 			newContext.tag = qName;
 			Context pc = context.peek();
@@ -116,10 +126,12 @@ public class XUIContainer {
 		}
 		
 		public void endElement(String uri, String localName,
-                			   String qName) throws SAXException{			
+                			   String qName) throws SAXException{
+			/*
 			if(log.isDebugEnabled()){
 				log.debug("end tag:" + qName);
 			}
+			*/
 			context.pop();
 		}
 		
@@ -179,7 +191,7 @@ public class XUIContainer {
 			if(callMethod == null){
 				log.warn(String.format("Not found method for tag '%s'", context.tag));
 			}else {
-				log.info(String.format("tag '%s' --> '%s'", context.tag, callMethod.getName()));
+				//log.info(String.format("tag '%s' --> '%s'", context.tag, callMethod.getName()));
 			}
 		}
 		
@@ -253,12 +265,25 @@ public class XUIContainer {
 			}else if(context.tag.toLowerCase().equals("rows") ||
 					context.tag.toLowerCase().equals("columns") ||
 					context.tag.toLowerCase().equals("hgap") ||
-					context.tag.toLowerCase().equals("vgap")
+					context.tag.toLowerCase().equals("vgap") ||
+					
+					context.tag.toLowerCase().equals("dividerlocation") ||
+					context.tag.toLowerCase().equals("dividersize")					
 					){
 				String val = attributes.getValue("value");
 				context.args = new Object[]{Integer.parseInt(val)};
 				context.argClass = new Class[]{int.class};
-			}	
+			}else if(context.tag.toLowerCase().equals("orientation")){
+				String val = attributes.getValue("value");
+				if(val.equals("VERTICAL")){
+					context.args = new Object[]{JSplitPane.VERTICAL_SPLIT};
+					context.argClass = new Class[]{int.class};
+				}
+			}else if(context.tag.toLowerCase().equals("resizeweight")){
+				String val = attributes.getValue("value");
+				context.args = new Object[]{Double.parseDouble(val)};
+				context.argClass = new Class[]{double.class};
+			}
 			
 			if(context.args != null && context.argClass == null){
 				context.argClass = new Class[context.args.length];
