@@ -56,9 +56,11 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame(EventQueue eventQueue){
 		super();
-		this.setTitle("动物免疫公文打印&查询系统");
+		//this.setTitle("动物免疫公文打印&查询系统");
 		this.events = eventQueue;
 		this.mainFrame = this;
+		
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	    
     public void addToolBar(MenuToolbar bar){

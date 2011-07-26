@@ -10,40 +10,40 @@
 		
 		<add name="l1" align="Center" class="javax.swing.JSplitPane">
 		<orientation value="VERTICAL" />
-		<dividerLocation value="100" />
+		<dividerLocation value="65" />
 		<DividerSize value="0" />
 				
 		<topComponent align1='Center' class='javax.swing.JPanel'>
-			<minimumSize w="200" h="80" />
+			<minimumSize w="200" h="40" />
 			<layout ref='null' />			
 			<add name='connect' class='javax.swing.JButton' >
 				<text value="连接" />
-				<bounds x='10' y='2' w='60' h='30' />
+				<bounds x='10' y='5' w='60' h='25' />
 			</add>
 			<add name='upgrade' class='javax.swing.JButton' >
 				<text value="升级" />
-				<bounds x='10' y='60' w='60' h='30' />
+				<bounds x='10' y='35' w='60' h='25' />
 			</add>
 			
 			<add name='xx1' class='javax.swing.JTextField' >
 				<text value="/程序_zip" />
-				<bounds x='80' y='20' w='200' h='30' />
+				<bounds x='80' y='5' w='200' h='25' />
 			</add>
 
 			<add name='xx2' class='javax.swing.JTextField' >
 				<text value="Internat升级服务器" />
-				<bounds x='80' y='60' w='200' h='30' />
+				<bounds x='80' y='35' w='200' h='25' />
 			</add>
 			
 			<add name='info' class='javax.swing.JLabel' >
-				<bounds x='380' y='60' w='200' h='30' />
+				<bounds x='380' y='8' w='200' h='30' />
 				<text value="升级前请关闭物流系统" />
 			</add>
 		</topComponent>
 		
 		<bottomComponent name='l2' class='javax.swing.JSplitPane' >
 			<orientation value="VERTICAL" />
-			<dividerLocation value="200" />
+			<!-- <dividerLocation value="300" /> -->
 			<DividerSize value="0" />
 			<ResizeWeight value="1.0" />
 			
@@ -58,24 +58,27 @@
 				<columns value="3" />
 				<hgap value="6" />
 			</layout>
-			<minimumSize w="200" h="80" />
+			<minimumSize w="200" h="53" />
+			<!--
+			<minimumSize w="200" h="40" />
+			-->
 			
-			<add name='info' class='javax.swing.JLabel' >
-				<text value="升级前请关闭物流系统" />
+			<add name='fileInfo' class='javax.swing.JLabel' >
+				<text value="单个文件进度" />
 			</add>
-			<add name='info' class='javax.swing.JLabel' >
-				<text value="升级前请关闭物流系统" />
+			<add name='taskInfo' class='javax.swing.JLabel' >
+				<text value="总的进度" />
 			</add>
-			<add name='info' class='javax.swing.JLabel' >
-				<text value="升级前请关闭物流系统" />
+			<add name='toolInfo' class='javax.swing.JLabel' >
+				<text value="总文件状态" />
 			</add>
 															
-			<add name='connect' class='javax.swing.JProgressBar' />
+			<add name='fileProgress' class='javax.swing.JProgressBar' />
 				
-			<add name='upgrade' class='javax.swing.JProgressBar' />
+			<add name='taskProgress' class='javax.swing.JProgressBar' />
 			
-			<add name='info' class='javax.swing.JLabel' >
-				<text value="升级前请关闭物流系统" />
+			<add name='info' class='org.notebook.gui.StatusBar' >
+				<text value="状态栏.." />
 			</add>
 						
 			</bottomComponent>			

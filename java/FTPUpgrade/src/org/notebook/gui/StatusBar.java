@@ -39,7 +39,7 @@ public class StatusBar extends JPanel {
 
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
+		/*
 		int y = 0;
 		g.setColor(new Color(156, 154, 140));
 		g.drawLine(0, y, getWidth(), y);
@@ -62,6 +62,7 @@ public class StatusBar extends JPanel {
 		y = getHeight() - 1;
 		g.setColor(new Color(221, 221, 220));
 		g.drawLine(0, y, getWidth(), y);
+		*/
 	}
 	
 	public void setText(final String text){

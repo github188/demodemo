@@ -1,5 +1,8 @@
 package org.notebook.services;
 
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,7 +13,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
@@ -154,6 +159,23 @@ public class DefaultBookController implements BookController{
 			XUIContainer xui = (XUIContainer)event.getSource();			
 			JPanel padding = (JPanel)xui.getByName("padding");
 			padding.setBorder(new EmptyBorder(10,10,10,10));
+			
+			JSplitPane l1 = (JSplitPane)xui.getByName("l1");
+			JSplitPane l2 = (JSplitPane)xui.getByName("l2");
+			l1.setBorder(new EmptyBorder(0, 0, 0, 0));
+			l2.setBorder(new EmptyBorder(0, 0, 0, 0));
+			
+			//PreferredSize
+			
+			JPanel status = (JPanel)xui.getByName("status");
+			status.setPreferredSize(new Dimension(100, 40));
+			
+			JFrame main = (JFrame)xui.getByName("main");
+			main.addWindowListener(new WindowAdapter() {
+		        public void windowClosing(WindowEvent ce) {
+		        	System.exit(0);
+		        }
+		    });			
 			log.error("xxxxxxxxx: update border;");
 			
 		}
