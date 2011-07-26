@@ -105,12 +105,14 @@ public class FTPSyncService {
 	public void updateFTPFilelist(){
 		if(!logined)return;
 		try {
+			status("读取FTP服务文件列表");
 			FTPFile[] files = ftp.listFiles();
 			for(FTPFile f: files){
 				if(!f.isFile()) continue;
 				updateFTPFileInfo(f);
 			}
 			model.fireTableDataChanged();
+			status("文件列表读取完成，准备更新文件...");
 		} catch (IOException e) {
 			status("FTP网络连接出错");
 			log.error(e.toString(), e);
