@@ -27,7 +27,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.notebook.events.BroadCastEvent;
+import org.notebook.events.EventAction;
+
 public class StatusBar extends JPanel {
+	
 	private JLabel label = new JLabel("init...");
 	public StatusBar() {
 		setLayout(new BorderLayout());
@@ -63,6 +67,11 @@ public class StatusBar extends JPanel {
 		g.setColor(new Color(221, 221, 220));
 		g.drawLine(0, y, getWidth(), y);
 		*/
+	}
+		
+	@EventAction(order=1)
+	public void UpdateStateBar(final BroadCastEvent event){
+		setText((String)event.get(Events.STATUS_PARAM));
 	}
 	
 	public void setText(final String text){

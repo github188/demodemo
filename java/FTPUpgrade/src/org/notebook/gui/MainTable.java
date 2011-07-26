@@ -22,10 +22,10 @@ public class MainTable extends JTable {
 	private void setGUI(){
 		this.getColumnModel().getColumn(0).setPreferredWidth(80);
 		this.getColumnModel().getColumn(5).setPreferredWidth(80);
-		this.setBackground(Color.RED);		
+		//this.setBackground(Color.RED);		
 	}
 	
-	static class StatusModel extends AbstractTableModel{
+	public static class StatusModel extends AbstractTableModel{
 		protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		protected ArrayList<UpgradeModel> data = new ArrayList<UpgradeModel>();
 		public StatusModel(){			
@@ -34,6 +34,10 @@ public class MainTable extends JTable {
 		
 		public String getColumnName(int column){
 			 return columns[column];
+		}
+		
+		public void addUpgradeModel(UpgradeModel file){
+			this.data.add(file);
 		}
 
 		@Override
@@ -54,12 +58,12 @@ public class MainTable extends JTable {
 				case 0: return task.source;
 				case 1: return task.sourceSize;
 				case 2: return task.dst;
-				case 3: return task.dstSize;
+				case 3: return task.dstSize > 0?task.dstSize:"";
 				case 4: return task.isUpdate + "";
 				case 5: return task.updateDate;		
 			}
 			return "";
 		}
-	}	
+	}
 
 }

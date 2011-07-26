@@ -85,6 +85,9 @@ public class XUIContainer {
 	private void addComponent(String name, Object o){
 		log.info("add component, name:" + name + ", " + o.toString());
 		this.cache.put(name, o);
+		if(this.eventQueue != null){
+			this.eventQueue.registerAction(o);
+		}
 	}
 	
 	static class Context{

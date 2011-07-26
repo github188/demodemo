@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <root>
 	<win name='main' class='org.notebook.gui.MainFrame'>
-		<size x='600' y='400' />
+		<size x='750' y='550' />
 		<title value="在线升级管理系统" />
 		
 		<!--<layout ref='null' /> -->
@@ -35,7 +35,7 @@
 				<bounds x='80' y='35' w='200' h='25' />
 			</add>
 			
-			<add name='info' class='javax.swing.JLabel' >
+			<add name='warn_info' class='javax.swing.JLabel' >
 				<bounds x='380' y='8' w='200' h='30' />
 				<text value="升级前请关闭物流系统" />
 			</add>
@@ -49,7 +49,7 @@
 			
 			<topComponent class='javax.swing.JScrollPane'>
 				<viewport>
-					<add class="org.notebook.gui.MainTable" />
+					<add name='mainTable' class="org.notebook.gui.MainTable" />
 				</viewport>
 			</topComponent>
 			<bottomComponent name='status' class='javax.swing.JPanel'>

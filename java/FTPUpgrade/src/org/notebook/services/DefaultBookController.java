@@ -1,6 +1,9 @@
 package org.notebook.services;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -13,7 +16,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
@@ -27,6 +32,8 @@ import org.notebook.cache.LocalFileStorage;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
 import org.notebook.gui.MainFrame;
+import org.notebook.gui.MainTable;
+import org.notebook.gui.MainTable.StatusModel;
 import org.notebook.gui.MenuToolbar;
 import org.notebook.xui.XUIContainer;
 
@@ -49,6 +56,7 @@ public class DefaultBookController implements BookController{
 	//初始化了本地NoteBook路径.
 	private boolean initedBook = false;
 	private boolean isWin = false;
+	private FTPSyncService ftpSync = null;
 	
 	//演示数据
 	private int dataCursor = 0;
@@ -155,10 +163,14 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@EventAction(order=1)
-		public void XuiLoaded(BroadCastEvent event){
+		public void XuiLoaded(final BroadCastEvent event){
+			//event.
 			XUIContainer xui = (XUIContainer)event.getSource();			
 			JPanel padding = (JPanel)xui.getByName("padding");
 			padding.setBorder(new EmptyBorder(10,10,10,10));
+			
+			JLabel info = (JLabel)xui.getByName("warn_info");
+			info.setForeground(Color.red);
 			
 			JSplitPane l1 = (JSplitPane)xui.getByName("l1");
 			JSplitPane l2 = (JSplitPane)xui.getByName("l2");
@@ -166,19 +178,61 @@ public class DefaultBookController implements BookController{
 			l2.setBorder(new EmptyBorder(0, 0, 0, 0));
 			
 			//PreferredSize
-			
+			MainTable mainTable = (MainTable)xui.getByName("mainTable");
+						
 			JPanel status = (JPanel)xui.getByName("status");
 			status.setPreferredSize(new Dimension(100, 40));
 			
 			JFrame main = (JFrame)xui.getByName("main");
+			
+			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
+					 event.queue, main);
+			
 			main.addWindowListener(new WindowAdapter() {
 		        public void windowClosing(WindowEvent ce) {
-		        	System.exit(0);
+		        	System.exit(0);		        	
+		        	//this.windowOpened(e)
 		        }
-		    });			
-			log.error("xxxxxxxxx: update border;");
+		        
+		        public void windowOpened(WindowEvent ce){
+					syncThread.execute(new Runnable(){
+						@Override
+						public void run() {
+							ftpSync.scanLocalPath();
+					}});
+		        }
+		    });
 			
-		}
+			//注册FTP响应是事件。
+			event.queue.registerAction(ftpSync);
+			//event.queue.
+			
+			JButton connect = (JButton)xui.getByName("connect");
+			connect.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(final ActionEvent arg0) {
+					syncThread.execute(new Runnable(){
+						@Override
+						public void run() {
+							ftpSync.connect();
+					}});
+				}		
+			});			
+
+			JButton upgrade = (JButton)xui.getByName("upgrade");		
+			upgrade.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(final ActionEvent arg0) {
+					syncThread.execute(new Runnable(){
+						@Override
+						public void run() {
+							ftpSync.upgrade();
+					}});
+				}
+			});			
+			
+			//log.error("xxxxxxxxx: update border;");			
+		}	
 		
 		public String toString(){
 			return "BookController Actions";

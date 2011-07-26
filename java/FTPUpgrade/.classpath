@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="lib" path="lib/substance-5.2_01.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/jreg.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
