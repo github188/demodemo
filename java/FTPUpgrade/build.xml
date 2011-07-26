@@ -123,7 +123,8 @@
 						  <attribute name="Main-Class" value="org.notebook.gui.NoteBookApp"/>
 					</manifest>
                     <zipfileset src="lib/commons-logging-1.1.1.jar" />
-                    <zipfileset src="lib/json_simple-1.1.jar" />     
+                    <zipfileset src="lib/json_simple-1.1.jar" />    
+                    <zipfileset src="lib/commons-net-3.0.1.jar" />     
                  	<!--
                     <zipfileset src="lib/substance-5.2_01.jar" />
                     -->                    

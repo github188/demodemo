@@ -2,7 +2,7 @@ package org.notebook.cache;
 
 public class Configuration {
 	public String getHost(){
-		return "";
+		return "10.56.126.77";
 	}
 	
 	public String getRootPath(){
@@ -10,10 +10,10 @@ public class Configuration {
 	}
 	
 	public String getUsername(){
-		return "iparebot";
+		return "root";
 	}
 	
 	public String getPassword(){
-		return "iparebot";
+		return "nokia123";
 	}
 }

@@ -25,6 +25,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.notebook.cache.Configuration;
 import org.notebook.cache.DataStorage;
 import org.notebook.cache.Document;
 import org.notebook.cache.DocumentDefine;
@@ -186,7 +187,10 @@ public class DefaultBookController implements BookController{
 			JFrame main = (JFrame)xui.getByName("main");
 			
 			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
-					 event.queue, main);
+					 event.queue, main,
+					 new Configuration(),
+					 syncThread
+					);
 			
 			main.addWindowListener(new WindowAdapter() {
 		        public void windowClosing(WindowEvent ce) {
