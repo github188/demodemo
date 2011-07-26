@@ -1,10 +1,9 @@
 package org.notebook.xui;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.beans.Beans;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -42,6 +41,10 @@ public class XUIContainer {
 		SAXParserFactory saxfac = SAXParserFactory.newInstance();
 		SAXParser parser = null;
 		InputStream in = null;
+		if(resource == null){
+			log.warn("Resource url is null");
+			return;
+		}
 		try {
 			parser = saxfac.newSAXParser();
 			in = resource.openStream();
@@ -169,7 +172,7 @@ public class XUIContainer {
 						callMethod = m;
 						break;
 					} catch(Exception e) {
-						log.error(e.toString(), e);
+						log.error(e.toString(), e.getCause());
 					}
 				}
 			}
@@ -215,15 +218,48 @@ public class XUIContainer {
 			}else if(ref != null){
 				context.obj = getByName(ref);
 				context.args = new Object[]{context.obj};
-			}			
-			String x = attributes.getValue("x");
-			String y = attributes.getValue("y");
-			if(x != null && y != null){
-				int ix = Integer.parseInt(x);
-				int iy = Integer.parseInt(y);
-				context.args = new Object[]{ix, iy};
-				context.argClass = new Class[]{int.class, int.class};
 			}
+			
+			if(context.tag.equals("size")){
+				String x = attributes.getValue("x");
+				String y = attributes.getValue("y");
+				if(x != null && y != null){
+					int ix = Integer.parseInt(x);
+					int iy = Integer.parseInt(y);
+					context.args = new Object[]{ix, iy};
+					context.argClass = new Class[]{int.class, int.class};
+				}
+			}else if(context.tag.equals("title") || context.tag.equals("text")){
+				context.args = new Object[]{attributes.getValue("value")};
+			}else if(context.tag.equals("bounds")){
+				String x = attributes.getValue("x");
+				String y = attributes.getValue("y");
+				String w = attributes.getValue("w");
+				String h = attributes.getValue("h");				
+				if(x != null && y != null){
+					int ix = Integer.parseInt(x);
+					int iy = Integer.parseInt(y);
+					context.args = new Object[]{ix, iy, 
+							Integer.parseInt(w), Integer.parseInt(h)};
+					context.argClass = new Class[]{int.class, int.class, 
+							int.class, int.class};
+				}
+			}else if(context.tag.equals("minimumSize")){
+				String w = attributes.getValue("w");
+				String h = attributes.getValue("h");				
+				if(w != null && h != null){
+					context.args = new Object[]{new Dimension(Integer.parseInt(w), Integer.parseInt(h))};
+				}				
+			}else if(context.tag.toLowerCase().equals("rows") ||
+					context.tag.toLowerCase().equals("columns") ||
+					context.tag.toLowerCase().equals("hgap") ||
+					context.tag.toLowerCase().equals("vgap")
+					){
+				String val = attributes.getValue("value");
+				context.args = new Object[]{Integer.parseInt(val)};
+				context.argClass = new Class[]{int.class};
+			}	
+			
 			if(context.args != null && context.argClass == null){
 				context.argClass = new Class[context.args.length];
 				for(int i = 0; i < context.args.length; i++){
@@ -233,13 +269,6 @@ public class XUIContainer {
 				}
 			}
 		}
-	}
-	
-	private Context createContext(Context parent, String tag, Attributes attributes){
-		if(tag.equals("size")){
-			
-		}
-		return null;
 	}
 	
 }

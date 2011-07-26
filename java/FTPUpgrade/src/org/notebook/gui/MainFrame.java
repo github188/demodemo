@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.logging.Log;
@@ -67,6 +68,8 @@ public class MainFrame extends JFrame {
 
 	
 	public void showSettings(){
+		JPanel p = new JPanel();
+		//p.setSize(width, height)
 		//NoteBookSettings settings = new NoteBookSettings(this, controller);		
 		//settings.setLocationRelativeTo(this);
 		//settings.setVisible(true);

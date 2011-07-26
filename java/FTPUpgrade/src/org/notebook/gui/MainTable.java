@@ -1,9 +1,9 @@
 package org.notebook.gui;
 
+import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -12,18 +12,20 @@ import org.notebook.cache.UpgradeModel;
 
 public class MainTable extends JTable {
 	
-	public MainTable(StatusModel model){
-		super(model);
+	public MainTable(){
+		super(new StatusModel());
 		this.setGUI();
 		
+
 	}
 		
 	private void setGUI(){
 		this.getColumnModel().getColumn(0).setPreferredWidth(80);
-		this.getColumnModel().getColumn(5).setPreferredWidth(80);		
+		this.getColumnModel().getColumn(5).setPreferredWidth(80);
+		this.setBackground(Color.RED);		
 	}
 	
-	class StatusModel extends AbstractTableModel{
+	static class StatusModel extends AbstractTableModel{
 		protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		protected ArrayList<UpgradeModel> data = new ArrayList<UpgradeModel>();
 		public StatusModel(){			

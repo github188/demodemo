@@ -3,6 +3,7 @@ package org.notebook.gui;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -10,6 +11,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
@@ -80,13 +83,36 @@ public class NoteBookApp {
 		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run(){
-				xui.load(this.getClass().getClassLoader().getResource("org.netbook.gui.layout.xml"));				
-				main = (MainFrame)xui.getByName("main");			
-				services.setTopWindow(main);
-				//main.initGui();
-            	//窗口居中.
-            	main.setLocationRelativeTo(null);
-            	main.setVisible(true);
+				URL layout = this.getClass().getClassLoader().getResource("org/notebook/gui/layout.xml");
+				if(layout != null) {
+					xui.load(layout);				
+					main = (MainFrame)xui.getByName("main");	
+					
+					JSplitPane l1 = (JSplitPane)xui.getByName("l1");
+					//JSplitPane.VERTICAL_SPLIT;
+					l1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+					l1.setDividerLocation(100);
+					l1.setDividerSize(0);
+
+					JSplitPane l2 = (JSplitPane)xui.getByName("l2");
+					//JSplitPane.VERTICAL_SPLIT;
+					l2.setOrientation(JSplitPane.VERTICAL_SPLIT);
+					l2.setDividerLocation(200);
+					l2.setDividerSize(0);
+					l2.setResizeWeight(1.0);
+					
+					//JPanel status = (JPanel)xui.getByName("status");
+					//status.setre
+					
+					
+					services.setTopWindow(main);
+					//main.initGui();
+	            	//窗口居中.
+	            	main.setLocationRelativeTo(null);
+	            	main.setVisible(true);
+				}else {
+					log.error("Not found applicaton layout configuration.");
+				}
 			}
         });	
 		
