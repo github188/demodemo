@@ -1,5 +1,6 @@
 package org.notebook.xui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.swing.AbstractButton;
 import javax.swing.JSplitPane;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -72,6 +74,7 @@ public class XUIContainer {
 	
 	public void setEventQueue(EventQueue eq){
 		this.eventQueue = eq;
+		this.addComponent("common_action", eq.getActionListener());
 	}
 
 	public Object getByName(String name){
@@ -85,6 +88,15 @@ public class XUIContainer {
 	private void addComponent(String name, Object o){
 		log.info("add component, name:" + name + ", " + o.toString());
 		this.cache.put(name, o);
+		if(o instanceof Component){
+			Component c = (Component)o;
+			c.setName(name);
+		}
+		if(o instanceof AbstractButton){
+			AbstractButton c = (AbstractButton)o;
+			c.setActionCommand(name);
+		}
+		
 		if(this.eventQueue != null){
 			this.eventQueue.registerAction(o);
 		}

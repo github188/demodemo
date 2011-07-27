@@ -29,7 +29,7 @@ public class AboutDialog extends JDialog {
 		//setMinimumSize(new Dimension(340, 150));
 		this.pack();
 		this.setResizable(false);
-	}	
+	}
 	
 	/**
 	 * 

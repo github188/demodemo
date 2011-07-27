@@ -42,6 +42,7 @@ public class NoteBookApp {
 		System.out.println("java.home:" + System.getProperty("java.home"));
 		System.out.println("java.runtime.version:" + System.getProperty("java.runtime.version"));
 		System.out.println("java.runtime.name:" + System.getProperty("java.runtime.name"));
+		System.out.println("run_mode:" + System.getProperty("run_mode"));
     	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {
@@ -74,6 +75,8 @@ public class NoteBookApp {
 		//eventQueue.registerAction(lafManager);
 		
 		xui.setEventQueue(eventQueue);
+		//xui.
+		
 		try{
 			UIManager.setLookAndFeel(
 		            UIManager.getSystemLookAndFeelClassName());

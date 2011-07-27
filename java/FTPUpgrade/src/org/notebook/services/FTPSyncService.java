@@ -46,6 +46,8 @@ public class FTPSyncService {
 	private TaskStatus status = null;
 	private File localRoot = new File(".");
 	
+	private boolean isDownloading = false;
+	
 	//当前传输的文件的输出流。
 	private OutputStream curOs = null;
 	
@@ -125,6 +127,16 @@ public class FTPSyncService {
 	 * 简单下载处理流程。
 	 */
 	public void simpleDownload(){
+		if(isDownloading){
+			JOptionPane.showMessageDialog(win,
+				    "已经开始传输文件！",
+				    "Error",
+				    JOptionPane.INFORMATION_MESSAGE);
+			return;		
+		}
+			
+		isDownloading = true;
+		
 		status = new TaskStatus();
 		
 		Collection<UpgradeModel> fileList = this.getUpdatingList();
@@ -134,8 +146,7 @@ public class FTPSyncService {
 			status.totalBytes += s;
 		}
 		
-		updateStatusBar("开始下载文件...");
-		
+		updateStatusBar("开始下载文件...");		
 		for(UpgradeModel f: fileList){
 			try {
 				downLoadFile(f);
@@ -156,6 +167,8 @@ public class FTPSyncService {
 				break;
 			}
 		}
+		
+		isDownloading = false;
 		//updateStatusBar("文件下载完毕.");
 		
 	}
@@ -176,7 +189,7 @@ public class FTPSyncService {
 		curOs = new FileOutputStream(dstFile, true);
 		ftp.retrieveFile(file.dst, curOs);
 		
-		curOs.close();
+		if(curOs != null)curOs.close();
 		curOs = null;
 		status.doneFiles++;
 		status.doneBytes += file.dstSize;
@@ -278,6 +291,19 @@ public class FTPSyncService {
 			    JOptionPane.ERROR_MESSAGE);
 		*/
 	}
+	
+	/**
+	 * 暂停传输
+	 */	
+	public void pause(){
+		//simpleDownload();
+		log.info("---------pause----------------");
+		try {
+			ftp.disconnect();
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
+	}	
 	
 	public void scanLocalPath(){
 		//for()

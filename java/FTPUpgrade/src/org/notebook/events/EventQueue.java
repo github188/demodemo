@@ -1,6 +1,7 @@
 package org.notebook.events;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,6 +23,13 @@ public class EventQueue {
 	private Log log = LogFactory.getLog("event.queue");
 	//public
 	private ArrayList<EventMap> queue = new ArrayList<EventMap>();
+	
+	private ActionListener globalListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			dispatchEvent(e);
+		}};
+	
 	public EventQueue(Action defaultAction){
 		EventMap e = new EventMap("*");
 		e.order = Integer.MAX_VALUE;
@@ -47,6 +55,14 @@ public class EventQueue {
 			}
 		}
 		return e.order;
+	}
+	
+	/**
+	 * 创建一个ActionListener, 这个Action回路由请求到当前的Queue.
+	 * @return
+	 */
+	public ActionListener getActionListener(){
+		return globalListener;
 	}
 	
 	public void registerAction(Object handler){

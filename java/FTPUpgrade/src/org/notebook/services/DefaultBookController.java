@@ -59,7 +59,7 @@ public class DefaultBookController implements BookController{
 		this.runningJNLP = isJNLP;
 		this.runningSandBox = isSandBox;
 		
-		syncThread = new ThreadPoolExecutor(2, 5, 60, 
+		syncThread = new ThreadPoolExecutor(4, 10, 60, 
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(100));
 		//this.sync.start();
@@ -146,10 +146,6 @@ public class DefaultBookController implements BookController{
 			
 			//PreferredSize
 			MainTable mainTable = (MainTable)xui.getByName("mainTable");
-						
-			JPanel status = (JPanel)xui.getByName("status");
-			status.setPreferredSize(new Dimension(100, 40));
-			
 			JFrame main = (JFrame)xui.getByName("main");
 			
 			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
@@ -161,7 +157,6 @@ public class DefaultBookController implements BookController{
 			main.addWindowListener(new WindowAdapter() {
 		        public void windowClosing(WindowEvent ce) {
 		        	System.exit(0);		        	
-		        	//this.windowOpened(e)
 		        }
 		        
 		        public void windowOpened(WindowEvent ce){
@@ -176,30 +171,6 @@ public class DefaultBookController implements BookController{
 			//注册FTP响应是事件。
 			event.queue.registerAction(ftpSync);
 			//event.queue.
-			
-			JButton connect = (JButton)xui.getByName("connect");
-			connect.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(final ActionEvent arg0) {
-					syncThread.execute(new Runnable(){
-						@Override
-						public void run() {
-							ftpSync.connect();
-					}});
-				}		
-			});			
-
-			JButton upgrade = (JButton)xui.getByName("upgrade");		
-			upgrade.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(final ActionEvent arg0) {
-					syncThread.execute(new Runnable(){
-						@Override
-						public void run() {
-							ftpSync.upgrade();
-					}});
-				}
-			});			
 			
 			fileInfo = (JLabel)xui.getByName("fileInfo");
 			fileInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -230,6 +201,43 @@ public class DefaultBookController implements BookController{
 		        });
 			}			
 		}
+		
+		@EventAction(order=1)
+		public void upgrade(final BroadCastEvent event){
+			//
+			JButton button = (JButton)event.getSource();
+			//button.getActionCommand()
+			//if(button)
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.upgrade();
+			}});			
+		}
+		
+		@EventAction(order=1)
+		public void pause(final BroadCastEvent event){
+			//
+			JButton button = (JButton)event.getSource();
+			//button.getActionCommand()
+			//if(button)
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.pause();
+			}});			
+		}		
+		
+		
+		
+		@EventAction(order=1)
+		public void connect(final BroadCastEvent event){
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.connect();
+			}});
+		}		
 		
 		private void updateProcessBar(TaskStatus status){
 			String tInfo = String.format("已传文件%s个%1.2fM, 待传文件%s个%1.2fM",
