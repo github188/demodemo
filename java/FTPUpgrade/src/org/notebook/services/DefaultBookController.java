@@ -7,11 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -20,50 +15,45 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.notebook.cache.Configuration;
 import org.notebook.cache.DataStorage;
-import org.notebook.cache.Document;
-import org.notebook.cache.DocumentDefine;
 import org.notebook.cache.LocalFileStorage;
+import org.notebook.cache.TaskStatus;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
+import org.notebook.gui.Events;
 import org.notebook.gui.MainFrame;
 import org.notebook.gui.MainTable;
 import org.notebook.gui.MainTable.StatusModel;
-import org.notebook.gui.MenuToolbar;
 import org.notebook.xui.XUIContainer;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog("services");
 	private DataStorage storage = null;
-	//private SyncService sync = null;
-
-	//private NoteBook book = null;
 	private MainFrame mainFrame = null;
 	private ThreadPoolExecutor syncThread = null;
-	private ThreadPoolExecutor actionThread = null;
 	private MenuAction menuActions = new MenuAction();
-	private Map<String, Method> actionMapping = new HashMap<String, Method>();
 	
 	private boolean runningJNLP = false;
 	private boolean runningSandBox = false;
 	private boolean visibleTrayIcon = false;
-	private int autoLoginTimes = 0;
-	//初始化了本地NoteBook路径.
-	private boolean initedBook = false;
 	private boolean isWin = false;
 	private FTPSyncService ftpSync = null;
 	
-	//演示数据
-	private int dataCursor = 0;
-	private Map<String, List<Document>> _temp = new HashMap<String, List<Document>>();
-	private List<Document> _cur = null;
+	private JLabel fileInfo = null;
+	private JLabel taskInfo = null;
+	private JLabel toolInfo = null;
+	private JProgressBar fileProgress = null;
+	private JProgressBar toolProgress = null;	
 	
+		
 	public DefaultBookController(boolean isJNLP, boolean isSandBox){
 		isWin = System.getProperty("sun.desktop").equals("windows");
 		this.runningJNLP = isJNLP;
@@ -72,10 +62,6 @@ public class DefaultBookController implements BookController{
 		syncThread = new ThreadPoolExecutor(2, 5, 60, 
 				TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(100));
-		actionThread = new ThreadPoolExecutor(1, 1, 60, 
-				TimeUnit.SECONDS, 
-				new LinkedBlockingDeque<Runnable>(100));
-		
 		//this.sync.start();
 		
 		this.storage = createPersistenceService();
@@ -124,28 +110,8 @@ public class DefaultBookController implements BookController{
 		return old;
 	}
 	
-	protected boolean authencation(){
-
-		return false;
-	}
-	
-	
-	private void restoreLastStatus(){
-
-	}
-	
 	public class MenuAction {
-		
-		@EventAction(order=1)
-		public void Loaded(BroadCastEvent event){
-			log.info("applcation loaded...");
-			DocumentDefine doc = storage.loadDocument("simple.cfg");
-			Map<String, Object> param = new HashMap<String, Object>();
-			param.put(MenuToolbar.EVENT_DATA_DOC_PANEL, doc);			
-			event.fireNewEvent(MenuToolbar.LOAD_DOC_PANEL, mainFrame,  param);
-			_cur = new ArrayList<Document>();
-		}	
-		
+				
 		@EventAction(order=1)
 		public void Exit(BroadCastEvent event) {
 			log.info("shutdown applcation...");
@@ -235,8 +201,55 @@ public class DefaultBookController implements BookController{
 				}
 			});			
 			
-			//log.error("xxxxxxxxx: update border;");			
-		}	
+			fileInfo = (JLabel)xui.getByName("fileInfo");
+			fileInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+
+			taskInfo = (JLabel)xui.getByName("taskInfo");
+			taskInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+
+			toolInfo = (JLabel)xui.getByName("toolInfo");
+			toolInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+			
+			fileProgress = (JProgressBar)xui.getByName("fileProgress");
+			toolProgress = (JProgressBar)xui.getByName("taskProgress");			
+		}
+		
+		@EventAction(order=1)
+		public void UpdateProgressBar(final BroadCastEvent event){
+			final TaskStatus status = (TaskStatus)event.get(Events.PROGRESS_PARAM);
+			if(status == null)return;
+			if(SwingUtilities.isEventDispatchThread()){
+				updateProcessBar(status);
+			}else {
+				SwingUtilities.invokeLater(new Runnable() {
+		            public void run() {
+		            	updateProcessBar(status);
+		            }
+		        });
+			}			
+		}
+		
+		private void updateProcessBar(TaskStatus status){
+			String tInfo = String.format("已传文件%s个%1.2fM, 待传文件%s个%1.2fM",
+					status.doneFiles, status.doneBytes /1024.0/1024.0,
+					status.totalFiles - status.doneFiles, 
+					(status.totalBytes - status.doneBytes) /1024.0/1024.0
+					);
+			String fInfo = null;
+			if(status.curFile != null){
+				fInfo = String.format("%s 进度.", status.curFile);
+			}else {
+				fInfo = "单个文件进度.";
+			}
+			toolInfo.setText(tInfo);
+			fileInfo.setText(fInfo);
+			
+			fileProgress.setMaximum((int)status.fileBytes);
+			fileProgress.setValue((int)status.doneFileByptes);
+			
+			toolProgress.setMaximum((int)status.totalBytes);
+			toolProgress.setValue((int)status.doneBytes);			
+		}
 		
 		public String toString(){
 			return "BookController Actions";
