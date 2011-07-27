@@ -161,14 +161,16 @@ public class FTPSyncService {
 	}
 	
 	private void downLoadFile(UpgradeModel file) throws IOException{
+		//status.fileBytes = 0;
 		status.fileBytes = file.dstSize;
-		status.fileBytes = 0;
 		status.curFile = file.dst;
 		File dstFile = new File(this.localRoot, file.dst + ".cache");
 		long offset = 0;
 		if(dstFile.isFile()){
 			offset = dstFile.length();
 		}
+		
+		status.doneFileByptes = offset;
 		updateProgressBar();
 		ftp.setRestartOffset(offset);
 		curOs = new FileOutputStream(dstFile, true);
@@ -177,7 +179,7 @@ public class FTPSyncService {
 		curOs.close();
 		curOs = null;
 		status.doneFiles++;
-		status.doneFileByptes+= file.dstSize;
+		status.doneBytes += file.dstSize;
 		
 		File newFile = new File(this.localRoot, file.dst);
 		if(newFile.isFile()){
@@ -303,31 +305,14 @@ public class FTPSyncService {
         private long lastUpdateUI = 0;
         
         public void bytesTransferred(CopyStreamEvent event) {        	
-            //bytesTransferred(event.getTotalBytesTransferred(), event.getBytesTransferred(), event.getStreamSize());
-        	if(status != null){
-        		//status.doneBytes += event.getBytesTransferred();
-        		status.doneFileByptes += event.getBytesTransferred();
-        		
-        		//至少0.2秒才更新一次进度条，避免影响界面操作影响效率。
-        		//if(System.currentTimeMillis() - lastUpdateUI > 200){
-        			lastUpdateUI = System.currentTimeMillis(); 
-        			updateProgressBar();
-        		//}
-        	}
+            bytesTransferred(event.getTotalBytesTransferred(), event.getBytesTransferred(), event.getStreamSize());
         }
 
         public void bytesTransferred(long totalBytesTransferred,
                 int bytesTransferred, long streamSize) {
-            long megs = totalBytesTransferred / 1000000;
-            for (long l = megsTotal; l < megs; l++) {
-                System.err.print("#");
-            }
-            
-            megsTotal = megs;
         	if(status != null){
         		//status.doneBytes += event.getBytesTransferred();
-        		status.doneFileByptes += bytesTransferred;
-        		
+        		status.doneFileByptes += bytesTransferred;        		
         		//至少0.2秒才更新一次进度条，避免影响界面操作影响效率。
         		if(System.currentTimeMillis() - lastUpdateUI > 200){
         			lastUpdateUI = System.currentTimeMillis(); 

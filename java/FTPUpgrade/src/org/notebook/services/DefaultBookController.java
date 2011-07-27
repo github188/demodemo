@@ -211,7 +211,9 @@ public class DefaultBookController implements BookController{
 			toolInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 			
 			fileProgress = (JProgressBar)xui.getByName("fileProgress");
-			toolProgress = (JProgressBar)xui.getByName("taskProgress");			
+			fileProgress.setStringPainted(true);
+			toolProgress = (JProgressBar)xui.getByName("taskProgress");
+			toolProgress.setStringPainted(true);
 		}
 		
 		@EventAction(order=1)
@@ -231,7 +233,7 @@ public class DefaultBookController implements BookController{
 		
 		private void updateProcessBar(TaskStatus status){
 			String tInfo = String.format("已传文件%s个%1.2fM, 待传文件%s个%1.2fM",
-					status.doneFiles, status.doneBytes /1024.0/1024.0,
+					status.doneFiles, (status.totalBytes + status.doneFileByptes) /1024.0/1024.0,
 					status.totalFiles - status.doneFiles, 
 					(status.totalBytes - status.doneBytes) /1024.0/1024.0
 					);
@@ -245,10 +247,11 @@ public class DefaultBookController implements BookController{
 			fileInfo.setText(fInfo);
 			
 			fileProgress.setMaximum((int)status.fileBytes);
+			//fileProgress.setm
 			fileProgress.setValue((int)status.doneFileByptes);
 			
 			toolProgress.setMaximum((int)status.totalBytes);
-			toolProgress.setValue((int)status.doneBytes);			
+			toolProgress.setValue((int)(status.doneBytes + status.doneFileByptes));			
 		}
 		
 		public String toString(){
