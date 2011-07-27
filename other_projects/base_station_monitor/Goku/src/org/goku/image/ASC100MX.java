@@ -192,7 +192,7 @@ public class ASC100MX implements Runnable{
 			if(writeBuffer.hasRemaining()){
 				throw new IOException("Time out to send UPD package.");
 			}
-			log.info(String.format("Send to MX %s->%s size %s", client.getClientId(), addr.toString(), data.limit()));
+			log.debug(String.format("Send to MX %s->%s size %s", client.getClientId(), addr.toString(), data.limit()));
 		}else {
 			log.info("Not found MX server for node:" + locationId);
 		}
