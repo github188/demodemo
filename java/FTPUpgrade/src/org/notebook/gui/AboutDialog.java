@@ -52,9 +52,9 @@ public class AboutDialog extends JDialog {
         final JTextArea about = new JTextArea("");
         about.setEditable(false);
         final String aboutText = "\n" +  
-        						 name + " 成都动物免疫／申请／证明，打印查询系统.\n\n" +
+        						 name + " FTP远程升级软件.\n\n" +
         						 "版本: " + Version.getVersion() + "\n" +
-        						 "开发商: 蓝星软件开发公司\n" +
+        						 "开发者： 四无浪子\n" +
         						 "联系方式: wudalong@gmail.com" + 
         						 "\n\n";
         about.setText(aboutText);

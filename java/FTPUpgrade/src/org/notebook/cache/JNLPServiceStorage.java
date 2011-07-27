@@ -1,5 +1,6 @@
 package org.notebook.cache;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -27,6 +28,10 @@ public class JNLPServiceStorage extends DataStorage{
             log.error("failed to init JNLP service");
         }
     }
+    
+	public File getRootPath(){
+		return new File(root.getFile());
+	}    
 	
 	protected URL getPath(String id){
 		try {

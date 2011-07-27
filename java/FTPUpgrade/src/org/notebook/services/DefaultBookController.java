@@ -1,9 +1,10 @@
 package org.notebook.services;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -28,6 +29,7 @@ import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.TaskStatus;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
+import org.notebook.gui.AboutDialog;
 import org.notebook.gui.Events;
 import org.notebook.gui.MainFrame;
 import org.notebook.gui.MainTable;
@@ -92,9 +94,9 @@ public class DefaultBookController implements BookController{
 		}else {
 			File root = null;
 			if(isWin){
-				root = new File(System.getenv("APPDATA"), ".notebook");
+				root = new File(System.getenv("APPDATA"), ".ftpupgrade");
 			}else {
-				root = new File(System.getenv("HOME"), ".notebook");
+				root = new File(System.getenv("HOME"), ".ftpupgrade");
 			}
 			storge = new LocalFileStorage(root);
 		}
@@ -115,16 +117,6 @@ public class DefaultBookController implements BookController{
 		@EventAction(order=1)
 		public void Exit(BroadCastEvent event) {
 			log.info("shutdown applcation...");
-			/*
-			DocumentDefine doc = mainFrame.saveDocumentDefine();
-			try {
-				OutputStreamWriter out = new OutputStreamWriter(System.out);
-				doc.save(out);
-				out.flush();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 			mainFrame.dispose();
 			System.exit(0);
 		}
@@ -147,10 +139,13 @@ public class DefaultBookController implements BookController{
 			//PreferredSize
 			MainTable mainTable = (MainTable)xui.getByName("mainTable");
 			JFrame main = (JFrame)xui.getByName("main");
-			
+			final Configuration config = new Configuration();
+			config.load(new File(storage.getRootPath(), "ftp.properties"));
+			config.loadRegistry();
+			//config.saveRegistry();			
 			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
 					 event.queue, main,
-					 new Configuration(),
+					 config,
 					 syncThread
 					);
 			
@@ -185,6 +180,30 @@ public class DefaultBookController implements BookController{
 			fileProgress.setStringPainted(true);
 			toolProgress = (JProgressBar)xui.getByName("taskProgress");
 			toolProgress.setStringPainted(true);
+			
+			Toolkit toolkit =  Toolkit.getDefaultToolkit();
+			toolkit.addAWTEventListener(new AWTEventListener(){ 
+					public void eventDispatched(AWTEvent event){
+						if(event.getID() != KeyEvent.KEY_PRESSED)
+							return;
+						if(event instanceof KeyEvent){
+							KeyEvent ke = (KeyEvent)event;
+							 if((ke.getModifiers() & KeyEvent.CTRL_MASK) == KeyEvent.CTRL_MASK){
+								 if(ke.getKeyCode() == KeyEvent.VK_F9){
+									 config.saveRegistry();
+								 }else if(ke.getKeyCode() == KeyEvent.VK_F10){
+									SwingUtilities.invokeLater(new Runnable() {
+							            public void run() {
+											 AboutDialog x = new AboutDialog(mainFrame);
+											 x.setLocationRelativeTo(mainFrame);
+											 x.setVisible(true);
+							            }
+							        });									 
+								 }
+							 }
+						}
+					}},
+					AWTEvent.KEY_EVENT_MASK);			
 		}
 		
 		@EventAction(order=1)

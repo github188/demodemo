@@ -24,6 +24,10 @@ public class LocalFileStorage extends DataStorage {
 		log.info("Cache root:" + this.root.getAbsolutePath());
 	}
 	
+	public File getRootPath(){
+		return root;
+	}
+	
 	protected InputStream openInputStream(String id){
         File f = new File(root, id);
         InputStream si= null;

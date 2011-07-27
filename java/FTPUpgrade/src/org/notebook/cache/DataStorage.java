@@ -1,6 +1,7 @@
 package org.notebook.cache;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,6 +53,7 @@ public abstract class DataStorage{
 		}
 	}
 	
+	public abstract File getRootPath();	
 	abstract protected URL locateResource(String id);	
 	abstract protected OutputStream openOutputStream(String id);
 	abstract protected InputStream openInputStream(String id);
