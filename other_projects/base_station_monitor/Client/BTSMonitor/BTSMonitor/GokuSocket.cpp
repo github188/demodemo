@@ -13,6 +13,7 @@ using namespace std;
 static char THIS_FILE[] = __FILE__;
 #endif
 
+//Command_SendAndReceiveTimer() Thread...
 int GokuSocket::read_buffer(char *buffer, int size)
 {
 	StartAutoWait(8); //5 second

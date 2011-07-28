@@ -189,7 +189,7 @@ void CTaskMgr::OnBnClickedBtnTaskAdd()
 	sStartTime.Format("%02d:%02d:%02d",atoi(sBeginHH),atoi(sBeginMM),atoi(sBeginSS));
 	sEndTime.Format("%02d:%02d:%02d",atoi(sEndHH),atoi(sEndMM),atoi(sEndSS));
 
-	CString sStatus = "2";
+	CString sStatus = "1"; //Default Value
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	if( pApp->pgkclient->saveTaskInfo(sTaskID, sTaskName, sUUID, sCh, sVV,  sWeek,  sBeginDate, sEndDate,  sStartTime, sEndTime, sMinShowTime, sShowOrder,sStatus))
@@ -291,7 +291,7 @@ void CTaskMgr::InitTaskLstView(void)
 	m_cboEndHour.ResetContent();
 	for (;i<24;i++)
 	{
-		str.Format("%2d", i);
+		str.Format("%02d", i);
 		m_cboStartHour.AddString(str);
 		m_cboEndHour.AddString(str);
 	}
@@ -637,7 +637,9 @@ void CTaskMgr::OnBnClickedBtnModSaveTask()
 
 						SetDlgItemText(IDC_EDIT_TASK_NAME, sTaskName);
 
+						m_cboChannel.ResetContent();
 						m_cboDeviceID.SelectString(0,sBTSID);
+						OnCbnSelchangeCboDeviceId();
 						//CString sChan;
 						//sChan.Format("%s:Í¨µÀ%d",sCh, sCh);
 						//m_cboChannel.SelectString(0,sChan);
@@ -851,7 +853,7 @@ bool CTaskMgr::ModifyTask()
 	sStartTime.Format("%02d:%02d:%02d",atoi(sBeginHH),atoi(sBeginMM),atoi(sBeginSS));
 	sEndTime.Format("%02d:%02d:%02d",atoi(sEndHH),atoi(sEndMM),atoi(sEndSS));
 
-	CString sStatus = m_sStatus=="idle"? "2" : "1";
+	CString sStatus = m_sStatus=="idle"? "2" : "1"; //1 run, 2 work, 9 delete.
 
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
 	if( pApp->pgkclient->saveTaskInfo(m_sTaskID, sTaskName, sUUID, sCh, sVV,  sWeek,  sBeginDate, sEndDate,  sStartTime, sEndTime, sMinShowTime, sShowOrder,sStatus))

@@ -6,6 +6,7 @@
 #include "VideoPlayControl.h"
 #include "MonitorImage.h"
 #include "ImageSocket.h"
+#include "RealAlarmSocket.h"
 
 UINT alarm_getRealAlarm_thread(LPVOID param);
 UINT Command_SendAndReceiveTimer(LPVOID param);
@@ -22,11 +23,13 @@ public:
 	VideoPlayControl *m_pRealPlayControl;
 	VideoPlayControl *m_pReplayControl;
 
-	GokuSocket *socket;
+	GokuSocket *socket; //Main Thread Socket
+
+	CRealAlarmSocket *m_realAlarmSocket; //real Alarm Socket
+
 	BTSManager btsmanager;
 	AlarmManager alarmmanager;
-	CWinThread *playThread;
-	CWinThread *alarmThread;
+	CWinThread *m_pRealAlarmThread;
 
 public:
 	GokuClient(CString &primary_server, CString &secondary_server)
@@ -38,26 +41,22 @@ public:
 			m_pPlayThread[i]=NULL;
 			m_pArrVideoCtrl[i]=NULL;
 		}
-		m_pAlarmVideoCtrl = NULL;
-		m_pAlarmVideoThread = NULL;
-
+		
+		//Main Thread Socket...
 		socket = new GokuSocket(primary_server, secondary_server);
 		m_nConnectCode = socket->connect_server();
 		
-		m_pVedioCtrlThread = NULL;
+		//Main Socket Data Send&Recv timeout control...
 		m_pTimerThread = NULL;
-
 		if (m_nConnectCode>0)
-		{
 			m_pTimerThread = AfxBeginThread(Command_SendAndReceiveTimer, socket);
-		}
 		
+		//Video Thread Status Control...
+		m_pVedioCtrlThread = NULL;
 		m_hEventVideoCtrl[0] = ::CreateEvent(NULL,FALSE,FALSE,NULL); //Exit Video Ctrl
 		m_hEventVideoCtrl[1] = ::CreateEvent(NULL,FALSE,FALSE,NULL); //Stop Time out...wait for other function over...
-
 		m_pVedioCtrlThread = AfxBeginThread(video_thread_control, this);
 
-		m_nSid = 0;
 
 		m_pMoImage = NULL;
 		m_lWaitTime = cnWAIT_TIME;
@@ -65,9 +64,8 @@ public:
 		m_pRealPlayControl=NULL;
 		m_pReplayControl=NULL;
 
-		for (i=0; i<GOKU_FUNC_END; i++)
-			m_hFuncEvent[i] = ::CreateEvent(NULL,FALSE,FALSE,NULL);
 		m_bRealAlarmStrReturn = false;
+		m_realAlarmSocket = NULL;
 
 	}
 
@@ -96,13 +94,6 @@ public:
 				m_pArrVideoCtrl[i]->status = 0; //Thread is runing...
 				m_pArrVideoCtrl[i]->socket->CancelSocket();
 			}
-		}
-
-		if (m_pAlarmVideoCtrl) //Alarm Query Thread
-		{
-			m_pAlarmVideoCtrl->bIsBlocking = true;
-			m_pAlarmVideoCtrl->status = 0;
-			m_pAlarmVideoCtrl->socket->CancelSocket();
 		}
 
 		::Sleep(100);
@@ -199,24 +190,26 @@ public:
 			}
 		}
 		*///-----------------------------------------------------------
-		socket->ExitAutoWait();
 
+		//Exit Main Thread Socket timeout control
+		socket->ExitAutoWait();
 		delete socket;
+
+		//Exit RealAlarm Thread Socket timeout control
+		if (m_realAlarmSocket)
+		{
+			m_realAlarmSocket->ExitAutoWait();
+			m_realAlarmSocket->SocketAttach();
+			delete m_realAlarmSocket;
+			m_realAlarmSocket = NULL;
+		}
+
 
 		if ( m_pMoImage) 
 		{
 			delete m_pMoImage;
 			m_pMoImage = NULL;
 		}
-
-		if (m_pAlarmVideoCtrl)
-			delete m_pAlarmVideoCtrl;
-
-		//Exit Function Thread
-		::SetEvent(m_hFuncEvent[GOKU_FUNC_NONE]);
-		::Sleep(50);
-		for (i=0; i<GOKU_FUNC_END; i++)
-			::CloseHandle(m_hFuncEvent[i]);
 
 	}
 
@@ -226,7 +219,8 @@ public:
 	int login(const TCHAR *username, const TCHAR *password);
 	int login(CString &user, CString &password);
 	int logout();
-	bool GetUserInfo(CString& sUserName, CString& sPassword, int& nSid);
+	int ModifyPW(CString sOldPW, CString sNewPW);
+	bool GetUserInfo(CString& sUserName, CString& sPassword, CString& sSid);
 
 	void listbtstree(CString &str);
 	void getAlarmStr(CString &alarmStr);
@@ -255,7 +249,7 @@ public:
 	bool real_play(CString &uuid, CString &channel, DataCallBack callback, int session, HWND hWnd=NULL);
 
 	//VideoPlayControl* replay(CString &videoId, DataCallBack callback, int session=0);
-	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false);
+	bool replay(CString &videoId, DataCallBack callback, int session=0, CString sAlarmVideoName="", bool bSave=false, HWND hWnd=NULL);
 	void ReplayjumpToPos(CString pos);
 
 	int IsConnected() { return (m_nConnectCode == -1 ? FALSE: TRUE); }
@@ -263,6 +257,8 @@ public:
 		socket->cs.Close();
 		m_nConnectCode = socket->connect_server(); 	
 	}
+
+	bool   GetRealAlarmInfo();   
 
 	//Modify errno is the windows reserve type
 	//MonitorImage* getRealImagebyBase64(BTSInfo *binfo, int *errno);
@@ -273,23 +269,19 @@ public:
 	MonitorImage* getAlarmImagebyBase64(CString sBtsUUID,CString sCh, CString sRoute,CString alarmID, int *err);
 
 	int stop_Alarm(CString btsid, CString timeout);
-	bool StopAlamVideoPlay();
 protected:
 	int execute_command(CString &cmd);
 	CString host;
 	CString m_sUserName;
 	CString m_sPassword;
-	int		m_nSid;
+	CString	m_sSid;
 	int		m_nConnectCode;
 	CWinThread		 *m_pVedioCtrlThread; //Control GoKuSocket
 	CWinThread		 *m_pTimerThread; //Control GoKuSocket
 
 public:
-	VideoPlayControl *m_pArrVideoCtrl[cnTOTAL_VV_CNT]; //[cnMAX_VV]; //Real Play
-	VideoPlayControl *m_pAlarmVideoCtrl;			  //Replay Alarm Vedio
-
-	CWinThread		 *m_pPlayThread[cnTOTAL_VV_CNT]; //[cnMAX_VV];   //Real Play thread handle
-	CWinThread		 *m_pAlarmVideoThread;       //Alarm Video thread
+	VideoPlayControl *m_pArrVideoCtrl[cnTOTAL_VV_CNT]; //[cnMAX_VV]; //Real Play + Alarm play
+	CWinThread		 *m_pPlayThread[cnTOTAL_VV_CNT];   //[cnMAX_VV];   //Real Play thread handle + alarm play thread
 
 	//CMap<UINT,UINT,VideoPlayControl*,VideoPlayControl*> m_mapVideoPlayCtrl;
 	//CMap<UINT,UINT,MonitorImage*,MonitorImage*> m_mapImagePlayCtrl;
@@ -315,12 +307,6 @@ public:
 	
 	HANDLE m_hEventVideoCtrl[2];
 
-	//Func Tread
-	HANDLE m_hFuncEvent[GOKU_FUNC_END];
-	void   StartFuncThread();
-	bool   IsRealAlarmReturn() {return m_bRealAlarmStrReturn;};
-	void   SetRealAlarm(bool bHasAlarm) {m_bRealAlarmStrReturn = bHasAlarm;};
-	bool   GetRealAlarmInfo();   
 private:
 	long	m_lWaitTime;
 	int	   m_nAlarmVideoSaveCount;

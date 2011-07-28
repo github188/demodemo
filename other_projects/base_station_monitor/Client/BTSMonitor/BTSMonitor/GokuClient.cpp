@@ -72,16 +72,23 @@ int GokuClient::login(CString &user, CString &password)
 	if ( !socket->SendCmdAndRecvMsg(sCmd,sMsg) )
 		return -1;
 
-	util::split_next(sMsg, code, ':', 0);
+	CString sRet,sCode, sSid, sTemp;
+	//util::split_next(sMsg, code, ':', 0);
+	util::split_next(sMsg, sTemp, '\n', 0);
+	int pos = util::split_next(sTemp, sRet, '$', 0);
 	///----by-liang----------------------------------
-	
-	int ret = util::str2int(code);
-	//int ret = execute_command(sCmd);
-	
+	util::split_next(sRet, sCode, ':', 0);
+	int ret = util::str2int(sCode);
+
+	sSid = sTemp.Mid(pos+1);
+
 	if (ret == 0)
 	{
 		m_sUserName = user;
 		m_sPassword = password;
+		m_sSid = sSid;
+
+		CLogFile::WriteLog(CString("登陆成功: ") + sMsg);
 	}
 
 	return ret;
@@ -94,14 +101,22 @@ int GokuClient::logout()
 	return ret;
 }
 
-bool GokuClient::GetUserInfo(CString& sUserName, CString& sPassword, int& nSid)
+int GokuClient::ModifyPW(CString sOldPW, CString sNewPW)
+{
+	CString sCmd;
+	sCmd.Format("cmd>new_password?sid=%s&old=%s&new=%s",m_sSid, sOldPW,sNewPW);
+	int ret = execute_command(sCmd);
+	return ret;
+}
+
+bool GokuClient::GetUserInfo(CString& sUserName, CString& sPassword, CString& sSid)
 {
 	if (m_sUserName.IsEmpty() && m_sPassword.IsEmpty())
 		return false;
 
 	sUserName = m_sUserName;
 	sPassword = m_sPassword;
-	nSid	  = m_nSid;
+	sSid	  = m_sSid;
 	return true;
 }
 
@@ -174,6 +189,8 @@ void GokuClient::listbtstree(CString &str)
 		strError.Format("%s ErrorInfo:%s","listbtstree()",sRet);
 		CLogFile::WriteLog(strError);
 	}
+
+	CLogFile::WriteLog(CString("设备列表: ") + sMsg);
 
 }
 
@@ -354,7 +371,6 @@ void GokuClient::queryAlarmInfo(CString category, CString uuid,CString sCh, CStr
 	nTotal=util::str2int(sTotal);
 	int linenum=util::str2int(sCount);
 	nCount = linenum;
-	pos++; //emit \n
 	for(int i=0;i<linenum;i++)
 	{
 
@@ -420,12 +436,26 @@ void GokuClient::getRealTimeAlarmStr(CString &alarmStr)
 	if (sMsg.IsEmpty())
 		return;
 
-	CString temp;
-	int pos=util::split_next(sMsg, temp, '$', 0);
- 	pos=util::split_next(sMsg, temp, '$', pos+1);
-	pos=util::split_next(sMsg, temp, '$', pos+1);
-	int linenum=util::str2int(temp);
-	pos++; //emit \n
+	//0:告警信息列表$<COUNT>$<RETURN_COUNT>$<QSID>
+	CString temp,sRet,sResult, sTotal, sCount, sQSid;
+	int pos=util::split_next(sMsg, temp, '\n', 0);
+	if(temp.IsEmpty())
+		return;
+
+	//0:alarm list
+	int pos1=util::split_next(temp, sRet, '$', 0);
+	util::split_next(sRet, sResult, ':', 0);
+	if ( util::str2int(sResult) )
+	{
+		return;
+	}
+
+	pos1=util::split_next(temp, sTotal, '$', pos1+1);
+	pos1=util::split_next(temp, sCount, '$', pos1+1);
+	sQSid=temp.Mid(pos1+1);
+	int nTotal=util::str2int(sTotal);
+	int linenum=util::str2int(sCount);
+	int nCount = linenum;
 	for(int i=0;i<linenum;i++)
 	{
 		pos=util::split_next(sMsg, temp, '\n', pos+1);
@@ -498,10 +528,10 @@ bool GokuClient::getTaskList(CString& sTaskList)
 {
 	
 	CString sCmd; //="cmd>list_task?sid=";
-	if (!m_nSid)
-		sCmd.Format("cmd>list_task?sid=%d", m_nSid);
-	else
+	if (m_sSid.IsEmpty())
 		sCmd=="cmd>list_task?sid=";
+	else
+		sCmd.Format("cmd>list_task?sid=%s", m_sSid);
 
 	sCmd.Append("\n");
 
@@ -662,7 +692,7 @@ bool GokuClient::real_play(CString &uuid, CString &channel, DataCallBack callbac
 }
 
 //VideoPlayControl* GokuClient::replay(CString &videoId, DataCallBack callback, int session)
-bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CString sAlarmVideoName, bool bSave)
+bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CString sAlarmVideoName, bool bSave,HWND hWnd)
 {
 	CString master_server = socket->ipaddr + ":";
 	util::int2str(master_server, socket->port);
@@ -670,13 +700,12 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 	//CSimpleSocket *masterSocket = new CSimpleSocket(master_server, master_server);
 	CSimpleSocketImpl * masterSocket = new CSimpleSocketImpl(master_server, master_server);
 
-	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session,videoId,"", sAlarmVideoName,bSave);
+	VideoPlayControl *control = new VideoPlayControl(masterSocket, callback, session,videoId,"", sAlarmVideoName,bSave,hWnd);
 
 	if (control==NULL) return false;
 
 	//m_pRealPlayControl=control; //quyao add... I think this should be replayControl...???
 
-	//m_pAlarmVideoCtrl = control;
 	m_pArrVideoCtrl[session] = control;
 
 	if ( control->socket->connect_server() > 0 )
@@ -687,8 +716,7 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 		if ( control->socket->SocketDetach() )
 		{
 			//playThread=AfxBeginThread(video_read_thread, control);
-			//m_pAlarmVideoThread = AfxBeginThread(video_read_thread, control);
-			playThread=m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
+			m_pPlayThread[session] = AfxBeginThread(video_read_thread, control);
 		}
 		else
 		{
@@ -697,14 +725,9 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 			//CString strError;
 			//strError.Format("播放失败%d",session);
 			//AfxMessageBox(strError);
-			
-			//delete m_pAlarmVideoCtrl;
-			//m_pAlarmVideoCtrl = NULL;			
-			//return false;
-			
+						
 			delete m_pArrVideoCtrl[session];
 			m_pArrVideoCtrl[session] = NULL;
-			playThread=NULL;
 			return false;
 
 		}
@@ -713,75 +736,6 @@ bool GokuClient::replay(CString &videoId, DataCallBack callback, int session,CSt
 		return false;
 
 	return true;
-}
-bool GokuClient::StopAlamVideoPlay()
-{
-	/*
-	if (!m_pAlarmVideoCtrl)
-		return;
-
-	m_pAlarmVideoCtrl->bIsBlocking = true;
-	m_pAlarmVideoCtrl->status = 0;
-	m_pAlarmVideoCtrl->socket->CancelSocket();
-
-	::Sleep(100);
-
-	delete m_pAlarmVideoCtrl;
-	m_pAlarmVideoCtrl = NULL;
-	*/
-
-	//--------------------
-	if (m_pAlarmVideoCtrl==NULL) //Unknown , needn't do futher operation...
-		return true;
-
-	if ( m_pAlarmVideoCtrl->status != 1) //Thread is exit.already...
-	{
-		delete m_pAlarmVideoCtrl;
-		m_pAlarmVideoCtrl=NULL;		
-		return true;
-	}
-
-
-	// Runing... = 1
-	m_pAlarmVideoCtrl->bIsBlocking = true; //
-	m_pAlarmVideoCtrl->status = 0; //Thread is runing...
-
-	DWORD dwRet = ::WaitForSingleObject(m_pAlarmVideoThread->m_hThread,2000);
-	if (dwRet == WAIT_TIMEOUT)
-	{
-		if (m_pAlarmVideoCtrl->bIsBlocking)
-			m_pAlarmVideoCtrl->socket->CancelSocket();
-
-		//Continue wait another 2s
-		dwRet = ::WaitForSingleObject(m_pAlarmVideoThread->m_hThread,3000);
-		if (dwRet == WAIT_TIMEOUT)
-		{
-			if (m_pAlarmVideoThread != NULL && m_pAlarmVideoThread->m_hThread > 0) 
-				::AfxTermThread((HINSTANCE__*)(m_pAlarmVideoThread->m_hThread));
-		}
-	}
-	else
-	{
-		if (m_pAlarmVideoCtrl->status != -1) //thread is still not exit...
-		{
-
-			if (m_pAlarmVideoThread != NULL && m_pAlarmVideoThread->m_hThread > 0) 
-				::AfxTermThread((HINSTANCE__*)(m_pAlarmVideoThread->m_hThread));
-		}
-	}
-
-
-	m_pAlarmVideoThread = NULL;
-
-#ifdef _DEBUG
-	if (m_pAlarmVideoCtrl->status==-1)
-		TRACE("\r\nTERMINATE AlarmVideoCtrl window:\r\n!!!");
-#endif
-
-	delete m_pAlarmVideoCtrl;
-	m_pAlarmVideoCtrl=NULL;
- 	 
-	return true;	
 }
 
 UINT alarm_getRealAlarm_thread(LPVOID param)
@@ -1230,35 +1184,83 @@ void GokuClient::ReplayjumpToPos(CString pos)
 }
 
 //--------------------------------------------------Let Function run in thread....
-void   GokuClient::StartFuncThread()
-{
-	AfxBeginThread(Goku_Funtion_Control, this);
-}
 bool   GokuClient::GetRealAlarmInfo()
 {
-	if ( IsRealAlarmReturn() )
-	{
-		SetRealAlarm(false); //No Alarm...
-		return true;
-	}
-	::SetEvent(m_hFuncEvent[GET_REALTIME_ALARM_STR]);
+	
+	//if ( IsRealAlarmReturn() )
+	//{
+	//	SetRealAlarm(false); //No Alarm...
+	//	return true;
+	//}
+	//::SetEvent(m_hFuncEvent[GET_REALTIME_ALARM_STR]);
+	//return false;
 
-	return false;
+	if (m_realAlarmSocket) //Has already Start...
+	{
+		if (m_realAlarmSocket->IsRealAlarmReturn())
+		{
+			m_realAlarmSocket->SetRealAlarm(false); //No Alarm...
+			return true;
+		}
+
+		::SetEvent(m_realAlarmSocket->m_hFuncEvent[GET_REALTIME_ALARM_STR]);
+
+		return false;
+
+	}
+	else
+	{
+		//Need to restart the thread.
+		VERIFY(m_realAlarmSocket = new CRealAlarmSocket(host, host));
+
+		if ( m_realAlarmSocket->connect_server() > 0 )
+		{
+			//Bind SID to this socket
+			int nCode = m_realAlarmSocket->BindSessionID(m_sSid);
+			if ( nCode)
+			{
+				CString sError;
+				sError.Format("绑定SID到实时告警Socket上出错,错误代码: %d", nCode);
+				CLogFile::WriteLog(sError);
+				return false;
+			}
+
+			//Socket Detach 
+			if ( m_realAlarmSocket->SocketDetach() )
+			{
+				//m_pTimerThread = AfxBeginThread(Command_SendAndReceiveTimer, m_realAlarmSocket);
+				m_pRealAlarmThread = AfxBeginThread(Goku_Funtion_Control, m_realAlarmSocket);
+
+			}
+			else
+			{
+				delete m_realAlarmSocket;
+				m_realAlarmSocket = NULL;
+				return false;
+			}
+		}
+		else
+			return false;
+	}
+
+	return true;
 
 }
 
  //Let all command run in a thread.
 UINT Goku_Funtion_Control(LPVOID param)
 {
-	GokuClient *pGokuClient = (GokuClient*)param;
+	CRealAlarmSocket *pRealAlarm = (CRealAlarmSocket*)param;
 	
-	if (!pGokuClient) return 0;
+	if (!pRealAlarm) return 0;
+
+	pRealAlarm->SocketAttach();
 
 	bool bRuning = true;
 	DWORD dwRet = 0;
 	while (bRuning)
 	{
-		dwRet = ::WaitForMultipleObjects(2,pGokuClient->m_hFuncEvent,false,INFINITE); //10 Second
+		dwRet = ::WaitForMultipleObjects(GOKU_FUNC_END,pRealAlarm->m_hFuncEvent,false,INFINITE); //10 Second
 		switch(dwRet)
 		{
 		case WAIT_OBJECT_0: //GOKU_FUNC_NONE, exit
@@ -1285,17 +1287,17 @@ UINT Goku_Funtion_Control(LPVOID param)
 			break;
 		case WAIT_OBJECT_0+5: //GET_REALTIME_ALARM_STR
 			{
-				//...
+		
 				CString strAlarm;
-				pGokuClient->getRealTimeAlarmStr(strAlarm);
+				pRealAlarm->getRealTimeAlarmStr(strAlarm);
 				if ( strAlarm.IsEmpty() )
 				{
-					pGokuClient->SetRealAlarm(false);
+					pRealAlarm->SetRealAlarm(false);
 				}
 				else
 				{
-					pGokuClient->alarmmanager.getalarmList(strAlarm);
-					pGokuClient->SetRealAlarm(true);
+					pRealAlarm->alarmmanager.getalarmList(strAlarm);
+					pRealAlarm->SetRealAlarm(true);
 				}
 
 			}
@@ -1324,6 +1326,11 @@ UINT Goku_Funtion_Control(LPVOID param)
 			break;
 		}
 	}
+
+	pRealAlarm->SocketDetach();
+
+	TRACE("Goku_Funtion_Control thread exit");
+	CLogFile::WriteLog("Goku_Funtion_Control thread exit");
 
 	return 19;
 }

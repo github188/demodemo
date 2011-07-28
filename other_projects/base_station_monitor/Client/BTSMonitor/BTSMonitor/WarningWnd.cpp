@@ -137,15 +137,29 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 	if ( pApp->pgkclient->btsmanager.btsmap.IsEmpty() )
 		return; //the BTS Device listview is still not built.
 
-
-
-
-	//CString alarmStr;
-	//pApp->pgkclient->getRealTimeAlarmStr(alarmStr);
-	//pApp->pgkclient->alarmmanager.getalarmList(alarmStr);
-
-	if (pApp->pgkclient->GetRealAlarmInfo())
+	if (cnUSE_THREAD)
 	{
+		if (pApp->pgkclient->GetRealAlarmInfo())
+		{
+
+			if (!pApp->pgkclient->m_realAlarmSocket->alarmmanager.curRefreshAlarmList.IsEmpty())
+			{
+				m_pRuntimePg->AddListView(ALARM_REFRESH);
+				m_pCriticalPg->AddListView(ALARM_REFRESH);
+			}
+
+			if (!pApp->pgkclient->m_realAlarmSocket->alarmmanager.curNewAlarmList.IsEmpty())
+			{
+				m_pRuntimePg->AddListView(ALARM_NEW);
+				m_pCriticalPg->AddListView(ALARM_NEW);
+			}
+		}
+	}
+	else
+	{
+		CString alarmStr;
+		pApp->pgkclient->getRealTimeAlarmStr(alarmStr);
+		pApp->pgkclient->alarmmanager.getalarmList(alarmStr);
 
 		if (!pApp->pgkclient->alarmmanager.curRefreshAlarmList.IsEmpty())
 		{
@@ -159,6 +173,7 @@ void CWarningWnd::OnTimer(UINT_PTR nIDEvent)
 			m_pCriticalPg->AddListView(ALARM_NEW);
 		}
 	}
+
 
 	CDockablePane::OnTimer(nIDEvent);
 }

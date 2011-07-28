@@ -7,6 +7,10 @@
 #include "CriticalWarning.h"
 #include "WarnPopVideo.h"
 #include "WarningWnd.h"
+#include "ConfigMgr.h"
+
+#include <mmsystem.h>
+#pragma comment (lib ,"winmm.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,22 +27,22 @@ CRuntimeWarning::CRuntimeWarning()
 	, m_nPopViewCount(0)
 	,m_bOnScroll(false)
 {
-	int i=0;
-	for (;i<cnMAX_POP_WINDOW; i++)
-	{
-		m_pPopVideoDlg[i] = NULL;
-	}
+//	int i=0;
+//	for (;i<cnMAX_POP_WINDOW; i++)
+//	{
+//		m_pPopVideoDlg[i] = NULL;
+//	}
 }
 
 CRuntimeWarning::~CRuntimeWarning()
 {
 	//KillTimer(WM_RUNTIME_TIMER);
-	int i=0;
-	for (;i<cnMAX_POP_WINDOW; i++)
-	{
-		if (m_pPopVideoDlg[i])
-			delete m_pPopVideoDlg[i];
-	}
+//	int i=0;
+//	for (;i<cnMAX_POP_WINDOW; i++)
+//	{
+//		if (m_pPopVideoDlg[i])
+//			delete m_pPopVideoDlg[i];
+//	}
 }
 
 void CRuntimeWarning::DoDataExchange(CDataExchange* pDX)
@@ -61,6 +65,8 @@ BEGIN_MESSAGE_MAP(CRuntimeWarning, CPropertyPage)
 	ON_NOTIFY(NM_DBLCLK, IDC_LST_RUNTIME_WARNING, &CRuntimeWarning::OnNMDblclkLstRuntimeWarning)
 	ON_COMMAND(ID_WARNING_PLAY, &CRuntimeWarning::OnWarningPlay)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LST_RUNTIME_WARNING, &CRuntimeWarning::OnNMCustomdrawLstRuntimeWarning)
+	ON_UPDATE_COMMAND_UI(ID_WARNING_SCROOLING_OFF, &CRuntimeWarning::OnUpdateWarningScroolingOff)
+	ON_UPDATE_COMMAND_UI(ID_WARNING_SCROOLING_ON, &CRuntimeWarning::OnUpdateWarningScroolingOn)
 END_MESSAGE_MAP()
 
 
@@ -126,17 +132,24 @@ BOOL CRuntimeWarning::OnInitDialog()
 	//SetTimer(WM_RUNTIME_TIMER,1000,NULL);
 #endif
 
+	/*
+	//CMainFrame  *pMain = (CMainFrame *)AfxGetMainWnd();
+	//CMainFrame   *pMain=(CMainFrame *)AfxGetApp()->m_pMainWnd; 
 	i=0;
 	for (; i<cnMAX_POP_WINDOW; i++)
 	{
 		VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(this) );
+		//VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(NULL) );
 		m_pPopVideoDlg[i]->SetPopVideoIndex(i);
 		m_pPopVideoDlg[i]->Create(IDD_POP_VIDEO);//(IDD_POP_VIDEO,this); //AfxGetApp()->m_pMainWnd);
+		m_pPopVideoDlg[i]->SetParentWnd(this);
 		m_pPopVideoDlg[i]->ShowWindow(SW_HIDE);
 
 	}
+	*/
 
-	
+	m_gConfigMgr.SetRuntimeWarnWnd(this);
+
 	//AddListView();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -164,16 +177,61 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 
 	CString sLocation, sTemp;
 	AlarmInfo* pAlarmInfo = NULL;
-	
+	m_alarmIndex = 0;
 	POSITION pos = NULL;
-	if (type == ALARM_NEW)
-		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
-	else if (type == ALARM_REFRESH)
-		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+	if (cnUSE_THREAD)
+	{
+		if (type == ALARM_NEW)
+			pos = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curNewAlarmList.GetHeadPosition();
+		else if (type == ALARM_REFRESH)
+			pos = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curRefreshAlarmList.GetHeadPosition();
+
+	}
+	else
+	{
+		if (type == ALARM_NEW)
+			pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+		else if (type == ALARM_REFRESH)
+			pos = pApp->pgkclient->alarmmanager.curRefreshAlarmList.GetHeadPosition();
+
+	}
 
 	while( pos!=NULL )
 	{
-		pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
+		if (cnUSE_THREAD)
+		{
+			if (type == ALARM_NEW)
+				pAlarmInfo = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curNewAlarmList.GetNext(pos);
+			else if (type == ALARM_REFRESH)
+				pAlarmInfo = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curRefreshAlarmList.GetNext(pos);
+			else
+			{
+				CString strError;
+				strError.Format("AddListView() [use thread] Unknown alarm type : %d", type);
+				CLogFile::WriteLog(strError);
+				break;
+			}
+
+		}
+		else 
+		{
+			if (type == ALARM_NEW)
+				pAlarmInfo = pApp->pgkclient->alarmmanager.curNewAlarmList.GetNext(pos);
+			else if (type == ALARM_REFRESH)
+				pAlarmInfo = pApp->pgkclient->alarmmanager.curRefreshAlarmList.GetNext(pos);
+			else
+			{
+				CString strError;
+				strError.Format("AddListView() [Non thread] Unknown alarm type : %d", type);
+				CLogFile::WriteLog(strError);
+				break;
+			}
+
+
+		}
+
+		//pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
+
 		if (pAlarmInfo)
 		{
 			//Judge the current alarm is task or not 
@@ -188,27 +246,37 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 				continue;
 			}
 
-			int lstIdx = 0;
+			//int lstIdx = 0;
 			if (type == ALARM_NEW)
 			{
 				//"�澯״̬", //level
 				m_lstRuntimeWarning.InsertItem(m_alarmIndex,"",0);
 				m_lstRuntimeWarning.SetItem(m_alarmIndex,0,LVIF_IMAGE,"",atoi(pAlarmInfo->level),0,0,0);
+				
+				//Make Sound 
+				::PlaySound(LPCTSTR(m_gConfigMgr.GetPopWarnSound()),NULL, SND_ASYNC);
 			}
 			else if (type == ALARM_REFRESH)
 			{
+				BOOL bFind = FALSE;
 				CString sUUID;
 				int nItemCount = m_lstRuntimeWarning.GetItemCount();
 				for (int i=0; i<nItemCount; i++)
 				{
-					sUUID = m_lstRuntimeWarning.GetItemText(i, 8);
-					if (sUUID == pAlarmInfo->uuid)
+					sUUID = m_lstRuntimeWarning.GetItemText(i, 10);
+					if (sUUID == pAlarmInfo->sUUID)
 					{
-						lstIdx = i;
+						//lstIdx = i;
+						m_alarmIndex = i;
+						bFind = TRUE;
 						break;
 					}
 				}
+
+				if (bFind==FALSE) //No Find ,then process Next Alarm Element.Needn't refresh.
+					continue;
 			}
+
 
 			//"UUID",		//UUID
 			//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
@@ -248,17 +316,21 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 				m_lstRuntimeWarning.SetItem(m_alarmIndex,9,LVIF_TEXT,"δ֪",0,0,0,0);	
 
 
-			m_lstRuntimeWarning.SetItem(m_alarmIndex,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+			m_lstRuntimeWarning.SetItem(m_alarmIndex,10,LVIF_TEXT,pAlarmInfo->sUUID,0,0,0,0);	
 
 			//if no BTSID, then continue;
 			if ( pAlarmInfo->BTSID.IsEmpty() )
 				continue;
+
+			if (type == ALARM_REFRESH)
+				continue;  //Needn't to pop new window any more...
 
 			//.pop the warning vedio windows
 			if (m_nPopViewCount<cnMAX_POP_WINDOW && ((pAlarmInfo->category == "1") || (pAlarmInfo->category == "2") ))
 			{
 				for (int i=0; i<cnMAX_POP_WINDOW; i++)
 				{
+					/*
 					if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 					{
 						m_pPopVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->uuid, sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime, pAlarmInfo->category);
@@ -266,6 +338,15 @@ void CRuntimeWarning::AddListView(ALARM_COMING_TYPE type)
 						m_pPopVideoDlg[i]->PlayVideo();
 						break;
 					}
+					*/
+					if (m_gConfigMgr.m_pVideoDlg[i]->IsShowing() == FALSE)
+					{
+						m_gConfigMgr.m_pVideoDlg[i]->SetVideoPara(pAlarmInfo->BTSID,pAlarmInfo->sUUID, sLocation,pAlarmInfo->ChannelID,pAlarmInfo->startTime, pAlarmInfo->endTime, pAlarmInfo->category);
+						m_gConfigMgr.m_pVideoDlg[i]->ShowWindow(SW_SHOW);
+						m_gConfigMgr.m_pVideoDlg[i]->PlayVideo();
+						break;
+					}
+
 				}
 			}
 
@@ -389,7 +470,7 @@ void CRuntimeWarning::OnWarningAck()
 	//WARNING_UNACK
 	CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
 
-	CString sUUID = m_lstRuntimeWarning.GetItemText(m_nCurItem,8);
+	CString sUUID = m_lstRuntimeWarning.GetItemText(m_nCurItem,10);
 	if ( pApp->pgkclient->confirmAlarm(sUUID) )
 	{
 		LV_ITEM lvitem = {0};
@@ -492,7 +573,7 @@ bool CRuntimeWarning::AckedWarning(CString sUUID)
 	int nCnt = m_lstRuntimeWarning.GetItemCount();
 	for (int i=0; i<nCnt; i++)
 	{
-		if (m_lstRuntimeWarning.GetItemText(i,8) == sUUID)
+		if (m_lstRuntimeWarning.GetItemText(i,10) == sUUID)
 		{
 
 			CBTSMonitorApp *pApp = (CBTSMonitorApp*)AfxGetApp();
@@ -536,7 +617,7 @@ bool CRuntimeWarning::DeleteItemByUUID(CString sUUID)
 	int nCnt = m_lstRuntimeWarning.GetItemCount();
 	for(i=0; i<nCnt; i++)
 	{
-		curUUID = m_lstRuntimeWarning.GetItemText(i,8);
+		curUUID = m_lstRuntimeWarning.GetItemText(i,10);
 		if (curUUID == sUUID)
 		{
 			m_lstRuntimeWarning.DeleteItem(i);
@@ -582,11 +663,23 @@ void CRuntimeWarning::OnWarningPlay()
 	{
 		for (i=0; i<cnMAX_POP_WINDOW; i++)
 		{
+			/*
 			if (m_pPopVideoDlg[i]->IsShowing() == FALSE)
 			{
 				m_pPopVideoDlg[i]->SetVideoPara(sBtsID,sUUID, sLocation,sCh,sBeginTime, sEndTime, sType, TRUE);
 				m_pPopVideoDlg[i]->ShowWindow(SW_SHOW);
 				m_pPopVideoDlg[i]->PlayVideo();
+
+				bNeedCloseCurrentPlayingWindow = false;
+
+				break;
+			}
+			*/
+			if (m_gConfigMgr.m_pVideoDlg[i]->IsShowing() == FALSE)
+			{
+				m_gConfigMgr.m_pVideoDlg[i]->SetVideoPara(sBtsID,sUUID, sLocation,sCh,sBeginTime, sEndTime, sType, TRUE);
+				m_gConfigMgr.m_pVideoDlg[i]->ShowWindow(SW_SHOW);
+				m_gConfigMgr.m_pVideoDlg[i]->PlayVideo();
 
 				bNeedCloseCurrentPlayingWindow = false;
 
@@ -646,5 +739,18 @@ void CRuntimeWarning::OnNMCustomdrawLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pR
 		}
 	}
 	*/
+
+}
+
+void CRuntimeWarning::OnUpdateWarningScroolingOff(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_bOnScroll==FALSE);
+}
+
+void CRuntimeWarning::OnUpdateWarningScroolingOn(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_bOnScroll==TRUE);
 
 }

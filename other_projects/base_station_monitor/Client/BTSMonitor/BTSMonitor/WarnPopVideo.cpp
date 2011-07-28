@@ -26,7 +26,8 @@ CWarnPopVideo::CWarnPopVideo(CWnd* pParent /*=NULL*/)
 	, m_nTimeOut(0)
 {
 	m_pPopView = NULL;
-	m_pParent = pParent;
+	//m_pParent  = pParent; //BtsMonitorView...
+	m_pRuntimeWarning  = NULL;
 }
 
 CWarnPopVideo::~CWarnPopVideo()
@@ -92,12 +93,12 @@ void CWarnPopVideo::OnSize(UINT nType, int cx, int cy)
 		CButton *pBtn = (CButton *)GetDlgItem(IDOK);
 		if (pBtn)
 		{
-			int dlt = 5;
+			int dlt = 3;
 			CRect btnRect, dlgRect;
 			pBtn->GetClientRect(&btnRect);
-			GetClientRect(&dlgRect);
-
-			m_pPopView->MoveWindow(dlgRect.left,dlgRect.top,dlgRect.Width(), dlgRect.Height()-btnRect.Height()-dlt);
+			//GetClientRect(&dlgRect);
+			//m_pPopView->MoveWindow(dlgRect.left,dlgRect.top,dlgRect.Width(), dlgRect.Height()-btnRect.Height());
+			m_pPopView->MoveWindow(0,0,cx, cy-btnRect.Height()-dlt);
 		}
 
 	}
@@ -141,28 +142,42 @@ void CWarnPopVideo::OnBnClickedOk()//确认当天告警视频
 	}
 
 	//Acked this warning video.
-	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pParent;
+	BOOL bAck = FALSE;
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pRuntimeWarning;
 	if (pRunTimeWnd)
-		pRunTimeWnd->AckedWarning(m_sUUID);
-
-	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	if ( atoi(m_sCategory) == 2 ) //Piture...
 	{
-		//Retrive this picutre, and show it.
-		//pApp->pgkclient->getAlarmImagebyBase64(this->m_sBtsID,this->m_sChannel,this->m_sRoute,
-		return;
+		bAck = pRunTimeWnd->AckedWarning(m_sUUID);
 
+		pRunTimeWnd->DecPopVedioCount();
 	}
-	else
-	//Close Current vedio
-	//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
-	//if(bOpenRet)
-	{
-		pApp->pgkclient->Stop_Play(m_nPopIndex+cnPOP_VEDIO_INDEX);		
 
-		BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
-		
-		BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);			
+	if (bAck)
+	{
+		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+		if ( atoi(m_sCategory) == 2 ) //Piture...
+		{
+			//Retrive this picutre, and show it.
+			//pApp->pgkclient->getAlarmImagebyBase64(this->m_sBtsID,this->m_sChannel,this->m_sRoute,
+			CPopPlayView *pView = ((CPopPlayView*)m_pPopView);
+			pView->SetImageType(0); //no type
+			pView->StopImgMonitor();
+
+		}
+		else
+		//Close Current vedio
+		//BOOL bOpenRet = PLAY_CloseStream(nViewIndex);	
+		//if(bOpenRet)
+		{
+			pApp->pgkclient->PauseVedioThread();
+			pApp->pgkclient->Stop_Play(m_nPopIndex+cnPOP_VEDIO_INDEX);		
+			pApp->pgkclient->ContinueVedioThread();
+
+			BOOL bPlay = PLAY_Stop(m_nPopIndex+cnPOP_VEDIO_INDEX);
+			
+			BOOL bOpenRet = PLAY_CloseStream(m_nPopIndex+cnPOP_VEDIO_INDEX);			
+		}
+
+		m_bShowing = FALSE;
 	}
 
 	OnOK();
@@ -176,6 +191,12 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 		CButton *pBtnOK = (CButton *)GetDlgItem(IDOK);
 		if (pBtnOK)
 			pBtnOK->ShowWindow(SW_HIDE);
+		CEdit *pEdit = (CEdit*)GetDlgItem(IDC_TIMEOUT);
+		if (pEdit)
+			pEdit->ShowWindow(SW_HIDE);
+		CButton *pBtnPause = (CButton*)GetDlgItem(IDC_PAUSE_ALARM);
+		if (pBtnPause)
+			pBtnPause->ShowWindow(SW_HIDE);
 
 		//Full Video Screen
 		GetWindowPlacement(&m_struOldPlacement);
@@ -229,9 +250,19 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 	else //Restore normal screen
 	{
 		//Show OK Button
+		CRect btnRect;
 		CButton *pBtnOK = (CButton *)GetDlgItem(IDOK);
 		if (pBtnOK)
+		{
 			pBtnOK->ShowWindow(SW_SHOW);
+			pBtnOK->GetClientRect(&btnRect);
+		}
+		CEdit *pEdit = (CEdit*)GetDlgItem(IDC_TIMEOUT);
+		if (pEdit)
+			pEdit->ShowWindow(SW_SHOW);
+		CButton *pBtnPause = (CButton*)GetDlgItem(IDC_PAUSE_ALARM);
+		if (pBtnPause)
+			pBtnPause->ShowWindow(SW_SHOW);
 		
 		//Restore old position
 		ModifyStyle(0,WS_SIZEBOX,0);
@@ -239,8 +270,7 @@ void CWarnPopVideo::FullScreenPopVideo(void)
 		SetWindowPlacement(&m_struOldPlacement);
 		RECT rc;
 		GetClientRect(&rc);
-// 		rc.right  -= 1;
-// 		rc.bottom -= 132;
+ 		rc.bottom -= (btnRect.Height()+3);
 		m_pPopView->MoveWindow(&rc,TRUE);
 
 		//SetWindowSize();
@@ -274,7 +304,7 @@ void CWarnPopVideo::OnClose()
 	ShowWindow(SW_HIDE);
 	
 
-	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pParent;
+	CRuntimeWarning *pRunTimeWnd = (CRuntimeWarning*)m_pRuntimeWarning;
 	if (pRunTimeWnd)
 		pRunTimeWnd->DecPopVedioCount();
 

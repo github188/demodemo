@@ -24,6 +24,7 @@ typedef struct tagCUR_ALARM_PARA
 	int		nCurPg;
 }CUR_ALARM_PARA;
 class CDlgImage;
+class CMyProgressDlg;
 class CWarningMgr : public CDialog
 {
 	DECLARE_DYNAMIC(CWarningMgr)
@@ -68,11 +69,14 @@ private:
 
 	HTREEITEM m_hItemCurFind;
 	HTREEITEM m_hRootItem;
+
+	CMyProgressDlg *pProgressDlg;
 public:
 	HTREEITEM FindTarget(HTREEITEM  hItem, CString sName, bool bFindNext=FALSE);
 	BOOL FindNewTarget(CString sFindStr);
 	BOOL FindNextTarget(void);
-
+	void StartTimer();
+	void StopTimer();
 
 public:
 	void InitVedioDeviceTree(void);
@@ -80,28 +84,27 @@ public:
 	afx_msg void OnNMClickTreeWarnMgrDevice(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnHdnItemclickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
-private:
-	CUR_ALARM_PARA m_CurAlarmPara;
-	int m_nCurItem;
-	CDlgImage *pDlgImage;
 public:
 	afx_msg void OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
-private:
-	CPoint m_menuPt;
-	bool m_bPopMenu;
 public:
 	afx_msg void OnWarningmgrExport();
 	afx_msg void OnUpdateWarningmgrExport(CCmdUI *pCmdUI);
 	afx_msg void OnWarningmgrSaveas();
 	afx_msg void OnUpdateWarningmgrSaveas(CCmdUI *pCmdUI);
 private:
+	CUR_ALARM_PARA m_CurAlarmPara;
+	int m_nCurItem;
+	CDlgImage *pDlgImage;
+	CPoint m_menuPt;
+	bool m_bPopMenu;
 	CRect m_rcVedio;
 	int	  m_nAlarmVideoSaveCnt;		//Saving Video.
 	bool  m_bSaving[cnALARM_VIDEO_VV];
 	bool  m_bIsSaving;
 	int  m_nPlayingStatus; //0 No playing, 1 playing, 2 pause, 3 gotoBegin, 4 gotoEnd, 5 goForward,6 goBackword, 
+	UINT	m_nTimerID;
 public:
 	void ShowButton(bool bShow);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -121,4 +124,5 @@ public:
 	CString m_strPageInfo;
 	void ShowQueryAlarmInfo(CString strQueryAlarm);
 //	afx_msg void OnStnClickedAlarmVideo();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

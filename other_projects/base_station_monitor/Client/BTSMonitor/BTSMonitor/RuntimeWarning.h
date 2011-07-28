@@ -61,4 +61,6 @@ public:
 	bool DeleteItemByUUID(CString sUUID);
 	afx_msg void OnWarningPlay();
 	afx_msg void OnNMCustomdrawLstRuntimeWarning(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnUpdateWarningScroolingOff(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateWarningScroolingOn(CCmdUI *pCmdUI);
 };

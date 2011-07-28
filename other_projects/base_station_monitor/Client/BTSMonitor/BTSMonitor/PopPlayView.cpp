@@ -134,7 +134,7 @@ BOOL CPopPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth, int nH
 	IStream *pStm;  
 	CFileStatus fstatus;  
 	CFile file;  
-	LONG cb;  
+	ULONGLONG cb;  
 
 	//打开文件并检测文件的有效性
 	if (file.Open(strPicName,CFile::modeRead)&&file.GetStatus(strPicName,fstatus)&&((cb = fstatus.m_size) != -1))  
@@ -142,7 +142,7 @@ BOOL CPopPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth, int nH
 		if (cb == 0)
 			return false;
 
-		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, cb);  
+		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)cb);  
 		LPVOID pvData = NULL;  
 		if (hGlobal != NULL)  
 		{  
@@ -150,7 +150,7 @@ BOOL CPopPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth, int nH
 			if (pvData != NULL)  
 			{  
 				//file.ReadHuge(pvData, cb);  //6.0中可能是用这个函数
-				file.Read(pvData, cb);  //VC2005.NET中用这个函数
+				file.Read(pvData, (UINT)cb);  //VC2005.NET中用这个函数
 				GlobalUnlock(hGlobal);  
 				CreateStreamOnHGlobal(hGlobal, TRUE, &pStm);  
 			}
@@ -170,7 +170,7 @@ BOOL CPopPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth, int nH
 
 	//load image from file stream
 
-	if(SUCCEEDED(OleLoadPicture(pStm,fstatus.m_size,TRUE,IID_IPicture,(LPVOID*)&pPic)))
+	if(SUCCEEDED(OleLoadPicture(pStm,(LONG)fstatus.m_size,TRUE,IID_IPicture,(LPVOID*)&pPic)))
 
 	{
 		OLE_XSIZE_HIMETRIC hmWidth;  
@@ -303,6 +303,10 @@ void CPopPlayView::OnTimer(UINT_PTR nIDEvent)
 			else if (4 == err) //数据结束--告警查询时，已没有满足条件的图片
 			{
 				m_sImageStatus = "Condition is not satisfied!";
+			}
+			else if (0xE2 == err)
+			{
+				m_sImageStatus = "No Image or Connection is broken!";
 			}
 			else
 			{

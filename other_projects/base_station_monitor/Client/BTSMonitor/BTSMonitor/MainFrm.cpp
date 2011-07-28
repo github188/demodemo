@@ -24,6 +24,7 @@
 #include "TaskMgr.h"
 #include "UserMgr.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -31,6 +32,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 // CMainFrame
+
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 
@@ -75,7 +77,6 @@ CMainFrame::~CMainFrame()
 	//	CMFCRibbonStatusBarPane *pStatusBarPane = (CMFCRibbonStatusBarPane*)m_wndStatusBar.GetElement(i);
 	//	delete pStatusBarPane;
 	//}
-
 
 
 }
@@ -277,7 +278,7 @@ void CMainFrame::InitializeRibbon()
 
 BOOL CMainFrame::CreateDockingWindows()
 {
-	BOOL bNameValid;
+	//BOOL bNameValid;
 
 	// 创建文件视图
 	CString strCameraView = "监控列表";
@@ -533,11 +534,17 @@ void CMainFrame::OnTaskMgr()
 void CMainFrame::OnSystemConfig()
 {
 	// TODO: Add your command handler code here
-	CWarningConfig systemCfg;
-	if ( IDOK == systemCfg.DoModal())
-	{
-		;
-	}
+	//CWarningConfig systemCfg;
+	//if ( IDOK == systemCfg.DoModal())
+	//{
+	//	;
+	//}
+
+	CWarningConfig *pSystemCfg = new CWarningConfig(this);
+	pSystemCfg->Create(IDD_WARNING_CONFIG);
+	pSystemCfg->UpdateWindow();
+	pSystemCfg->ShowWindow(SW_SHOW);
+
 }
 
 void CMainFrame::OnWarningMgr()

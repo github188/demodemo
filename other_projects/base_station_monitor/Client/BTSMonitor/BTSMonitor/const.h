@@ -29,6 +29,9 @@
 #define ID_REAL_IMG_TIMER			2150 //  2150+25 = 2175, 2150~2175 for PlayView timer.
 #define ID_REAL_POP_IMG_TIMER	    2180  // 2180+8  = 2188, 2180~2188 for PlayPopView timer.
 
+#define ID_PROGRESS_TIMER	    2198  // 
+#define ID_WARNING_MGR_TIMER    2199  // 
+
 //
 #define ID_USER_CONTROL				2200			
 
@@ -77,8 +80,9 @@ const int cnMAX_VV = 25;		//up to 25 play window...
 const int cnMAX_POP_WINDOW = 8; //up to 8 pop window showing warning...
 const int cnALARM_VIDEO_VV = 10; //up to 10 alarm play view..
 const int cnWARNING_IMAGE = 100;
-const int cnWARNING_VEDIO = cnMAX_VV + cnMAX_POP_WINDOW;
-const int cnTOTAL_VV_CNT  = cnMAX_VV + cnMAX_POP_WINDOW + cnALARM_VIDEO_VV;
+const int cnWARNING_VEDIO = cnMAX_VV + cnMAX_POP_WINDOW; //Replay Alarm Video.
+const int cnWARNING_VEDIO_SAVE = cnMAX_VV + cnMAX_POP_WINDOW+1; //SAVE Alarm Video.
+const int cnTOTAL_VV_CNT  = cnMAX_VV + cnMAX_POP_WINDOW + cnALARM_VIDEO_VV +1;
 const int cnREAL_MAX_VV = cnMAX_VV+cnMAX_POP_WINDOW;
 
 int play_video(int  sessionId, char * pBuffer, int  len);
@@ -91,5 +95,7 @@ const int cnCR=0xD;
 const int cnREAL_IMG_INTERVAL = 5000; // 5 sec..
 
 const long cnPLAY_VIDEO_STEP = 760000; //10 sec video...
+
+const bool cnUSE_THREAD	= TRUE;
 
 #endif //AFX_CONST_H

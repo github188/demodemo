@@ -127,16 +127,63 @@ void CCriticalWarning::AddListView(ALARM_COMING_TYPE type)
 
 	CString sLocation, sTemp;
 	AlarmInfo* pAlarmInfo = NULL;
-	
+	m_alarmIndex = 0;
+	/*
 	POSITION pos = NULL;
 	if (type == ALARM_NEW)
 		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
 	else if (type == ALARM_REFRESH)
 		pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+	*/
+	POSITION pos = NULL;
+	if (cnUSE_THREAD)
+	{
+		if (type == ALARM_NEW)
+			pos = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curNewAlarmList.GetHeadPosition();
+		else if (type == ALARM_REFRESH)
+			pos = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curRefreshAlarmList.GetHeadPosition();
 
+	}
+	else
+	{
+		if (type == ALARM_NEW)
+			pos = pApp->pgkclient->alarmmanager.curNewAlarmList.GetHeadPosition();
+		else if (type == ALARM_REFRESH)
+			pos = pApp->pgkclient->alarmmanager.curRefreshAlarmList.GetHeadPosition();
+
+	}
 	while( pos!=NULL )
 	{
-		pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
+		// /pAlarmInfo = pApp->pgkclient->alarmmanager.alarmList.GetNext(pos);
+		if (cnUSE_THREAD)
+		{
+			if (type == ALARM_NEW)
+				pAlarmInfo = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curNewAlarmList.GetNext(pos);
+			else if (type == ALARM_REFRESH)
+				pAlarmInfo = pApp->pgkclient->m_realAlarmSocket->alarmmanager.curRefreshAlarmList.GetNext(pos);
+			else
+			{
+				CString strError;
+				strError.Format(" CCriticalWarning::AddListView() [use thread] Unknown alarm type : %d", type);
+				CLogFile::WriteLog(strError);
+				break;
+			}
+
+		}
+		else 
+		{
+			if (type == ALARM_NEW)
+				pAlarmInfo = pApp->pgkclient->alarmmanager.curNewAlarmList.GetNext(pos);
+			else if (type == ALARM_REFRESH)
+				pAlarmInfo = pApp->pgkclient->alarmmanager.curRefreshAlarmList.GetNext(pos);
+			else
+			{
+				CString strError;
+				strError.Format(" CCriticalWarning::AddListView() [Non thread] Unknown alarm type : %d", type);
+				CLogFile::WriteLog(strError);
+				break;
+			}
+		}
 		
 		if (!pAlarmInfo)
 			continue;
@@ -144,7 +191,7 @@ void CCriticalWarning::AddListView(ALARM_COMING_TYPE type)
 		if ( atoi(pAlarmInfo->level) < 4 )
 			continue;
 
-		int lstIdx = 0;
+		//int lstIdx = 0;
 		if (type == ALARM_NEW)
 		{
 			//"�澯״̬", //level
@@ -153,18 +200,25 @@ void CCriticalWarning::AddListView(ALARM_COMING_TYPE type)
 		}
 		else if (type == ALARM_REFRESH)
 		{
+			BOOL bFind = FALSE;
 			CString sUUID;
 			int nItemCount = m_lstCriticalWarning.GetItemCount();
 			for (int i=0; i<nItemCount; i++)
 			{
 				sUUID = m_lstCriticalWarning.GetItemText(i, 8);
-				if (sUUID == pAlarmInfo->uuid)
+				if (sUUID == pAlarmInfo->sUUID)
 				{
-					lstIdx = i;
+					//lstIdx = i;
+					m_alarmIndex = i;
 					break;
 				}
 			}
+
+			if (bFind==FALSE)
+				continue; //No Item , Needn't to refresh.
 		}
+
+		//m_alarmIndex = lstIdx;
 
 		//"UUID",		//UUID
 		//m_lstRuntimeWarning.SetItem(m_alarmIndex,1,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);
@@ -191,7 +245,7 @@ void CCriticalWarning::AddListView(ALARM_COMING_TYPE type)
 			;
 		m_lstCriticalWarning.SetItem(m_alarmIndex,7,LVIF_TEXT,sTemp,0,0,0,0);	
 
-		m_lstCriticalWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+		m_lstCriticalWarning.SetItem(m_alarmIndex,8,LVIF_TEXT,pAlarmInfo->sUUID,0,0,0,0);	
 
 		//if no BTSID, then continue;
 		if ( pAlarmInfo->BTSID.IsEmpty() )

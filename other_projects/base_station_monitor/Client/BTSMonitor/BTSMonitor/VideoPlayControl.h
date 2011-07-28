@@ -54,6 +54,8 @@ public:
 		bPause=false;
 		bFastForward=false;
 		pos="0";
+
+		m_uSaveBytes = 0;
 	}
 
 	~VideoPlayControl(){
@@ -70,6 +72,11 @@ public:
 	void close(){
 		socket->close();
 	}
+
+	UINT GetDownLoadBytes() {return m_uSaveBytes;};
+	void SetDownLoadBytes(UINT nBytes) {m_uSaveBytes = nBytes;};
+private:
+	UINT	m_uSaveBytes;
 };
 
 

@@ -301,7 +301,7 @@ BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHei
 	IStream *pStm;  
 	CFileStatus fstatus;  
 	CFile file;  
-	LONG cb;  
+	ULONGLONG cb;  
 
 	//打开文件并检测文件的有效性
 	if (file.Open(strPicName,CFile::modeRead)&&file.GetStatus(strPicName,fstatus)&&((cb = fstatus.m_size) != -1))  
@@ -309,7 +309,7 @@ BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHei
 		if (cb == 0)
 			return false;
 
-		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, cb);  
+		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)cb);  
 		LPVOID pvData = NULL;  
 		if (hGlobal != NULL)  
 		{  
@@ -317,7 +317,7 @@ BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHei
 			if (pvData != NULL)  
 			{  
 				//file.ReadHuge(pvData, cb);  //6.0中可能是用这个函数
-				file.Read(pvData, cb);  //VC2005.NET中用这个函数
+				file.Read(pvData, (UINT)cb);  //VC2005.NET中用这个函数
 				GlobalUnlock(hGlobal);  
 				CreateStreamOnHGlobal(hGlobal, TRUE, &pStm);  
 			}
@@ -337,7 +337,7 @@ BOOL	CPlayView::ShowPicture(CDC*  pDC, CString strPicName, int nWidth , int nHei
 
 	//load image from file stream
 
-	if(SUCCEEDED(OleLoadPicture(pStm,fstatus.m_size,TRUE,IID_IPicture,(LPVOID*)&pPic)))
+	if(SUCCEEDED(OleLoadPicture(pStm,(LONG)fstatus.m_size,TRUE,IID_IPicture,(LPVOID*)&pPic)))
 
 	{
 		OLE_XSIZE_HIMETRIC hmWidth;  

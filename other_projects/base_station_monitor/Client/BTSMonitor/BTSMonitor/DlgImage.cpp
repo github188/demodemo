@@ -105,8 +105,8 @@ void CDlgImage::Initialize(CString sPicDir,int nCol, int nWidth, int nHeight)
 	CString sFileImage;
 	WIN32_FIND_DATA FindFileData;
 
-	strcpy(szFind,sPicDir);
-	strcat(szFind,"\\*.*");
+	strcpy_s(szFind,MAX_PATH,sPicDir);  //strcpy_s(szFind,strlen(sPicDir),sPicDir); will be crash.why..  
+	strcat_s(szFind,MAX_PATH-strlen(szFind),"\\*.*" );
 
 	HANDLE hFind=::FindFirstFile(szFind,&FindFileData);
 	if(INVALID_HANDLE_VALUE == hFind)    return;

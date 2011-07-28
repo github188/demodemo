@@ -5,6 +5,7 @@
 #include "BTSMonitor.h"
 #include "LoginDlg.h"
 #include "util.h"
+#include "ConfigMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,7 +80,7 @@ void CLoginDlg::OnBnClickedOk()
 			pApp->pgkclient->listbtstree(pApp->btsTotalStr);
 
 			//Begin Thread....
-			pApp->pgkclient->StartFuncThread();
+			//pApp->pgkclient->StartFuncThread();
 
 			//Save default data
 			CFileException error;
@@ -296,6 +297,11 @@ BOOL CLoginDlg::OnInitDialog()
 	//pStatic->ModifyStyle(0xF, SS_BITMAP|SS_CENTERIMAGE);
 	HICON  hIcon1  =  AfxGetApp()->LoadIcon(IDI_LOGON);
 	pStatic->SetIcon(hIcon1);
+
+	//Show Release Date & Version
+	CString sVersionInfo;
+	sVersionInfo.Format("Ver: %s   Date: %s",m_gConfigMgr.GetVersion(),m_gConfigMgr.GetReleaseDate());
+	SetDlgItemText(IDC_VER_INFO, sVersionInfo);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

@@ -49,9 +49,9 @@ void CUserMgr::OnBnClickedBtnMod()
 	CString sSID;
 	if (m_strNewPw.Compare(m_strNewPw2) == 0)
 	{
-		//
+		// 
 		CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-		int nRet = 0; //pApp->pgkclient->ModifyUserInfo(sSID,m_strOldPw,m_strNewPw);
+		int nRet = pApp->pgkclient->ModifyPW(m_strOldPw,m_strNewPw);
 
 		if (nRet==1)
 		{
@@ -74,10 +74,9 @@ BOOL CUserMgr::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	CString sUser, sPw;
-	int nSid;
+	CString sUser, sPw, sSid;
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	pApp->pgkclient->GetUserInfo(sUser,sPw, nSid);
+	pApp->pgkclient->GetUserInfo(sUser,sPw, sSid);
 
 	m_strUser = sUser;
 

@@ -1,6 +1,8 @@
 #pragma once
-
+#include "const.h"
+#include "WarnPopVideo.h"
 //
+
 class CTaskItem : public CObject
 {
 
@@ -36,7 +38,6 @@ public:
 
 };
 // CConfigMgr command target
-
 class CConfigMgr : public CObject
 {
 public:
@@ -45,12 +46,6 @@ public:
 
 public:
 	//Warning Config Mgr...
-	void SetPicWinIndex(int index) {m_nPicWinIndex = index;};
-	int GetPicWinIndex() {return m_nPicWinIndex;};
-
-	void SetPlayPicInterval(int index) {m_nPlayPicInterval = index;};
-	int GetPlayPicInterval() {return m_nPlayPicInterval;};
-
 	void SetMaxPopWarnWin(int index) {m_nMaxPopWarnWin = index;};
 	int GetMaxPopWarnWin() {return m_nMaxPopWarnWin;};
 
@@ -59,6 +54,11 @@ public:
 
 	void SetPopWarnEnable(bool bEnable) { m_bPopWarnEnable = bEnable;};
 	bool GetPopWarnEnable() {return m_bPopWarnEnable;};
+
+	//void SetPopWarnSound(CString sPopWarnSound) {m_sPopWarnSound = sPopWarnSound;};
+	CString GetVersion() {return m_sVersion;};
+
+	CString GetReleaseDate( ) {return m_sReleaseDate;};
 
 	//Task Config
 	void GetTaskList(CObArray& objArray) {		objArray.Copy( *m_pArrTask);	};
@@ -69,6 +69,10 @@ public:
 	BOOL  SetTaskNoSignal() {	return	::ResetEvent(m_hCtrlTask[0]); };
 	BOOL  SetTaskExit()		{	return  ::SetEvent(m_hCtrlTask[1]); };
 
+public:
+	CWarnPopVideo* m_pVideoDlg[cnMAX_POP_WINDOW];
+	CWnd * GetRuntimeWarnWnd() {return m_pWnd;};
+	void  SetRuntimeWarnWnd(CWnd  *pWnd) {m_pWnd = pWnd;};
 private:
 	//Warning Config Mgr...
 	int		m_nPicWinIndex;
@@ -77,9 +81,15 @@ private:
 	CString m_sPopWarnSound;
 	bool    m_bPopWarnEnable;
 
+	CString m_sVersion;
+	CString m_sReleaseDate;
+
 	//Task Config Mgr..
 	CObArray*  m_pArrTask;	
 	HANDLE	   m_hCtrlTask[2];
+
+	//
+	CWnd * m_pWnd;
 
 };
 

@@ -3,8 +3,10 @@
 
 void AlarmInfo::buildClass(const CString &info)
 {
+	const char splitch='$';
 	int pos = 0;
-	pos = util::split_next(info, uuid, splitch, 0);
+	//pos = util::split_next(info, uuid, splitch, 0);
+	pos = util::split_next(info, sUUID, splitch, 0);
 	pos = util::split_next(info, alarmCode, splitch, pos + 1);
 	pos = util::split_next(info, BTSID, ':', pos + 1);
 	pos = util::split_next(info, ChannelID, splitch, pos + 1);

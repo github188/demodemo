@@ -29,6 +29,7 @@
 #include "ConfigMgr.h"
 
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -88,6 +89,9 @@ CBTSMonitorView::~CBTSMonitorView()
 			::AfxTermThread((HINSTANCE__*)(m_pTaskThread->m_hThread));		
 	}
 	*/
+
+	int i=0;
+
 }
 
 BOOL CBTSMonitorView::PreCreateWindow(CREATESTRUCT& cs)
@@ -378,6 +382,31 @@ void CBTSMonitorView::OnInitialUpdate()
 	
 	//Begin the Task Thread...
 	//m_pTaskThread = AfxBeginThread((AFX_THREADPROC)ProcessTask, (LPVOID)this);
+
+
+	int xx,yy, nCnt;
+	nCnt = 8;
+	int stepX  = rc.Width() /16;
+	int stepY  = rc.Height()/16; 
+	xx = stepX * 4;
+	yy = stepY * 4;
+	CRect rcPopWnd;
+	int i=0;
+	for (; i<cnMAX_POP_WINDOW; i++)
+	{
+		VERIFY(m_gConfigMgr.m_pVideoDlg[i] = new CWarnPopVideo(this) );
+		//VERIFY(m_pPopVideoDlg[i] = new CWarnPopVideo(NULL) );
+		m_gConfigMgr.m_pVideoDlg[i]->SetPopVideoIndex(i);
+		m_gConfigMgr.m_pVideoDlg[i]->Create(IDD_POP_VIDEO);//(IDD_POP_VIDEO,this); //AfxGetApp()->m_pMainWnd);
+		m_gConfigMgr.m_pVideoDlg[i]->SetRuntimeWarnWnd(m_gConfigMgr.GetRuntimeWarnWnd());
+		m_gConfigMgr.m_pVideoDlg[i]->UpdateWindow();
+		m_gConfigMgr.m_pVideoDlg[i]->ShowWindow(SW_HIDE);
+		m_gConfigMgr.m_pVideoDlg[i]->GetClientRect(&rcPopWnd);
+		m_gConfigMgr.m_pVideoDlg[i]->MoveWindow(xx+i*stepX, yy+i*stepY, rcPopWnd.Width()+4,rcPopWnd.Height()+36);
+		//m_gConfigMgr.m_pVideoDlg[i]->OnSize(0,rcPopWnd.Width()+4,rcPopWnd.Height()+33);
+
+	}
+
 }
 
 void CBTSMonitorView::OnLButtonDown(UINT nFlags, CPoint point)

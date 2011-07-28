@@ -20,6 +20,8 @@
 #include "BTSMonitorDoc.h"
 #include "BTSMonitorView.h"
 
+#include "ConfigMgr.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -113,7 +115,10 @@ BOOL CBTSMonitorApp::InitInstance()
 	//pgkclient =new GokuClient(host, host);
 
 	VERIFY( 1 == InitSkinMagicLib(AfxGetInstanceHandle(), NULL, NULL, NULL ));
-	VERIFY( 1 == LoadSkinFromResource(NULL, "corona" ,"SKINMAGIC" ));//¼ÓÔØ¾²Ì¬Æ¤·ô×ÊÔ´
+	//VERIFY( 1 == LoadSkinFromResource(NULL, "corona" ,"SKINMAGIC" ));
+	VERIFY( 1 == LoadSkinFromResource(NULL, "DEVIOR" ,"SKINMAGIC" ));
+	//VERIFY( 1 == LoadSkinFromResource(NULL, "TUSK" ,"SKINMAGIC" ));
+	
 	VERIFY( 1 == SetDialogSkin( "Dialog" ) );
 
 	CLoginDlg dlg;
@@ -304,6 +309,9 @@ BOOL CAboutDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
+	CString sVersionInfo;
+	sVersionInfo.Format("Ver: %s\r\n\r\nDate:%s",m_gConfigMgr.GetVersion(),m_gConfigMgr.GetReleaseDate());
+	SetDlgItemText(IDC_ABOUT_VER, sVersionInfo);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

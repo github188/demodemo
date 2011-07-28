@@ -26,8 +26,6 @@ CWarningConfig::~CWarningConfig()
 void CWarningConfig::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_CMB_PICTURE_WINDOW, m_cboPicWin);
-	DDX_Control(pDX, IDC_CMB_PICTURE_PLAY_INTERVAL, m_cboPlayInterval);
 	DDX_Control(pDX, IDC_CHK_NO_WARNING, m_chkWarnEnable);
 	DDX_Text(pDX, IDC_WARNING_WAVE, m_strWarnSound);
 	DDX_Control(pDX, IDC_CMB_POPWND_COUNT, m_cboPopWinCnt);
@@ -37,6 +35,7 @@ void CWarningConfig::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CWarningConfig, CDialog)
 	ON_BN_CLICKED(IDOK, &CWarningConfig::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CWarningConfig::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_WAVE_BROWSE, &CWarningConfig::OnBnClickedWaveBrowse)
 END_MESSAGE_MAP()
 
 
@@ -47,28 +46,9 @@ BOOL CWarningConfig::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-
-	m_cboPicWin.ResetContent();
-	int i=0;
 	CString str;
-	while(i<=25)
-	{
-		str.Format("%d",i++);
-		m_cboPicWin.AddString(str);
-	}
-
-	m_cboPlayInterval.ResetContent();
-	i=0;
-	int nDuring = 10;
-	while(i<=10)
-	{
-		str.Format("%d",nDuring*i);
-		m_cboPlayInterval.AddString(str);
-		i++;
-	}
-
 	m_cboPopWinCnt.ResetContent();
-	i=0;
+	int i=0;
 	while(i<=8)
 	{
 		str.Format("%d",i);
@@ -79,19 +59,18 @@ BOOL CWarningConfig::OnInitDialog()
 
 	//Init Config Data
 	util::InitApp();
-	char *pConfigurationFile = util::GetAppPath();
-	strcat(pConfigurationFile, CONFIG_FILE);
+	//char *pConfigurationFile = util::GetAppPath();
+	//strcat_s(pConfigurationFile,strlen(CONFIG_FILE), CONFIG_FILE);
+	char szCfgPath[1024];
+	ZeroMemory(szCfgPath,1024);
+	char *pConfigurationFile = szCfgPath;
+	strcat_s(pConfigurationFile,1024,util::GetAppPath());
+	strcat_s(pConfigurationFile,1024 - strlen(pConfigurationFile), CONFIG_FILE);
+
 	char lpDefault[1024];
 	memset(lpDefault,0,1024);
-	DWORD dwRet = GetPrivateProfileString("SYS_CFG", "PicWinIndex","",lpDefault,sizeof(lpDefault),pConfigurationFile);
-	if (dwRet>0)
-		m_cboPicWin.SelectString(-1,lpDefault);
 
-	dwRet = GetPrivateProfileString("SYS_CFG", "PlayPicInterval","",lpDefault,sizeof(lpDefault),pConfigurationFile);
-	if (dwRet>0)
-		m_cboPlayInterval.SelectString(-1,lpDefault);
-
-	dwRet = GetPrivateProfileString("SYS_CFG", "MaxPopWarnWin","",lpDefault,sizeof(lpDefault),pConfigurationFile);
+	DWORD dwRet = GetPrivateProfileString("SYS_CFG", "MaxPopWarnWin","",lpDefault,sizeof(lpDefault),pConfigurationFile);
 	if (dwRet>0)
 		m_cboPopWinCnt.SelectString(-1,lpDefault);
 
@@ -102,8 +81,8 @@ BOOL CWarningConfig::OnInitDialog()
 	dwRet = GetPrivateProfileString("SYS_CFG", "PopWarnEnable","",lpDefault,sizeof(lpDefault),pConfigurationFile);
 	if (dwRet>0 && lpDefault[0]=='1')
 		m_chkWarnEnable.SetCheck(1);
-	
 
+	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -114,36 +93,20 @@ void CWarningConfig::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//Init Config Data
 	util::InitApp();
-	char *pConfigurationFile = util::GetAppPath();
-	strcat(pConfigurationFile, CONFIG_FILE);
+	//char *pConfigurationFile = util::GetAppPath();
+	//strcat_s(pConfigurationFile,strlen(CONFIG_FILE), CONFIG_FILE);
+	char szCfgPath[1024];
+	ZeroMemory(szCfgPath,1024);
+	char *pConfigurationFile = szCfgPath;
+	strcat_s(pConfigurationFile,1024,util::GetAppPath());
+	strcat_s(pConfigurationFile,1024 - strlen(pConfigurationFile), CONFIG_FILE);
 
 	//Get Picture monitor setting window
 	CString strVal;
 	int n=0;
-	int nIndex = m_cboPicWin.GetCurSel();
-	if (nIndex != LB_ERR)
-	{
-		n = m_cboPicWin.GetLBTextLen(nIndex);
-		m_cboPicWin.GetLBText(nIndex,strVal.GetBuffer(n));
-
-		//Save to Config File
-		WritePrivateProfileString("SYS_CFG", "PicWinIndex",	strVal,	pConfigurationFile);
-		m_gConfigMgr.SetPicWinIndex(atoi(strVal));
-	}
-	//Get Picture Play Interval
-	nIndex = m_cboPlayInterval.GetCurSel();
-	if (nIndex != LB_ERR)
-	{
-		n = m_cboPlayInterval.GetLBTextLen(nIndex);
-		m_cboPlayInterval.GetLBText(nIndex,strVal.GetBuffer(n));
-
-		//Save to Config File
-		WritePrivateProfileString("SYS_CFG", "PlayPicInterval",	strVal,	pConfigurationFile);
-		m_gConfigMgr.SetPlayPicInterval(atoi(strVal));
-	}
 
 	//Get Max Pop Showing Windows
-	nIndex = m_cboPopWinCnt.GetCurSel();
+	int nIndex = m_cboPopWinCnt.GetCurSel();
 	if (nIndex != LB_ERR)
 	{
 		n = m_cboPopWinCnt.GetLBTextLen(nIndex);
@@ -154,7 +117,8 @@ void CWarningConfig::OnBnClickedOk()
 		m_gConfigMgr.SetMaxPopWarnWin(atoi(strVal));
 	}
 
-	GetWindowText(strVal);
+	
+	strVal = m_strWarnSound;
 	if ( !strVal.IsEmpty() )
 	{
 		WritePrivateProfileString("SYS_CFG", "PopWarnSound", strVal,	pConfigurationFile);
@@ -183,4 +147,32 @@ void CWarningConfig::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
 	OnCancel();
+}
+
+void CWarningConfig::OnBnClickedWaveBrowse()
+{
+	// TODO: Add your control notification handler code here
+	char *strFilter = "WAV File(*.wav)|*.wav||";
+	CFileDialog FileDlg(TRUE,"",NULL,0,strFilter,this);
+
+	util::InitApp();
+	//char *pWaveDir = util::GetAppPath();
+	//strcat_s(pWaveDir, strlen("Wave"),"Wave");
+	char szCfgPath[1024];
+	ZeroMemory(szCfgPath,1024);
+	char *pWaveDir = szCfgPath;
+	strcat_s(pWaveDir,1024,util::GetAppPath());
+	strcat_s(pWaveDir,1024 - strlen(pWaveDir), "Wave");
+
+	FileDlg.m_ofn.lpstrInitialDir = pWaveDir;
+
+	if(FileDlg.DoModal()==IDOK)
+	{
+		CString strFileName = FileDlg.GetFileName();
+		CString strPathName = FileDlg.GetPathName();
+		BOOL    bOnlyRead   = FileDlg.GetReadOnlyPref();
+		m_strWarnSound = strPathName;
+		UpdateData(FALSE);
+	}
+
 }

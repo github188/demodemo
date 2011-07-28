@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "BTSMonitor.h"
 #include "ConfigMgr.h"
-
+#include "WarnPopVideo.h"
 ///////////////////////////////////////
 //Task Array
 
@@ -31,6 +31,7 @@ CTaskItem::CTaskItem(const CTaskItem& task)
 	status = task.status; //0 reserve, 1 waiting, 2 runing
 	sUUID_Old = task.sUUID_Old;
 	sCh_Old   = task.sCh_Old;
+
 
 }
 CTaskItem& CTaskItem::operator=(CTaskItem& task)
@@ -81,8 +82,12 @@ CConfigMgr::CConfigMgr()
 	}
 	//Load Config Data
 	util::InitApp();
-	char *pConfigurationFile = util::GetAppPath();
-	strcat(pConfigurationFile, CONFIG_FILE);
+	char szCfgPath[1024];
+	ZeroMemory(szCfgPath,1024);
+	char *pConfigurationFile = szCfgPath;
+	strcat_s(pConfigurationFile,1024,util::GetAppPath());
+	strcat_s(pConfigurationFile,1024 - strlen(pConfigurationFile), CONFIG_FILE);
+
 	char lpDefault[1024];
 	memset(lpDefault,0,1024);
 	DWORD dwRet = GetPrivateProfileString("SYS_CFG", "PicWinIndex","",lpDefault,sizeof(lpDefault),pConfigurationFile);
@@ -107,6 +112,13 @@ CConfigMgr::CConfigMgr()
 	else
 		m_bPopWarnEnable = false;
 
+	dwRet = GetPrivateProfileString("SYS_CFG", "Version","1.0.00",lpDefault,sizeof(lpDefault),pConfigurationFile);
+	if (dwRet>0)
+		m_sVersion = lpDefault;
+	
+	dwRet = GetPrivateProfileString("SYS_CFG", "Date","2011-07-01",lpDefault,sizeof(lpDefault),pConfigurationFile);
+	if (dwRet>0)
+		m_sReleaseDate = lpDefault;
 
 	//Task Cfg
 	m_pArrTask = new CObArray();
@@ -184,14 +196,23 @@ CConfigMgr::CConfigMgr()
 	//Control Process Event Init
 	m_hCtrlTask[0] = ::CreateEvent(NULL,TRUE,FALSE,NULL);  //manual 
 	m_hCtrlTask[1] = ::CreateEvent(NULL,FALSE,FALSE,NULL); //auto Exit
+
+	m_pWnd = NULL;
+
 }
 
 CConfigMgr::~CConfigMgr()
 {
 	//Save Config Data
 	util::InitApp();
-	char *pConfigurationFile = util::GetAppPath();
-	strcat(pConfigurationFile, CONFIG_FILE);
+	//char *pConfigurationFile = util::GetAppPath();
+	//strcat_s(pConfigurationFile, strlen(CONFIG_FILE),CONFIG_FILE);
+	char szCfgPath[1024];
+	ZeroMemory(szCfgPath,1024);
+	char *pConfigurationFile = szCfgPath;
+	strcat_s(pConfigurationFile,1024,util::GetAppPath());
+	strcat_s(pConfigurationFile,1024 - strlen(pConfigurationFile), CONFIG_FILE);
+
 
 	CString strVal;
 
@@ -281,8 +302,17 @@ CConfigMgr::~CConfigMgr()
 	m_pArrTask = NULL;
 
 	//Release Event
-	for(int i=0; i<2; i++)
+	for(i=0; i<2; i++)
 		::CloseHandle(m_hCtrlTask[i]);
+
+
+	i=0;
+	for (;i<cnMAX_POP_WINDOW; i++)
+	{
+		if (m_pVideoDlg[i])
+			delete m_pVideoDlg[i];
+	}
+
 }
 
 

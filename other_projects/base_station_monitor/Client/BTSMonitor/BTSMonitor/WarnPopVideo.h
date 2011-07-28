@@ -30,6 +30,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	void FullScreenPopVideo(void);
 	void PlayVideo(void);
+	void SetRuntimeWarnWnd(CWnd* pRuntimeWarning) {m_pRuntimeWarning = pRuntimeWarning;};
 private:
 	bool m_bFullScreen;
 	WINDOWPLACEMENT m_struOldPlacement;
@@ -48,7 +49,7 @@ public:
 	BOOL IsShowing(void);
 private:
 	BOOL m_bShowing;
-	CWnd* m_pParent;
+	CWnd* m_pRuntimeWarning;
 	CString m_btsName;
 public:
 	afx_msg void OnBnClickedSavePassedVideo();

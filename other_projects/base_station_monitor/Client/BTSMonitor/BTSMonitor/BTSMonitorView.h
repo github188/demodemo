@@ -12,9 +12,11 @@
 // BTSMonitorView.h : CBTSMonitorView 类的接口
 //
 
-#include "const.h"
 
 #pragma once
+
+#include "const.h"
+
 
 
 typedef struct tagVV_INFO

@@ -46,6 +46,31 @@ public:
 		::SetEvent(m_hExitTimerThread);
 	}
 
+
+	BOOL SocketDetach() {
+		BOOL bOk = FALSE; 
+		m_hSoc = cs.Detach();
+		if (m_hSoc)
+			bOk = TRUE;
+		return bOk;
+	}
+
+	BOOL SocketAttach() {
+		BOOL bOk = FALSE;
+		if (m_hSoc)
+			bOk = cs.Attach(m_hSoc);
+		return bOk;
+	}
+
+
+	virtual void close() {
+		cs.Close();
+	}
+
+	virtual BOOL IsConnectBlocking() {
+		return cs.IsBlocking();
+	};
+
 public:
 	HANDLE m_hEvent[3];
 
@@ -54,12 +79,12 @@ protected:
 
 public:
 	CSocket cs;
+	SOCKET	m_hSoc;;
 private:
-	//CTimeOutSocket	cs;
 	HANDLE	m_hAutoWait;
 	HANDLE	m_hStopAutoWait;
 	HANDLE	m_hExitTimerThread;
-	long   m_lWaitTime;
+	long    m_lWaitTime;
 
 
 

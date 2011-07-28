@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "VideoPlayControl.h"
 #include "const.h"
+#include "MyProgressDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -107,9 +108,12 @@ UINT video_read_thread(LPVOID param)
 	
 	if (!control) return 0x11;
 
+	UINT			uDL_Bytes = 0;
+	CString			strFileName,strShowInfo;
 	CFile fVideo;
 	if (control->m_bSave)
 	{
+		strFileName = control->m_sFileName.Mid(control->m_sFileName.ReverseFind('\\')+1);
 		CFileException error;
 		if (!fVideo.Open(control->m_sFileName,CFile::modeCreate|CFile::modeWrite, &error))
 		{
@@ -125,6 +129,7 @@ UINT video_read_thread(LPVOID param)
 			AfxMessageBox(strFormatted);
 			return 0x11;
 		}
+
 	}
 
 	int bufferLen = 4096 + 100;
@@ -147,7 +152,7 @@ UINT video_read_thread(LPVOID param)
 			control->bIsBlocking = false;
 			for(unsigned int i = 0; i < control->vedio_command_list.size(); i++)
 			{
-					control->socket->write_wstring(control->vedio_command_list[i]);
+				control->socket->write_wstring(control->vedio_command_list[i]);
 			}
 			//for(unsigned int i = 0; i < control->vedio_command_list.size(); i++){
 			//	delete control->vedio_command_list[i]; //crash
@@ -159,7 +164,11 @@ UINT video_read_thread(LPVOID param)
 			{
 
 				if (control->m_bSave)
+				{
+					uDL_Bytes+=ret;
 					fVideo.Write(buffer,ret); //Save Video
+					control->SetDownLoadBytes(uDL_Bytes/1024);
+				}
 				else
 					control->callback(control->sessionId, buffer, ret); //Play Video
 
@@ -223,7 +232,12 @@ UINT video_read_thread(LPVOID param)
 	control->close();
 	
 	if (control->m_bSave)
+	{
 		fVideo.Close();
+		uDL_Bytes = 0;
+		control->SetDownLoadBytes(uDL_Bytes/1024);
+
+	}
 
 	//Need Refresh the PlayView
 	if (control->m_hWnd && control->status==2)

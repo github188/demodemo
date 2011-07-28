@@ -48,6 +48,18 @@ AlarmManager::~AlarmManager()
 		}
 	}
 
+	//queryAlarmList..
+	pos = queryAlarmList.GetHeadPosition();
+	nAlarmCount = queryAlarmList.GetCount();
+	for (int i=0; i<nAlarmCount; i++)
+	{
+		pAlarmInfo = queryAlarmList.GetNext(pos);
+		if ( pAlarmInfo )
+		{
+			delete pAlarmInfo;
+			pAlarmInfo = NULL;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -61,18 +73,18 @@ CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr, boo
 		//remove all data from the list
 		BOOL bRet = FALSE;
 		AlarmInfo*  pAlarmInfo = NULL;
-		POSITION pos = alarmList.GetHeadPosition();
-		int nAlarmCount = alarmList.GetCount();
+		POSITION pos = queryAlarmList.GetHeadPosition();
+		int nAlarmCount = queryAlarmList.GetCount();
 		for (int i=0; i<nAlarmCount; i++)
 		{
-			pAlarmInfo = alarmList.GetNext(pos);
+			pAlarmInfo = queryAlarmList.GetNext(pos);
 			if ( pAlarmInfo )
 			{
 				delete pAlarmInfo;
 				pAlarmInfo = NULL;
 			}
 		}
-		alarmList.RemoveAll();
+		queryAlarmList.RemoveAll();
 		//add new query alarm to the list
 		while(ipos!=1)
 		{
@@ -85,10 +97,10 @@ CList<AlarmInfo*, AlarmInfo*>* AlarmManager::getalarmList(CString &alarmStr, boo
 			alarmline=alarmStr.Mid(ileft, iright-ileft+1);
 			ileft=ipos+1;
 			AlarmInfo* alarm=new AlarmInfo(alarmline);
-			alarmList.AddTail(alarm);
+			queryAlarmList.AddTail(alarm);
 		}
 		
-		return &alarmList;
+		return &queryAlarmList;
 	}
 
 	//Real Alarm list
@@ -168,7 +180,6 @@ BOOL AlarmManager::IsAlarmExist(CString alarmStr)
 	if (sUUID.IsEmpty())
 		return TRUE; //do not add this alarm into the listview.
 
-
 	BOOL bRet = FALSE;
 	AlarmInfo*  pAlarmInfo = NULL;
 	POSITION pos = alarmList.GetHeadPosition();
@@ -176,7 +187,7 @@ BOOL AlarmManager::IsAlarmExist(CString alarmStr)
 	for (int i=0; i<nAlarmCount; i++)
 	{
 		pAlarmInfo = alarmList.GetNext(pos);
-		if ( pAlarmInfo->uuid == sUUID )
+		if ( pAlarmInfo->sUUID == sUUID )
 		{
 			bRet = TRUE;
 			break;

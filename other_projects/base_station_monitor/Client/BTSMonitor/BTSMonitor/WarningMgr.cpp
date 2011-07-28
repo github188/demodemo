@@ -33,23 +33,37 @@ CWarningMgr::CWarningMgr(CWnd* pParent /*=NULL*/)
 
 	m_CurAlarmPara.nCurPg = 0;
 	m_CurAlarmPara.nTotalPg = 0;
+
+	pProgressDlg = NULL;
+
+	m_nTimerID = 0;
 }
 
 CWarningMgr::~CWarningMgr()
 {
+	if (m_nTimerID && m_hWnd)
+		KillTimer(m_nTimerID);
+
 	if (pDlgImage)
 		delete pDlgImage;
 
 	//Need free Memory...
 	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
-	//pApp->pgkclient->StopAlamVideoPlay();
 	{
 		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
 		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 	}
-	
+
+	{
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO_SAVE);
+		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO_SAVE);		
+		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO_SAVE);			
+		
+	}
 	m_nPlayingStatus = 0;
+	if (pProgressDlg)
+		delete pProgressDlg;
 }
 
 void CWarningMgr::DoDataExchange(CDataExchange* pDX)
@@ -101,6 +115,7 @@ BEGIN_MESSAGE_MAP(CWarningMgr, CDialog)
 	ON_BN_CLICKED(IDC_LAST, &CWarningMgr::OnBnClickedLast)
 	ON_BN_CLICKED(IDC_GOTO, &CWarningMgr::OnBnClickedGoto)
 //	ON_STN_CLICKED(IDC_ALARM_VIDEO, &CWarningMgr::OnStnClickedAlarmVideo)
+ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -267,6 +282,15 @@ BOOL CWarningMgr::OnInitDialog()
 		pDlgImage->MoveWindow(&m_rcVedio);
 		pDlgImage->ShowWindow(SW_HIDE);
 	}
+
+	//Progress Dialog...
+	VERIFY(pProgressDlg = new  CMyProgressDlg() );
+	pProgressDlg->Create(IDD_PROGRESS_DLG,this);
+	pProgressDlg->ShowWindow(SW_HIDE);
+	pProgressDlg->UpdateWindow();
+	pProgressDlg->SetSaveStatus(FALSE);
+
+	m_alarmVideoCtrl.SetBitmap( ::LoadBitmap(NULL, MAKEINTRESOURCE(IDB_G3LOGO)) );
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -767,7 +791,10 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 	if (!bPlayNewItem)
 	{
 		if (sCategory=="视频")
+		{ 
+			AfxMessageBox("请先终止当前视频播放!");
 			return;
+		}
 		else
 		{
 			//the thread shouldn't be in the pause status...
@@ -786,6 +813,8 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 
 			m_nPlayingStatus = 0;
+
+			StopTimer();
 		}
 	}
 
@@ -828,14 +857,14 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 		pDlgImage->ShowWindow(SW_HIDE);
 
 		//Stop Vedio Thread...
-		//pApp->pgkclient->StopAlamVideoPlay();
 		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
-
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
 		BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
-
+		StopTimer();
 
 		//Open New ---------------------------------------------
+		m_alarmVideoCtrl.SetWindowText("Connect to server...");
+
 		PLAY_SetStreamOpenMode(cnWARNING_VEDIO, STREAME_REALTIME);
 		bOpenRet = PLAY_OpenStream(cnWARNING_VEDIO,0,0,1024*900);
 		if(bOpenRet)
@@ -846,6 +875,8 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 
 			//Reload first, then play the video.????
 			m_nPlayingStatus = 1;
+
+			StartTimer();
 		}
 
 	}
@@ -916,8 +947,14 @@ void CWarningMgr::OnNMDblclkLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 			//Save Image to local Directory
 			CString sJpgName;
 			util::InitApp();
-			char *pAlarmImageDir = util::GetAppPath();
-			strcat(pAlarmImageDir,"AlarmImage");
+			//char *pAlarmImageDir = util::GetAppPath();
+			//strcat_s(pAlarmImageDir,strlen("AlarmImage"),"AlarmImage");
+			char szCfgPath[1024];
+			ZeroMemory(szCfgPath,1024);
+			char *pAlarmImageDir = szCfgPath;
+			strcat_s(pAlarmImageDir,1024,util::GetAppPath());
+			strcat_s(pAlarmImageDir,1024 - strlen(pAlarmImageDir), "AlarmImage");
+
 
 			//Remove all file of this directory...
 			util::DeleteAllFile(pAlarmImageDir, true);
@@ -1004,12 +1041,15 @@ void CWarningMgr::OnNMRClickLstTargetWarning(NMHDR *pNMHDR, LRESULT *pResult)
 //		m_hItemCurFind = htItem;
 //	}
 
-	CMenu myMenu ;
-	myMenu.LoadMenu( IDR_POPMENU_WARNMGR ) ;
-	CMenu *pMenu = myMenu.GetSubMenu(0) ;
-	pMenu->TrackPopupMenu(TPM_LEFTALIGN, m_menuPt.x, m_menuPt.y, this ) ;
+	if (pProgressDlg->GetSaveStatus())
+	{
+		CMenu myMenu ;
+		myMenu.LoadMenu( IDR_POPMENU_WARNMGR ) ;
+		CMenu *pMenu = myMenu.GetSubMenu(0) ;
+		pMenu->TrackPopupMenu(TPM_LEFTALIGN, m_menuPt.x, m_menuPt.y, this ) ;
 
-	m_bPopMenu = true;
+		m_bPopMenu = true;
+	}
 
 	*pResult = 0;
 }
@@ -1189,15 +1229,21 @@ void CWarningMgr::OnWarningmgrSaveas()
 		//Make Name...
 		sVideoName.Format("%s_%s_%s.h264", sBTSID,sCh,sTime);
 
-		CString sDefaultVideoPath, sWarnVideoName;
+		CString sDefaultVideoPath, sWarnVideoName,sFileName;
 		util::InitApp();
-		char *pAlarmImageDir = util::GetAppPath();
-		strcat(pAlarmImageDir,"AlarmVideo");
+		//char *pAlarmImageDir = util::GetAppPath();
+		//strcat_s(pAlarmImageDir,strlen("AlarmVideo"),"AlarmVideo");
+		char szCfgPath[1024];
+		ZeroMemory(szCfgPath,1024);
+		char *pAlarmImageDir = szCfgPath;
+		strcat_s(pAlarmImageDir,1024,util::GetAppPath());
+		strcat_s(pAlarmImageDir,1024 - strlen(pAlarmImageDir), "AlarmVideo");
+
+
 		//sWarnVideoName.Format("%s%s%s", pAlarmImageDir,"\\", sVideoName);
 		sDefaultVideoPath.Format("%s%s", pAlarmImageDir,"\\");
 
-
-		CFileDialog FileDlg(TRUE,_T("告警视频保存"),sVideoName,OFN_HIDEREADONLY|OFN_PATHMUSTEXIST,NULL,NULL);
+		CFileDialog FileDlg(TRUE,_T(""),sVideoName,OFN_HIDEREADONLY|OFN_PATHMUSTEXIST,NULL,NULL);
 		FileDlg.m_ofn.lpstrTitle = "";
 		char sDir[_MAX_PATH];
 		GetCurrentDirectory(_MAX_PATH,sDir);
@@ -1207,14 +1253,22 @@ void CWarningMgr::OnWarningmgrSaveas()
 			sWarnVideoName = FileDlg.GetPathName();
 			//if(!FileExists(m_strMapPath))
 			//	return;
+			sFileName = FileDlg.GetFileName();
 		}
 		else
 			return;
 
+		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO_SAVE); //
 
-		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO); //StopAlamVideoPlay();
+		pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO_SAVE,sWarnVideoName,true);
 
-		pApp->pgkclient->replay(AlarmID, play_video, cnWARNING_VEDIO,sWarnVideoName,true);
+		pProgressDlg->SetSaveStatus(TRUE);
+		pProgressDlg->SetDownLoadFileName(sFileName) ;//视频
+		pProgressDlg->SetVideoType(1) ;//视频
+		pProgressDlg->StartTimer();
+		pProgressDlg->ShowWindow(SW_SHOW);
+		
+		pProgressDlg->CenterWindow();
 
 		//m_bIsSaving　= true;
 
@@ -1331,12 +1385,14 @@ void CWarningMgr::OnWarningmgrSaveas()
 			CString strShowInfo;
 			bool bRetriveNextImage = TRUE;
 			int nImageCnt = 1;
-			CMyProgressDlg *pProgressDlg = NULL;
-			VERIFY(pProgressDlg = new  CMyProgressDlg(this) );
-			pProgressDlg->Create(IDD_PROGRESS_DLG);
+
+			pProgressDlg->SetSaveStatus(TRUE);
+			pProgressDlg->SetVideoType(2) ;//图片
 			pProgressDlg->ShowWindow(SW_SHOW);
+			pProgressDlg->CenterWindow();
+			BOOL bSaving = TRUE;
 			//while ( pMoImage->getNextImage(&err))
-			while (bRetriveNextImage)
+			while (bRetriveNextImage && bSaving)
 			{
 				//CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
 				//strShowInfo+="No Video...";
@@ -1379,10 +1435,11 @@ void CWarningMgr::OnWarningmgrSaveas()
 				pMoImage->savedata(sJpgName);
 
 				nImageCnt++;
+
+				bSaving = pProgressDlg->GetSaveStatus();
 			}
 
-			delete pProgressDlg;
-
+			pProgressDlg->ShowWindow(SW_HIDE);
 		}
 
 	}
@@ -1539,7 +1596,10 @@ void CWarningMgr::OnBnClickedBtnPlay()
 	if (!bPlayNewItem)
 	{
 		if (sCategory == "视频")
+		{
+			AfxMessageBox("请先终止当前视频播放!");
 			return;
+		}
 		else //Show Image...
 		{
 			//the thread shouldn't be in the pause status...
@@ -1557,6 +1617,8 @@ void CWarningMgr::OnBnClickedBtnPlay()
 			BOOL bOpenRet = PLAY_CloseStream(cnWARNING_VEDIO);			
 
 			m_nPlayingStatus = 0;
+
+			StopTimer();
 		}
 	}
 
@@ -1565,9 +1627,9 @@ void CWarningMgr::OnBnClickedBtnPlay()
 		ShowButton(TRUE);			
 		pDlgImage->ShowWindow(SW_HIDE);
 
-		CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
-		strShowInfo+="Connect to server...";
-		m_alarmVideoCtrl.SetWindowText(strShowInfo);
+		//CString strShowInfo("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+		//strShowInfo+="Connect to server...";
+		m_alarmVideoCtrl.SetWindowText("Connect to server...");
 		//m_wndWarnVedio.UpdateWindow();
 		//m_wndWarnVedio.Invalidate();
 		//m_alarmVideoCtrl.Invalidate();
@@ -1576,7 +1638,6 @@ void CWarningMgr::OnBnClickedBtnPlay()
 		//return;
 
 		//Stop Vedio Thread...
-		//pApp->pgkclient->StopAlamVideoPlay();
 		pApp->pgkclient->Stop_Play(cnWARNING_VEDIO);
 
 		BOOL bPlay = PLAY_Stop(cnWARNING_VEDIO);		
@@ -1594,6 +1655,8 @@ void CWarningMgr::OnBnClickedBtnPlay()
 
 			//Reload first, then play the video.????
 			m_nPlayingStatus = 1;
+
+			StartTimer();
 		}
 
 	}
@@ -1664,8 +1727,13 @@ void CWarningMgr::OnBnClickedBtnPlay()
 			//Save Image to local Directory
 			CString sJpgName;
 			util::InitApp();
-			char *pAlarmImageDir = util::GetAppPath();
-			strcat(pAlarmImageDir,"AlarmImage");
+			//char *pAlarmImageDir = util::GetAppPath();
+			//strcat_s(pAlarmImageDir,strlen("AlarmImage"), "AlarmImage");
+			char szCfgPath[1024];
+			ZeroMemory(szCfgPath,1024);
+			char *pAlarmImageDir = szCfgPath;
+			strcat_s(pAlarmImageDir,1024,util::GetAppPath());
+			strcat_s(pAlarmImageDir,1024 - strlen(pAlarmImageDir), "AlarmImage");
 
 			//Remove all file of this directory...
 			util::DeleteAllFile(pAlarmImageDir);
@@ -1769,6 +1837,8 @@ void CWarningMgr::OnBnClickedBtnStop()
 	//Invalidate();
 
 	m_nPlayingStatus = 0;
+
+	StopTimer();
 
 }
 
@@ -2098,10 +2168,10 @@ void CWarningMgr::ShowQueryAlarmInfo(CString strQueryAlarm)
 	CString sLocation, sTemp;
 	int nCount = 0;
 	AlarmInfo* pAlarmInfo = NULL;	
-	POSITION pos = m_alarmMgr.alarmList.GetHeadPosition();
+	POSITION pos = m_alarmMgr.queryAlarmList.GetHeadPosition();
 	while( pos!=NULL )
 	{
-		pAlarmInfo = m_alarmMgr.alarmList.GetNext(pos);
+		pAlarmInfo = m_alarmMgr.queryAlarmList.GetNext(pos);
 		if (pAlarmInfo)
 		{
 			//"告警状态", //level
@@ -2141,10 +2211,39 @@ void CWarningMgr::ShowQueryAlarmInfo(CString strQueryAlarm)
 				nCategory == 2 ?  "图片": "无";
 			m_lstFindWarnResult.SetItem(nCount,9,LVIF_TEXT,sTemp,0,0,0,0);	
 
-			m_lstFindWarnResult.SetItem(nCount,10,LVIF_TEXT,pAlarmInfo->uuid,0,0,0,0);	
+			m_lstFindWarnResult.SetItem(nCount,10,LVIF_TEXT,pAlarmInfo->sUUID,0,0,0,0);	
 
 			nCount++;
 
 		}// ArmList
 	}
+}
+
+void CWarningMgr::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	CString sRunStatus;
+	CBTSMonitorApp *pApp=(CBTSMonitorApp *)AfxGetApp();
+	int nStatus = pApp->pgkclient->m_pArrVideoCtrl[cnWARNING_VEDIO]->status;
+	switch(nStatus)
+	{
+	case 1:
+		sRunStatus = "Receving data...";
+		break;
+	default:
+		sRunStatus = "Video End...";
+		break;
+
+	}
+	m_alarmVideoCtrl.SetWindowText(sRunStatus);
+
+	CDialog::OnTimer(nIDEvent);
+}
+void CWarningMgr::StartTimer()
+{
+	m_nTimerID = SetTimer(ID_WARNING_MGR_TIMER,2000,NULL);
+}
+void CWarningMgr::StopTimer()
+{
+	KillTimer(m_nTimerID);
 }

@@ -17,7 +17,7 @@ public:
 	void buildClass(const CString &info);
 
 public:
-	CString uuid;		//
+	CString sUUID;		//
 	CString alarmCode;  //1:当前实时告警, 正在发生的告警;2:历史告警记录
 	CString BTSID;		//
 	CString ChannelID;
@@ -27,6 +27,6 @@ public:
 	CString endTime;
 	CString category;	//1.视频 2.图片, 3.无
 	CString BTSType;	//端局类型，现在还没有和客户确认，直接显示一个编码就行啦。
-	static const char splitch='$';
+
 
 };

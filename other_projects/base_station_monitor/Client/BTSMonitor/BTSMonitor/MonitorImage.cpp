@@ -25,7 +25,10 @@ void MonitorImage::decodeImageData(CString &base64line)
 {
 	int len=util::str2int(lenth);
 	if(data!=NULL)
+	{
 		delete[] data;
+		data = NULL;
+	}
 	data=new char[len+1];
 	DecodeBase64(base64line.GetBuffer(), data);
 }

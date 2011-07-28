@@ -142,6 +142,7 @@
 #define IDR_POPUP_PLAYVIEW              345
 #define IDD_DLG_IMAGE                   346
 #define IDD_PROGRESS_DLG                350
+#define IDB_G3LOGO                      352
 #define IDC_LST_RUNTIME_WARNING         1000
 #define IDC_LIST_GENERAL_WARNING        1000
 #define IDC_LIST_CRITICAL_WARNING       1000
@@ -226,6 +227,8 @@
 #define IDC_CBO_PAGE_IDX                1079
 #define IDC_PROGRESS_INFO               1081
 #define IDC_PLAY_CTRL_BOX               1082
+#define IDC_VER_INFO                    1083
+#define IDC_ABOUT_VER                   1084
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_FIND_CAMERA                  32771
 #define ID_VV1                          32781
@@ -261,9 +264,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        351
+#define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32811
-#define _APS_NEXT_CONTROL_VALUE         1083
+#define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           325
 #endif
 #endif

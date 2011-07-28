@@ -23,9 +23,8 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-	CComboBox m_cboPicWin;
-	CComboBox m_cboPlayInterval;
-	CButton m_chkWarnEnable;
+	CButton m_chkWarnEnable; //No Warning
 	CString m_strWarnSound;
-	CComboBox m_cboPopWinCnt;
+	CComboBox m_cboPopWinCnt; //Warning Pop Win Count
+	afx_msg void OnBnClickedWaveBrowse();
 };
