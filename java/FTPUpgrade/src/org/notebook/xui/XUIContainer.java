@@ -43,6 +43,9 @@ public class XUIContainer {
 	private EventQueue eventQueue = null;
 	
 	public void load(URL resource){
+		load(resource, true);
+	}
+	public void load(URL resource, boolean triggerEvent){
 		SAXParserFactory saxfac = SAXParserFactory.newInstance();
 		SAXParser parser = null;
 		InputStream in = null;
@@ -56,7 +59,7 @@ public class XUIContainer {
 			Context root = new Context();
 			root.parent = this;
 			parser.parse(in, new XUISAXHandler(root));
-			if(this.eventQueue != null){
+			if(this.eventQueue != null && triggerEvent){
 				this.eventQueue.fireEvent("XuiLoaded", this);
 			}
 		}catch (Exception e) {
@@ -83,6 +86,13 @@ public class XUIContainer {
 	
 	public Object[] getAllComponents(){
 		return cache.values().toArray();
+	}
+	
+	public void importResource(String ref){
+		URL url = this.getClass().getClassLoader().getResource(ref);
+		if(url != null){
+			load(url, false);
+		}
 	}
 	
 	private void addComponent(String name, Object o){
@@ -244,7 +254,12 @@ public class XUIContainer {
 				}
 			}else if(ref != null){
 				context.obj = getByName(ref);
-				context.args = new Object[]{context.obj};
+				String align = attributes.getValue("align");
+				if(align != null){
+					context.args = new Object[]{context.obj, align};
+				}else {
+					context.args = new Object[]{context.obj};
+				}
 			}
 			
 			if(context.tag.equals("size")){
@@ -298,6 +313,9 @@ public class XUIContainer {
 				String val = attributes.getValue("value");
 				context.args = new Object[]{Double.parseDouble(val)};
 				context.argClass = new Class[]{double.class};
+			}else if(context.tag.toLowerCase().equals("importresource")){
+				String val = attributes.getValue("url");
+				context.args = new Object[]{val};				
 			}
 			
 			if(context.args != null && context.argClass == null){

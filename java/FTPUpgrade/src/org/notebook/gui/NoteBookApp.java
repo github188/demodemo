@@ -94,7 +94,7 @@ public class NoteBookApp {
 		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run(){
-				URL layout = this.getClass().getClassLoader().getResource("org/notebook/gui/layout.xml");
+				URL layout = this.getClass().getClassLoader().getResource("org/notebook/layout/MainFrame.xml");
 				if(layout != null) {
 					xui.load(layout);				
 					main = (MainFrame)xui.getByName("main");

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <root>
+	<importResource url="org/notebook/layout/SimpleDownloadPanel.xml" />
 	<win name='main' class='org.notebook.gui.MainFrame'>
 		<size x='750' y='550' />
 		<title value="在线升级管理系统" />
@@ -13,43 +14,9 @@
 		<dividerLocation value="65" />
 		<DividerSize value="0" />
 				
-		<topComponent align1='Center' class='javax.swing.JPanel'>
-			<minimumSize w="200" h="40" />
-			<layout ref='null' />			
-			<add name='connect' class='javax.swing.JButton' >
-				<actionListener ref='common_action' />
-				<text value="连接" />
-				<bounds x='10' y='5' w='100' h='25' />
-			</add>
-			<add name='upgrade' class='javax.swing.JButton' command=''>
-				<actionListener ref='common_action' />
-				<text value="简单下载" />
-				<bounds x='10' y='35' w='100' h='25' />
-			</add>
-			
-			<add name='xx1' class='javax.swing.JTextField' >
-				<text value="/程序_zip" />
-				<bounds x='120' y='5' w='200' h='25' />
-			</add>
-			
-			<!--
-			<add name='pause' class='javax.swing.JButton' >
-				<actionListener ref='common_action' />
-				<text value="暂停传输" />
-				<bounds x='120' y='35' w='100' h='25' />
-			</add>
-			-->						
-			
-			<add name='xx2' class='javax.swing.JTextField' >
-				<text value="Internat升级服务器" />
-				<bounds x='120' y='35' w='200' h='25' />
-			</add>
-
-			
-			<add name='warn_info' class='javax.swing.JLabel' >
-				<bounds x='380' y='8' w='200' h='30' />
-				<text value="升级前请关闭物流系统" />
-			</add>
+		<topComponent class='javax.swing.JPanel'>
+			<layout class='java.awt.CardLayout' />
+			<add ref="simpleDownload" align="simple sd" />
 		</topComponent>
 		
 		<bottomComponent name='l2' class='javax.swing.JSplitPane' >
