@@ -10,11 +10,10 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +29,7 @@ public class NoteBookApp {
 	private Log log = LogFactory.getLog("app");
 	//只用来判断是否已经有一个进程在运行.
 	private static SingleInstance singlton = new SocketSingleInstance();
-	private MainFrame main = null;
+	private JFrame main = null;
 	private EventQueue eventQueue = null;
 	private BookController services = null;
 	private XUIContainer xui = new XUIContainer();
@@ -42,7 +41,6 @@ public class NoteBookApp {
 		System.out.println("java.home:" + System.getProperty("java.home"));
 		System.out.println("java.runtime.version:" + System.getProperty("java.runtime.version"));
 		System.out.println("java.runtime.name:" + System.getProperty("java.runtime.name"));
-		System.out.println("run_mode:" + System.getProperty("run_mode"));
     	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {
@@ -97,7 +95,7 @@ public class NoteBookApp {
 				URL layout = this.getClass().getClassLoader().getResource("org/notebook/layout/MainFrame.xml");
 				if(layout != null) {
 					xui.load(layout);				
-					main = (MainFrame)xui.getByName("main");
+					main = (JFrame)xui.getByName("main");
 					
 					services.setTopWindow(main);
 					//main.initGui();

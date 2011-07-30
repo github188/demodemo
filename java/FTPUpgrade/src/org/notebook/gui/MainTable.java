@@ -30,7 +30,7 @@ public class MainTable extends JTable {
 		protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		public StatusModel(){			
 		}
-		String[] columns = new String[]{"源文件", "大小", "目标文件", "大小", "是否更新", "更新时间"};
+		String[] columns = new String[]{"本地文件", "大小", "FTP文件", "大小", "是否更新", "更新时间"};
 		
 		public String getColumnName(int column){
 			 return columns[column];

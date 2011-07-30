@@ -8,7 +8,7 @@
 			<text value="连接" />
 			<bounds x='10' y='5' w='100' h='25' />
 		</add>
-		<add name='upgrade' class='javax.swing.JButton' command=''>
+		<add name='simpleDown' class='javax.swing.JButton' command=''>
 			<actionListener ref='common_action' />
 			<text value="简单下载" />
 			<bounds x='10' y='35' w='100' h='25' />

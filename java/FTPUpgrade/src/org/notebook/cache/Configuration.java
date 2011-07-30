@@ -44,10 +44,9 @@ public class Configuration {
 		InputStream in = null;
 		try {
 			if(path.isFile()){
+				log.debug("Loading " + path.getAbsolutePath());
 				in = new FileInputStream(path);
-				if (path.isFile()) {
-					p.load(in);
-				}
+				p.load(in);
 			}
 		} catch (IOException e) {
 			log.error(e.toString(), e);
@@ -60,6 +59,7 @@ public class Configuration {
 				}
 			}
 		}
+		
 		param.put(FTP_HOST, p.getProperty(FTP_HOST, "127.0.0.1"));
 		param.put(FTP_USER, p.getProperty(FTP_USER, "root"));
 		param.put(FTP_PASSWORD, p.getProperty(FTP_PASSWORD, ""));
@@ -74,7 +74,6 @@ public class Configuration {
 		param.put(FTP_USER, perf.get(FTP_USER, getUsername()));
 		param.put(FTP_PASSWORD, perf.get(FTP_PASSWORD, getPassword()));
 		param.put(FTP_ROOT_DIR, perf.get(FTP_ROOT_DIR, getRootPath()));
-		//param.put(FTP_HOST, perf.get(FTP_HOST, this.getHost()));		
 	}
 	
 	public void saveRegistry(){

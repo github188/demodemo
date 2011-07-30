@@ -1,7 +1,6 @@
 package org.notebook.services;
 
-import org.notebook.events.BroadCastEvent;
-import org.notebook.gui.MainFrame;
+import javax.swing.JFrame;
 
 public interface BookController {
 	//public void processEvent(BroadCastEvent e);
@@ -12,6 +11,6 @@ public interface BookController {
 	public boolean runingJNLP();
 	public boolean runingSandBox();
 	public Object getEventActions();	
-	public void setTopWindow(MainFrame mainJFrame);
+	public void setTopWindow(JFrame mainJFrame);
 	//public NoteBook getNoteBook();
 }

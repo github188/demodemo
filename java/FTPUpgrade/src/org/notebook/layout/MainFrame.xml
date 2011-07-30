@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <root>
 	<importResource url="org/notebook/layout/SimpleDownloadPanel.xml" />
-	<win name='main' class='org.notebook.gui.MainFrame'>
+	<importResource url="org/notebook/layout/ServerUpgrade.xml" />
+	<win name='main' class='javax.swing.JFrame'>
 		<size x='750' y='550' />
 		<title value="在线升级管理系统" />
 		
@@ -14,9 +15,12 @@
 		<dividerLocation value="65" />
 		<DividerSize value="0" />
 				
-		<topComponent class='javax.swing.JPanel'>
-			<layout class='java.awt.CardLayout' />
-			<add ref="simpleDownload" align="simple sd" />
+		<topComponent name='actionPanel' class='javax.swing.JPanel'>
+			<minimumSize w="200" h="65" />
+			
+			<layout name='cardLayout' class='java.awt.CardLayout' />
+			<add ref="simpleDownload" align="simple" />
+			<add ref="serverUpgradePanel" align="server" />
 		</topComponent>
 		
 		<bottomComponent name='l2' class='javax.swing.JSplitPane' >

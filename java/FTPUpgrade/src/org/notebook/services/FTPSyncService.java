@@ -282,8 +282,8 @@ public class FTPSyncService {
 	/**
 	 * 由界面触发，开始执行升级操作。
 	 */	
-	public void upgrade(){
-		simpleDownload();
+	public void serverUpgrade(){
+		//simpleDownload();
 		/*
 		JOptionPane.showMessageDialog(win,
 			    "功能还没有实现！",

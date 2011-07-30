@@ -1,7 +1,9 @@
 package org.notebook.services;
 
 import java.awt.AWTEvent;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
@@ -12,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,13 +36,14 @@ import org.notebook.gui.AboutDialog;
 import org.notebook.gui.Events;
 import org.notebook.gui.MainFrame;
 import org.notebook.gui.MainTable;
+import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.MainTable.StatusModel;
 import org.notebook.xui.XUIContainer;
 
 public class DefaultBookController implements BookController{
 	private static Log log = LogFactory.getLog("services");
 	private DataStorage storage = null;
-	private MainFrame mainFrame = null;
+	private JFrame mainFrame = null;
 	private ThreadPoolExecutor syncThread = null;
 	private MenuAction menuActions = new MenuAction();
 	
@@ -54,6 +58,9 @@ public class DefaultBookController implements BookController{
 	private JLabel toolInfo = null;
 	private JProgressBar fileProgress = null;
 	private JProgressBar toolProgress = null;	
+	private XUIContainer xui = null;
+	private Configuration config = new Configuration();
+	private String curMode = null;
 	
 		
 	public DefaultBookController(boolean isJNLP, boolean isSandBox){
@@ -67,9 +74,12 @@ public class DefaultBookController implements BookController{
 		//this.sync.start();
 		
 		this.storage = createPersistenceService();
+		
+		config.load(new File(storage.getRootPath(), "ftp.properties"));
+		config.loadRegistry();		
 	}
 	
-	public void setTopWindow(MainFrame mainJFrame){
+	public void setTopWindow(JFrame mainJFrame){
 		this.mainFrame = mainJFrame;		
 	}
 	
@@ -112,6 +122,58 @@ public class DefaultBookController implements BookController{
 		return old;
 	}
 	
+	public void setWorkMode(String name){
+		JPanel actionPanel = (JPanel)xui.getByName("actionPanel");
+		CardLayout layout = (CardLayout)actionPanel.getLayout();
+		if(name != null){
+			curMode = name;
+			layout.show(actionPanel, name);
+		}else {
+			layout.first(actionPanel);
+		}
+	}
+	
+	private Image appIcon(){
+		ImageIcon icon = null;
+		String iconUrl = "org/notebook/gui/images/application.png";
+		try{
+			icon = new ImageIcon(MenuToolbar.class.getClassLoader().getResource(iconUrl));
+		}catch(Exception e){
+			log.error(e.toString(), e);
+		}
+		return icon.getImage();				
+	}
+	
+	private Image appIcon16(){
+		return appIcon().getScaledInstance(16, 16, Image.SCALE_SMOOTH);			
+	}	
+	
+	public void initSystemShortCut(){
+		Toolkit toolkit =  Toolkit.getDefaultToolkit();
+		toolkit.addAWTEventListener(new AWTEventListener(){ 
+				public void eventDispatched(AWTEvent event){
+					if(event.getID() != KeyEvent.KEY_PRESSED)
+						return;
+					if(event instanceof KeyEvent){
+						KeyEvent ke = (KeyEvent)event;
+						 if((ke.getModifiers() & KeyEvent.CTRL_MASK) == KeyEvent.CTRL_MASK){
+							 if(ke.getKeyCode() == KeyEvent.VK_F9){
+								 config.saveRegistry();
+							 }else if(ke.getKeyCode() == KeyEvent.VK_F10){
+								SwingUtilities.invokeLater(new Runnable() {
+						            public void run() {
+										 AboutDialog x = new AboutDialog(mainFrame);
+										 x.setLocationRelativeTo(mainFrame);
+										 x.setVisible(true);
+						            }
+						        });									 
+							 }
+						 }
+					}
+				}},
+				AWTEvent.KEY_EVENT_MASK);		
+	}
+	
 	public class MenuAction {
 				
 		@EventAction(order=1)
@@ -121,10 +183,14 @@ public class DefaultBookController implements BookController{
 			System.exit(0);
 		}
 		
+		/**
+		 * 窗口刚创建，还在没有显示时调用。
+		 * @param event
+		 */
 		@EventAction(order=1)
 		public void XuiLoaded(final BroadCastEvent event){
 			//event.
-			XUIContainer xui = (XUIContainer)event.getSource();			
+			xui = (XUIContainer)event.getSource();			
 			JPanel padding = (JPanel)xui.getByName("padding");
 			padding.setBorder(new EmptyBorder(10,10,10,10));
 			
@@ -137,34 +203,21 @@ public class DefaultBookController implements BookController{
 			l2.setBorder(new EmptyBorder(0, 0, 0, 0));
 			
 			//PreferredSize
-			MainTable mainTable = (MainTable)xui.getByName("mainTable");
-			JFrame main = (JFrame)xui.getByName("main");
-			final Configuration config = new Configuration();
-			config.load(new File(storage.getRootPath(), "ftp.properties"));
-			config.loadRegistry();
-			//config.saveRegistry();			
-			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
-					 event.queue, main,
-					 config,
-					 syncThread
-					);
 			
+			JFrame main = (JFrame)xui.getByName("main");
+			//config.saveRegistry();			
+
 			main.addWindowListener(new WindowAdapter() {
 		        public void windowClosing(WindowEvent ce) {
-		        	System.exit(0);		        	
-		        }
-		        
+		        	event.fireNewEvent("Exit", ce.getSource(), null);        	
+		        }		        
 		        public void windowOpened(WindowEvent ce){
-					syncThread.execute(new Runnable(){
-						@Override
-						public void run() {
-							ftpSync.scanLocalPath();
-					}});
+		        	event.fireNewEvent("windowOpened", ce.getSource(), null);
 		        }
 		    });
 			
 			//注册FTP响应是事件。
-			event.queue.registerAction(ftpSync);
+			//event.queue.registerAction(ftpSync);
 			//event.queue.
 			
 			fileInfo = (JLabel)xui.getByName("fileInfo");
@@ -181,29 +234,32 @@ public class DefaultBookController implements BookController{
 			toolProgress = (JProgressBar)xui.getByName("taskProgress");
 			toolProgress.setStringPainted(true);
 			
-			Toolkit toolkit =  Toolkit.getDefaultToolkit();
-			toolkit.addAWTEventListener(new AWTEventListener(){ 
-					public void eventDispatched(AWTEvent event){
-						if(event.getID() != KeyEvent.KEY_PRESSED)
-							return;
-						if(event instanceof KeyEvent){
-							KeyEvent ke = (KeyEvent)event;
-							 if((ke.getModifiers() & KeyEvent.CTRL_MASK) == KeyEvent.CTRL_MASK){
-								 if(ke.getKeyCode() == KeyEvent.VK_F9){
-									 config.saveRegistry();
-								 }else if(ke.getKeyCode() == KeyEvent.VK_F10){
-									SwingUtilities.invokeLater(new Runnable() {
-							            public void run() {
-											 AboutDialog x = new AboutDialog(mainFrame);
-											 x.setLocationRelativeTo(mainFrame);
-											 x.setVisible(true);
-							            }
-							        });									 
-								 }
-							 }
-						}
-					}},
-					AWTEvent.KEY_EVENT_MASK);			
+			//System.out.println("run_mode:" + System.getProperty("run_mode"));
+			
+			main.setIconImage(appIcon16());
+			setWorkMode(System.getProperty("run_mode"));
+		}
+		
+		/**
+		 * 窗口显示出来以后调用。
+		 * @param event
+		 */
+		@EventAction(order=1)
+		public void windowOpened(final BroadCastEvent event){
+			MainTable mainTable = (MainTable)xui.getByName("mainTable");
+			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
+					 event.queue, mainFrame,
+					 config,
+					 syncThread
+					);
+			
+			initSystemShortCut();
+			
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.scanLocalPath();
+			}});			
 		}
 		
 		@EventAction(order=1)
@@ -222,15 +278,24 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@EventAction(order=1)
-		public void upgrade(final BroadCastEvent event){
+		public void simpleDown(final BroadCastEvent event){
 			//
-			JButton button = (JButton)event.getSource();
-			//button.getActionCommand()
-			//if(button)
+			//JButton button = (JButton)event.getSource();
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.upgrade();
+					ftpSync.simpleDownload();
+			}});			
+		}
+
+		@EventAction(order=1)
+		public void serverUpgrade(final BroadCastEvent event){
+			//
+			//JButton button = (JButton)event.getSource();
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.serverUpgrade();
 			}});			
 		}
 		

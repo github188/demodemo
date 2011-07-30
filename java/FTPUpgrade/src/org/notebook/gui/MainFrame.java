@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
 import org.notebook.events.EventQueue;
-import org.notebook.gui.editor.SimplePrintPanel;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -4362026054606144515L;
@@ -39,10 +38,7 @@ public class MainFrame extends JFrame {
 	public MenuToolbar menu = null;	
 	public EventQueue events = null;
 	public StatusBar statusBar = null;
-	public SimplePrintPanel mainPanel = null;
 
-	private JScrollPane _panel = null;
-		
 	//初始化托盘时, Controller还没有创建。把安装的结果临时保存。等Contoller创建后，再传给Controller.
 	private boolean visibleTrayIcon = false;
 
@@ -67,28 +63,6 @@ public class MainFrame extends JFrame {
     	menu = new MenuToolbar(events);
     	this.getRootPane().setJMenuBar(menu.getMenuBar());
     }
-
-	
-	public void showSettings(){
-		JPanel p = new JPanel();
-		//p.setSize(width, height)
-		//NoteBookSettings settings = new NoteBookSettings(this, controller);		
-		//settings.setLocationRelativeTo(this);
-		//settings.setVisible(true);
-	}
-	
-	@EventAction(order=1)
-	public void About(BroadCastEvent event){
-		AboutDialog about = new AboutDialog(mainFrame);
-		about.setLocationRelativeTo(mainFrame);
-		about.setVisible(true);
-		event.done();
-	}
-	
-		
-	public void status(String msg){
-		this.statusBar.setText(msg);
-	}
 	
 	private Image appIcon(){
 		return MenuToolbar.icon("org/notebook/gui/images/application.png").getImage();			
