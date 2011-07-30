@@ -56,11 +56,15 @@ public class DefaultBookController implements BookController{
 	private JLabel fileInfo = null;
 	private JLabel taskInfo = null;
 	private JLabel toolInfo = null;
+	
+	private JLabel server_info = null;
+	
 	private JProgressBar fileProgress = null;
 	private JProgressBar toolProgress = null;	
 	private XUIContainer xui = null;
 	private Configuration config = new Configuration();
 	private String curMode = null;
+	private DatabaseService database = null;
 	
 		
 	public DefaultBookController(boolean isJNLP, boolean isSandBox){
@@ -76,7 +80,8 @@ public class DefaultBookController implements BookController{
 		this.storage = createPersistenceService();
 		
 		config.load(new File(storage.getRootPath(), "ftp.properties"));
-		config.loadRegistry();		
+		config.loadRegistry();	
+		database = new DatabaseService();
 	}
 	
 	public void setTopWindow(JFrame mainJFrame){
@@ -196,6 +201,9 @@ public class DefaultBookController implements BookController{
 			
 			JLabel info = (JLabel)xui.getByName("warn_info");
 			info.setForeground(Color.red);
+
+			server_info = (JLabel)xui.getByName("server_info");
+			server_info.setForeground(Color.red);
 			
 			JSplitPane l1 = (JSplitPane)xui.getByName("l1");
 			JSplitPane l2 = (JSplitPane)xui.getByName("l2");
@@ -250,15 +258,19 @@ public class DefaultBookController implements BookController{
 			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
 					 event.queue, mainFrame,
 					 config,
-					 syncThread
+					 syncThread,
+					 database
 					);
+			if(curMode != null && curMode.equals("server")){
+				ftpSync.setMode(FTPSyncService.UPLOAD_MODE);
+			}
 			
-			initSystemShortCut();
+			initSystemShortCut();			
 			
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.scanLocalPath();
+					ftpSync.scanLocalPath(false);
 			}});			
 		}
 		
@@ -324,14 +336,22 @@ public class DefaultBookController implements BookController{
 		}		
 		
 		private void updateProcessBar(TaskStatus status){
+			long doneBytes = status.doneBytes;
+			if(!status.isZip && status.isUploading){
+				doneBytes += status.doneFileByptes;
+			}
 			String tInfo = String.format("已传文件%s个%1.2fM, 待传文件%s个%1.2fM",
-					status.doneFiles, (status.totalBytes + status.doneFileByptes) /1024.0/1024.0,
+					status.doneFiles, doneBytes /1024.0/1024.0,
 					status.totalFiles - status.doneFiles, 
-					(status.totalBytes - status.doneBytes) /1024.0/1024.0
+					(status.totalBytes - doneBytes) /1024.0/1024.0
 					);
 			String fInfo = null;
 			if(status.curFile != null){
-				fInfo = String.format("%s 进度.", status.curFile);
+				if(status.isZip){
+					fInfo = String.format("%s 压缩进度.", status.curFile);
+				}else {
+					fInfo = String.format("%s 上传进度.", status.curFile);
+				}
 			}else {
 				fInfo = "单个文件进度.";
 			}
@@ -343,8 +363,24 @@ public class DefaultBookController implements BookController{
 			fileProgress.setValue((int)status.doneFileByptes);
 			
 			toolProgress.setMaximum((int)status.totalBytes);
-			toolProgress.setValue((int)(status.doneBytes + status.doneFileByptes));			
+			toolProgress.setValue((int)(doneBytes));
 		}
+		
+		
+		@EventAction(order=1)
+		public void UpdateStateBar(final BroadCastEvent event){
+			if(event.get(Events.STATUS_WARN) != null && 
+			  (Boolean)event.get(Events.STATUS_WARN) &&
+			  server_info != null){
+			  final String text = (String)event.get(Events.STATUS_PARAM);
+				SwingUtilities.invokeLater(new Runnable() {
+		            public void run() {
+		            	server_info.setText(text);
+		            }
+		        });				
+			}
+			//setText((String)event.get(Events.STATUS_PARAM));
+		}		
 		
 		public String toString(){
 			return "BookController Actions";

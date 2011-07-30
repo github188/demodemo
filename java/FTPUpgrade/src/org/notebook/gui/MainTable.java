@@ -62,13 +62,24 @@ public class MainTable extends JTable {
 			UpgradeModel task = data.get(rowIndex);
 			switch(columnIndex){
 				case 0: return task.source;
-				case 1: return task.sourceSize > 0 ? task.sourceSize : "";
+				case 1: return formateSize(task.sourceSize);
 				case 2: return task.dst;
-				case 3: return task.dstSize > 0?task.dstSize:"";
+				case 3: return formateSize(task.dstSize);
 				case 4: return task.isUpdate ? "是": "否";
-				case 5: return task.updateDate;		
+				case 5: return task.updateDate;
 			}
 			return "";
+		}
+		
+		private String formateSize(long size){
+			if(size == 0)return "";
+			double b = size / 1024.0;
+			String unit = "Kb";
+			if(b > 1024){
+				b = b / 1024.0;
+				unit = "Mb";
+			}			
+			return String.format("%s(%1.2f%s)", size, b, unit);
 		}
 	}
 

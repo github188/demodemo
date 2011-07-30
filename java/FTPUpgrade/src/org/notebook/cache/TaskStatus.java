@@ -14,4 +14,7 @@ public class TaskStatus {
 	public String curFile = "";
 	public long fileBytes = 0;
 	public long doneFileByptes = 0;
+	
+	public boolean isZip = false;
+	public boolean isUploading = false;
 }
