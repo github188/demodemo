@@ -120,7 +120,9 @@ public class FTPSyncService {
 					syncThread.execute(new Runnable(){
 						@Override
 						public void run() {
-							updateFTPFilelist();							
+							if(changeWorkDir(cfg.getRootPath())){
+								updateFTPFilelist();				
+							}
 						}});
 				}else {
 					updateStatusBar("FTP登录失败, 用户名:" + cfg.getUsername());					
@@ -159,7 +161,7 @@ public class FTPSyncService {
 			return;		
 		}
 		
-		changeWorkDir(cfg.getRootPath());
+		//changeWorkDir(cfg.getRootPath());
 			
 		isDownloading = true;
 		
@@ -199,17 +201,23 @@ public class FTPSyncService {
 		
 	}
 	
-	private void changeWorkDir(String dir){
+	private boolean changeWorkDir(String dir){
 		try {
-			if(ftp.changeWorkingDirectory(cfg.getRootPath())){
-				updateStatusBar("FTP当前目录：" + cfg.getRootPath());
+			if(ftp.changeWorkingDirectory(dir)){
+				updateStatusBar("FTP当前目录：" + dir);
+				return true;
 			}else {
-				updateStatusBar("没有找到FTP服务器目录:" + cfg.getRootPath());
+				updateStatusBar("没有找到FTP服务器目录:" + dir);
+				JOptionPane.showMessageDialog(win,
+					    "没有找到FTP服务器目录:" + dir,
+					    "错误",
+					    JOptionPane.ERROR_MESSAGE);				
 			}
 		} catch (IOException e) {
 			log.error(e.toString(), e);
-			updateStatusBar("FTP连接错误, 中止下载任务.");
+			updateStatusBar("FTP连接错误.");
 		}
+		return false;
 	}
 	
 	private boolean uploadFile(UpgradeModel file) {
@@ -390,7 +398,8 @@ public class FTPSyncService {
 			
 		isDownloading = true;
 		
-		changeWorkDir(cfg.getRootPath());
+		//changeWorkDir(cfg.getRootPath());
+		
 		status = new TaskStatus();
 		
 		Collection<UpgradeModel> fileList = this.getUpdatingList();
@@ -436,7 +445,10 @@ public class FTPSyncService {
 	 * 上传升级Zip包。
 	 */
 	private void uploadZipFile(){
-		changeWorkDir(cfg.param.get(Configuration.FTP_ZIP_DIR));
+		if(!changeWorkDir(cfg.param.get(Configuration.FTP_ZIP_DIR))){
+			return;
+		}
+		model.data.clear();
 		this.scanLocalPath(true);
 		this.updateFTPFilelist();
 		
@@ -460,7 +472,7 @@ public class FTPSyncService {
 						    JOptionPane.ERROR_MESSAGE);
 					break;
 				}
-				database.insertZipFile(this.curVersion, f.dst);
+				database.insertZipFile(this.curVersion, f.source);
 			}
 			
 			//升级包上传完成。
