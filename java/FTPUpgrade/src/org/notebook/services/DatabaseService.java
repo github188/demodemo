@@ -104,6 +104,34 @@ public class DatabaseService {
 		}
 	}
 	
+	public boolean testConnection(){
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		boolean isOk = false;
+		//清空缓存从新加载驱动。
+		driver = null;
+		try {
+			conn = getConnection();
+			pstm = conn.prepareStatement("select distinct FILENAME from tb_upload_file where version>1");
+			rs = pstm.executeQuery();
+			isOk = true;
+		} catch (SQLException e) {
+			log.error(e.toString(), e);
+		}finally{
+			try{
+				if(rs != null)rs.close();
+			}catch(SQLException e){};
+			try {
+				if(pstm != null) pstm.close();
+			} catch (SQLException e) {}
+			try {
+				if(conn != null) conn.close();
+			} catch (SQLException e) {}
+		}		
+		return isOk;		
+	}
+	
 	public Collection<UpgradeFile> getUpgradeFile(String version){
 		Connection conn = null;
 		PreparedStatement pstm = null;

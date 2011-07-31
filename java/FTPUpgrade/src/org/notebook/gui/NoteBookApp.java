@@ -112,16 +112,6 @@ public class NoteBookApp {
 		
 	}
 	
-	/**
-	 * 把当前目录的所有jar,加到classpath. 为了能正确加载JDBC dirver.
-	 */
-	private void installClassLoader(){
-		URL curJar = NoteBookApp.class.getProtectionDomain().getCodeSource().getLocation();
-		 curJar.toURI().resolve("jdbc-driver.jar");
-		 
-		
-	}
-	
 	private boolean runingJNLP(){
 		try {
 			Class.forName("javax.jnlp.ServiceManager");

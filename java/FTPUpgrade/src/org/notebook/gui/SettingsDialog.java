@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,14 +18,17 @@ import javax.swing.table.AbstractTableModel;
 
 import org.notebook.Version;
 import org.notebook.cache.Configuration;
+import org.notebook.services.DatabaseService;
 
 public class SettingsDialog extends JDialog {
 	private String name = "";
-	public Configuration config = null;
+	private Configuration config = null;
+	private DatabaseService db = null;
 	
-	public SettingsDialog(JFrame parent, Configuration config){
+	public SettingsDialog(JFrame parent, Configuration config, DatabaseService db){
 		super(parent, true);
 		this.config = config;
+		this.db = db;
 		this.name = Version.getName();
 		this.setTitle("系统参数配置");
 		setContentPane(createAboutJPanel());
@@ -58,6 +62,9 @@ public class SettingsDialog extends JDialog {
         
         JButton close = new JButton("取消");
         buttons.add(close);
+
+        JButton conn = new JButton("数据库连接测试");
+        buttons.add(conn);
         
         
         p.add(buttons, BorderLayout.NORTH);
@@ -66,6 +73,27 @@ public class SettingsDialog extends JDialog {
         p.add(buttons, BorderLayout.SOUTH);
         
         final JDialog dailog = this;
+
+        conn.addActionListener(
+        		new ActionListener(){
+        			@Override
+        			public void actionPerformed(ActionEvent e) {
+        				//config.saveRegistry();
+        				if(db.testConnection()){
+        					JOptionPane.showMessageDialog(getParent(),
+        						    "数据库连接成功！",
+        						    "成功",
+        						    JOptionPane.INFORMATION_MESSAGE);        					
+        				}else {
+        					JOptionPane.showMessageDialog(getParent(),
+        						    "数据库连接失败！",
+        						    "失败",
+        						    JOptionPane.ERROR_MESSAGE);        					
+        				}
+        			}
+		});
+
+        
         save.addActionListener(
         		new ActionListener(){
         			@Override
@@ -141,7 +169,7 @@ public class SettingsDialog extends JDialog {
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	        
 
 	        //Add content to the window.
-	        final SettingsDialog s = new SettingsDialog(frame, new Configuration());
+	        final SettingsDialog s = new SettingsDialog(frame, new Configuration(), null);
 	        //s.config = new Configuration();
 	        JButton a = new JButton("test");
 	        

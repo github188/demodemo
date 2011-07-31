@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
@@ -164,7 +165,7 @@ public class DefaultBookController implements BookController{
 						 if((ke.getModifiers() & KeyEvent.CTRL_MASK) == KeyEvent.CTRL_MASK){
 							 if(ke.getKeyCode() == KeyEvent.VK_F9){
 								 //config.saveRegistry();
-								 SettingsDialog x = new SettingsDialog(mainFrame, config);
+								 SettingsDialog x = new SettingsDialog(mainFrame, config, database);
 								 x.setLocationRelativeTo(mainFrame);
 								 x.setVisible(true);
 							 }else if(ke.getKeyCode() == KeyEvent.VK_F10){
@@ -273,7 +274,15 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.scanLocalPath(false);
+					if(curMode != null && !curMode.equals("simple")){
+						ftpSync.scanLocalPath(false);
+						if(!database.testConnection()){
+        					JOptionPane.showMessageDialog(mainFrame,
+        						    "数据库连接失败, 请检查参数配置。",
+        						    "错误",
+        						    JOptionPane.ERROR_MESSAGE);							
+						}
+					}
 			}});			
 		}
 		
