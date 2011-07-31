@@ -15,13 +15,33 @@ import org.apache.commons.logging.LogFactory;
 
 public class Configuration {
 	protected Log log = LogFactory.getLog("cfg");
-	private static String FTP_HOST = "ftp_host";
-	private static String FTP_USER = "ftp_user";
-	private static String FTP_PASSWORD = "ftp_password";
-	private static String FTP_ROOT_DIR = "ftp_root_dir";
-	private static String FTP_ZIP_DIR = "ftp_zip_dir";
+	public final static String FTP_HOST = "ftp_host";
+	public final static String FTP_USER = "ftp_user";
+	public final static String FTP_PASSWORD = "ftp_password";
+	public final static String FTP_ROOT_DIR = "ftp_root_dir";
+	public final static String FTP_ZIP_DIR = "ftp_zip_dir";
 	
-	private Map<String, String> param = new HashMap<String, String>();
+	public final static String DB_DRIVER = "db_driver";
+	public final static String DB_URL = "db_url";
+	public final static String DB_USER = "db_user";
+	public final static String DB_PASSWORD = "db_password";
+	public final String[] PARAMS = {FTP_HOST, FTP_USER, FTP_PASSWORD, FTP_ROOT_DIR, FTP_ZIP_DIR,
+			DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD
+			};
+	
+	public Map<String, String> param = new HashMap<String, String>();
+	
+	public Configuration(){
+		param.put(FTP_HOST, "127.0.0.1");
+		param.put(FTP_USER, "root");
+		param.put(FTP_PASSWORD, "");
+		param.put(FTP_ROOT_DIR, "/");
+		param.put(FTP_ZIP_DIR, "/zip");
+		param.put(DB_DRIVER, "oracle.jdbc.driver.OracleDriver");
+		param.put(DB_URL, "jdbc:oracle:thin:127.0.0.1:1521/prod");
+		param.put(DB_USER, "user");
+		param.put(DB_PASSWORD, "");
+	}
 	
 	public String getHost(){
 		return param.get(FTP_HOST);
@@ -60,28 +80,28 @@ public class Configuration {
 			}
 		}
 		
-		param.put(FTP_HOST, p.getProperty(FTP_HOST, "127.0.0.1"));
-		param.put(FTP_USER, p.getProperty(FTP_USER, "root"));
-		param.put(FTP_PASSWORD, p.getProperty(FTP_PASSWORD, ""));
-		param.put(FTP_ROOT_DIR, p.getProperty(FTP_ROOT_DIR, "/"));
-		param.put(FTP_ZIP_DIR, p.getProperty(FTP_ZIP_DIR, "/zip"));		
+		for(String name: PARAMS){
+			if(p.getProperty(name) != null){
+				param.put(name, p.getProperty(name));
+			}
+		}
 	}
 	
 	public void loadRegistry(){
 		Preferences perf = Preferences.userRoot().node("ftp_upgrade");
-		log.debug("path:" + perf.absolutePath());
-		param.put(FTP_HOST, perf.get(FTP_HOST, getHost()));
-		param.put(FTP_USER, perf.get(FTP_USER, getUsername()));
-		param.put(FTP_PASSWORD, perf.get(FTP_PASSWORD, getPassword()));
-		param.put(FTP_ROOT_DIR, perf.get(FTP_ROOT_DIR, getRootPath()));
+		//log.debug("path:" + perf.absolutePath());
+		for(String name: PARAMS){
+			if(perf.get(name, null) != null){
+				param.put(name, perf.get(name, null));
+			}
+		}
 	}
 	
 	public void saveRegistry(){
 		Preferences perf = Preferences.userRoot().node("ftp_upgrade");
-		perf.put(FTP_HOST, getHost());
-		perf.put(FTP_USER, getUsername());
-		perf.put(FTP_PASSWORD, getPassword());
-		perf.put(FTP_ROOT_DIR, getRootPath());
+		for(String name: PARAMS){
+			perf.put(name, param.get(name));
+		}
 		try {
 			perf.flush();
 			log.debug("save registory:" + perf.absolutePath());

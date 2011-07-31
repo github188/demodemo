@@ -41,6 +41,8 @@ public class NoteBookApp {
 		System.out.println("java.home:" + System.getProperty("java.home"));
 		System.out.println("java.runtime.version:" + System.getProperty("java.runtime.version"));
 		System.out.println("java.runtime.name:" + System.getProperty("java.runtime.name"));
+		System.out.println("jar:" + System.getProperty("java.runtime.name"));
+		//URL curJar = NoteBookApp.class.getProtectionDomain().getCodeSource().getLocation();
     	
     	AccessController.doPrivileged(
 				new PrivilegedAction() {
@@ -107,6 +109,16 @@ public class NoteBookApp {
 				}
 			}
         });	
+		
+	}
+	
+	/**
+	 * 把当前目录的所有jar,加到classpath. 为了能正确加载JDBC dirver.
+	 */
+	private void installClassLoader(){
+		URL curJar = NoteBookApp.class.getProtectionDomain().getCodeSource().getLocation();
+		 curJar.toURI().resolve("jdbc-driver.jar");
+		 
 		
 	}
 	
