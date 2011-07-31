@@ -34,10 +34,10 @@ import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
 import org.notebook.gui.AboutDialog;
 import org.notebook.gui.Events;
-import org.notebook.gui.MainFrame;
 import org.notebook.gui.MainTable;
-import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.MainTable.StatusModel;
+import org.notebook.gui.MenuToolbar;
+import org.notebook.gui.SettingsDialog;
 import org.notebook.xui.XUIContainer;
 
 public class DefaultBookController implements BookController{
@@ -81,7 +81,7 @@ public class DefaultBookController implements BookController{
 		
 		config.load(new File(storage.getRootPath(), "ftp.properties"));
 		config.loadRegistry();	
-		database = new DatabaseService();
+		database = new DatabaseService(config);
 	}
 	
 	public void setTopWindow(JFrame mainJFrame){
@@ -163,7 +163,10 @@ public class DefaultBookController implements BookController{
 						KeyEvent ke = (KeyEvent)event;
 						 if((ke.getModifiers() & KeyEvent.CTRL_MASK) == KeyEvent.CTRL_MASK){
 							 if(ke.getKeyCode() == KeyEvent.VK_F9){
-								 config.saveRegistry();
+								 //config.saveRegistry();
+								 SettingsDialog x = new SettingsDialog(mainFrame, config);
+								 x.setLocationRelativeTo(mainFrame);
+								 x.setVisible(true);
 							 }else if(ke.getKeyCode() == KeyEvent.VK_F10){
 								SwingUtilities.invokeLater(new Runnable() {
 						            public void run() {
