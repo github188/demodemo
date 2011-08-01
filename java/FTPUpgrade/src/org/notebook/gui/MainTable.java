@@ -13,7 +13,7 @@ import org.notebook.cache.UpgradeModel;
 public class MainTable extends JTable {
 	
 	public MainTable(){
-		super(new StatusModel());
+		super(new TableModel());
 		this.setGUI();
 		
 
@@ -25,10 +25,10 @@ public class MainTable extends JTable {
 		//this.setBackground(Color.RED);		
 	}
 	
-	public static class StatusModel extends AbstractTableModel{
+	public static class TableModel extends AbstractTableModel{
 		public ArrayList<UpgradeModel> data = new ArrayList<UpgradeModel>();
 		protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		public StatusModel(){			
+		public TableModel(){			
 		}
 		String[] columns = new String[]{"本地文件", "大小", "FTP文件", "大小", "是否更新", "更新时间"};
 		

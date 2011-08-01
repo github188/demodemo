@@ -27,7 +27,8 @@ public class Configuration {
 	public final static String DB_USER = "db_user";
 	public final static String DB_PASSWORD = "db_password";
 	public final String[] PARAMS = {FTP_HOST, FTP_USER, FTP_PASSWORD, FTP_ROOT_DIR, FTP_ZIP_DIR,
-			DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD
+			DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD,
+			LOCAL_VERSION
 			};
 	
 	public Map<String, String> param = new HashMap<String, String>();

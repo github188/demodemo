@@ -36,7 +36,7 @@ import org.notebook.events.EventAction;
 import org.notebook.gui.AboutDialog;
 import org.notebook.gui.Events;
 import org.notebook.gui.MainTable;
-import org.notebook.gui.MainTable.StatusModel;
+import org.notebook.gui.MainTable.TableModel;
 import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.SettingsDialog;
 import org.notebook.xui.XUIContainer;
@@ -253,7 +253,7 @@ public class DefaultBookController implements BookController{
 			//System.out.println("run_mode:" + System.getProperty("run_mode"));
 			
 			main.setIconImage(appIcon16());
-			setWorkMode(System.getProperty("run_mode"));
+			setWorkMode(System.getProperty("run_mode", "simple"));
 		}
 		
 		/**
@@ -263,7 +263,7 @@ public class DefaultBookController implements BookController{
 		@EventAction(order=1)
 		public void windowOpened(final BroadCastEvent event){
 			MainTable mainTable = (MainTable)xui.getByName("mainTable");
-			ftpSync = new FTPSyncService((StatusModel)mainTable.getModel(),
+			ftpSync = new FTPSyncService((TableModel)mainTable.getModel(),
 					 event.queue, mainFrame,
 					 config,
 					 syncThread,
@@ -278,7 +278,8 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.scanLocalPath(curMode != null && curMode.equals("client"));						
+					boolean isOnlyZip = curMode != null && curMode.equals("client");
+					ftpSync.scanLocalPath(isOnlyZip);						
 
 					if(curMode != null && !curMode.equals("simple")){
 						if(!database.testConnection()){
@@ -400,18 +401,18 @@ public class DefaultBookController implements BookController{
 			if(event.get(Events.STATUS_WARN) != null && 
 			  (Boolean)event.get(Events.STATUS_WARN)){
 			  final String text = (String)event.get(Events.STATUS_PARAM);
-			  if(server_info != null && curMode != null && curMode.equals("server")){
+			  if(curMode.equals("server") && server_info != null){
 					SwingUtilities.invokeLater(new Runnable() {
 			            public void run() {
 			            	server_info.setText(text);
 			            }
 			        });
-			  }else if(client_info != null){
+			  }else if(curMode.equals("client") && client_info != null){
 					SwingUtilities.invokeLater(new Runnable() {
 			            public void run() {
 			            	client_info.setText(text);
 			            }
-			        });				  
+			        });
 			  }
 			}
 			//setText((String)event.get(Events.STATUS_PARAM));

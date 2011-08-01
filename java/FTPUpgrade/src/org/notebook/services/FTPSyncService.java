@@ -38,7 +38,7 @@ import org.notebook.cache.UpgradeFile;
 import org.notebook.cache.UpgradeModel;
 import org.notebook.events.EventQueue;
 import org.notebook.gui.Events;
-import org.notebook.gui.MainTable.StatusModel;
+import org.notebook.gui.MainTable.TableModel;
 
 public class FTPSyncService {
 	public static final int UPLOAD_MODE = 1;
@@ -48,7 +48,7 @@ public class FTPSyncService {
 	
 	
 	private ThreadPoolExecutor syncThread = null;
-	private StatusModel model = null;
+	private TableModel dataModel = null;
 	private EventQueue eventQueue = null;
 	private JFrame win = null;
 	private FTPClient ftp = null;
@@ -59,6 +59,7 @@ public class FTPSyncService {
 	private File localRoot = new File(".");
 	private String curVersion = null;
 	private DatabaseService database = null;
+	//private String mode = null;
 	
 	private boolean isDownloading = false;
 	
@@ -69,17 +70,21 @@ public class FTPSyncService {
 	private OutputStream curOs = null;
 	private InputStream curIn = null;
 	
-	/*
-	 * 当前工作模式， 上传数据模式／下载数据模式。
+	/**
+	 * 软件工作模式, 简单下载，客户端升级，服务端上传。
 	 */
-	private int mode = DOWNLOAD_MODE;
+	private String workMode = null;
+	/*
+	 * 当前FTP模式， 上传数据模式／下载数据模式。
+	 */
+	private int ftpMode = DOWNLOAD_MODE;
 	
-	public FTPSyncService(StatusModel model, EventQueue eventQueue, JFrame win, 
+	public FTPSyncService(TableModel model, EventQueue eventQueue, JFrame win, 
 			Configuration cfg,
 			ThreadPoolExecutor threadPool,
 			DatabaseService dbs
 			){
-		this.model = model;
+		this.dataModel = model;
 		this.eventQueue = eventQueue;
 		this.win = win;
 		this.cfg = cfg;
@@ -91,6 +96,7 @@ public class FTPSyncService {
 	 * 由界面触发，开始连接服务器。
 	 */
 	public void connect(final String mode){
+		this.workMode = mode;
 		if(ftp != null && ftp.isConnected() && ftp.isAvailable()){
 			JOptionPane.showMessageDialog(win,
 				    "当前FTP处于连接状态！",
@@ -125,7 +131,7 @@ public class FTPSyncService {
 						public void run() {
 							//if(this.)
 							String cdDir = cfg.getRootPath();
-							if(mode != null && mode.equals("client")){
+							if(mode.equals("client")){
 								cdDir = cfg.param.get(Configuration.FTP_ZIP_DIR);
 							}
 							if(changeWorkDir(cdDir)){
@@ -150,7 +156,7 @@ public class FTPSyncService {
 	}
 	
 	public void setMode(int mode){
-		this.mode = mode;
+		this.ftpMode = mode;
 	}
 	
 	private void initFTPConnection(){
@@ -178,7 +184,7 @@ public class FTPSyncService {
 		Collection<UpgradeModel> fileList = this.getUpdatingList();
 		status.totalFiles = fileList.size();
 		for(UpgradeModel f: fileList){
-			long s = (mode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
+			long s = (ftpMode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
 			status.totalBytes += s;
 		}
 		
@@ -247,6 +253,11 @@ public class FTPSyncService {
 			}
 			ftp.rename(cacheName, file.source);
 			
+			//下载成功事件
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put(Events.FTP_PATH_PARAM, file.source);
+			eventQueue.fireEvent(Events.FTP_UP_DONE_EVENT, param);
+			
 			status.doneFiles++;
 			status.doneBytes += file.sourceSize;
 			status.isUploading = false;
@@ -289,6 +300,11 @@ public class FTPSyncService {
 			}
 			dstFile.renameTo(newFile);			
 			updateProgressBar();
+
+			//下载成功事件
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put(Events.FTP_PATH_PARAM, file.dst);
+			eventQueue.fireEvent(Events.FTP_DOWN_DONE_EVENT, param);			
 		}catch(IOException e){
 			ftpError = true;
 			log.error(e.toString(), e);
@@ -314,23 +330,7 @@ public class FTPSyncService {
 	 */
 	private Collection<UpgradeModel> getUpdatingList(){
 		Collection<UpgradeModel> fileList = new ArrayList<UpgradeModel>();
-		for(UpgradeModel m:model.getData()){
-			m.isUpdate = false;
-			if(m.dstSize != m.sourceSize){
-				//如果是下载模式，FTP上没有文件。不需要更新。
-				if(mode == DOWNLOAD_MODE && m.dst == null){
-					continue;
-				}
-				//上传的时候，如果本地没有文件不上传。
-				else if(mode == UPLOAD_MODE && m.source == null){
-					continue;
-				}
-				m.isUpdate = true;
-			}				
-		}
-		model.fireTableDataChanged();
-		
-		for(UpgradeModel m: model.getData()){
+		for(UpgradeModel m: dataModel.getData()){
 			if(m.isUpdate){
 				fileList.add(m);
 			}
@@ -346,7 +346,7 @@ public class FTPSyncService {
 		Collection<UpgradeFile> updatedFile = database.getUpgradeFile(version);
 		
 		Collection<UpgradeModel> fileList = new ArrayList<UpgradeModel>();
-		for(UpgradeModel m: model.getData()){
+		for(UpgradeModel m: dataModel.getData()){
 			m.isUpdate = false;
 			if(!isContain(updatedFile, m.dst))continue;
 			if(m.sourceSize != m.dstSize){
@@ -354,7 +354,7 @@ public class FTPSyncService {
 				m.isUpdate = true;				
 			} 
 		}
-		model.fireTableDataChanged();
+		dataModel.fireTableDataChanged();
 		
 		return fileList;
 	}
@@ -367,6 +367,9 @@ public class FTPSyncService {
 	}
 	//private 
 	
+	/**
+	 * 从FTP服务器更新文件列表，检查文件更新状态。
+	 */
 	public void updateFTPFilelist(){
 		if(!logined)return;
 		try {
@@ -381,8 +384,26 @@ public class FTPSyncService {
 				}
 				updateFTPFileInfo(f);
 			}
-			model.fireTableDataChanged();
+			//model.fireTableDataChanged();
 			updateStatusBar("文件列表读取完成，准备更新文件...");
+			if(!workMode.equals("client")){
+				for(UpgradeModel m:dataModel.getData()){
+					m.isUpdate = false;
+					if(m.dstSize != m.sourceSize){
+						//如果是下载模式，FTP上没有文件。不需要更新。
+						if(ftpMode == DOWNLOAD_MODE && m.dst == null){
+							continue;
+						}
+						//上传的时候，如果本地没有文件不上传。
+						else if(ftpMode == UPLOAD_MODE && m.source == null){
+							continue;
+						}
+						m.isUpdate = true;
+					}
+				}
+			}
+			
+			dataModel.fireTableDataChanged();			
 		} catch (IOException e) {
 			updateStatusBar("FTP网络连接出错");
 			log.error(e.toString(), e);
@@ -392,7 +413,7 @@ public class FTPSyncService {
 	private void updateFTPFileInfo(FTPFile file){
 		boolean isFound = false;
 		UpgradeModel tmp = null; 
-		for(UpgradeModel m: model.getData()){
+		for(UpgradeModel m: dataModel.getData()){
 			if(m.source != null && m.source.equals(file.getName())){
 				m.dst = file.getName();
 				m.dstSize = file.getSize();
@@ -404,7 +425,7 @@ public class FTPSyncService {
 			tmp = new UpgradeModel();
 			tmp.dst = file.getName();
 			tmp.dstSize = file.getSize();
-			model.addUpgradeModel(tmp);
+			dataModel.addUpgradeModel(tmp);
 		}
 	}	
 	
@@ -452,7 +473,7 @@ public class FTPSyncService {
 			this.updateVersionInfo();
 			status.totalFiles = fileList.size();
 			for(UpgradeModel f: fileList){
-				long s = (mode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
+				long s = (ftpMode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
 				status.totalBytes += s;
 			}
 			updateStatusBar("开始上传文件...");
@@ -502,10 +523,13 @@ public class FTPSyncService {
 		String localVersion = cfg.getLocalVersion();
 		String remoteVersion = database.getLastVersion(false);
 		if(localVersion.trim().equals(remoteVersion.trim())){
+			String msg = "本地软件已经是最新版本" + remoteVersion;
+			this.updateStatusBar(msg, true);
+
 			JOptionPane.showMessageDialog(win,
-				    "本地软件已经是最新版本" + localVersion,
+				    "本地软件已经是最新版本" + remoteVersion,
 				    "消息",
-				    JOptionPane.INFORMATION_MESSAGE);		
+				    JOptionPane.INFORMATION_MESSAGE);	
 		}else {
 			String msg = String.format("从%s 升级到 %s.", localVersion, remoteVersion);
 			this.updateStatusBar(msg, true);
@@ -514,9 +538,8 @@ public class FTPSyncService {
 			status = new TaskStatus();
 			status.totalFiles = fileList.size();
 			for(UpgradeModel f: fileList){
-				long s = (mode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
-				status.totalBytes += s;
-			}			
+				status.totalBytes += f.dstSize;
+			}
 			
 			updateProgressBar();
 			
@@ -537,9 +560,9 @@ public class FTPSyncService {
 			cfg.saveRegistry();
 			
 			JOptionPane.showMessageDialog(win,
-				    "本地软件成功升级到最新版本" + localVersion,
+				    "本地软件成功升级到最新版本" + remoteVersion,
 				    "消息",
-				    JOptionPane.INFORMATION_MESSAGE);			
+				    JOptionPane.INFORMATION_MESSAGE);	
 		}
 				
 		isDownloading = false;
@@ -551,7 +574,7 @@ public class FTPSyncService {
 		if(!changeWorkDir(cfg.param.get(Configuration.FTP_ZIP_DIR))){
 			return;
 		}
-		model.data.clear();
+		dataModel.data.clear();
 		this.scanLocalPath(true);
 		this.updateFTPFilelist();
 		
@@ -561,7 +584,7 @@ public class FTPSyncService {
 			this.updateVersionInfo();
 			status.totalFiles = fileList.size();
 			for(UpgradeModel f: fileList){
-				long s = (mode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
+				long s = (ftpMode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
 				status.totalBytes += s;
 			}
 			updateStatusBar("开始上传文件...");
@@ -669,7 +692,7 @@ public class FTPSyncService {
 				status.isZip = true;
 				ins = zipFile.getInputStream(entry);
 				os = new FileOutputStream(new File(this.localRoot, entry.getName()));
-				
+				log.info("Extract file:" + entry.getName());
 				updateProgressBar();
 				long lastUpdate = System.currentTimeMillis();
 				for(int len = buffer.length; len == buffer.length;){
@@ -705,6 +728,9 @@ public class FTPSyncService {
 		}
 	}	
 	
+	/**
+	 * @param zip -- 是否只扫描zip文件。
+	 */
 	public void scanLocalPath(boolean zip){
 		//for()
 		File root = new File(".");
@@ -720,9 +746,9 @@ public class FTPSyncService {
 			m = new UpgradeModel();
 			m.source = f.getName();
 			m.sourceSize = f.length();
-			model.addUpgradeModel(m);
+			dataModel.addUpgradeModel(m);
 		}
-		model.fireTableDataChanged();
+		dataModel.fireTableDataChanged();
 	}
 
 	public void listFiles(){
