@@ -2,6 +2,7 @@
 <root>
 	<importResource url="org/notebook/layout/SimpleDownloadPanel.xml" />
 	<importResource url="org/notebook/layout/ServerUpgrade.xml" />
+	<importResource url="org/notebook/layout/ClientUpgrade.xml" />
 	<win name='main' class='javax.swing.JFrame'>
 		<size x='750' y='550' />
 		<title value="在线升级管理系统" />
@@ -21,6 +22,7 @@
 			<layout name='cardLayout' class='java.awt.CardLayout' />
 			<add ref="simpleDownload" align="simple" />
 			<add ref="serverUpgradePanel" align="server" />
+			<add ref="clientUpgradePanel" align="client" />
 		</topComponent>
 		
 		<bottomComponent name='l2' class='javax.swing.JSplitPane' >

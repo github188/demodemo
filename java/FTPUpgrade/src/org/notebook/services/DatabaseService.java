@@ -36,7 +36,11 @@ public class DatabaseService {
 		this.config = conf;
 	}
 	
-	public String getNewVersion(){
+	public String getLastVersion(){
+		return getLastVersion(true);
+	}
+	
+	public String getLastVersion(boolean createNew){
 		Connection conn = null;
 		PreparedStatement pstm = null;
 		ResultSet rs = null;
@@ -51,13 +55,17 @@ public class DatabaseService {
 			}else {
 				curVer = 1.0f;
 			}
-			curVer = curVer + 1;
-			pstm.setFloat(1, curVer);
-			//pstm.setDate(2, new Date(System.currentTimeMillis()));
-			//pstm.setTime(2, new Time(System.currentTimeMillis()));
-			pstm.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
-			pstm.execute();
-			conn.commit();
+			
+			//如果需要自动升级新版本。
+			if(createNew){
+				curVer = curVer + 1;
+				pstm.setFloat(1, curVer);
+				//pstm.setDate(2, new Date(System.currentTimeMillis()));
+				//pstm.setTime(2, new Time(System.currentTimeMillis()));
+				pstm.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+				pstm.execute();
+				conn.commit();
+			}
 		} catch (SQLException e) {
 			try {
 				if(conn != null)conn.rollback();

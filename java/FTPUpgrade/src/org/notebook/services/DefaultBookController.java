@@ -59,6 +59,7 @@ public class DefaultBookController implements BookController{
 	private JLabel toolInfo = null;
 	
 	private JLabel server_info = null;
+	private JLabel client_info = null;
 	
 	private JProgressBar fileProgress = null;
 	private JProgressBar toolProgress = null;	
@@ -208,6 +209,9 @@ public class DefaultBookController implements BookController{
 
 			server_info = (JLabel)xui.getByName("server_info");
 			server_info.setForeground(Color.red);
+
+			client_info = (JLabel)xui.getByName("client_info");
+			client_info.setForeground(Color.red);
 			
 			JSplitPane l1 = (JSplitPane)xui.getByName("l1");
 			JSplitPane l2 = (JSplitPane)xui.getByName("l2");
@@ -274,8 +278,9 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
+					ftpSync.scanLocalPath(curMode != null && curMode.equals("client"));						
+
 					if(curMode != null && !curMode.equals("simple")){
-						ftpSync.scanLocalPath(false);
 						if(!database.testConnection()){
         					JOptionPane.showMessageDialog(mainFrame,
         						    "数据库连接失败, 请检查参数配置。",
@@ -283,7 +288,7 @@ public class DefaultBookController implements BookController{
         						    JOptionPane.ERROR_MESSAGE);							
 						}
 					}
-			}});			
+			}});
 		}
 		
 		@EventAction(order=1)
@@ -322,6 +327,17 @@ public class DefaultBookController implements BookController{
 					ftpSync.serverUpgrade();
 			}});			
 		}
+
+		@EventAction(order=1)
+		public void clientUpgrade(final BroadCastEvent event){
+			//
+			//JButton button = (JButton)event.getSource();
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					ftpSync.clientUpgrade();
+			}});			
+		}
 		
 		@EventAction(order=1)
 		public void pause(final BroadCastEvent event){
@@ -343,7 +359,7 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.connect();
+					ftpSync.connect(curMode);
 			}});
 		}		
 		
@@ -382,14 +398,21 @@ public class DefaultBookController implements BookController{
 		@EventAction(order=1)
 		public void UpdateStateBar(final BroadCastEvent event){
 			if(event.get(Events.STATUS_WARN) != null && 
-			  (Boolean)event.get(Events.STATUS_WARN) &&
-			  server_info != null){
+			  (Boolean)event.get(Events.STATUS_WARN)){
 			  final String text = (String)event.get(Events.STATUS_PARAM);
-				SwingUtilities.invokeLater(new Runnable() {
-		            public void run() {
-		            	server_info.setText(text);
-		            }
-		        });				
+			  if(server_info != null && curMode != null && curMode.equals("server")){
+					SwingUtilities.invokeLater(new Runnable() {
+			            public void run() {
+			            	server_info.setText(text);
+			            }
+			        });
+			  }else if(client_info != null){
+					SwingUtilities.invokeLater(new Runnable() {
+			            public void run() {
+			            	client_info.setText(text);
+			            }
+			        });				  
+			  }
 			}
 			//setText((String)event.get(Events.STATUS_PARAM));
 		}		

@@ -20,6 +20,7 @@ public class Configuration {
 	public final static String FTP_PASSWORD = "ftp_password";
 	public final static String FTP_ROOT_DIR = "ftp_root_dir";
 	public final static String FTP_ZIP_DIR = "ftp_zip_dir";
+	public final static String LOCAL_VERSION = "local_version";
 	
 	public final static String DB_DRIVER = "db_driver";
 	public final static String DB_URL = "db_url";
@@ -41,6 +42,8 @@ public class Configuration {
 		param.put(DB_URL, "jdbc:oracle:thin:127.0.0.1:1521/prod");
 		param.put(DB_USER, "user");
 		param.put(DB_PASSWORD, "");
+		
+		param.put(LOCAL_VERSION, "0.1");
 	}
 	
 	public String getHost(){
@@ -58,6 +61,11 @@ public class Configuration {
 	public String getPassword(){
 		return param.get(FTP_PASSWORD);
 	}
+	
+	public String getLocalVersion(){
+		return param.get(LOCAL_VERSION);
+	}
+	
 	
 	public void load(File path){
 		Properties p = System.getProperties();

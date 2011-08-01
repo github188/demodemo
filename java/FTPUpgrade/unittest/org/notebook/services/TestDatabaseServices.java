@@ -13,16 +13,16 @@ public class TestDatabaseServices {
 		conf.param.put(Configuration.DB_PASSWORD, "");
 		
 		DatabaseService db = new DatabaseService(conf);
-		System.out.println(db.getNewVersion());
-		System.out.println(db.getNewVersion());
+		System.out.println(db.getLastVersion());
+		System.out.println(db.getLastVersion());
 		
-		String old = db.getNewVersion();
+		String old = db.getLastVersion();
 		System.out.println(old);
-		String n = db.getNewVersion();
+		String n = db.getLastVersion();
 		
 		db.insertZipFile(n, "test.zip");
 		db.insertZipFile(n, "test1.zip");
-		n = db.getNewVersion();
+		n = db.getLastVersion();
 		db.insertZipFile(n, "test.zip");
 		db.insertZipFile(n, "test2.zip");
 		
