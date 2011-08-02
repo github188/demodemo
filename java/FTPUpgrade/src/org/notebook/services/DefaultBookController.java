@@ -37,7 +37,6 @@ import org.notebook.gui.AboutDialog;
 import org.notebook.gui.Events;
 import org.notebook.gui.MainTable;
 import org.notebook.gui.MainTable.TableModel;
-import org.notebook.gui.MenuToolbar;
 import org.notebook.gui.SettingsDialog;
 import org.notebook.xui.XUIContainer;
 
@@ -144,7 +143,8 @@ public class DefaultBookController implements BookController{
 		ImageIcon icon = null;
 		String iconUrl = "org/notebook/gui/images/application.png";
 		try{
-			icon = new ImageIcon(MenuToolbar.class.getClassLoader().getResource(iconUrl));
+			icon = new ImageIcon(this.getClass()
+					.getClassLoader().getResource(iconUrl));
 		}catch(Exception e){
 			log.error(e.toString(), e);
 		}

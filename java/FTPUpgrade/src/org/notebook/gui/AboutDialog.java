@@ -47,7 +47,7 @@ public class AboutDialog extends JDialog {
         logoPanel.setPreferredSize(new Dimension(64, 32));
         logoPanel.add(logo, BorderLayout.CENTER); 
         aboutPanel.add(logoPanel, BorderLayout.WEST); 
-        logo.setIcon(MenuToolbar.icon("org/notebook/gui/images/application.png"));
+        logo.setIcon(NoteBookApp.icon("org/notebook/gui/images/application.png"));
         
         final JTextArea about = new JTextArea("");
         about.setEditable(false);

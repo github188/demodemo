@@ -5,14 +5,14 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
-import org.notebook.gui.MainFrame;
+import javax.swing.JFrame;
 
 public class SocketSingleInstance implements SingleInstance {
 	private static final int SINGLE_INSTANCE_NETWORK_SOCKET = 44332;	
 	private static ServerSocket socket = null;
 	
 	@Override
-	public boolean checkRunning(MainFrame app) {
+	public boolean checkRunning(JFrame app) {
 		try {
 			socket = new ServerSocket(SINGLE_INSTANCE_NETWORK_SOCKET,0,
 		    		InetAddress.getByAddress(new byte[] {127,0,0,1}));

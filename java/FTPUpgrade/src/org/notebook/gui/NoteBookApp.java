@@ -1,5 +1,6 @@
 package org.notebook.gui;
 
+import java.awt.Image;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -10,6 +11,8 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -131,7 +134,7 @@ public class NoteBookApp {
 	}
 	
 	private BookController createPrivilegedProxy(final BookController stub){
-    	return (BookController)Proxy.newProxyInstance(MainFrame.class.getClassLoader(), 
+    	return (BookController)Proxy.newProxyInstance(this.getClass().getClassLoader(), 
 				   new Class[]{BookController.class}, 
 				   new InvocationHandler(){
 						@SuppressWarnings("unchecked")
@@ -155,5 +158,17 @@ public class NoteBookApp {
 					}
 			);		
 	}	
+	
+	public static Icon icon(String iconUrl){
+		Icon icon = null;
+		//String iconUrl = "org/notebook/gui/images/application.png";
+		try{
+			icon = new ImageIcon(NoteBookApp.class.getClassLoader().getResource(iconUrl));
+		}catch(Exception e){
+			//log.error(e.toString(), e);
+		}
+		return icon;				
+	}
+	
 
 }
