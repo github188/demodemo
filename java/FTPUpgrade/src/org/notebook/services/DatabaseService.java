@@ -185,7 +185,9 @@ public class DatabaseService {
 		if(driver == null){
 			URL curJar = DatabaseService.class.getProtectionDomain().getCodeSource().getLocation();
 			try {
-				URL driverURL = curJar.toURI().resolve("jdbc-driver.jar").toURL();
+				String dbType = config.param.get(Configuration.DB_URL);
+				dbType = dbType.split(":")[1];
+				URL driverURL = curJar.toURI().resolve("jdbc-" + dbType.toLowerCase() + ".jar").toURL();
 				log.debug("JDBC url:" + driverURL.toString());
 				System.setProperty("java.class.path", driverURL.toString());
 				URLClassLoader cl = new URLClassLoader(new URL[]{driverURL, }, DatabaseService.class.getClassLoader());
