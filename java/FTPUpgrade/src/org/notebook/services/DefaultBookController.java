@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Date;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,7 @@ import org.notebook.cache.Configuration;
 import org.notebook.cache.DataStorage;
 import org.notebook.cache.LocalFileStorage;
 import org.notebook.cache.TaskStatus;
+import org.notebook.cache.UpgradeModel;
 import org.notebook.events.BroadCastEvent;
 import org.notebook.events.EventAction;
 import org.notebook.gui.AboutDialog;
@@ -59,6 +61,7 @@ public class DefaultBookController implements BookController{
 	
 	private JLabel server_info = null;
 	private JLabel client_info = null;
+	private TableModel tableModel = null;
 	
 	private JProgressBar fileProgress = null;
 	private JProgressBar toolProgress = null;	
@@ -155,6 +158,9 @@ public class DefaultBookController implements BookController{
 		return appIcon().getScaledInstance(16, 16, Image.SCALE_SMOOTH);			
 	}	
 	
+	/**
+	 * 注册系统快捷键。
+	 */
 	public void initSystemShortCut(){
 		Toolkit toolkit =  Toolkit.getDefaultToolkit();
 		toolkit.addAWTEventListener(new AWTEventListener(){ 
@@ -250,6 +256,8 @@ public class DefaultBookController implements BookController{
 			toolProgress = (JProgressBar)xui.getByName("taskProgress");
 			toolProgress.setStringPainted(true);
 			
+			MainTable mainTable = (MainTable)xui.getByName("mainTable");
+			tableModel = (TableModel)mainTable.getModel();
 			//System.out.println("run_mode:" + System.getProperty("run_mode"));
 			
 			main.setIconImage(appIcon16());
@@ -262,8 +270,7 @@ public class DefaultBookController implements BookController{
 		 */
 		@EventAction(order=1)
 		public void windowOpened(final BroadCastEvent event){
-			MainTable mainTable = (MainTable)xui.getByName("mainTable");
-			ftpSync = new FTPSyncService((TableModel)mainTable.getModel(),
+			ftpSync = new FTPSyncService(tableModel,
 					 event.queue, mainFrame,
 					 config,
 					 syncThread,
@@ -341,6 +348,44 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@EventAction(order=1)
+		public void FtpDownloadDone(final BroadCastEvent event){
+			String path = (String)event.get(Events.FTP_PATH_PARAM);
+			if(path != null){
+				UpgradeModel row = null;
+				for(int i = 0; i < tableModel.getRowCount(); i++){
+					row = tableModel.getData().get(i);
+					if(row.dst.equals(path)){
+						row.isUpdate = false;
+						row.updateDate = new Date();
+						row.source = row.dst;
+						row.sourceSize = row.dstSize;
+						tableModel.fireTableRowsUpdated(i, i);
+						//log.info("update:" + i);
+						break;
+					}
+				}
+			}			
+		}
+
+		@EventAction(order=1)
+		public void FtpUploadDone(final BroadCastEvent event){
+			String path = (String)event.get(Events.FTP_PATH_PARAM);
+			if(path != null){
+				UpgradeModel row = null;
+				for(int i = 0; i < tableModel.getRowCount(); i++){
+					row = tableModel.getData().get(i);
+					if(row.source.equals(path)){
+						row.updateDate = new Date();
+						row.dst = row.source;
+						row.dstSize = row.sourceSize;
+						tableModel.fireTableRowsUpdated(i, i);
+						break;
+					}
+				}
+			}
+		}
+		
+		@EventAction(order=1)
 		public void pause(final BroadCastEvent event){
 			//
 			JButton button = (JButton)event.getSource();
@@ -379,7 +424,11 @@ public class DefaultBookController implements BookController{
 				if(status.isZip){
 					fInfo = String.format("%s 压缩进度.", status.curFile);
 				}else {
-					fInfo = String.format("%s 上传进度.", status.curFile);
+					if(curMode.equals("server")){
+						fInfo = String.format("%s 上传进度.", status.curFile);
+					}else {
+						fInfo = String.format("%s 下载进度.", status.curFile);
+					}
 				}
 			}else {
 				fInfo = "单个文件进度.";

@@ -285,7 +285,7 @@ public class FTPSyncService {
 		updateProgressBar();
 		ftp.setRestartOffset(offset);
 		
-		boolean ftpError = false;
+		//boolean ftpError = false;
 		try{
 			curOs = new FileOutputStream(dstFile, true);
 			status.isUploading = true;
@@ -304,10 +304,11 @@ public class FTPSyncService {
 			//下载成功事件
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put(Events.FTP_PATH_PARAM, file.dst);
-			eventQueue.fireEvent(Events.FTP_DOWN_DONE_EVENT, param);			
+			eventQueue.fireEvent(Events.FTP_DOWN_DONE_EVENT, this, param);			
 		}catch(IOException e){
-			ftpError = true;
+			//ftpError = true;
 			log.error(e.toString(), e);
+			return false;
 		}finally{
 
 			status.isUploading = false;
@@ -321,7 +322,7 @@ public class FTPSyncService {
 			}
 		}
 		
-		return ftpError;
+		return true;
 	}
 	
 	/**

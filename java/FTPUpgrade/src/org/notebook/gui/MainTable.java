@@ -28,7 +28,7 @@ public class MainTable extends JTable {
 	public static class TableModel extends AbstractTableModel{
 		public ArrayList<UpgradeModel> data = new ArrayList<UpgradeModel>();
 		protected DateFormat format= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		public TableModel(){			
+		public TableModel(){
 		}
 		String[] columns = new String[]{"本地文件", "大小", "FTP文件", "大小", "是否更新", "更新时间"};
 		
@@ -66,7 +66,7 @@ public class MainTable extends JTable {
 				case 2: return task.dst;
 				case 3: return formateSize(task.dstSize);
 				case 4: return task.isUpdate ? "是": "否";
-				case 5: return task.updateDate;
+				case 5: return task.updateDate != null ? format.format(task.updateDate): "";
 			}
 			return "";
 		}
@@ -78,7 +78,7 @@ public class MainTable extends JTable {
 			if(b > 1024){
 				b = b / 1024.0;
 				unit = "Mb";
-			}			
+			}
 			return String.format("%s(%1.2f%s)", size, b, unit);
 		}
 	}
