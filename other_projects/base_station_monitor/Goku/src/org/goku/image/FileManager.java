@@ -131,9 +131,6 @@ public class FileManager {
 		if(baseUUID != null && !"".equals(baseUUID)){
 			filter.put("baseStation__=", baseUUID);
 		}
-		if(baseUUID != null && !"".equals(baseUUID)){
-			filter.put("baseStation__=", baseUUID);
-		}
 		if(ch != null && !"".equals(ch)){
 			filter.put("channelId__=", ch);
 		}		

@@ -59,8 +59,9 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		if(cmd.equals("alarm_image")){
 			alarmImage(client, out, param.get("alarmId"), 
 					param.get("baseStation"), param.get("channel"),
+					param.get("last"), 
 					param.get("status"),
-					param.get("last"), param.get("mode"),
+					param.get("mode"),
 					param.get("encode")
 					);
 		}else if(cmd.equals("real_image")){
