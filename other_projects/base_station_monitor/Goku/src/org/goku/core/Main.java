@@ -142,7 +142,9 @@ public class Main {
 	private void updateLog4jLevel(Settings s, String name){
 		org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
 		String level = s.getString("log_level", "debug").toLowerCase().trim();
-		if(level.equals("debug")){
+		if(level.equals("trace")){
+			root.setLevel(org.apache.log4j.Level.TRACE);
+		}else if(level.equals("debug")){
 			root.setLevel(org.apache.log4j.Level.DEBUG);
 		}else if(level.equals("info")){
 			root.setLevel(org.apache.log4j.Level.INFO);
