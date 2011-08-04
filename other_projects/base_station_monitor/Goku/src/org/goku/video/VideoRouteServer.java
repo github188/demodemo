@@ -136,17 +136,21 @@ public class VideoRouteServer {
 		httpServer.addStartupListener(new StartupListener(){
 			@Override
 			public void started() {
-				for(int i = 0; i < 5; i++){
-					if(master.registerRoute("", httpPort, groupName, socketServer.listenPort + "")){
-						break;
-					}else {
-						log.info("Failed to connect master, try again 5 seconds later.");
-						try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e1) {
+				threadPool.execute(new Runnable(){
+					public void run(){
+						while(true){
+							if(master.registerRoute("", httpPort, groupName, socketServer.listenPort + "")){
+								log.info("Register to route ok");
+								break;
+							}
+							log.info("Failed to connect master, try again 5 seconds later.");
+							try {
+								Thread.sleep(5000);
+							} catch (InterruptedException e1) {
+							}
 						}
 					}
-				}
+				});
 				log.info("started http...");	
 			}
 		});
