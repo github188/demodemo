@@ -237,6 +237,7 @@ public class JDBCDataStorage extends DataStorage {
 	    	}
 	    }
 	    catch (SQLException ex){
+	    	log.error("sql:" + sql);
 	    	try {
 	    		if(!conn.getAutoCommit()){
 	    			conn.rollback();
