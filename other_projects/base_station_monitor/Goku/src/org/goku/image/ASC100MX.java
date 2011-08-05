@@ -333,9 +333,11 @@ public class ASC100MX implements Runnable{
 							byte channelId = buff.get();
 							buff.get();
 							int len = unsignedShort(buff); // i.getShort();
-							ByteBuffer sub = buff.asReadOnlyBuffer();
-							sub.limit(buff.position() + len);
-							clientRoute(node1, node2, channelId, sub);
+							if(len > 0){
+								ByteBuffer sub = buff.asReadOnlyBuffer();
+								sub.limit(buff.position() + len);
+								clientRoute(node1, node2, channelId, sub);
+							}
 						}
 					}
 				}

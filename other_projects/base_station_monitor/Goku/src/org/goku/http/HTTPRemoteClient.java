@@ -23,7 +23,8 @@ public class HTTPRemoteClient {
 	
 	public HTTPRemoteClient(String url){
 		try {
-			http = new SimpleHttpClient(new URL(url));
+			this.url = new URL(url);
+			http = new SimpleHttpClient(this.url);
 		} catch (MalformedURLException e1) {
 		}
 	}
@@ -134,6 +135,7 @@ public class HTTPRemoteClient {
 		HttpResponse resp = null;
 		Map<String, String> para = new HashMap<String, String>();
 		try {
+			log.debug("add basestation:" + bs.uuid + ", to:" + this.url);
 			para.put("q", "add_bs");
 			para.put("uuid", bs.uuid);
 			resp = http.post(para, EMPTY);
@@ -156,6 +158,7 @@ public class HTTPRemoteClient {
 		HttpResponse resp = null;
 		Map<String, String> para = new HashMap<String, String>();
 		try {
+			log.debug("remove basestation:" + bs.uuid + ", from:" + this.url);
 			para.put("q", "del_bs");
 			para.put("uuid", bs.uuid);
 			resp = http.post(para, EMPTY);
