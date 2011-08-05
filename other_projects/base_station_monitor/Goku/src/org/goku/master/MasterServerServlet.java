@@ -616,7 +616,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 					*/
 					String updateSql = "update alarm_record set user = ${0}, comfirmTime = ${1}," +
 							"lastUpdateTime=${1}, alarmStatus=${2} " +
-							"where uuid=${3} or combineUuid=${$3}";
+							"where uuid=${3} or combineUuid=${3}";
 					try {
 						server.storage.execute_sql(updateSql, new Object[]{userObj.name,
 								new Date(System.currentTimeMillis()),
