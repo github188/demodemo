@@ -60,8 +60,8 @@ public class NoteBookApp {
     	//showMessageBox("ss");
 		if(singlton.checkRunning(null)){
 			JOptionPane.showMessageDialog(null,
-				    "NoteBook已经在运行中.",
-				    "Error",
+				    Version.getName() +  "已经在运行中.",
+				    "错误",
 				    JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}else {

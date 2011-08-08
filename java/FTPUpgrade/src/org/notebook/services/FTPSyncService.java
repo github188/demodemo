@@ -61,8 +61,6 @@ public class FTPSyncService {
 	private DatabaseService database = null;
 	//private String mode = null;
 	
-	private boolean isDownloading = false;
-	
 	//Ftp服务器端，上传中断的文件
 	private Map<String, FTPFile> ftpCache = new HashMap<String, FTPFile>();
 	
@@ -97,7 +95,7 @@ public class FTPSyncService {
 	 */
 	public void connect(final String mode){
 		this.workMode = mode;
-		if(ftp != null && ftp.isConnected() && ftp.isAvailable()){
+		if(ftp != null && ftp.isConnected() && ftp.isAvailable() && logined){
 			JOptionPane.showMessageDialog(win,
 				    "当前FTP处于连接状态！",
 				    "Error",
@@ -129,7 +127,6 @@ public class FTPSyncService {
 					syncThread.execute(new Runnable(){
 						@Override
 						public void run() {
-							//if(this.)
 							String cdDir = cfg.getRootPath();
 							if(mode.equals("client")){
 								cdDir = cfg.param.get(Configuration.FTP_ZIP_DIR);
@@ -159,25 +156,17 @@ public class FTPSyncService {
 		this.ftpMode = mode;
 	}
 	
-	private void initFTPConnection(){
-		
-	}
-	
 	/**
 	 * 简单下载处理流程。
 	 */
 	public void simpleDownload(){
-		if(isDownloading){
+		if(!logined){
 			JOptionPane.showMessageDialog(win,
-				    "已经开始传输文件！",
-				    "Error",
-				    JOptionPane.INFORMATION_MESSAGE);
+				    "没有连接到FTP服务器！",
+				    "错误",
+				    JOptionPane.ERROR_MESSAGE);
 			return;		
 		}
-		
-		//changeWorkDir(cfg.getRootPath());
-			
-		isDownloading = true;
 		
 		status = new TaskStatus();
 		
@@ -191,19 +180,122 @@ public class FTPSyncService {
 		updateStatusBar("开始下载文件...");		
 		for(UpgradeModel f: fileList){
 			if(!downLoadFile(f)){
-				updateStatusBar("FTP连接错误, 中止下载任务.");
-				try {
-					ftp.disconnect();
-				} catch (IOException e1) {
-				}
+				logined = false;
+				JOptionPane.showMessageDialog(win,
+					    "文件传输出错，中止上传升级文件！",
+					    "错误",
+					    JOptionPane.ERROR_MESSAGE);
 				break;
 			}
+		}		
+	}
+	
+	/**
+	 * 由界面触发，开始执行升级操作。
+	 */	
+	public void serverUpgrade(){
+		if(!logined){
+			JOptionPane.showMessageDialog(win,
+				    "没有连接到FTP服务器！",
+				    "错误",
+				    JOptionPane.ERROR_MESSAGE);
+			return;		
+		}
+				
+		status = new TaskStatus();
+		
+		Collection<UpgradeModel> fileList = this.getUpdatingList();
+		if(fileList.size() > 0){
+			//更新当前升级的版本信息。
+			this.updateVersionInfo();
+			status.totalFiles = fileList.size();
+			for(UpgradeModel f: fileList){
+				long s = (ftpMode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
+				status.totalBytes += s;
+			}
+			updateStatusBar("开始上传文件...");
+			for(UpgradeModel f: fileList){
+				if(!this.uploadFile(f)){
+					logined = false;
+					JOptionPane.showMessageDialog(win,
+						    "文件传输出错，中止上传升级文件！",
+						    "错误",
+						    JOptionPane.ERROR_MESSAGE);
+					break;
+				}
+				this.compressFile(f.source);
+			}
+		}else {
+			JOptionPane.showMessageDialog(win,
+				    "没有找到需要更新的文件。",
+				    "消息",
+				    JOptionPane.INFORMATION_MESSAGE);			
 		}
 		
-		isDownloading = false;
-		//updateStatusBar("文件下载完毕.");
-		
+		if(this.curVersion != null ||
+		   new File(this.localRoot, "_version.cache").isFile() //有被中断的任务。
+		  ){
+			updateStatusBar("开始上传Zip升级包.");
+			uploadZipFile();
+		}		
 	}
+	
+	/**
+	 * 由界面触发，开始执行升级操作。
+	 */	
+	public void clientUpgrade(){
+		if(!logined){
+			JOptionPane.showMessageDialog(win,
+				    "没有连接到FTP服务器！",
+				    "错误",
+				    JOptionPane.ERROR_MESSAGE);
+			return;		
+		}
+		
+		String localVersion = cfg.getLocalVersion();
+		String remoteVersion = database.getLastVersion(false);
+		if(localVersion.trim().equals(remoteVersion.trim())){
+			String msg = "本地软件已经是最新版本" + remoteVersion;
+			this.updateStatusBar(msg, true);
+
+			JOptionPane.showMessageDialog(win,
+				    "本地软件已经是最新版本" + remoteVersion,
+				    "消息",
+				    JOptionPane.INFORMATION_MESSAGE);	
+		}else {
+			String msg = String.format("从%s 升级到 %s.", localVersion, remoteVersion);
+			this.updateStatusBar(msg, true);
+			
+			Collection<UpgradeModel> fileList = getUpgradeList(localVersion);
+			status = new TaskStatus();
+			status.totalFiles = fileList.size();
+			for(UpgradeModel f: fileList){
+				status.totalBytes += f.dstSize;
+			}
+			
+			updateProgressBar();
+			
+			updateStatusBar("开始下载文件...");
+			for(UpgradeModel f: fileList){
+				if(!this.downLoadFile(f)){
+					JOptionPane.showMessageDialog(win,
+						    "文件传输出错，中止下载升级文件！",
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+					logined = false;
+					break;
+				}
+				this.unCompressFileAndRemove(f.dst);
+			}
+			cfg.param.put(Configuration.LOCAL_VERSION, remoteVersion);
+			cfg.saveRegistry();
+			
+			JOptionPane.showMessageDialog(win,
+				    "本地软件成功升级到最新版本" + remoteVersion,
+				    "消息",
+				    JOptionPane.INFORMATION_MESSAGE);	
+		}			
+	}		
 	
 	private boolean changeWorkDir(String dir){
 		try {
@@ -448,126 +540,6 @@ public class FTPSyncService {
 		eventQueue.fireEvent(Events.PROGRESS_EVENT, this, param);
 	}
 	
-	
-	/**
-	 * 由界面触发，开始执行升级操作。
-	 */	
-	public void serverUpgrade(){
-		if(isDownloading){
-			JOptionPane.showMessageDialog(win,
-				    "已经开始传输文件！",
-				    "Error",
-				    JOptionPane.INFORMATION_MESSAGE);
-			return;		
-		}
-		
-			
-		isDownloading = true;
-		
-		//changeWorkDir(cfg.getRootPath());
-		
-		status = new TaskStatus();
-		
-		Collection<UpgradeModel> fileList = this.getUpdatingList();
-		if(fileList.size() > 0){
-			//更新当前升级的版本信息。
-			this.updateVersionInfo();
-			status.totalFiles = fileList.size();
-			for(UpgradeModel f: fileList){
-				long s = (ftpMode == DOWNLOAD_MODE) ? f.dstSize : f.sourceSize;
-				status.totalBytes += s;
-			}
-			updateStatusBar("开始上传文件...");
-			boolean ftpError = false;
-			for(UpgradeModel f: fileList){
-				if(!this.uploadFile(f)){
-					ftpError = true;
-					JOptionPane.showMessageDialog(win,
-						    "文件传输出错，中止上传升级文件！",
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-					break;
-				}
-				this.compressFile(f.source);
-			}
-		}else {
-			JOptionPane.showMessageDialog(win,
-				    "没有找到需要更新的文件。",
-				    "消息",
-				    JOptionPane.INFORMATION_MESSAGE);			
-		}
-		
-		if(this.curVersion != null ||
-		   new File(this.localRoot, "_version.cache").isFile() //有被中断的任务。
-		  ){
-			updateStatusBar("开始上传Zip升级包.");
-			uploadZipFile();
-		}		
-		
-		isDownloading = false;
-	}
-	
-	/**
-	 * 由界面触发，开始执行升级操作。
-	 */	
-	public void clientUpgrade(){
-		if(isDownloading){
-			JOptionPane.showMessageDialog(win,
-				    "已经开始传输文件！",
-				    "Error",
-				    JOptionPane.INFORMATION_MESSAGE);
-			return;		
-		}
-			
-		isDownloading = true;
-		
-		String localVersion = cfg.getLocalVersion();
-		String remoteVersion = database.getLastVersion(false);
-		if(localVersion.trim().equals(remoteVersion.trim())){
-			String msg = "本地软件已经是最新版本" + remoteVersion;
-			this.updateStatusBar(msg, true);
-
-			JOptionPane.showMessageDialog(win,
-				    "本地软件已经是最新版本" + remoteVersion,
-				    "消息",
-				    JOptionPane.INFORMATION_MESSAGE);	
-		}else {
-			String msg = String.format("从%s 升级到 %s.", localVersion, remoteVersion);
-			this.updateStatusBar(msg, true);
-			
-			Collection<UpgradeModel> fileList = getUpgradeList(localVersion);
-			status = new TaskStatus();
-			status.totalFiles = fileList.size();
-			for(UpgradeModel f: fileList){
-				status.totalBytes += f.dstSize;
-			}
-			
-			updateProgressBar();
-			
-			updateStatusBar("开始下载文件...");
-			boolean ftpError = false;
-			for(UpgradeModel f: fileList){
-				if(!this.downLoadFile(f)){
-					ftpError = true;
-					JOptionPane.showMessageDialog(win,
-						    "文件传输出错，中止下载升级文件！",
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-					break;
-				}
-				this.unCompressFileAndRemove(f.dst);
-			}
-			cfg.param.put(Configuration.LOCAL_VERSION, remoteVersion);
-			cfg.saveRegistry();
-			
-			JOptionPane.showMessageDialog(win,
-				    "本地软件成功升级到最新版本" + remoteVersion,
-				    "消息",
-				    JOptionPane.INFORMATION_MESSAGE);	
-		}
-				
-		isDownloading = false;
-	}	
 	/**
 	 * 上传升级Zip包。
 	 */

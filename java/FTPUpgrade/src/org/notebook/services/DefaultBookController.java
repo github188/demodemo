@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -47,7 +48,7 @@ public class DefaultBookController implements BookController{
 	private DataStorage storage = null;
 	private JFrame mainFrame = null;
 	private ThreadPoolExecutor syncThread = null;
-	private MenuAction menuActions = new MenuAction();
+	private EventHandler menuActions = new EventHandler();
 	
 	private boolean runningJNLP = false;
 	private boolean runningSandBox = false;
@@ -69,6 +70,7 @@ public class DefaultBookController implements BookController{
 	private Configuration config = new Configuration();
 	private String curMode = null;
 	private DatabaseService database = null;
+	private ReentrantLock ftpLock = new ReentrantLock();
 	
 		
 	public DefaultBookController(boolean isJNLP, boolean isSandBox){
@@ -190,7 +192,7 @@ public class DefaultBookController implements BookController{
 				AWTEvent.KEY_EVENT_MASK);		
 	}
 	
-	public class MenuAction {
+	public class EventHandler {
 				
 		@EventAction(order=1)
 		public void Exit(BroadCastEvent event) {
@@ -315,13 +317,37 @@ public class DefaultBookController implements BookController{
 		}
 		
 		@EventAction(order=1)
+		public void connect(final BroadCastEvent event){
+			syncThread.execute(new Runnable(){
+				@Override
+				public void run() {
+					if(ftpLock.tryLock()){
+						ftpSync.connect(curMode);
+						ftpLock.unlock();
+					}else {
+						JOptionPane.showMessageDialog(mainFrame,
+							    "当前正在传输数据！",
+							    "消息",
+							    JOptionPane.INFORMATION_MESSAGE);						
+					}
+			}});
+		}			
+		
+		@EventAction(order=1)
 		public void simpleDown(final BroadCastEvent event){
 			//
 			//JButton button = (JButton)event.getSource();
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.simpleDownload();
+					if(ftpLock.tryLock()){
+						ftpSync.simpleDownload();
+					}else {
+						JOptionPane.showMessageDialog(mainFrame,
+							    "当前正在传输数据！",
+							    "消息",
+							    JOptionPane.INFORMATION_MESSAGE);						
+					}						
 			}});			
 		}
 
@@ -332,8 +358,15 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.serverUpgrade();
-			}});			
+					if(ftpLock.tryLock()){
+						ftpSync.serverUpgrade();
+					}else {
+						JOptionPane.showMessageDialog(mainFrame,
+							    "当前正在传输数据！",
+							    "消息",
+							    JOptionPane.INFORMATION_MESSAGE);						
+					}
+			}});
 		}
 
 		@EventAction(order=1)
@@ -343,7 +376,14 @@ public class DefaultBookController implements BookController{
 			syncThread.execute(new Runnable(){
 				@Override
 				public void run() {
-					ftpSync.clientUpgrade();
+					if(ftpLock.tryLock()){
+						ftpSync.clientUpgrade();
+					}else {
+						JOptionPane.showMessageDialog(mainFrame,
+							    "当前正在传输数据！",
+							    "消息",
+							    JOptionPane.INFORMATION_MESSAGE);						
+					}
 			}});			
 		}
 		
@@ -398,16 +438,6 @@ public class DefaultBookController implements BookController{
 			}});			
 		}		
 		
-		
-		
-		@EventAction(order=1)
-		public void connect(final BroadCastEvent event){
-			syncThread.execute(new Runnable(){
-				@Override
-				public void run() {
-					ftpSync.connect(curMode);
-			}});
-		}		
 		
 		private void updateProcessBar(TaskStatus status){
 			long doneBytes = status.doneBytes;
