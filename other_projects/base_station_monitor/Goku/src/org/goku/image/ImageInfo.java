@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ImageInfo {
-	private int frameSize = 0;
+	private int frameSize = 1024;
 	
 	//0等待发送， 1, 成功接收 3, 丢包重传。
 	public byte ack[] = null;
