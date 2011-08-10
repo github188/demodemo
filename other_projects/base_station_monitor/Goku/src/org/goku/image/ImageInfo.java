@@ -61,6 +61,9 @@ public class ImageInfo {
 			ack[frame -1] = 1;
 		}
 		
+		/**
+		 * 从图片数据里面取到图片生成时间。
+		 */
 		if(frame == 1 && buffer.position() > 32){
 			byte[] date = new byte[14];
 			buffer.position(0x18);
