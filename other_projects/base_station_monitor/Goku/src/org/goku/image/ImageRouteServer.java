@@ -150,12 +150,18 @@ public class ImageRouteServer {
 		BaseStation station = (BaseStation)storage.load(BaseStation.class, uuid);
 		if(station != null && station.devType == 2){
 			ASC100Client client = new ASC100Client(station);
-			this.clients.put(uuid, client);
-			this.alarmManager.addClient(client);
-			client.addListener(activeReport);
-			mx.register(client);
-			client.maxRetryTime = max_retry_times;
-			
+			if(!this.clients.containsKey(uuid)){
+				this.clients.put(uuid, client);
+				this.alarmManager.addClient(client);
+				client.addListener(activeReport);
+				if(log.isTraceEnabled()){
+					client.addListener(new RawDataLogger(uuid + "_" + client.getClientId().replace('.', '_')));
+				}
+				mx.register(client);
+				client.maxRetryTime = max_retry_times;
+			}else {
+				log.warn("The client already added before, uuid:" + uuid);
+			}
 			return true;
 		}else if(station == null){
 			log.warn("Not found base station by uuid '" + uuid + "'");			

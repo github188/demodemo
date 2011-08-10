@@ -76,7 +76,7 @@ public class ASC100Client {
 		}
 		ImageClientEvent event = new ImageClientEvent(this);
 		event.raw = buffer.asReadOnlyBuffer();
-		eventProxy.debugRawData(event);		
+		eventProxy.debugRawData(event);	
 		
 		//当前数据包处理状态。
 		byte cur = 0;
@@ -264,6 +264,12 @@ public class ASC100Client {
 			outBuffer.put((byte)0xfe);
 			if(mx != null){
 				outBuffer.flip();
+				
+				ImageClientEvent event = new ImageClientEvent(this);
+				event.raw = outBuffer.asReadOnlyBuffer();
+				event.isSend = true;
+				eventProxy.debugRawData(event);
+				
 				mx.send(this, outBuffer);
 			}else {
 				log.warn("Can't send data, the client have not register to MX");

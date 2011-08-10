@@ -237,7 +237,9 @@ public class ASC100MX implements Runnable{
 			if(order == 0){
 				queue.next_index = -1;
 			}
-			log.debug(String.format("---Get UPD:#%s@%s, Wating order:%s---", order, ipAddr, queue.next_index));
+			if(log.isTraceEnabled()){
+				log.trace(String.format("---Get UPD:#%s@%s, Wating order:%s---", order, ipAddr, queue.next_index));
+			}
 			queue.put(order, tmp);
 			
 			this.queueWorker.run();

@@ -7,6 +7,7 @@ public class ImageClientEvent {
 	public ImageInfo image = null;
 	public ASC100Package data = null;
 	public ByteBuffer raw = null;
+	public boolean isSend = false;
 	public ImageClientEvent(ASC100Client s){
 		this.source = s;
 	}
