@@ -360,6 +360,7 @@ public class ASC100Client {
 					//log.debug("recevieImageOK..");
 					sendRetryFrame(new int[]{});
 					image.buffer.position(0);
+					image.buffer.limit(image.getDataSize());
 					ImageClientEvent event = new ImageClientEvent(this);
 					event.image = this.image;
 					this.eventProxy.recevieImageOK(event);

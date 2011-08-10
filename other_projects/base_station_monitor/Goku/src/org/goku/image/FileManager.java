@@ -56,7 +56,7 @@ public class FileManager {
 		AlarmDefine alarm = AlarmDefine.alarm(AlarmDefine.AL_5001);
 		String path = getSavePath(image.generateDate, client.info.uuid, "", alarm.alarmCode, image.channel + "");
 		FileOutputStream os = new FileOutputStream(new File(rootPath, path));
-		os.getChannel().write(image.buffer);
+		os.getChannel().write(image.buffer.asReadOnlyBuffer());
 		os.close();
 		
 		//
