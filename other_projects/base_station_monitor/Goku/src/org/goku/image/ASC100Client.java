@@ -347,9 +347,26 @@ public class ASC100Client {
 		}else if (image != null){
 			int paddingLen = ASC100MX.unsignedShort(inBuffer);
 			image.waitingFrames--;
-			if(paddingLen == inBuffer.remaining()){
-				log.debug(String.format("Image recieve frame:%s# size:%s, count:%s, remaining:%s", curFrame, inBuffer.remaining(), count, image.waitingFrames));				
-				image.recieveData(curFrame, inBuffer);
+			if(paddingLen == inBuffer.remaining() && paddingLen > 0){
+				log.debug(String.format("Image recieve frame:%s# size:%s, count:%s, remaining:%s", curFrame, inBuffer.remaining(), count, image.waitingFrames));
+				ByteBuffer zeroCheck = inBuffer.asReadOnlyBuffer();
+				int zeroCount = 0;
+				while(zeroCheck.hasRemaining()){
+					if(zeroCheck.get() == 0){
+						zeroCount++;
+						if(zeroCount > 100){
+							log.debug("Warn have more 100 zero data");
+							break;
+						}
+					}else {
+						zeroCount = 0;
+					}
+				}
+				if(zeroCount < 100){
+					image.recieveData(curFrame, inBuffer);
+				}else {
+					log.debug("Drop the image frame, It includes too more zero bytes.");
+				}
 			}else {
 				log.error(String.format("The picture data error, %s(remaining) != %s(buffer)", paddingLen, inBuffer.remaining()));				
 			}
@@ -363,7 +380,24 @@ public class ASC100Client {
 					image.buffer.limit(image.getDataSize());
 					ImageClientEvent event = new ImageClientEvent(this);
 					event.image = this.image;
-					this.eventProxy.recevieImageOK(event);
+					ByteBuffer zeroCheck = image.buffer.asReadOnlyBuffer();
+					int zeroCount = 0;
+					while(zeroCheck.hasRemaining()){
+						if(zeroCheck.get() == 0){
+							zeroCount++;
+							if(zeroCount > 100){
+								log.warn("The image data include more than 100 zero bytes.");
+								break;
+							}
+						}else {
+							zeroCount = 0;
+						}
+					}
+					if(zeroCount > 100){
+						log.warn("Drop the error image, because include too more zero bytes.");
+					}else {
+						this.eventProxy.recevieImageOK(event);
+					}
 					this.image = null;
 				}else if(image.reTry < maxRetryTime){
 					sendRetryFrame(retry);
