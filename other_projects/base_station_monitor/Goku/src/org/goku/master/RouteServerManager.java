@@ -3,6 +3,7 @@ package org.goku.master;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -192,6 +193,19 @@ public class RouteServerManager implements Runnable {
 	
 	protected void checkAllRouteServer(){
 		//log.info("check All RouteServer...");
+		
+		/**
+		 * 如果设备太长时间没有活动，自动修改为timeout状态。
+		 */
+		Date lastActive = new Date(System.currentTimeMillis() - 1000 * 60 * 5);
+		String updateTimeout = "update base_station set connectionStatus='timeout' " +
+				"where connectionStatus='connected' and lastActive<${0}";
+		try {
+			storage.execute_sql(updateTimeout, new Object[]{lastActive});
+		}catch(SQLException e) {
+			log.error(e.toString(), e);
+		}
+		
 		for(RouteServer s: servers.values()){
 			//boolean b = s.ping();
 			if(s.ping()){
