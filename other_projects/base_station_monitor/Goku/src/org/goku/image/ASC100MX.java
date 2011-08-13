@@ -216,7 +216,7 @@ public class ASC100MX implements Runnable{
 	 */
 	protected void process(InetSocketAddress client, ByteBuffer data){
 		byte cmd = data.get();
-		if(cmd == 0xc5){
+		if(cmd == (byte)0xc5){
 			this.processRouteTable(client, data);
 		}else if(cmd == 0x00){
 			ByteBuffer tmp = ByteBuffer.allocate(data.limit()); 
@@ -269,6 +269,7 @@ public class ASC100MX implements Runnable{
 			byte node1 = data.get();
 			String srID = String.format("%x.%x", node1, node2);
 			String oldMx = srRoute.get(srID);
+			log.trace(String.format("Mx route:%s->%s", srID, ipAddr));
 			if(oldMx == null || !oldMx.equals(ipAddr)){
 				srRoute.put(srID, ipAddr);
 				updateASC100Data(srID, ipAddr);
@@ -282,7 +283,10 @@ public class ASC100MX implements Runnable{
 		clients.addAll(clientTable.values());
 		for(ASC100Client c: clients){
 			if(c.getSrId().equals(sr)){
+				String oldId = c.info.locationId; 
 				c.info.locationId = mx + ":" + c.getClientId();
+				log.debug(String.format("Update location, uuid:%s, old:%s, new:%s", c.info.uuid,
+							oldId, c.info.locationId));
 				ImageRouteServer.getInstance().storage.save(c.info, new String[]{"locationId"});
 			}
 		}
