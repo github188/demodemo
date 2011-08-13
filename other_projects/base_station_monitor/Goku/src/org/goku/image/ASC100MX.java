@@ -324,7 +324,7 @@ public class ASC100MX implements Runnable{
 				inProcessing = true;
 				Collection<IncomeQueue> qList = new ArrayList<IncomeQueue>();
 				qList.addAll(mxIncomeQueue.values());
-				ByteBuffer tmp = ByteBuffer.allocate(4096);
+				//ByteBuffer tmp = ByteBuffer.allocate(4096);
 				for(IncomeQueue q: qList){
 					for(ByteBuffer buff = q.getNext(); buff != null; buff = q.getNext()){
 						int count = buff.get();
@@ -336,13 +336,13 @@ public class ASC100MX implements Runnable{
 							byte channelId = buff.get();
 							buff.get();
 							int len = unsignedShort(buff); // i.getShort();
-							
-							if(len > 0){
-								//读数据到缓存
-								tmp.clear(); tmp.limit(len);
-								tmp.put(buff);
-								tmp.flip();
-								clientRoute(node1, node2, channelId, tmp);
+							int oldLimit = buff.limit();
+							if(len > 0 && len + buff.position() <= oldLimit){
+								buff.limit(len + buff.position());
+								clientRoute(node1, node2, channelId, buff);
+							}
+							if(oldLimit > buff.position()){
+								buff.limit(oldLimit);
 							}
 						}
 					}
