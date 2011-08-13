@@ -249,7 +249,7 @@ public class ASC100MX implements Runnable{
 	}
 	
 	protected void clientRoute(byte node1, byte node2, byte channel, ByteBuffer data){
-		String channelId = String.format("%x.%x.%x", node1, node2, channel);
+		String channelId = String.format("%02x.%02x.%x", node1, node2, channel);
 		ASC100Client client = this.clientTable.get(channelId);
 		if(client != null){
 			//log.info("Process data client:" + channelId + ", size:" + data.remaining());
@@ -264,18 +264,22 @@ public class ASC100MX implements Runnable{
 		data.getShort();
 		
 		String ipAddr = mx.getAddress().getHostAddress();
+		String routeTable = "MX route:" + ipAddr + "->";	
 		for(int i = 0; i < channelCount; i++){
 			byte node2 = data.get();
 			byte node1 = data.get();
-			String srID = String.format("%x.%x", node1, node2);
+			if(node1 == node2 && node1 == 0)continue;
+			String srID = String.format("%02x.%02x", node1, node2);
 			String oldMx = srRoute.get(srID);
-			log.trace(String.format("Mx route:%s->%s", srID, ipAddr));
+			//log.trace(String.format("Mx route:%s->%s", srID, ipAddr));
+			routeTable += srID + ", "; 
 			if(oldMx == null || !oldMx.equals(ipAddr)){
 				srRoute.put(srID, ipAddr);
 				updateASC100Data(srID, ipAddr);
 				log.info(String.format("Update Mx table:%s->%s", srID, ipAddr));
 			}
 		}
+		log.debug(routeTable);
 	}
 	
 	protected void updateASC100Data(String sr, String mx){
