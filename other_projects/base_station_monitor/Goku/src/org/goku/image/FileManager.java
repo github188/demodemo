@@ -52,7 +52,7 @@ public class FileManager {
 	}
 	
 	public AlarmRecord saveImageFile(ASC100Client client, ImageInfo image) throws IOException{
-		log.info(String.format("Save image uuid:%s, ch:%s, time:%s", client.info.uuid, image.channel, image.generateDate));
+		log.debug(String.format("Save image uuid:%s, ch:%s, time:%s", client.info.uuid, image.channel, image.generateDate));
 		AlarmDefine alarm = AlarmDefine.alarm(AlarmDefine.AL_5001);
 		String path = getSavePath(image.generateDate, client.info.uuid, "", alarm.alarmCode, image.channel + "");
 		FileOutputStream os = new FileOutputStream(new File(rootPath, path));
@@ -108,7 +108,8 @@ public class FileManager {
 			activeAlarm.set(cacheKey, new AlarmUUID(rec.uuid, image.generateDate), (int)alarm.reActiveTime * 60);
 		}
 		storage.save(rec);
-		log.debug(String.format("image alarm uuid:%s, combinedUUID:%s, path:%s", rec.uuid, rec.combineUuid, rec.videoPath));
+		log.info(String.format("Save image alarm file, BTS uuid:%s, ch:%s, alarm id:%s, alarm group:%s, path:%s", rec.baseStation, rec.channelId,
+				rec.uuid, rec.combineUuid, rec.videoPath));
 		
 		return rec;
 	}

@@ -409,7 +409,7 @@ public class ASC100Client {
 					sendRetryFrame(retry);
 					image.reTry++;
 				}else {
-					log.debug(String.format("Drop image retry %s times.", image.reTry++));
+					log.warn(String.format("Drop image retry %s times, ch:%s, size:%s", image.reTry++, image.channel, image.getDataSize()));
 					this.image = null;
 				}
 			}

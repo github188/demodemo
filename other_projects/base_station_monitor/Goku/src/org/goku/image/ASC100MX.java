@@ -276,7 +276,7 @@ public class ASC100MX implements Runnable{
 			if(oldMx == null || !oldMx.equals(ipAddr)){
 				srRoute.put(srID, ipAddr);
 				updateASC100Data(srID, ipAddr);
-				log.info(String.format("Update Mx table:%s->%s", srID, ipAddr));
+				log.info(String.format("Update Mx table, SR:%s, new MX:%s, old MX:", srID, ipAddr, oldMx));
 			}
 		}
 		log.debug(routeTable);
@@ -289,7 +289,7 @@ public class ASC100MX implements Runnable{
 			if(c.getSrId().equals(sr)){
 				String oldId = c.info.locationId; 
 				c.info.locationId = mx + ":" + c.getClientId();
-				log.debug(String.format("Update location, uuid:%s, old:%s, new:%s", c.info.uuid,
+				log.info(String.format("Update location, uuid:%s, old:%s, new:%s", c.info.uuid,
 							oldId, c.info.locationId));
 				ImageRouteServer.getInstance().storage.save(c.info, new String[]{"locationId"});
 			}
