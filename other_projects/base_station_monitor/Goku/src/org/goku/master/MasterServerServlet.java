@@ -141,17 +141,6 @@ public class MasterServerServlet extends BaseRouteServlet{
 				response.getWriter().write("Not found file by id " + name);
 			}
 		}
-	}
-	
-	private String formateSize(long size){
-		if(size == 0)return "";
-		double b = size / 1024.0;
-		String unit = "Kb";
-		if(b > 1024){
-			b = b / 1024.0;
-			unit = "Mb";
-		}
-		return String.format("%s(%1.2f%s)", size, b, unit);
 	}	
 	
 	@SuppressWarnings("unchecked")
