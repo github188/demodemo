@@ -12,6 +12,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -192,16 +194,52 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 	public void video(HttpServletRequest request, HttpServletResponse response) 
 	throws IOException {
 	    String uuid = request.getParameter("uuid");
+	    String format = this.getStringParam(request, "format", "ogg");
+	    int ch = this.getIntParam(request, "ch", 1);	    
+	    processRealVideo(uuid, ch, format, request, response);
+    }
+	
+    protected void videoHandler(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException {
+    	Pattern p = Pattern.compile("/(\\d+)_(\\d+)\\.(flv|mp4|ogg)");
+    	Matcher m = p.matcher(request.getRequestURI());
+    	String uuid = null;
+    	int ch = 0;
+    	String format = null;
+    	if(m != null && m.find()){
+    		 uuid = m.group(1);
+    		 ch = Integer.parseInt(m.group(2));
+    		 format = m.group(3);
+    		 processRealVideo(uuid, ch, format, request, response);
+    	}else {
+    		response.getWriter().println("error uri:" + request.getRequestURI());
+    	}
+    }	
+    
+    private void processRealVideo(String uuid, int ch, String format, 
+    		HttpServletRequest request, HttpServletResponse response)
+    		throws IOException
+    {
 	    MonitorClient client = null;
-	    int ch = this.getIntParam(request, "ch", 1);
 	    if(uuid != null){
 	    	client = server.getMonitorClient(uuid);
 	    }
 	    
+	    log.debug(String.format("processRealVideo, uuid:%s, ch:%s, format:%s", uuid, ch, format));
 	    if(client != null){
 	    	client.realPlay(ch);
 			response.setHeader("Transfer-Encoding", "chunked");
-		    response.setContentType("application/octet-stream");
+			if(format.equals("mp4")){
+				response.setContentType("video/mp4");
+			}else if(format.equals("ogg")){
+				response.setContentType("video/ogg");
+				//response.setContentType("application/octet-stream");
+			}else if(format.equals("flv")){
+				response.setContentType("video/x-flv");
+			}
+			
+			response.setHeader("Content-Length", Integer.MAX_VALUE + "");
+		    //response.setContentType("application/octet-stream");
 			//response.setContentType("video/h264");			
 		    response.setStatus(HttpServletResponse.SC_OK);
 		    Continuation continuation = ContinuationSupport.getContinuation(request, null);
@@ -211,14 +249,14 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		    		response.getOutputStream(), 
 		    		request.getRemoteHost());
 		    callback.ch = ch;
-		    client.route.addDestination(callback);
+		    server.liveVideoEncoder.registerVideoOutput(client, ch, callback, format);
 		    //suspend 365 days
 		    continuation.suspend(1000 * 60 * 60 * 365);
 		    //suspend timeout.
 		    callback.close();
 	    }else {
 	    	response.getWriter().write("Not found client by uuid:" + uuid); 
-	    }
+	    }    	
     }
 	
 	public void send_play(HttpServletRequest request, HttpServletResponse response) 
@@ -369,6 +407,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		public void write(ByteBuffer data, int type, int channel) throws IOException {
 			if(!this.running) throw new IOException("Destination closed.");
 			if(channel == this.ch){
+				log.info("-----------------------xxx-");
 				byte[] buffer = new byte[data.remaining()];
 				data.get(buffer);
 				this.os.write(buffer);
@@ -386,7 +425,6 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
 		
 		public String toString(){
 			return String.format("HTTP<%s>", this.remoteIp);
-		}
-    	
+		}    	
     }
 }

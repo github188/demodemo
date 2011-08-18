@@ -1,5 +1,7 @@
 package org.goku.http;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -33,7 +35,15 @@ public abstract class BaseRouteServlet extends HttpServlet{
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
-    	doPost(request, response);
+		String uri = request.getRequestURI();
+		log.debug("request uri:" + uri);
+		if(uri.startsWith("/video/")){
+			videoHandler(request, response);
+		}else if(uri.startsWith("/static/")){
+			staticHandler(uri.replaceFirst("/static/", ""), request, response);			
+		}else {
+			doPost(request, response);
+		}
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
@@ -67,6 +77,72 @@ public abstract class BaseRouteServlet extends HttpServlet{
 		//response.getOutputStream().flush();
 		response.flushBuffer();
     }
+    
+    protected void videoHandler(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+    	response.getWriter().println(request.getRequestURI());
+    }
+    
+	public void staticHandler(String path, HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException{
+		File f = null;
+		if(path.length() > 0){
+			f = new File(System.getProperty("STATIC_ROOT", "."), path);
+		}else {
+			f = new File(System.getProperty("STATIC_ROOT", "."));
+		}
+		if(f.isFile()){
+		    response.setCharacterEncoding("utf-8");
+		    InputStream ins = new FileInputStream(f);
+		    byte[] buffer = new byte[64 * 1024];
+	    	if(response.getOutputStream() != null){
+		    	for(int len = ins.read(buffer); len > 0; ){
+		    		response.getOutputStream().write(buffer, 0, len);
+		    		len = ins.read(buffer);
+		    	}
+	    	}else { //在Socket, 模式不能取到OutputStream.
+	    		response.getWriter().println("Can't get OutputStream.");
+	    	}
+	    	ins.close();
+		}else if(f.isDirectory()){
+			response.setCharacterEncoding("utf-8");
+			response.setContentType(HTML);
+			response.getWriter().println("<html><title>文件列表" +
+					path + "</title><body>");
+			response.getWriter().println("<h1>目录：" + path + "</h1>");
+			response.getWriter().println("<ul>");
+			String stRoot = "/static/";
+			if(path.length() > 0){
+				stRoot += path;
+			}
+			
+			for(File sub: f.listFiles()){
+				if(sub.getName().startsWith(".")) continue;
+				if(sub.isDirectory()){
+					response.getWriter().println(String.format("<li><a href='%s%s/'>%s</a></li>", stRoot, sub.getName(), sub.getName()));
+				}else {
+					response.getWriter().println(String.format("<li><a href='%s%s'>%s</a> -- %s", stRoot, sub.getName(), sub.getName(), formateSize(sub.length())));
+				}
+			}
+			
+			response.getWriter().println("</ul>");
+			response.getWriter().println("</body></html>");
+			
+		}else {
+			response.getWriter().println("Not found path");
+		}
+	}
+    
+	private String formateSize(long size){
+		if(size == 0)return "";
+		double b = size / 1024.0;
+		String unit = "Kb";
+		if(b > 1024){
+			b = b / 1024.0;
+			unit = "Mb";
+		}
+		return String.format("%s(%1.2f%s)", size, b, unit);
+	}	
     
     protected abstract void index_page(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     

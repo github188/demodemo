@@ -120,7 +120,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 		if(name == null){
 			response.getWriter().write("Parameter list 'name=<PK>', 'mime=image/jpeg'");
 		}else {
-			File img = new File(System.getProperty("STATIC_ROOT", "."), name);			
+			File img = new File(System.getProperty("STATIC_ROOT", "."), name);		
 			if(img != null && img.exists()){
 			    response.setContentType("application/octet-stream");
 			    response.setCharacterEncoding("utf-8");
@@ -142,6 +142,17 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}
 		}
 	}
+	
+	private String formateSize(long size){
+		if(size == 0)return "";
+		double b = size / 1024.0;
+		String unit = "Kb";
+		if(b > 1024){
+			b = b / 1024.0;
+			unit = "Mb";
+		}
+		return String.format("%s(%1.2f%s)", size, b, unit);
+	}	
 	
 	@SuppressWarnings("unchecked")
 	public void image_alarm(HttpServletRequest request,

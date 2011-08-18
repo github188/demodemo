@@ -50,6 +50,7 @@ public class VideoRouteServer {
 	public HTTPRemoteClient master = null;
 	public AlarmMonitorCenter alarmManager = null;	
 	public VideoRecorderManager recordManager = null;
+	public VideoEncodingService liveVideoEncoder = null;
 	public SocketProxyServer proxyServer = null;
 	
 	public SimpleHTTPServer httpServer = null;
@@ -118,6 +119,11 @@ public class VideoRouteServer {
 		socketServer.setRecorderManager(recordManager);
 		threadPool.execute(socketServer);
 		log.info("Start scoket server at port " + port);
+		
+		String ffmpeg = settings.getString(Settings.FFMPEG_PATH, "ffmpeg");
+		liveVideoEncoder = new VideoEncodingService(threadPool, ffmpeg);
+		log.info("Start live video encoder...");
+		threadPool.execute(liveVideoEncoder);
 		
 		int startPort = settings.getInt(Settings.PROXY_PORT_START, 9000);
 		int endPort = settings.getInt(Settings.PROXY_PORT_END, 9000);
