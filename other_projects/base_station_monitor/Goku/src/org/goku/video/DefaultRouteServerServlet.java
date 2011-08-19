@@ -214,7 +214,7 @@ public class DefaultRouteServerServlet extends BaseRouteServlet{
     	}else {
     		response.getWriter().println("error uri:" + request.getRequestURI());
     	}
-    }	
+    }
     
     private void processRealVideo(String uuid, int ch, String format, 
     		HttpServletRequest request, HttpServletResponse response)

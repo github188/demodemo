@@ -2,8 +2,10 @@ package org.goku.master;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
@@ -25,6 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -56,6 +60,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 	private static SimpleCache cache = new SimpleCache();
 	private MasterVideoServer server = null;
 	private Log log = LogFactory.getLog("http");
+	private DateFormat cacheDate= new SimpleDateFormat("yy-MM-dd"); 		
+
 	
 	public void init(ServletConfig config){
 		server = MasterVideoServer.getInstance();
@@ -76,14 +82,102 @@ public class MasterServerServlet extends BaseRouteServlet{
 			}
 			
 			if(file != null && new File(file).exists() ){
-				_play(file, request, response);	
+				_play(file, request, response, null);	
 			}else if(file != null){
 				response.getWriter().write("Not found file:" + file);
 			}else {
 				response.getWriter().write("Not found file by id " + id);
 			}
-		}		
+		}
 	}
+	
+    protected void videoHandler(HttpServletRequest request, HttpServletResponse response) 
+	throws IOException, ServletException {
+    	Pattern p = Pattern.compile("/(\\d+)\\.(flv|mp4|ogg)");
+    	Matcher m = p.matcher(request.getRequestURI());
+    	String uuid = null;
+    	String format = null;
+    	String path = null;
+    	if(m != null && m.find()){
+    		 uuid = m.group(1);
+    		 format = m.group(2);
+    		 path = getVideoCache(uuid, format);
+    		 if(path != null){
+    			_play(path, request, response, format);
+    		 }else {
+    			 response.getWriter().println("Not found video by id:" + uuid);
+    		 }
+    	}else {
+    		response.getWriter().println("error uri:" + request.getRequestURI());
+    	}
+    }
+    
+    private String getVideoCache(String uuid, String format){
+		String date = cacheDate.format(new Date(System.currentTimeMillis()));		
+		String cache_name = String.format("_cache_%s_%s.video.%s", uuid, format, date);    	
+    	File cfile = new File("logs", cache_name);
+    	if(!cfile.isFile()){
+    		final File _tmpPath = new File("logs", String.format("_cache_%s_%s.console.%s", uuid, format, date));
+    		//有可能已经转换过一次，但是出错了也不需要再转换了。
+    		if(!_tmpPath.isFile()){
+    			File alarmFile = server.recordManager.getAlarmRecordFile(uuid);
+    			if(alarmFile != null){
+	    			final Process p;
+	    			try {
+	    				String[] cmds = new String[]{"ffmpeg",
+	    						"-y", "-f", "h264", "-i", alarmFile.getAbsolutePath(),
+	    						"-f", format, cfile.getAbsolutePath()};
+	    				String bash = "";
+	    				for(String c:cmds)bash += c + " ";
+	    				log.debug(bash);
+	    				p = Runtime.getRuntime().exec(cmds);
+	    				new Thread(){
+    						public void run(){
+    							InputStream in = p.getErrorStream();
+    							OutputStream out = null;
+    							try{
+    								out = new FileOutputStream(_tmpPath);
+    							}catch(IOException e){
+    								log.warn(e.toString());
+    							}
+    							byte[] data = new byte[1024];
+    							while(true){
+    								int len;
+									try {
+										len = in.read(data);
+										if(len > 0){
+											if(out != null){
+												out.write(data, 0, len);
+											}else {
+												log.debug(new String(data, 0, len));											
+											}
+										}
+										try {
+											Thread.sleep(10);
+										} catch (InterruptedException e) {
+										}
+									} catch (IOException e) {
+										log.debug("error output:" + e.toString());
+										break;
+									}
+    							}
+    							if(out != null)
+									try {
+										out.close();
+									} catch (IOException e) {
+									}		
+    						}
+	    				}.start();
+	    				int errCode = p.waitFor();			
+	    				log.debug("ffmpeg exit code:" + errCode);
+					} catch (Exception e) {
+						log.error("convert video error:" + e.toString());
+					}
+    			}
+    		}
+    	}    	
+    	return cfile.isFile() ? cfile.getAbsolutePath(): null;
+    }
 	
 	public void img(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -189,11 +283,14 @@ public class MasterServerServlet extends BaseRouteServlet{
 	}
 	
 	private void _play(String file, HttpServletRequest request, 
-					HttpServletResponse response) throws ServletException, IOException{
+					HttpServletResponse response, String format) throws ServletException, IOException{
 		response.setHeader("Transfer-Encoding", "chunked");
 		
 		String mime = request.getParameter("mime");
-		mime = mime == null ? "application/octet-stream" : mime;		
+		mime = mime == null ? "application/octet-stream" : mime;
+		if(format != null){
+			mime = "video/" + format;
+		}
 	    response.setContentType(mime);
 	    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 	    
