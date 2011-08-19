@@ -165,7 +165,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 									try {
 										out.close();
 									} catch (IOException e) {
-									}		
+									}
     						}
 	    				}.start();
 	    				int errCode = p.waitFor();			
@@ -312,8 +312,8 @@ public class MasterServerServlet extends BaseRouteServlet{
 	    //end = Math.min(end, start + 1024 * 1024);
 	    start = Math.min(start, end);
 	    
-	    log.info(String.format("Start replay video, mime:%s, Range bytes=%s-%s, file:%s", 
-				   mime, start, end, file));
+	    log.info(String.format("Start replay video, mime:%s, Range bytes=%s-%s, total size:%s, file:%s", 
+				   mime, start, end, fileSize, file));
 	    
 	    response.setHeader("Content-Length", (end - start) + "");
 	    response.setHeader("Content-Range", String.format("bytes %s-%s/%s", start, end, fileSize));
