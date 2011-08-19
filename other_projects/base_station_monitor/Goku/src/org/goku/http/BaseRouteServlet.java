@@ -93,7 +93,14 @@ public abstract class BaseRouteServlet extends HttpServlet{
 		}
 		if(f.isFile()){
 		    response.setCharacterEncoding("utf-8");
+		    long last = this.getIntParam(request, "last", 0);		    
 		    InputStream ins = new FileInputStream(f);
+		    if(last > 0){
+		    	long start = f.length() - last;
+		    	if(start > 0){
+		    		ins.skip(start);
+		    	}
+		    }
 		    byte[] buffer = new byte[64 * 1024];
 	    	if(response.getOutputStream() != null){
 		    	for(int len = ins.read(buffer); len > 0; ){
@@ -121,7 +128,10 @@ public abstract class BaseRouteServlet extends HttpServlet{
 				if(sub.isDirectory()){
 					response.getWriter().println(String.format("<li><a href='%s%s/'>%s</a></li>", stRoot, sub.getName(), sub.getName()));
 				}else {
-					response.getWriter().println(String.format("<li><a href='%s%s'>%s</a> -- %s", stRoot, sub.getName(), sub.getName(), formateSize(sub.length())));
+					String last = String.format("<a href='%s%s?last=1024'>last</a>", stRoot, sub.getName());
+					if(sub.getName().indexOf("log") == -1)last = "";
+					response.getWriter().println(String.format("<li><a href='%s%s'>%s</a> -- %s %s</li>", stRoot, sub.getName(), sub.getName(), 
+						formateSize(sub.length()), last));
 				}
 			}
 			
