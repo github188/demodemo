@@ -19,7 +19,7 @@ class User(models.Model):
                                      )
                             )
     
-    balance = models.IntegerField(help_text='帐户余额')
+    balance = models.IntegerField(help_text='帐户余额', default=0)
         
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
@@ -51,15 +51,40 @@ class WeiboProfile(models.Model):
                                                )
                                     )
 
-    is_vip = models.IntegerField()
+    is_vip = models.IntegerField(default = 0)
     fans_count = models.IntegerField()
-    details = models.TextField()
+    details = models.TextField(default = "")
     
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    @staticmethod
+    def import_from_sina(user, auth):
+        p = WeiboProfile.objects.filter(weibo_source='sina', weibo_id=user.id)[:1]
+        if p:
+            p = p[0]
+            p.app_key = auth._consumer.key
+            p.app_token = auth._consumer.secret
+            p.authon_token = auth.access_token.secret
+            p.authon_key = auth.access_token.key
+            p.fans_count = int(user.followers_count)
+            p.save()
+        else:
+            p = WeiboProfile(weibo_source='sina', weibo_id=user.id)
+            p.app_key = auth._consumer.key
+            p.app_token = auth._consumer.secret
+            p.authon_token = auth.access_token.secret
+            p.authon_key = auth.access_token.key
+            p.fans_count = int(user.followers_count)
+            u, c = User.objects.get_or_create(email = user.id)
+            u.screen_name = user.screen_name
+            u.save()
+            p.user = u
+            p.save()
+        return p
+    
     def __unicode__(self):
-        return self.weibo_id    
+        return self.weibo_id
     
 class WeiboTask(models.Model):
     class Meta:

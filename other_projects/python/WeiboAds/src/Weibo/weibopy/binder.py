@@ -126,6 +126,7 @@ def bind_api(**config):
             # or maximum number of retries is reached.
             sTime = time.time()
             retries_performed = 0
+            import os, urlparse, logging
             while retries_performed < self.retry_count + 1:
                 # Open connection
                 # FIXME: add timeout
@@ -133,6 +134,15 @@ def bind_api(**config):
                     conn = httplib.HTTPSConnection(self.host)
                 else:
                     conn = httplib.HTTPConnection(self.host)
+                
+                if os.environ.get("http_proxy", ):
+                    logging.debug("thougth http proxy:%s, host:%s" % (os.environ.get("http_proxy", ), self.host))
+                    proxy = urlparse.urlparse(os.environ.get("http_proxy", ))
+                    conn = httplib.HTTPConnection(proxy.hostname, proxy.port)
+                    conn.connect()
+                    #url = "http://%s" % self.host
+                    #conn._set_tunnel(proxy.hostname, proxy.port)
+                
                 # Apply authentication
                 if self.api.auth:
                     self.api.auth.apply_auth(
@@ -141,7 +151,7 @@ def bind_api(**config):
                     )
                 # Execute request
                 try:
-                    conn.request(self.method, url, headers=self.headers, body=self.post_data)
+                    conn.request(self.method, "http://" + self.host + url, headers=self.headers, body=self.post_data)
                     resp = conn.getresponse()
                 except Exception, e:
                     raise WeibopError('Failed to send request: %s' % e + "url=" + str(url) +",self.headers="+ str(self.headers))

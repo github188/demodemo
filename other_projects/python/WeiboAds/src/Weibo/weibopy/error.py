@@ -6,7 +6,7 @@ class WeibopError(Exception):
     """Weibopy exception"""
 
     def __init__(self, reason):
-        self.reason = reason.encode('utf-8')
+        self.reason = unicode(reason).encode('utf-8')
 
     def __str__(self):
         return self.reason
