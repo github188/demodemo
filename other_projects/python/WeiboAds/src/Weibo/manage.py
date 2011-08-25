@@ -9,4 +9,8 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
+    import logging, sys
+    FORMAT = "%(asctime)s %(name)s T[%(thread)d]P[%(process)d] %(levelname)8s %(message)s"
+    logging.basicConfig(level=logging.DEBUG, format=FORMAT, stream=sys.stdout)   
+        
     execute_manager(settings)

@@ -16,5 +16,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/(.*)', admin.site.root),
-    (r'^.*', include('Weibo.coreapp.urls')),
+    (r'^v/', include('Weibo.coreapp.urls')),
 )
