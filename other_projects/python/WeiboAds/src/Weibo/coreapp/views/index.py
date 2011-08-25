@@ -5,21 +5,25 @@ import logging
 from Weibo.weibopy.auth import OAuthHandler
 from Weibo.weibopy.api import API
 from Weibo.coreapp.models import WeiboProfile
+from Weibo.settings import APP_ROOT
 
 
 def guest_index(r):
-    r.session['xxx'] = r.GET.get("user",)
+    #r.session['xxx'] = r.GET.get("user",)
     
-    logging.info("xxx:%s" % r.session['xxx'])
+    #logging.info("xxx:%s" % r.session['xxx'])
+    if r.session.get('login_user',):
+        return HttpResponseRedirect("%s/v/my" % APP_ROOT)
+    
     return render_to_response("weibo/weibo_base.html", 
                               {'user': r.GET.get("user",)})
 
 def login_index(r):
     #r.session['xxx'] = "xxxxx"
-    user = r.session['xxx']
-    logging.info("loging:%s" % r.session['xxx'])
+    user = r.session.get('login_user',)
+    logging.info(u"loging:%s" % user)
     
-    return render_to_response("weibo/weibo_base.html", {'user': user})
+    return render_to_response("weibo/login_index.html", {'user': user})
 
 def callback(r):
     auth = OAuthHandler("2453342288", "2c545e783036afe3ae1cfef1e24ba9fb", )
@@ -33,14 +37,15 @@ def callback(r):
     user = api.verify_credentials()    
     logging.info("user:%s" % str(user))
     
-    WeiboProfile.import_from_sina(user, auth)
+    p = WeiboProfile.import_from_sina(user, auth)
+    r.session['login_user'] = p.user
     
-    return HttpResponseRedirect("/v/my")
+    return HttpResponseRedirect("%s/v/my" % APP_ROOT)
     #return render_to_response("weibo/weibo_base.html", {'user': ''})
 
 def auth_sina(r):
     #callback    
-    auth = OAuthHandler("2453342288", "2c545e783036afe3ae1cfef1e24ba9fb", "http://127.0.0.1:8000/v/callback")
+    auth = OAuthHandler("2453342288", "2c545e783036afe3ae1cfef1e24ba9fb", "%s/v/callback" % APP_ROOT)
     auth_url = auth.get_authorization_url()
     r.session['request_token'] = auth.request_token
     logging.info("url:%s" % auth_url)

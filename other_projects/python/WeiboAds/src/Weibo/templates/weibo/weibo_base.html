@@ -22,16 +22,19 @@ Welcome {{user.first_name}}, <a href="{% app_root %}/web_logout">Logout</a>
         <a href="{% app_root %}/">
         <img border="0" src="{% app_root %}/images/logo_nokia.gif"></img>
         </a>
-        <span style="font-size:24px;"><a href="{% app_root %}/areaci/">围脖广告交互平台</a></span>
+        <span style="font-size:24px;"><a href="{% app_root %}/">围脖广告交互平台</a></span>
         <span style="font-size:14px;">-- A platform to run test case in dedicated environment.</span>
     </div>
   </div>
   <div class="hr"><hr /></div>
 <div class='index_nav'>
-</div>		
+</div>			
   <div id="content">
-   	user:{{user}}
-    {% block content %}{% endblock content %}
+
+    {% block content %}
+	<a href="{%app_root%}/v/auth_sina"> 新浪围脖登录</a>
+   	user:{{user}}	    
+    {% endblock content %}
   </div>
   <div id="footer">
 	<div style="border-bottom: 1px solid #7799dd;margin-bottom:10px;"></div>
