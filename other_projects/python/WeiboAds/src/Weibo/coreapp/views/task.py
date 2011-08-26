@@ -100,6 +100,6 @@ def task_comment(r, ):
         comment = TaskComment(task=task, user=r.cur_user)
         comment.desc = r.POST.get('content')
         comment.save()
-        return HttpResponseRedirect("/task/%s" % task.id)  
+        return HttpResponseRedirect("%s/task/%s" % (APP_ROOT, task.id))
     else:
-        return HttpResponseRedirect("/index")
+        return HttpResponseRedirect("%s/index" % (APP_ROOT, ))
