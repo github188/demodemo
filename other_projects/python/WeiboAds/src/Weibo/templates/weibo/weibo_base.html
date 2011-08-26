@@ -26,6 +26,8 @@ Welcome {{cur_user.screen_name}}, <a href="{% app_root %}/logout">Logout</a>
   </div>
   <div class="hr"><hr /></div>
 <div class='index_nav'>
+    {% block nav_bar %}
+    {% endblock nav_bar %}
 </div>			
   <div id="content">
 

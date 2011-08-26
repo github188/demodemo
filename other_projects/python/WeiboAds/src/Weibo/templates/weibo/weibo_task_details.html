@@ -1,0 +1,43 @@
+{% extends "weibo/logined_base.html" %}
+
+{% load reporting_tags %}
+
+{% block content %}
+
+	<table>
+		<tr>
+			发布：{{task.user.screen_name}}, 
+			状态：{{task.get_task_status_display}},
+			
+			价格：小于1万粉:{{task.price_1}}元, 1万～10万:{{task.price_2}}元
+			10万以上:{{task.price_3}}元
+		</tr>		
+		<tr>
+			<td>{{task.content}}</td>
+		</tr>
+		<tr>
+			<td>标签:{{task.tags}}</td>
+		</tr>		
+	</table>
+
+
+	{% for e in comments %}
+	
+	<table>
+		<tr>
+			{{e.user.screen_name}}
+		</tr>		
+		<tr>
+			<td>{{e.desc}}</td>
+		</tr>
+	</table>
+	{%endfor%}
+	
+	
+	<form action='/task/comment' method='POST'>
+		评论:
+		<input type='hidden' name='tid' value="{{task.id}}" />
+		<textarea cols='60' rows='5' name='content'></textarea>
+		<input type='submit' name='submit' value="评论" />
+	</form>	
+{% endblock %}

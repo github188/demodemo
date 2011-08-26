@@ -7,5 +7,11 @@ urlpatterns = patterns('',
    (r'^callback',  'Weibo.coreapp.views.callback'),   
    (r'^logout',  'Weibo.coreapp.views.logout'),   
    
-   (r'^task/post',  'Weibo.coreapp.views.post_new_task'),   
+   (r'^task/post',  'Weibo.coreapp.views.post_new_task'), 
+   (r'^task/list',  'Weibo.coreapp.views.task_search'),
+   (r'^task/my_task',  'Weibo.coreapp.views.my_task'),
+   
+   (r'^task/(\d+)',  'Weibo.coreapp.views.task_detail'),
+   (r'^task/comment',  'Weibo.coreapp.views.task_comment'),
+      
 )

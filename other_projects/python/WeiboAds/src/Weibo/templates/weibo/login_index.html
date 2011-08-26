@@ -1,16 +1,10 @@
-{% extends "weibo/weibo_base.html" %}
+{% extends "weibo/logined_base.html" %}
 
 {% load reporting_tags %}
 
 {% block title %}围脖交互平台{% endblock title %}
 {% block content %}
-	<a href="{{app_root}}/task/post">发布新任务</a>
-	<a href="＃">我发布的任务</a>
-	<a href="#">我竞标的任务</a>
-	<a href="#">资金管理</a>
-	
-	<br/>
-	<br/>
+
 	欢迎 {{user.screen_name}};
 
 {% endblock content %}

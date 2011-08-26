@@ -157,10 +157,11 @@ class TaskComment(models.Model):
     class Meta:
         db_table = 'task_comment'
         verbose_name_plural = '任务回复'
-        verbose_name = '任务回复'        
+        verbose_name = '任务回复'
                     
     user = models.ForeignKey('User')
     task = models.ForeignKey('WeiboTask')
+    contract = models.OneToOneField('TaskContract', null=True)
 
     comment_type = models.CharField(max_length=5,
                                    default="S1",
@@ -181,7 +182,7 @@ class TaskContract(models.Model):
     class Meta:
         db_table = 'task_contract'
         verbose_name_plural = '交易合同'
-        verbose_name = '交易合同'            
+        verbose_name = '交易合同'      
         
     user = models.ForeignKey('User')
     task = models.ForeignKey('WeiboTask')
@@ -190,12 +191,12 @@ class TaskContract(models.Model):
     
     status = models.CharField(max_length=5,
                               default="S1",
-                               choices=(('S1', "申请"),
+                              choices=(('S1', "申请"),
                                         ('S2', "中标"),
                                         ('S3', "提交"),
                                         ('S4', "付费"), 
                                         )
-                               )
+                              )
     
     task_deliver = models.TextField(help_text='任务交互地址。')
         
