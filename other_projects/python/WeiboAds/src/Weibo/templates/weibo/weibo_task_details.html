@@ -34,7 +34,7 @@
 	{%endfor%}
 	
 	
-	<form action='/task/comment' method='POST'>
+	<form action='{%app_root%}/task/comment' method='POST'>
 		评论:
 		<input type='hidden' name='tid' value="{{task.id}}" />
 		<textarea cols='60' rows='5' name='content'></textarea>
