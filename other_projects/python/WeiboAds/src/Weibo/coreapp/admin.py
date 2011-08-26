@@ -14,8 +14,8 @@ class WeiboProfileAdmin(admin.ModelAdmin):
     search_fields = ('weibo_id', )
         
 class WeiboTaskAdmin(admin.ModelAdmin):
-    fields = ['user', 'content', 'image_url', 'desc', 'tags', 'task_status', 'task_type', 'pay_status', 'price_1', 'price_2', 'price_3']
-    list_display = ('user', 'tags', 'task_status', 'task_type', 'pay_status', 'price_1', 'price_2', 'price_3', 'create_time', 'update_time')
+    fields = ['user', 'task_type', 'content', 'image_url', 'desc', 'tags',  'task_status', 'contract_type', 'pay_status', 'price_1', 'price_2', 'price_3']
+    list_display = ('user', 'task_type', 'task_status', 'task_type', 'pay_status', 'contract_type', 'price_1', 'price_2', 'price_3', 'create_time', 'update_time')
 
 class TaskCommentAdmin(admin.ModelAdmin):    
     fields = ['user', 'task', 'comment_type', 'desc', ]

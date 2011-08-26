@@ -15,4 +15,6 @@ TIME_ZONE = 'PRC'
 ADMIN_MEDIA_PREFIX = '/admin'
 
 APP_ROOT = 'http://127.0.0.1:8000'
-WWW_ROOT = "."
+
+DATA_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+WWW_ROOT = os.path.join(DATA_ROOT, 'www_root')

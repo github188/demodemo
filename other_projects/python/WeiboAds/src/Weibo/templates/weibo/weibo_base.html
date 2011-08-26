@@ -2,7 +2,7 @@
 {% load reporting_tags %}
 <html>
 <head>
-  <title>Area CI-{% block title %}{% endblock %}</title>
+  <title>围脖联盟-{% block title %}{% endblock %}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link type="text/css" href="{% app_root %}/css/area_ci.css" rel="stylesheet" />
   <link type="text/css" href="{% app_root %}/css/buttons.css" rel="stylesheet" />
@@ -12,18 +12,16 @@
   <div id="header">
     <div>
 <div style="float:right;">
-{% if not user.is_anonymous %}
-Welcome {{user.first_name}}, <a href="{% app_root %}/web_logout">Logout</a>
-{%else %}
-<a href="{% app_root %}/web_login">Login</a>
+{% if cur_user %}
+Welcome {{cur_user.screen_name}}, <a href="{% app_root %}/logout">Logout</a>
 {% endif %}
 </div>
     
         <a href="{% app_root %}/">
         <img border="0" src="{% app_root %}/images/logo_nokia.gif"></img>
         </a>
-        <span style="font-size:24px;"><a href="{% app_root %}/">围脖广告交互平台</a></span>
-        <span style="font-size:14px;">-- A platform to run test case in dedicated environment.</span>
+        <span style="font-size:24px;"><a href="{% app_root %}/index">围脖广告交互平台</a></span>
+        <span style="font-size:14px;">-- 发布转发／广告任务.</span>
     </div>
   </div>
   <div class="hr"><hr /></div>
@@ -32,7 +30,7 @@ Welcome {{user.first_name}}, <a href="{% app_root %}/web_logout">Logout</a>
   <div id="content">
 
     {% block content %}
-	<a href="{%app_root%}/v/auth_sina"> 新浪围脖登录</a>
+	<a href="{%app_root%}/auth_sina"> 新浪围脖登录</a>
    	user:{{user}}	    
     {% endblock content %}
   </div>
