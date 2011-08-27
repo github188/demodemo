@@ -27,10 +27,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td>{{e.content}}</td>
+			<td>
+				{%ifequal e.task_type 'reply' %}
+				转发：{{e.image_url}}
+				{%else%}
+				内容：{{e.content}}
+				{%endifequal%} 
+			</td>
 		</tr>
 		<tr>
-			<td>标签:{{e.tags}}</td>
+			<td>{{e.create_time|date:"m月d日 H:i"}}, 标签:{{e.tags}}</td>
 		</tr>		
 	</table>
 	<br/>

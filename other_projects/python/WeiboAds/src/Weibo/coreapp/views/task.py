@@ -18,20 +18,22 @@ def post_new_task(r):
     if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
     
     if r.method == 'POST':
-        tasks = WeiboTask()
-        tasks.user = r.cur_user
+        task = WeiboTask()
+        task.user = r.cur_user
         for e in ['task_type', 'content', 'image_url', 'tags', 'price_1', 'price_2', 'price_3',
                   'desc']:
             value = r.POST.get(e)
-            setattr(tasks, e, value)
-        tasks.save()
+            if value: setattr(task, e, value)
+        if (task.task_type == 'post' and task.content) or \
+           (task.task_type == 'reply' and task.image_url) :
+            task.save()
         return HttpResponseRedirect("%s/my" % APP_ROOT)     
     else:
         form = TaskForm(instance=WeiboTask(), )
         form.init_bounds()
         form.update_attr()
     
-    return render_to_response("weibo/weibo_task_form.html", 
+    return render_to_response("weibo/seller/weibo_task_form.html", 
                               {'form': form},
                               context_instance=template.RequestContext(r)
                               )
@@ -43,6 +45,16 @@ class TaskForm(ModelForm):
     def update_attr(self):
         self.form_fields['content'].field.widget.attrs.update({'cols': '60', 'rows': '3'})
         self.form_fields['desc'].field.widget.attrs.update({'cols': '60', 'rows': '5'})
+        
+        self.form_fields['price_1'].field.widget.input_type = 'number'
+        self.form_fields['price_1'].field.widget.attrs.update({'min': '0', 'max': '100000'})
+        self.form_fields['price_2'].field.widget.input_type = 'number'
+        self.form_fields['price_2'].field.widget.attrs.update({'min': '0', 'max': '100000'})
+        self.form_fields['price_3'].field.widget.input_type = 'number'
+        self.form_fields['price_3'].field.widget.attrs.update({'min': '0', 'max': '100000'})
+        
+        self.form_fields['image_url'].field.widget.input_type = 'url'
+
     
     def init_bounds(self):
         """ 把值和字段绑定，可以在界面直接显示 """

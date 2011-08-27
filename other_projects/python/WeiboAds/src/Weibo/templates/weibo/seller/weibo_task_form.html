@@ -10,54 +10,54 @@
 			<td>{{form.form_fields.task_type}}
 			<div class='help'>{{form.fields.task_type.help_text}}</div>
 			</td>
-		<tr>
-		<tr>
+		</tr>
+		<tr id='weibo_content'>
 			<td>{{form.fields.content.label}}</td>
 			<td>{{form.form_fields.content}}
 			<div class='help'>{{form.fields.content.help_text}}</div>
 			</td>
-		<tr>
-		<tr>
+		</tr>
+		<tr id='weibo_link'>
 			<td>{{form.fields.image_url.label}}</td>
 			<td>{{form.form_fields.image_url}}
 			<div class='help'>{{form.fields.image_url.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 
 		<tr>
 			<td>{{form.fields.tags.label}}</td>
 			<td>{{form.form_fields.tags}}
 			<div class='help'>{{form.fields.tags.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 
 		<tr>
 			<td>{{form.fields.price_1.label}}</td>
 			<td>{{form.form_fields.price_1}}
 			<div class='help'>{{form.fields.price_1.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 
 		<tr>
 			<td>{{form.fields.price_2.label}}</td>
 			<td>{{form.form_fields.price_2}}
 			<div class='help'>{{form.fields.price_2.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 
 		<tr>
 			<td>{{form.fields.price_3.label}}</td>
 			<td>{{form.form_fields.price_3}}
 			<div class='help'>{{form.fields.price_3.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 
 		<tr>
 			<td>{{form.fields.desc.label}}</td>
 			<td>{{form.form_fields.desc}}
 			<div class='help'>{{form.fields.desc.help_text}}</div>
 			</td>
-		<tr>
+		</tr>
 			
 	</table>
 	
@@ -66,4 +66,17 @@
 		<tr><td></td><td><input type='submit' value='发布任务'/></td></tr>
 	</table>
     </form>
+<script>
+$(function(){
+	$("#id_task_type").change(function(){
+		if($(this).val() == 'reply'){
+			$("#weibo_content").hide();
+			$("#weibo_link td:first").html("围脖连接：")
+		}else {
+			$("#weibo_content").show();
+			$("#weibo_link td:first").html("围脖图片")
+		}
+	});
+});
+</script>
 {% endblock %}

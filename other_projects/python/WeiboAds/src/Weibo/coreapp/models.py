@@ -151,9 +151,9 @@ class WeiboTask(models.Model):
                                          )                                   
                                    )
     
-    price_1 = models.IntegerField(verbose_name="价格1", help_text='0~1万粉丝的价格')
-    price_2 = models.IntegerField(verbose_name="价格2", help_text='1万~10万粉丝的价格')
-    price_3 = models.IntegerField(verbose_name="价格3", help_text='10万~以上粉丝的价格')
+    price_1 = models.IntegerField(default=0, verbose_name="价格1", help_text='0~1万粉丝的价格')
+    price_2 = models.IntegerField(default=0, verbose_name="价格2", help_text='1万~10万粉丝的价格')
+    price_3 = models.IntegerField(default=0, verbose_name="价格3", help_text='10万~以上粉丝的价格')
     
     #竞标结束时间
     finish_time = models.DateTimeField('finish time', null=True)

@@ -23,7 +23,7 @@
 			<td>{{e.content}}</td>
 		</tr>
 		<tr>
-			<td>标签:{{e.tags}}</td>
+			<td>{{e.create_time|date:"m月d日 H:i"}} 标签:{{e.tags}}</td>
 		</tr>		
 	</table>
 	{%endfor%}
