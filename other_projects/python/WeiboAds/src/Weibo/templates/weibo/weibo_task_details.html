@@ -31,8 +31,24 @@
 		<tr>
 			<td width="120px;">{{e.user.screen_name}}</td>
 
-			<td>{{e.get_comment_type_display}}
-			<br/>
+			<td>
+			{% if e.contract %}
+				<div>
+				报价：{{e.contract.price}},
+				状态：{{e.contract.get_status_display}},
+				</div>				
+				<!--  {{e.get_comment_type_display}} -->
+				{% if e.contract.is_submit %}
+					<div>
+					{%for file in e.contract.uploaded_files %}
+						围脖地址：{{file.desc}}<br/>
+						<img class='task' src='{{file.external_link}}' /><br/>
+					{%endfor%}
+					</div>
+				{%endif%}
+						
+				<br/>
+			{% endif %}		
 			{{e.desc}}</td>
 		</tr>
 	</table>

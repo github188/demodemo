@@ -216,8 +216,8 @@ class TaskContract(models.Model):
                               default="S1",
                               choices=(('S1', "申请"),
                                         ('S2', "中标"),
-                                        ('S3', "提交"),
-                                        ('S4', "付费"), 
+                                        ('S3', "已提交任务"),
+                                        ('S4', "已付费"), 
                                         )
                               )
     
@@ -231,9 +231,13 @@ class TaskContract(models.Model):
     
     def can_accept(self):
         return self.status == 'S1'
+
+    def can_pay(self):
+        return self.status == 'S3'
     
     def is_submit(self):
-        return self.status == 'S3'    
+        return self.status in ['S3', 'S4']    
+
     
     def weibo_p(self):
         if not hasattr(self, "_cache_p"):

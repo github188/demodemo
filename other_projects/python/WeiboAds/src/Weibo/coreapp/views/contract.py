@@ -26,6 +26,19 @@ def accept_contract(r, tid):
     
     return HttpResponseRedirect("%s/task/%s/contracts" % (APP_ROOT,
                                                           contract.task.id))
+
+def done_contract(r, tid):
+    
+    if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
+    contract = TaskContract.objects.get(id= (tid or r.REQUEST['tid']))    
+    if contract.task.user != r.cur_user: return HttpResponseRedirect("%s/index" % APP_ROOT)
+    contract.status = 'S4'
+    contract.save()
+    
+    return HttpResponseRedirect("%s/task/%s/contracts" % (APP_ROOT,
+                                                          contract.task.id))
+
+
 def submit_contract(r, tid):
     """提交完成后的任务"""
     if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)

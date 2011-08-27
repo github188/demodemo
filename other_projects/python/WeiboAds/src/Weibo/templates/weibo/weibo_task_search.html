@@ -12,7 +12,14 @@
 			状态：{{e.get_task_status_display}},
 			
 			价格：小于1万粉:{{e.price_1}}元, 1万～10万:{{e.price_2}}元
-			10万以上:{{e.price_3}}元		
+			10万以上:{{e.price_3}}元	
+			<br/>
+			&nbsp;
+			竞标人数： <a href="{%app_root%}/task/{{e.id}}/contracts">{{e.custom_count}}</a>
+			&nbsp;
+			提交数量:
+			<a href="{%app_root%}/task/{{e.id}}/contracts">{{e.submit_contract.count}}</a>			
+			
 			&nbsp;&nbsp;
 			<a href="{%app_root%}/task/{{e.id}}">详细信息</a>
 			&nbsp;&nbsp;
