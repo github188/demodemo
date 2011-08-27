@@ -4,16 +4,17 @@
 
 {% block content %}
 
-	<table>
+	<table border=1>
 		<tr>
-			发布：{{task.user.screen_name}}, 
+			<td>发布：{{task.user.screen_name}}, 
 			状态：{{task.get_task_status_display}},
 			
 			价格：小于1万粉:{{task.price_1}}元, 1万～10万:{{task.price_2}}元
 			10万以上:{{task.price_3}}元
 			
 			&nbsp;&nbsp;
-			<a href="{%app_root%}/do_task/{{task.id}}">参加竞标</a>			
+			<a href="{%app_root%}/do_task/{{task.id}}">参加竞标</a>
+			</td>			
 		</tr>
 		<tr>
 			<td>{{task.content}}</td>
@@ -22,13 +23,13 @@
 			<td>标签:{{task.tags}}</td>
 		</tr>		
 	</table>
-
+	<br/>
 
 	{% for e in comments %}
 	
 	<table>
 		<tr>
-			<td>{{e.user.screen_name}}</td>
+			<td width="120px;">{{e.user.screen_name}}</td>
 
 			<td>{{e.get_comment_type_display}}
 			<br/>
@@ -36,7 +37,6 @@
 		</tr>
 	</table>
 	{%endfor%}
-	
 	
 	<form action='{%app_root%}/task/comment' method='POST'>
 		评论:

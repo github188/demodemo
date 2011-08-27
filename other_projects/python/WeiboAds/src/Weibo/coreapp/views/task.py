@@ -53,7 +53,7 @@ class TaskForm(ModelForm):
 def my_task(r, page=0, limit=50):
     if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
     
-    list = WeiboTask.objects.filter(user=r.cur_user).order_by()
+    list = WeiboTask.objects.filter(user=r.cur_user).order_by("-create_time")
     
     cur_page = list[page * limit: (page + 1) * limit]
     
@@ -61,6 +61,18 @@ def my_task(r, page=0, limit=50):
                               {'data_list': cur_page},
                               context_instance=template.RequestContext(r)
                               )  
+
+def my_do_task(r, page=0, limit=50):
+    if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
+    
+    list = TaskContract.objects.filter(user=r.cur_user).order_by("-create_time")
+    
+    cur_page = list[page * limit: (page + 1) * limit]
+    
+    return render_to_response("weibo/custom/my_do_task.html", 
+                              {'data_list': cur_page},
+                              context_instance=template.RequestContext(r)
+                              ) 
     
         
 def task_search(r, tag='', order_by='-update_time', page=0, limit=50):

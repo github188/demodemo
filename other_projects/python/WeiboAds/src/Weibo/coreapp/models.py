@@ -216,6 +216,12 @@ class TaskContract(models.Model):
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    def weibo_p(self):
+        s, id = self.weibo.split(":") 
+        p = WeiboProfile.objects.filter(weibo_source=s,
+                                        weibo_id=id)[:1]
+        return p and p[0] or object()
+    
     def __unicode__(self):
         return u"task_%s_%s" % (self.id, self.user.screen_name)      
     

@@ -9,6 +9,16 @@
   <script type="text/javascript" src="{% app_root %}/js/jquery-1.2.6.min.js"></script> 
 </head>
 <body>
+<style>
+table{width:100%;
+border:1px solid #000;
+margin: 0.5em 0 1em 0;
+}
+
+tr,td{
+border:1px solid #000;
+}
+</style>
   <div id="header">
     <div>
 <div style="float:right;">
@@ -27,10 +37,10 @@ Welcome {{cur_user.screen_name}}, <a href="{% app_root %}/logout">Logout</a>
   <div class="hr"><hr /></div>
 <div class='index_nav'>
     {% block nav_bar %}
-    {% endblock nav_bar %}
+    {% endblock nav_bar %}    
 </div>			
   <div id="content">
-
+<br />
     {% block content %}
 	<a href="{%app_root%}/auth_sina"> 新浪围脖登录</a>
    	user:{{user}}	    

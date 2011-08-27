@@ -10,6 +10,7 @@ urlpatterns = patterns('',
    (r'^task/post',  'Weibo.coreapp.views.post_new_task'), 
    (r'^task/list',  'Weibo.coreapp.views.task_search'),
    (r'^task/my_task',  'Weibo.coreapp.views.my_task'),
+   (r'^task/my_do_task',  'Weibo.coreapp.views.my_do_task'),
    
    (r'^task/(\d+)',  'Weibo.coreapp.views.task_detail'),
    (r'^do_task/(\d+)',  'Weibo.coreapp.views.do_task'),   

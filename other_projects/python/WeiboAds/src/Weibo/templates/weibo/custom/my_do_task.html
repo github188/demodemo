@@ -1,0 +1,29 @@
+{% extends "weibo/logined_base.html" %}
+
+{% load reporting_tags %}
+
+{% block content %}
+	{% for e in data_list %}
+	
+	<table>
+		<tr>
+			<td>
+			我的报价：{{e.price}}, 我的围脖：{{e.weibo_p.screen_name}}, 
+			状态：{{e.get_status_display}},
+			</td>			
+		</tr>
+		<tr>
+			<td>我的报价说明：{{e.desc}}</td>
+		</tr>		
+		<tr>
+			<td>
+			发布：{{e.task.user.screen_name}}, 
+			状态：{{e.task.get_task_status_display}},
+			
+			价格：小于1万粉:{{e.price_1}}元, 1万～10万:{{e.price_2}}元
+			10万以上:{{e.price_3}}元
+			</td>
+		</tr>
+	</table>
+	{%endfor%}
+{% endblock %}

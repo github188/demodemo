@@ -7,6 +7,7 @@
 	
 	<table>
 		<tr>
+			<td>
 			发布：{{e.user.screen_name}}, 
 			状态：{{e.get_task_status_display}},
 			
@@ -16,6 +17,7 @@
 			<a href="{%app_root%}/task/{{e.id}}">详细信息</a>
 			&nbsp;&nbsp;
 			<a href="{%app_root%}/do_task/{{e.id}}">竞标</a>
+			</td>
 		</tr>
 		<tr>
 			<td>{{e.content}}</td>
@@ -24,5 +26,6 @@
 			<td>标签:{{e.tags}}</td>
 		</tr>		
 	</table>
+	<br/>
 	{%endfor%}
 {% endblock %}
