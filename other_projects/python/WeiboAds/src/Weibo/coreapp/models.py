@@ -162,7 +162,13 @@ class WeiboTask(models.Model):
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
     def __unicode__(self):
-        return u"task_%s" % self.id    
+        return u"task_%s" % self.id
+    
+    def custom_count(self):
+        return self.taskcontract_set.all().count()
+    
+    def active_contract(self):
+        return self.taskcontract_set.all()
     
 class TaskComment(models.Model):
     class Meta:
@@ -217,10 +223,12 @@ class TaskContract(models.Model):
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
     def weibo_p(self):
-        s, id = self.weibo.split(":") 
-        p = WeiboProfile.objects.filter(weibo_source=s,
-                                        weibo_id=id)[:1]
-        return p and p[0] or object()
+        if not hasattr(self, "_cache_p"):
+            s, id = self.weibo.split(":") 
+            p = WeiboProfile.objects.filter(weibo_source=s,
+                                            weibo_id=id)[:1]
+            self._cache_p = p and p[0] or object()
+        return self._cache_p
     
     def __unicode__(self):
         return u"task_%s_%s" % (self.id, self.user.screen_name)      

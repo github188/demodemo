@@ -3,7 +3,6 @@
 {% load reporting_tags %}
 
 {% block content %}
-
 	<table>
 		<tr>
 			<td>发布：{{task.user.screen_name}}, 
@@ -24,24 +23,25 @@
 		</tr>		
 	</table>
 	<br/>
-
-	{% for e in comments %}
+	
+	{% for e in contract_list %}
 	
 	<table>
 		<tr>
-			<td width="120px;">{{e.user.screen_name}}</td>
-
-			<td>{{e.get_comment_type_display}}
+			<td>
+			围脖：{{e.weibo_p.screen_name}},  报价：{{e.price}},
+			状态：{{e.get_status_display}},
+			{% ifequal e.status 'S1'%}
+			<a href='{%app_root%}/task/contract/{{e.id}}/accept'>接受竞标</a>
+			{%endifequal%}
 			<br/>
-			{{e.desc}}</td>
+			粉丝：{{e.weibo_p.fans_count}}， 好友：{{e.weibo_p.friends_count}}， 
+			围脖: {{e.weibo_p.weibo_count}}
+			</td>
+		</tr>
+		<tr>
+			<td>报价说明：{{e.desc}}</td>
 		</tr>
 	</table>
 	{%endfor%}
-	
-	<form action='{%app_root%}/task/comment' method='POST'>
-		评论:
-		<input type='hidden' name='tid' value="{{task.id}}" />
-		<textarea cols='60' rows='5' name='content'></textarea>
-		<input type='submit' name='submit' value="评论" />
-	</form>	
 {% endblock %}

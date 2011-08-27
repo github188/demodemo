@@ -60,7 +60,7 @@ def my_task(r, page=0, limit=50):
     return render_to_response("weibo/weibo_my_task.html", 
                               {'data_list': cur_page},
                               context_instance=template.RequestContext(r)
-                              )  
+                              ) 
 
 def my_do_task(r, page=0, limit=50):
     if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
@@ -73,6 +73,19 @@ def my_do_task(r, page=0, limit=50):
                               {'data_list': cur_page},
                               context_instance=template.RequestContext(r)
                               ) 
+
+def task_custom_list(r, tid):    
+    if not is_login(r):return HttpResponseRedirect("%s/index" % APP_ROOT)
+    task = WeiboTask.objects.get(id= (tid or r.REQUEST['tid']))
+    if task.user != r.cur_user: return HttpResponseRedirect("%s/index" % APP_ROOT)
+    contract_list = task.active_contract()
+    
+    return render_to_response("weibo/seller/task_contract_list.html", 
+                              {'task': task,
+                               'contract_list': contract_list,
+                               },
+                              context_instance=template.RequestContext(r)
+                              )     
     
         
 def task_search(r, tag='', order_by='-update_time', page=0, limit=50):
