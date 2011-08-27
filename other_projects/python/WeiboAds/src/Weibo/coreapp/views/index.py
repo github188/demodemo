@@ -43,6 +43,7 @@ def callback(r):
     
     p = WeiboProfile.import_from_sina(user, auth)
     r.session['login_user'] = p.user
+    r.session['login_weibo'] = p
     
     return HttpResponseRedirect("%s/my" % APP_ROOT)
     #return render_to_response("weibo/weibo_base.html", {'user': ''})

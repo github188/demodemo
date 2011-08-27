@@ -55,8 +55,14 @@ class WeiboProfile(models.Model):
                                                )
                                     )
 
+    screen_name = models.CharField(max_length=32)
+    
     is_vip = models.IntegerField(default = 0)
     fans_count = models.IntegerField()
+    friends_count = models.IntegerField()
+    weibo_count = models.IntegerField()
+    photo_url = models.CharField(max_length=255)
+    
     details = models.TextField(default = "")
     
     update_time = models.DateTimeField('update time', auto_now=True)
@@ -67,24 +73,29 @@ class WeiboProfile(models.Model):
         p = WeiboProfile.objects.filter(weibo_source='sina', weibo_id=user.id)[:1]
         if p:
             p = p[0]
-            p.app_key = auth._consumer.key
-            p.app_token = auth._consumer.secret
-            p.authon_token = auth.access_token.secret
-            p.authon_key = auth.access_token.key
-            p.fans_count = int(user.followers_count)
-            p.save()
         else:
             p = WeiboProfile(weibo_source='sina', weibo_id=user.id)
-            p.app_key = auth._consumer.key
-            p.app_token = auth._consumer.secret
-            p.authon_token = auth.access_token.secret
-            p.authon_key = auth.access_token.key
-            p.fans_count = int(user.followers_count)
             u, c = User.objects.get_or_create(email = user.id)
             u.screen_name = user.screen_name
             u.save()
             p.user = u
-            p.save()
+
+        p.app_key = auth._consumer.key
+        p.app_token = auth._consumer.secret
+        p.authon_token = auth.access_token.secret
+        p.authon_key = auth.access_token.key
+        
+        p.screen_name = user.screen_name
+        p.fans_count = int(user.followers_count)
+        p.friends_count = int(user.friends_count)
+        p.weibo_count = int(user.statuses_count)
+        p.photo_url = user.profile_image_url
+        if user.verified:
+            p.is_vip = 1
+        else:
+            p.is_vip = 0
+        
+        p.save()
         return p
     
     def __unicode__(self):
@@ -182,10 +193,12 @@ class TaskContract(models.Model):
     class Meta:
         db_table = 'task_contract'
         verbose_name_plural = '交易合同'
-        verbose_name = '交易合同'      
+        verbose_name = '交易合同'
         
     user = models.ForeignKey('User')
     task = models.ForeignKey('WeiboTask')
+    price = models.IntegerField()
+    weibo = models.CharField(max_length=64, help_text='完成任务的围脖帐号, 一个用户可以有多个围脖，但是一个交易只能有一个围脖帐号。')
     
     desc = models.TextField()
     
@@ -224,8 +237,7 @@ class UploadFile(models.Model):
     create_time = models.DateTimeField('create time', auto_now_add=True)
 
     def __unicode__(self):
-        return self.path
-    
+        return self.path    
 
 class UserTransaction(models.Model):
     """帐号交易金额清单"""

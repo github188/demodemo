@@ -12,6 +12,7 @@ urlpatterns = patterns('',
    (r'^task/my_task',  'Weibo.coreapp.views.my_task'),
    
    (r'^task/(\d+)',  'Weibo.coreapp.views.task_detail'),
+   (r'^do_task/(\d+)',  'Weibo.coreapp.views.do_task'),   
    (r'^task/comment',  'Weibo.coreapp.views.task_comment'),
       
 )

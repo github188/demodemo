@@ -4,7 +4,13 @@
 
 {% block title %}围脖交互平台{% endblock title %}
 {% block content %}
-
-	欢迎 {{user.screen_name}};
-
+	<br/><br/>
+	欢迎 {{cur_user.screen_name}}; 
+	当前登录围脖：
+	
+	<img src='{{cur_weibo.photo_url}}' />
+	粉丝：{{cur_weibo.fans_count}}
+	好友：{{cur_weibo.friends_count}}
+	围脖：{{cur_weibo.weibo_count}}
+		
 {% endblock content %}

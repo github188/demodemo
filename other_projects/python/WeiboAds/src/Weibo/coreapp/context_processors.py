@@ -18,6 +18,7 @@ def tep_context(request):
             
     return {
         'cur_user': request.session.get("login_user"),
+        'cur_weibo': request.session.get("login_weibo"),
         'param': request.REQUEST,
         'url_path': url_path
     }

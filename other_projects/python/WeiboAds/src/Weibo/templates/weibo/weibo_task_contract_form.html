@@ -1,9 +1,7 @@
 {% extends "weibo/logined_base.html" %}
-
 {% load reporting_tags %}
 
 {% block content %}
-
 	<table>
 		<tr>
 			发布：{{task.user.screen_name}}, 
@@ -11,10 +9,7 @@
 			
 			价格：小于1万粉:{{task.price_1}}元, 1万～10万:{{task.price_2}}元
 			10万以上:{{task.price_3}}元
-			
-			&nbsp;&nbsp;
-			<a href="{%app_root%}/do_task/{{task.id}}">参加竞标</a>			
-		</tr>
+		</tr>		
 		<tr>
 			<td>{{task.content}}</td>
 		</tr>
@@ -22,26 +17,25 @@
 			<td>标签:{{task.tags}}</td>
 		</tr>		
 	</table>
-
-
-	{% for e in comments %}
 	
-	<table>
-		<tr>
-			<td>{{e.user.screen_name}}</td>
-
-			<td>{{e.get_comment_type_display}}
-			<br/>
-			{{e.desc}}</td>
-		</tr>
-	</table>
-	{%endfor%}
-	
-	
-	<form action='{%app_root%}/task/comment' method='POST'>
-		评论:
+	<form action='{%app_root%}/do_task/{{task.id}}' method='POST'>
 		<input type='hidden' name='tid' value="{{task.id}}" />
-		<textarea cols='60' rows='5' name='content'></textarea>
+		<div>价格：
+		<input type='text' name='price' value="" />
+		</div>
+		<div>发布围脖：
+		<select name='weibo'>
+			{% for w in weibo_list %}
+				<option value='{{w.weibo_source}}:{{w.weibo_id}}'>{{w.weibo_source}}:{{w.screen_name}}</option>
+			{% endfor %}
+		</select>
+		</div>
+		
+		<div>
+		说明:
+		<textarea cols='60' rows='5' name='desc'></textarea>
+		</div>
 		<input type='submit' name='submit' value="评论" />
 	</form>	
+	
 {% endblock %}

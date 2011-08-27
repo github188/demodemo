@@ -103,3 +103,34 @@ def task_comment(r, ):
         return HttpResponseRedirect("%s/task/%s" % (APP_ROOT, task.id))
     else:
         return HttpResponseRedirect("%s/index" % (APP_ROOT, ))
+    
+def do_task(r, tid):
+    if not is_login(r): return HttpResponseRedirect("%s/index" % APP_ROOT)
+    
+    task = WeiboTask.objects.get(id= (tid or r.REQUEST['tid']))
+    if r.method == 'POST':
+        price = r.POST['price']
+        desc = r.POST['desc']
+        weibo = r.POST['weibo']
+        contract = TaskContract(user=r.cur_user, task=task)
+        contract.price = int(price)
+        contract.desc = desc
+        contract.weibo = weibo
+        contract.save()
+        
+        comment = TaskComment(task=task, user=r.cur_user)
+        comment.contract = contract
+        comment.comment_type = 'S2'
+        comment.desc = desc
+        comment.save()
+        
+        return HttpResponseRedirect("%s/task/%s" % (APP_ROOT, task.id))
+    else:
+        weibo_list = r.cur_user.weiboprofile_set.all()
+    
+    return render_to_response("weibo/weibo_task_contract_form.html", 
+                              {'task': task,
+                               'weibo_list': weibo_list,
+                               },
+                              context_instance=template.RequestContext(r)
+                              )
