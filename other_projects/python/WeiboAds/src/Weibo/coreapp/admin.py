@@ -15,7 +15,7 @@ class WeiboProfileAdmin(admin.ModelAdmin):
         
 class WeiboTaskAdmin(admin.ModelAdmin):
     fields = ['user', 'task_type', 'content', 'image_url', 'desc', 'tags',  'task_status', 'contract_type', 'pay_status', 'price_1', 'price_2', 'price_3']
-    list_display = ('user', 'task_type', 'task_status', 'task_type', 'pay_status', 'contract_type', 'price_1', 'price_2', 'price_3', 'create_time', 'update_time')
+    list_display = ('id', 'user', 'task_type', 'task_status', 'task_type', 'pay_status', 'contract_type', 'price_1', 'price_2', 'price_3', 'create_time', 'update_time')
 
 class TaskCommentAdmin(admin.ModelAdmin):    
     fields = ['user', 'task', 'comment_type', 'desc', ]
@@ -23,7 +23,7 @@ class TaskCommentAdmin(admin.ModelAdmin):
 
 class TaskContractAdmin(admin.ModelAdmin):    
     fields = ['user', 'task', 'desc', 'status', 'task_deliver',]
-    list_display = ('user', 'task', 'status', 'task_deliver', 'create_time', 'update_time')    
+    list_display = ('id', 'user', 'task', 'status', 'task_deliver', 'create_time', 'update_time')    
 
 class UploadFileAdmin(admin.ModelAdmin):    
     fields = ['user', 'path', 'ref_id']
@@ -31,7 +31,7 @@ class UploadFileAdmin(admin.ModelAdmin):
     
 class UserTransactionAdmin(admin.ModelAdmin):    
     fields = ['user', 'action', 'count', 'balance', 'transaction_id', ]
-    list_display = ('user', 'action', 'count', 'balance', 'transaction_id', 'create_time')        
+    list_display = ('id', 'user', 'action', 'count', 'balance', 'transaction_id', 'create_time')        
 
 admin.site.register(User, UserAdmin)
 admin.site.register(WeiboProfile, WeiboProfileAdmin)

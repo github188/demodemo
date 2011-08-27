@@ -170,6 +170,10 @@ class WeiboTask(models.Model):
     def active_contract(self):
         return self.taskcontract_set.all()
     
+    def submit_contract(self):
+        return self.taskcontract_set.filter(status='S3')
+    
+    
 class TaskComment(models.Model):
     class Meta:
         db_table = 'task_comment'
@@ -222,6 +226,15 @@ class TaskContract(models.Model):
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    def can_submit(self):
+        return self.status == 'S2'
+    
+    def can_accept(self):
+        return self.status == 'S1'
+    
+    def is_submit(self):
+        return self.status == 'S3'    
+    
     def weibo_p(self):
         if not hasattr(self, "_cache_p"):
             s, id = self.weibo.split(":") 
@@ -231,8 +244,13 @@ class TaskContract(models.Model):
         return self._cache_p
     
     def __unicode__(self):
-        return u"task_%s_%s" % (self.id, self.user.screen_name)      
+        return u"task_%s_%s" % (self.id, self.user.id)
     
+    def uploaded_files(self):
+        #files = [ e for e in self.task_deliver.split(";") if e.startswith("file:") ]
+        #file_ids = [ e.split(":")[1] for e in files ]
+        return UploadFile.objects.filter(ref_id = "contract:%s" % self.id)
+        
 class UploadFile(models.Model):
     """上传附件"""
     class Meta:

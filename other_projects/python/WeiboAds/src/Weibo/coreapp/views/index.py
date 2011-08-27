@@ -60,5 +60,5 @@ def auth_sina(r):
 
 def logout(r):
     r.session.flush()
-    return HttpResponseRedirect("/index")
+    return HttpResponseRedirect("%s/index" % APP_ROOT)
     

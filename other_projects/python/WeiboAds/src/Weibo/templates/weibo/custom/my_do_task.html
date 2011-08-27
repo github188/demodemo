@@ -10,11 +10,15 @@
 			<td>
 			我的报价：{{e.price}}, 我的围脖：{{e.weibo_p.screen_name}}, 
 			状态：{{e.get_status_display}},
+			
+			{% if e.can_submit %}
+				<a href="{%app_root%}/contract/{{e.id}}/submit" >提交任务</a>
+			{% endif%}
 			</td>			
 		</tr>
 		<tr>
 			<td>我的报价说明：{{e.desc}}</td>
-		</tr>		
+		</tr>
 		<tr>
 			<td>
 			发布：{{e.task.user.screen_name}}, 
@@ -24,6 +28,16 @@
 			10万以上:{{e.price_3}}元
 			</td>
 		</tr>
+		{% if e.is_submit %}
+		<tr>
+			<td>
+				{%for file in e.uploaded_files %}
+					围脖地址：{{file.desc}}<br/>
+					<img class='task' src='{{file.external_link}}' /><br/>
+				{%endfor%}
+			</td>
+		</tr>
+		{%endif%}
 	</table>
 	{%endfor%}
 {% endblock %}

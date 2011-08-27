@@ -130,6 +130,7 @@ def task_comment(r, ):
         return HttpResponseRedirect("%s/index" % (APP_ROOT, ))
     
 def do_task(r, tid):
+    """参加竞标任务"""
     if not is_login(r): return HttpResponseRedirect("%s/index" % APP_ROOT)
     
     task = WeiboTask.objects.get(id= (tid or r.REQUEST['tid']))
@@ -159,3 +160,4 @@ def do_task(r, tid):
                                },
                               context_instance=template.RequestContext(r)
                               )
+    
