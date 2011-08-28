@@ -48,7 +48,8 @@ class WeiboProfile(models.Model):
     app_token = models.CharField(max_length=64)
     authon_token = models.CharField(max_length=64)
     authon_key = models.CharField(max_length=64)
-
+    
+    credit_level = models.FloatField(default=0, verbose_name="价值评分")
     weibo_source = models.CharField(max_length=16,
                                       default="sina",
                                       choices=(('sina', "sina"),

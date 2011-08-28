@@ -2,6 +2,11 @@
 from django.db import models
 import logging
 
+try:
+    import json
+except:
+    import simplejson as json
+
 class ProfileCredit(models.Model):
     """用户的价值评分记录"""
     class Meta:
@@ -25,6 +30,27 @@ class ProfileCredit(models.Model):
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    def update_credit_data(self, data={}):        
+        attr = self._get_details()
+        attr.update(data)
+        self.details = json.dumps(attr)
+
+    def update_credit_details(self, data={}):
+        attr = self._get_details()
+        attr.update(data)
+        self.details = json.dumps(attr)
+        
+    def get_credit_data(self, f):
+        return self._get_details().get(f, 0)
+    
+    def _get_details(self):
+        if not hasattr(self, "_cache_details"):
+            try:
+                self._cache_details = json.loads(self.details)
+            except:
+                self._cache_details = {}
+        return self._cache_details
+    
 class CreditParameter(models.Model):
     """用户的价值评分参数。"""
     class Meta:
@@ -33,13 +59,15 @@ class CreditParameter(models.Model):
         verbose_name = '评级参数'
 
     data_source = models.CharField(max_length=10, verbose_name="数据源",
+                                   default='weibo',
                                    help_text='支持对不同的围脖，采用不同的权值，和采用空间. 默认是weibo.')
     name = models.CharField(max_length=32, verbose_name="参数名",)
     weight = models.FloatField(verbose_name="评分权值")
     default_value = models.IntegerField(verbose_name="默认评分",
-                                        help_text='如果用户没有此项数据时，默认取值. 用于新增参数.')
+                                        help_text='如果用户没有此项数据时，默认取值. 用于新增参数.',
+                                        default=0)
     
-    total = models.IntegerField(verbose_name="样本数量")
+    total = models.IntegerField(verbose_name="样本数量", default=0)
     
     level1 = models.CharField(max_length=32, verbose_name="区间1")
     level2 = models.CharField(max_length=32, verbose_name="区间2")
@@ -63,6 +91,25 @@ class CreditParameter(models.Model):
 
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
+    
+    def get_data_level(self, data):
+        """计算某一个参数在这一纬度的最后得分。"""
+        levels = self._get_levels()
+        for i in range(10):
+            if data < levels[i]: break
+        if i == 9 and data > levels[9]: return 100
+        end = levels[i]
+        start = 0 
+        if i > 0: start = levels[i-1]
+        return i * 10 + (data - start) * 10.0 / (end - start)
+    
+    def _get_levels(self):
+        if not hasattr(self, '_level_cache'):
+            self._level_cache = []
+            for i in range(10):
+                d = getattr(self, 'level%s' % (i + 1))
+                self._level_cache.append(int(d.split(":")[0].strip()))        
+        return self._level_cache
 
 class CreditQueue(models.Model):
     """等待评分的围脖用户列表"""
@@ -85,6 +132,7 @@ class APPAccessKey(models.Model):
         verbose_name = '围脖用户访问授权'
     
     app_key = models.CharField(max_length=32, )
+    user_id = models.CharField(max_length=32, )
     app_secret = models.CharField(max_length=32, )
     access_key = models.CharField(max_length=32, )
     access_secret = models.CharField(max_length=32, )
@@ -92,6 +140,13 @@ class APPAccessKey(models.Model):
     last_use_time = models.DateTimeField('update time', )
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
+
+from django.db.models.signals import pre_save, post_save
+from Weibo.coreapp.models import WeiboProfile
+from credit_service import update_access_key, update_credit_report
+post_save.connect(update_access_key, sender=WeiboProfile)
+post_save.connect(update_credit_report, sender=ProfileCredit)
+
 
 #参考指标？
 #

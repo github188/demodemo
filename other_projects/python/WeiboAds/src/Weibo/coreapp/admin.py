@@ -9,8 +9,8 @@ class UserAdmin(admin.ModelAdmin):
     order_by = ("-create_time")
     
 class WeiboProfileAdmin(admin.ModelAdmin):
-    fields = ['user', 'weibo_id', 'weibo_source', 'is_vip', 'fans_count',]
-    list_display = ('user', 'weibo_id', 'weibo_source', 'is_vip', 'fans_count', 'create_time', 'update_time')
+    fields = ['user', 'weibo_id', 'weibo_source', 'is_vip', 'credit_level', 'fans_count',]
+    list_display = ('user', 'weibo_id', 'weibo_source', 'is_vip', 'credit_level', 'fans_count', 'friends_count', 'weibo_count', 'create_time', 'update_time')
     search_fields = ('weibo_id', )
         
 class WeiboTaskAdmin(admin.ModelAdmin):

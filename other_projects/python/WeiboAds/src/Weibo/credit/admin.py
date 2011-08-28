@@ -11,7 +11,7 @@ class CreditParameterAdmin(admin.ModelAdmin):
     order_by = ("-weight")
     
 class ProfileCreditAdmin(admin.ModelAdmin):
-    fields = ['uuid', 'credit_level', 'status', ]
+    fields = ['uuid', 'credit_level', 'status', 'details']
     list_display = ('uuid', 'credit_level', 'status', 'update_time', 'create_time')
     search_fields = ('uuid', )
         
