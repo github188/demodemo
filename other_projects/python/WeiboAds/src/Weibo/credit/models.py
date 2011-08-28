@@ -155,10 +155,10 @@ post_save.connect(update_credit_report, sender=ProfileCredit)
 #1000, 50%
 #10000, 10%
 
-#---2010-08-09.txt
-#fans, 10000, 100
-#fans, 10002, 100
-#fans, 10000, 100
+#---fans_100809_001.zip
+#sina,10000,100,001, 
+#sina,10002,100,002
+#qq,10000, 100
 
 #reply, user_0002, 100
 #reply, user_xxxx, 2000

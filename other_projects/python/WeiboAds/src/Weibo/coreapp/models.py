@@ -60,9 +60,9 @@ class WeiboProfile(models.Model):
     screen_name = models.CharField(max_length=32)
     
     is_vip = models.IntegerField(default = 0)
-    fans_count = models.IntegerField()
-    friends_count = models.IntegerField()
-    weibo_count = models.IntegerField()
+    fans_count = models.IntegerField(default = 0)
+    friends_count = models.IntegerField(default = 0)
+    weibo_count = models.IntegerField(default = 0)
     photo_url = models.CharField(max_length=255)
     
     details = models.TextField(default = "")
