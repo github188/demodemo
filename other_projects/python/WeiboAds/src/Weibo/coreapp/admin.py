@@ -33,10 +33,16 @@ class UserTransactionAdmin(admin.ModelAdmin):
     fields = ['user', 'action', 'count', 'balance', 'transaction_id', ]
     list_display = ('id', 'user', 'action', 'count', 'balance', 'transaction_id', 'create_time')        
 
+class TagContentAdmin(admin.ModelAdmin):    
+    fields = ['tag_name', 'ref_count', 'hit_count', ]
+    list_display = ('tag_name', 'ref_count', 'hit_count', 'update_time', 'create_time')        
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(WeiboProfile, WeiboProfileAdmin)
 admin.site.register(WeiboTask, WeiboTaskAdmin)
 admin.site.register(TaskComment, TaskCommentAdmin)
+admin.site.register(TagContent, TagContentAdmin)
 
 admin.site.register(TaskContract, TaskContractAdmin)
 admin.site.register(UploadFile, UploadFileAdmin)

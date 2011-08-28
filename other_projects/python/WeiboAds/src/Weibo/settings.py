@@ -79,7 +79,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'Weibo.coreapp.context_processors.tep_context',   
-)      
+)
 
 ROOT_URLCONF = 'Weibo.urls'
 
@@ -97,6 +97,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'Weibo.coreapp',
+    'Weibo.credit',
 )
 
 

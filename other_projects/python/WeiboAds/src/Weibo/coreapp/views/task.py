@@ -26,8 +26,11 @@ def post_new_task(r):
             if value: setattr(task, e, value)
         if (task.task_type == 'post' and task.content) or \
            (task.task_type == 'reply' and task.image_url) :
+            
+            #更新系统标签列表。
+            TagContent.update_tag_info(task.tags)
             task.save()
-        return HttpResponseRedirect("%s/my" % APP_ROOT)     
+        return HttpResponseRedirect("%s/my" % APP_ROOT) 
     else:
         form = TaskForm(instance=WeiboTask(), )
         form.init_bounds()

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from django.db import models
 import logging
 
@@ -301,4 +302,28 @@ class UserTransaction(models.Model):
     def __unicode__(self):
         return u"t_%s_%s" % (self.action, self.user.screen_name)
     
-        
+class TagContent(models.Model):
+    u"""帐号交易金额清单"""
+    
+    class Meta:
+        db_table = 'task_tag'
+        verbose_name_plural = u'任务标签'
+        verbose_name = u'任务标签'
+    
+    tag_name = models.CharField(max_length=16, unique=True)
+    
+    ref_count = models.IntegerField(default=0, )
+    hit_count = models.IntegerField(default=0, )
+    
+    update_time = models.DateTimeField('update time', auto_now=True)
+    create_time = models.DateTimeField('create time', auto_now_add=True)
+    
+    @staticmethod
+    def update_tag_info(tags):
+        pass
+    
+    def __unicode__(self):
+        return u"tag%s" % (self.id)
+    
+
+#
