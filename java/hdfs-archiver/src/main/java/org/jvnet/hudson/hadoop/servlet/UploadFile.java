@@ -1,5 +1,6 @@
 package org.jvnet.hudson.hadoop.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -80,7 +81,12 @@ public class UploadFile extends BaseServlet{
     }
     
     protected void processUploadedFile(FileItemStream item, String path, String client, Map<String, String> meta) throws IOException{
-    	path += "/" + item.getName();
+    	if(item.getName().contains("\\")){
+    		String[] names = item.getName().split("\\\\");
+    		path += "/" + names[names.length -1];
+    	}else {
+    		path += "/" + item.getName();
+    	}
     	int size = 0;
     	try{
     		String length = item.getHeaders().getHeader("Content-Length");
