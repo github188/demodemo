@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.http.channel.server.ProxyServer;
+
 public class ProxyServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
@@ -15,7 +17,6 @@ public class ProxyServlet extends HttpServlet{
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
-    	response.getWriter().println("hello proxy");
+    	ProxyServer.ins.startRequest(request, response);
     }
-
 }
