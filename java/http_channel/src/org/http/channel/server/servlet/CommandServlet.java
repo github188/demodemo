@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.http.channel.server.ProxyServer;
+
 public class CommandServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
@@ -15,6 +17,16 @@ public class CommandServlet extends HttpServlet{
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
-    	response.getWriter().println("hello command");
+    	//response.getWriter().println("hello command");
+    	String cmd = request.getRequestURI();
+    	String[] tmps = cmd.split("/");
+    	cmd = tmps[tmps.length - 1].toLowerCase().trim();
+    	if(cmd.equals("request")){
+    		ProxyServer.ins.forwardRequest(request, response);
+    	}else if(cmd.equals("reponse")){
+    		ProxyServer.ins.doneRequest(request, response);
+    	}else {
+    		response.getWriter().println("unkown command:" + cmd);
+    	}
     }
 }

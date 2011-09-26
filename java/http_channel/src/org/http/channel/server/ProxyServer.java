@@ -1,15 +1,27 @@
 package org.http.channel.server;
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.http.channel.proxy.ProxyClient;
@@ -44,6 +56,8 @@ public class ProxyServer {
 	private long proxySessionId = 0;
 	
 	private Settings settings = null;
+	private ThreadPoolExecutor threadPool = null;
+	private Timer timer = new Timer();
 	
 	/**
 	 * 保存当前还在活动的Proxy会话。
@@ -62,8 +76,19 @@ public class ProxyServer {
 	}
 
 	public void run(){
+		int core_thread_count = 5;
+		threadPool = new ThreadPoolExecutor(
+				core_thread_count,
+				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
+				60, 
+				TimeUnit.SECONDS, 
+				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
+				);
+		
 		startHTTPServer();
 	}
+	
+	//private 
 	
 	private void startHTTPServer(){
 		int httpPort = settings.getInt(Settings.HTTP_PORT, -1);
@@ -101,6 +126,7 @@ public class ProxyServer {
 		}
 		s.method = request.getMethod();
 		s.queryURL = request.getRequestURI();
+		s.header = headers;
 		if(request.getQueryString() != null){
 			s.queryURL += "?" + request.getQueryString(); 
 		}
@@ -117,9 +143,9 @@ public class ProxyServer {
 		 * 
 		 * 这个其实是一个线程复用的设计模式。
 		 */
-		s.continuation.suspend(30 * 1000);
-		s.continuation.setObject(response);
 		log.info("proxy session suspend.");
+		s.continuation.setObject(response);
+		s.continuation.suspend(180 * 1000);
 	}
 	
 	/**
@@ -127,7 +153,7 @@ public class ProxyServer {
 	 * @param request
 	 * @param response
 	 */
-	public void forwardRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
+	public void forwardRequest(HttpServletRequest request, final HttpServletResponse response) throws IOException{
 		//request.get
 		//ProxySession s =
 		//使用HTTP的分片方式，写数据数据流。
@@ -137,16 +163,30 @@ public class ProxyServer {
 			response.setHeader("Transfer-Encoding", "chunked");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/octet-stream");
-			ObjectOutputStream os = new ObjectOutputStream(new ZipOutputStream(response.getOutputStream()));
+			//ZipOutputStream zip = new ZipOutputStream(response.getOutputStream());
+			//zip.putNextEntry(new ZipEntry("command"));
 			
-			Continuation cons = ContinuationSupport.getContinuation(request, null); 
+			Continuation cons = ContinuationSupport.getContinuation(request, null); 			
+			
+			FilterOutputStream f = new FilterOutputStream(response.getOutputStream()){
+				public void flush() throws IOException{
+					super.flush();
+					response.flushBuffer();
+					log.debug("flush command request.");
+				}
+			};
+			
+			ObjectOutputStream os = new ObjectOutputStream(f);
+			//ObjectOutputStream
 			
 			/**
 			 * 等待3分钟的HTTP请求。
 			 */
-			cons.suspend(180 * 1000);
 			cons.setObject(os);
-			log.info("new client suspend.");			
+			log.info("new task tracker suspend.");
+			response.flushBuffer();
+			client.activeContinuation(cons);
+			cons.suspend(180 * 1000);
 		}
 	}
 	
@@ -156,7 +196,59 @@ public class ProxyServer {
 	 * @param response
 	 */
 	public void doneRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
-		//ProxySession s =  
+		//ProxySession s =
+    	boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+    	ProxyClient client = this.getProxyClient(request);
+    	if(isMultipart && client != null){
+    		ServletFileUpload upload = new ServletFileUpload();
+    		ProxySession session = null;
+    		HttpServletResponse proxyResponse = null;
+    		try {
+				FileItemIterator iter = upload.getItemIterator(request);
+				while (iter.hasNext()) {
+					FileItemStream item = iter.next();
+				    if (item.isFormField()) {
+				    	InputStream stream = item.openStream();
+				    	if(item.getFieldName().equals("sid")){
+				    		session = client.doneSession(Streams.asString(stream));
+				    		if(session != null){
+				    			proxyResponse = (HttpServletResponse)session.continuation.getObject();
+				    		}else {
+				    			break;
+				    		}
+				    	}else if(item.getFieldName().equals("status") && proxyResponse != null){
+				    		proxyResponse.setStatus(Integer.parseInt(Streams.asString(stream)));
+				    	}else if(proxyResponse != null && !proxyResponse.isCommitted()){
+				    		proxyResponse.setHeader(item.getFieldName(), 
+				    				Streams.asString(stream));
+				    	}
+				    	stream.close();
+				    } else if(!item.getName().equals("")) {
+				    	OutputStream os = proxyResponse.getOutputStream();
+				    	InputStream in = item.openStream();
+				    	byte[] buffer = new byte[64 * 1024];
+				    	for(int len = 0; len >= 0; ){
+				    		len = in.read(buffer);
+				    		if(len > 0){
+				    			os.write(buffer, 0, len);
+				    		}
+				    	}
+				    	in.close();
+				    	os.flush();
+				    }
+				}
+			} catch (Exception e) {
+				response.setHeader("upload_status", e.toString());
+				log.error(e.toString(), e);
+			} finally{
+				if( session != null){
+					session.continuation.resume();
+				}
+			}
+    	}else {
+    		log.warn("The request is not a multpart content type.");
+    	}
+    	response.getWriter().println("OK");
 	}
 	
 	/**

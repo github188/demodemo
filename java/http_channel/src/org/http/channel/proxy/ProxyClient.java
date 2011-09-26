@@ -8,7 +8,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.mortbay.log.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mortbay.util.ajax.Continuation;
 
 /**
@@ -22,6 +23,7 @@ import org.mortbay.util.ajax.Continuation;
  *
  */
 public class ProxyClient {
+	private Log log = LogFactory.getLog("client");
 	private Map<String, ProxySession> sessions = new HashMap<String, ProxySession>();
 	private Queue<String> waiting = new ConcurrentLinkedQueue<String>();
 	private Queue<String> blocking = new ConcurrentLinkedQueue<String>();
@@ -47,14 +49,29 @@ public class ProxyClient {
 		sessions.remove(sid);
 	}
 	
+	public ProxySession doneSession(String sid){
+		blocking.remove(sid);
+		schedule();
+		return sessions.remove(sid);
+	}
+	
 	/**
 	 * 有新的下载队列。
 	 * @param s
 	 */
 	public void activeContinuation(Continuation s){
 		clients.add(s);
+		try {
+			ObjectOutputStream o = (ObjectOutputStream)s.getObject();
+			o.writeObject("connected");
+			o.flush();
+			log.info("write command...");
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		}
 		schedule();
 	}
+		
 	
 	/**
 	 * 调度一次把需要转发的请求写到对应的下载队列中。
@@ -72,10 +89,11 @@ public class ProxyClient {
 						try {
 							os = (ObjectOutputStream)s.getObject();
 							os.writeObject(session);
+							os.flush();
 							blocking.add(session.sid);
 							session = nextSession();
-						} catch (IOException e) {
-							Log.debug("Write session Error:" + e.toString());
+						} catch (Exception e) {
+							log.debug("Write session Error:" + e.toString());
 							continue;
 						}
 					}

@@ -27,4 +27,8 @@ public class ProxySession  implements Serializable{
 	 * 里面有一个HttpResponse的引用。
 	 */
 	public transient Continuation continuation = null;
+	
+	public String toString(){
+		return "sid:" + this.sid + ", url:" + this.queryURL;
+	}
 }
