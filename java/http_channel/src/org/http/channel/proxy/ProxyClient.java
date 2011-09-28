@@ -65,11 +65,15 @@ public class ProxyClient {
 			ObjectOutputStream o = (ObjectOutputStream)s.getObject();
 			o.writeObject("connected");
 			o.flush();
-			log.info("write command...");
+			//log.info("write command...");
 		} catch (IOException e) {
 			log.error(e.toString(), e);
 		}
 		schedule();
+	}
+	
+	public int activeClient(){
+		return this.clients.size();
 	}
 		
 	
@@ -82,9 +86,10 @@ public class ProxyClient {
 			try{
 				ObjectOutputStream os = null;
 				ProxySession session = nextSession();
-				for(Continuation s = clients.peek(); s != null; s = clients.peek()){
+				for(Continuation s = clients.peek(); s != null; ){
 					//会话已经不在阻塞等待状态。
-					if(s.isResumed()) continue;
+					s = clients.poll();
+					if(s == null || s.isResumed()) continue;
 					if(session != null){
 						try {
 							os = (ObjectOutputStream)s.getObject();

@@ -1,11 +1,15 @@
 package org.http.channel.client;
 
+import static org.http.channel.client.Main.LOCAL;
+import static org.http.channel.client.Main.REMOTE;
+
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.List;
@@ -15,20 +19,18 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.http.channel.proxy.ProxySession;
 import org.http.channel.settings.Settings;
-import static org.http.channel.client.Main.*;
 
 public class ProxyClient {
 	private Log log = LogFactory.getLog("gate");
 	
 	private Settings settings = null;
-	private ThreadPoolExecutor responsePool = null;
-	private ThreadPoolExecutor requestPool = null;
+	private ThreadPoolExecutor proxyWorkerPool = null;
+	private ThreadPoolExecutor proxyCommandPool = null;
 	private String remote = null;
 	private String local = null;
 	private Timer timer = new Timer();
@@ -43,7 +45,7 @@ public class ProxyClient {
 	
 	public void run(){
 		int core_thread_count = 5;
-		responsePool = new ThreadPoolExecutor(
+		proxyWorkerPool = new ThreadPoolExecutor(
 				core_thread_count,
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
 				60, 
@@ -51,11 +53,11 @@ public class ProxyClient {
 				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
 				);
 
-		requestPool = new ThreadPoolExecutor(
+		proxyCommandPool = new ThreadPoolExecutor(
 				1, 3, 60, TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(50)
 				);
-		requestPool.execute(new RequestTracker());		
+		proxyCommandPool.execute(new RequestTracker());		
 		log.info(String.format("Start proxy client, remote:%s, local:%s", remote, local));
 		
 		timer.scheduleAtFixedRate(new TrackerScheduler(), 100, 60 * 1000);		
@@ -68,10 +70,10 @@ public class ProxyClient {
 	class TrackerScheduler extends TimerTask {
 		@Override
 		public void run() {
-			if(requestPool.getActiveCount() < 1) {
-				requestPool.execute(new RequestTracker());
-			}else if(commandCount > 10 && requestPool.getActiveCount() < 3){
-				requestPool.execute(new RequestTracker());
+			if(proxyCommandPool.getActiveCount() < 1) {
+				proxyCommandPool.execute(new RequestTracker());
+			}else if(commandCount > 10 && proxyCommandPool.getActiveCount() < 3){
+				proxyCommandPool.execute(new RequestTracker());
 			}
 			log.info("Command count:" + commandCount);
 			commandCount = 0;
@@ -98,12 +100,17 @@ public class ProxyClient {
 				ios = new ObjectInputStream(connection.getInputStream());
 				for(Object obj = ios.readObject(); obj != null; obj = ios.readObject()){
 					commandCount++;
-					log.debug("Read object:" + obj.toString());
+					log.debug("Request:" + obj.toString());
 					if(obj instanceof ProxySession){
-						responsePool.execute(new TaskWorker((ProxySession)obj));
+						proxyWorkerPool.execute(new TaskWorker((ProxySession)obj));
 					}
 				}
-			} catch (Exception e) {
+				
+			}catch(ConnectException conn){
+				log.info(String.format("Failed connection to '%s', msg:%s", remote, conn.toString()));
+			}catch(IOException eof){
+				log.info(String.format("EOF read proxy command. msg:%s", eof.toString()));
+			}catch (Exception e) {
 				log.error(e.toString(), e);
 			} finally {
 				if (ios != null)
@@ -130,7 +137,7 @@ public class ProxyClient {
 
 		@Override
 		public void run() {
-			log.info(String.format("Local http request:%s, session:%s", request.queryURL, request.sid));
+			log.info(String.format("Local:%s, session:%s", request.queryURL, request.sid));
 			HttpURLConnection connection = null;
 			InputStream ins = null;
 			try {
@@ -152,21 +159,27 @@ public class ProxyClient {
 				connection.connect();
 				ins = connection.getInputStream();
 				
-				log.debug(String.format("Response:%s, length:%s, type:%s",
+				log.debug(String.format("Local Done [%s] '%s' length:%s, type:%s",
 						connection.getResponseCode(),
+						request.queryURL,
 						connection.getContentLength(),
 						connection.getContentType()
 						));
 				this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
+			}catch(ConnectException conn){
+				log.info(String.format("Failed connection to '%s', msg:%s", local, conn.toString()));
 			} catch (Exception e) {
 				log.error(e.toString(), e);
 			}
 		}
 		
 		private void uploadResponse(InputStream in, Map<String, List<String>> header, int code) throws IOException{
+			log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));
+
 			HTTPForm form = new HTTPForm(new URL(remote + "/~/reponse"));
 			form.setParameter("sid", this.request.sid);
 			form.setParameter("status", code + "");
+			
 			
 			String values = "";
 			for(String k: header.keySet()){
@@ -175,12 +188,15 @@ public class ProxyClient {
 				for(int i = 1; i < val.size(); i++){
 					values += "," + val.get(i);
 				}
-				log.info(String.format("%s->%s", k, values));
+				//log.info(String.format("%s->%s", k, values));
 				if(k != null){
 					form.setParameter(k, values);
 				}
 			}
 			form.startFileStream("file0", "file", in);
+			String data = form.read();
+			form.close();
+			log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));
 		}
 	}
 }

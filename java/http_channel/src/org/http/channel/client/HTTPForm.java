@@ -28,13 +28,22 @@ public class HTTPForm {
 	    this.out = connection.getOutputStream();
 	}
 	
+	public String read() throws IOException{
+		submit();		
+		return connection.getResponseMessage();
+	}
+	
+	public void close(){
+		connection.disconnect();
+	}
+	
 		
-	public void close() throws IOException{
+	public void submit() throws IOException{
 		newline();
 	    boundary();
 	    write("--");newline();
 	    this.out.close();
-	    connection.disconnect();
+	    //connection.disconnect();
 	}
 	
 	public void startFileStream(String name, String filename, InputStream in) throws IOException {

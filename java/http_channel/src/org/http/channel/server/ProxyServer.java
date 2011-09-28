@@ -115,37 +115,44 @@ public class ProxyServer {
 	public void startRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		ProxyClient client = this.getProxyClient(request);
 		
-		ProxySession s = newProxySession();
-		Map<String, String> headers = new HashMap<String, String>();
-		log.info(String.format("New Request:%s, sid:%s", request.getPathInfo(), s.sid));
-		for(Enumeration<String> enums = request.getHeaderNames(); enums.hasMoreElements();){
-			String name = enums.nextElement();
-			String val = request.getHeader(name);
-			log.info(String.format("head:%s=>%s", name, val));
-			headers.put(name, val);
+		if(client.activeClient() > 0){
+			ProxySession s = newProxySession();
+			Map<String, String> headers = new HashMap<String, String>();
+			log.info(String.format("New Request:%s, sid:%s", request.getPathInfo(), s.sid));
+			for(Enumeration<String> enums = request.getHeaderNames(); enums.hasMoreElements();){
+				String name = enums.nextElement();
+				String val = request.getHeader(name);
+				//log.info(String.format("head:%s=>%s", name, val));
+				headers.put(name, val);
+			}
+			s.method = request.getMethod();
+			s.queryURL = request.getRequestURI();
+			s.header = headers;
+			if(request.getQueryString() != null){
+				s.queryURL += "?" + request.getQueryString(); 
+			}
+			//log.info("query url:" + s.queryURL);		
+			
+			s.continuation =  ContinuationSupport.getContinuation(request, null); 
+			
+			//保存当前Session
+			client.newSession(s);
+			
+			/**
+			 * Servlet的方法已经会返回，但是Response的会话是一直保留。直到
+			 * s.continuation.resume()， 被调用。
+			 * 
+			 * 这个其实是一个线程复用的设计模式。
+			 */
+			log.info("proxy session suspend.");
+			s.continuation.setObject(response);
+			s.continuation.suspend(180 * 1000);
+		}else {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			response.setCharacterEncoding("utf8");
+			response.getWriter().println("Not found active proxy client. <br/>" +
+					"没有找到一个代理客户端来转发请求。");
 		}
-		s.method = request.getMethod();
-		s.queryURL = request.getRequestURI();
-		s.header = headers;
-		if(request.getQueryString() != null){
-			s.queryURL += "?" + request.getQueryString(); 
-		}
-		log.info("query url:" + s.queryURL);		
-		
-		s.continuation =  ContinuationSupport.getContinuation(request, null); 
-		
-		//保存当前Session
-		client.newSession(s);
-		
-		/**
-		 * Servlet的方法已经会返回，但是Response的会话是一直保留。直到
-		 * s.continuation.resume()， 被调用。
-		 * 
-		 * 这个其实是一个线程复用的设计模式。
-		 */
-		log.info("proxy session suspend.");
-		s.continuation.setObject(response);
-		s.continuation.suspend(180 * 1000);
 	}
 	
 	/**
@@ -172,7 +179,7 @@ public class ProxyServer {
 				public void flush() throws IOException{
 					super.flush();
 					response.flushBuffer();
-					log.debug("flush command request.");
+					//log.debug("flush command request.");
 				}
 			};
 			
@@ -198,6 +205,8 @@ public class ProxyServer {
 	public void doneRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		//ProxySession s =
     	boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+    	int status = 0;
+    	int length = 0;
     	ProxyClient client = this.getProxyClient(request);
     	if(isMultipart && client != null){
     		ServletFileUpload upload = new ServletFileUpload();
@@ -213,14 +222,18 @@ public class ProxyServer {
 				    		session = client.doneSession(Streams.asString(stream));
 				    		if(session != null){
 				    			proxyResponse = (HttpServletResponse)session.continuation.getObject();
+				    			log.debug("------------------------------");
 				    		}else {
 				    			break;
 				    		}
 				    	}else if(item.getFieldName().equals("status") && proxyResponse != null){
-				    		proxyResponse.setStatus(Integer.parseInt(Streams.asString(stream)));
+				    		status = Integer.parseInt(Streams.asString(stream));
+				    		proxyResponse.setStatus(status);
 				    	}else if(proxyResponse != null && !proxyResponse.isCommitted()){
-				    		proxyResponse.setHeader(item.getFieldName(), 
-				    				Streams.asString(stream));
+				    		String name = item.getFieldName();
+				    		String values = Streams.asString(stream);
+				    		log.debug(String.format("%s:%s", name, values));
+				    		proxyResponse.setHeader(name,  values);
 				    	}
 				    	stream.close();
 				    } else if(!item.getName().equals("")) {
@@ -231,6 +244,7 @@ public class ProxyServer {
 				    		len = in.read(buffer);
 				    		if(len > 0){
 				    			os.write(buffer, 0, len);
+				    			length += len;
 				    		}
 				    	}
 				    	in.close();
@@ -242,6 +256,7 @@ public class ProxyServer {
 				log.error(e.toString(), e);
 			} finally{
 				if( session != null){
+					log.info(String.format("[%s] %s %s, SID:%s", status, length, session.queryURL, session.sid));
 					session.continuation.resume();
 				}
 			}
