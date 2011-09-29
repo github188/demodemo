@@ -60,6 +60,7 @@ public class ProxyClient {
 	 * @param s
 	 */
 	public void activeContinuation(Continuation s){
+		log.debug("new Task tracker:" + s.toString());
 		clients.add(s);
 		try {
 			ObjectOutputStream o = (ObjectOutputStream)s.getObject();
@@ -98,7 +99,8 @@ public class ProxyClient {
 							blocking.add(session.sid);
 							session = nextSession();
 						} catch (Exception e) {
-							log.debug("Write session Error:" + e.toString());
+							log.debug("Task tracker:" + s.toString());
+							log.debug("Write session Error:" + e.toString(), e);
 							continue;
 						}
 					}
