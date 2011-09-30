@@ -50,7 +50,7 @@ public class Main {
 			new ProxyClient(s).run();
 		}
 
-		System.out.println("Stopped.");
+		//System.out.println("Stopped.");
 	}
 	
 	private static void initLog4jFile(String name){
