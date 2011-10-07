@@ -1,0 +1,28 @@
+{% extends "config/site_base.html" %}
+{% load reporting_tags %}
+
+{% block content %}
+	<h1>修改参数-{{param.site_url}}</h2>
+	{% if message %}
+	<div class='form_msg'>{{message}}</div>
+	{%endif%}
+    <form action='?pid={{pid}}' method='POST'>
+	<input type='hidden' name='pid' value='{{pid}}' />
+	<table>
+		{% for param in param_list %}
+		<tr>
+			<td>{{param.field.label}}&nbsp;&nbsp; <a target='_blank' href='{%app_root%}/admin/params/parameterdefine/{{param.field.label}}/'>edit</a></td>
+			<td>{{param}}
+			<div class='help'>{{param.field.help_text}}</div>
+			</td>
+		</tr>
+		{%endfor%}
+	</table>
+	
+    <div style="clear:both;margin-bottom:10px;"></div>  
+	<table>
+		<tr><td></td><td><input type='submit' value='保存参数'/></td></tr>
+	</table>
+    </form>
+
+{% endblock %}

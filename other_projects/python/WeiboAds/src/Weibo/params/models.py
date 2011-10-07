@@ -37,7 +37,7 @@ class ParameterDefine(models.Model):
                                   choices=(('text', "text"),
                                            ('textarea', "textarea"),
                                            ('select', "select"),
-                                           ('checkbox', "checkbox"),
+                                          # ('checkbox', "checkbox"),
                                       ),                                  
                                   help_text='参数的输入类型',
                                   default='text',
@@ -47,10 +47,53 @@ class ParameterDefine(models.Model):
                                    verbose_name="默认值", 
                                    help_text='参数的默认值',
                                    blank=True)
+
+    view_order = models.IntegerField(verbose_name="显示排序", 
+                                     help_text='在参数配置页面的位置（升序排列）. 如果多个参数位置相同，按照创建时间排序。',
+                                     default=0)
     
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    @staticmethod
+    def load_param_group(group):
+        ps = ParameterDefine.objects.filter(group=group).order_by("view_order", "-create_time") #.order_by("-create_time")
+        return ps
+    
+    @property
+    def default_value(self):
+        if self.input_type == 'select':
+            return self.default_val.split("\n")[0]
+        else:
+            return self.default_val
+        
+    @property
+    def value_choices(self):
+        return ((e, e) for e in self.default_val.split("\n"))
+        
+    def get_field(self):
+        from django.forms.fields import Field, ChoiceField
+        from django.forms.widgets import Textarea
+        
+        cls = Field
+        attrs = {'required':False,
+                 'initial':self.default_value,
+                 'help_text': self.details,
+                 'label': self.uuid,
+                 }
+        
+        if self.input_type == 'select':
+            attrs['choices'] = self.value_choices
+            cls = ChoiceField
+        if self.input_type == 'textarea':
+            #attrs['rows'] = '6'
+            #attrs['cols'] = '80'
+            attrs['widget'] = Textarea({'rows':6, 'cols':80})
+        
+        return cls(**attrs)
+    
+    def __unicode__(self):
+        return self.uuid
     
 class ParameterValue(models.Model):
     """参数的具体配置至。"""
@@ -76,4 +119,36 @@ class ParameterValue(models.Model):
     update_time = models.DateTimeField('update time', auto_now=True)
     create_time = models.DateTimeField('create time', auto_now_add=True)
     
+    
+    def edit_param(self):
+        from Weibo.settings import APP_ROOT
+        return """<a href='%s/config/param_edit?pid=%s'>修改参数</a>""" \
+        % (APP_ROOT, self.id)
+        
+    edit_param.allow_tags = True
+    #edit_param.verbose_name = "文件下载"
+    #edit_param.verbose_name = "告警类型"
+    
+    @property
+    def dict_values(self):
+        v = {}
+        try:
+            v = json.loads(self.values)
+        except:
+            pass
+        return v
+    
+    def clean_site_cache(self):
+        pass
+    
+    def update_values(self, vals):
+        new_values = self.dict_values
+        new_values.update(vals)
+        self.values = json.dumps(new_values)        
+        
+    def __unicode__(self):
+        return self.site_url
+        
+    def __str__(self):
+        return self.site_url
     

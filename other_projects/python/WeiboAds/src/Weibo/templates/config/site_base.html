@@ -13,13 +13,15 @@
 <style>
 table{width:100%;
 border:1px solid #000;
-margin: 0.5em 0 1em 0;
 border-spacing:0;
 }
 
-tr,td{
-border:1px solid #000;
-border-spacing:0;
+td{
+	border:1px solid #000;
+}
+
+input[type=text]{
+	width:300px;
 }
 
 img.task{
@@ -38,8 +40,8 @@ Welcome {{cur_user.screen_name}}, <a href="{% app_root %}/logout">Logout</a>
         <a href="{% app_root %}/">
         <img border="0" src="{% app_root %}/images/logo_nokia.gif"></img>
         </a>
-        <span style="font-size:24px;"><a href="{% app_root %}/index">围脖广告交互平台</a></span>
-        <span style="font-size:14px;">-- 发布转发／广告任务.</span>
+        <span style="font-size:24px;"><a href="{% app_root %}/index">站点参数管理后台</a></span>
+        <span style="font-size:14px;">-- 配置站点参数.</span>
     </div>
   </div>
   <div class="hr"><hr /></div>
