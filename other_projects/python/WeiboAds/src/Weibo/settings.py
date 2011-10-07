@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'Weibo.coreapp',
     'Weibo.credit',
+    'Weibo.params',
 )
 
 
