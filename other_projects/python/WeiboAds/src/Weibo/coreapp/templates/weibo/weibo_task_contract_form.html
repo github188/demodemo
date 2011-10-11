@@ -1,0 +1,42 @@
+{% extends "weibo/logined_base.html" %}
+{% load reporting_tags %}
+
+{% block content %}
+	<table>
+		<tr><td>
+			发布：{{task.user.screen_name}}, 
+			状态：{{task.get_task_status_display}},
+			
+			价格：小于1万粉:{{task.price_1}}元, 1万～10万:{{task.price_2}}元
+			10万以上:{{task.price_3}}元
+			</td>
+		</tr>		
+		<tr>
+			<td>{{task.content}}</td>
+		</tr>
+		<tr>
+			<td>标签:{{task.tags}}</td>
+		</tr>		
+	</table>
+	
+	<form action='{%app_root%}/do_task/{{task.id}}' method='POST'>
+		<input type='hidden' name='tid' value="{{task.id}}" />
+		<div>价格：
+		<input type='text' name='price' value="" />
+		</div>
+		<div>发布围脖：
+		<select name='weibo'>
+			{% for w in weibo_list %}
+				<option value='{{w.weibo_source}}:{{w.weibo_id}}'>{{w.weibo_source}}:{{w.screen_name}}</option>
+			{% endfor %}
+		</select>
+		</div>
+		
+		<div>
+		说明:
+		<textarea cols='60' rows='5' name='desc'></textarea>
+		</div>
+		<input type='submit' name='submit' value="评论" />
+	</form>	
+	
+{% endblock %}

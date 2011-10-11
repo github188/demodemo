@@ -1,0 +1,47 @@
+{% extends "weibo/logined_base.html" %}
+
+{% load reporting_tags %}
+
+{% block content %}
+	<table>
+		<tr>
+			<td>
+			我的报价：{{contract.price}}, 我的围脖：{{contract.weibo_p.screen_name}}, 
+			状态：{{contract.get_status_display}},
+			</td>			
+		</tr>
+		<tr>
+			<td>我的报价说明：{{contract.desc}}</td>
+		</tr>		
+		<tr>
+			<td>
+			发布：{{contract.task.user.screen_name}}, 
+			状态：{{contract.task.get_task_status_display}},
+			
+			价格：小于1万粉:{{e.price_1}}元, 1万～10万:{{e.price_2}}元
+			10万以上:{{e.price_3}}元
+			</td>
+		</tr>
+		<tr>
+			<td>任务说明:{{task.desc}}</td>
+		</tr>		
+	</table>
+	
+	<h4>提交完成任务</h4>
+	只能上传小于1M图片，支持格式：jpeg, jpg, gif, png.
+	<form action='?' enctype="multipart/form-data" method='POST'>
+		<div>
+		围脖地址：<input type='text' name='file0_desc' size='60'/>
+		图片：<input type='file' name='file0' /> 			
+		</div>
+
+		<div>
+		围脖地址：<input type='text' name='file1_desc' size='60'/>
+		图片：<input type='file' name='file1' /> 			
+		</div>
+		
+		<div><input type='submit' name='submit' value='提交任务'/> </div>
+				
+	</form>
+	
+{% endblock %}
