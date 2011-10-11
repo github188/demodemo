@@ -1,11 +1,19 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
-import os, sys 
+import os, sys
 
 #sys.path.insert(0, "/home/username/django/")
 #sys.path.insert(0, "/home/username/django/projects")
-sys.path.insert(0, "/home/deon/works/ipata_workspace/WeiboAds/src/Weibo")
-sys.path.insert(0, "/home/deon/works/ipata_workspace/WeiboAds/src")
+#sys.path.insert(0, "/home/deon/works/ipata_workspace/WeiboAds/src/Weibo")
+#sys.path.insert(0, "/home/deon/works/ipata_workspace/WeiboAds/src")
+
+def setpythonpath():
+    lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+    lib_path = os.path.normpath(lib_path)
+    for e in os.listdir(lib_path):
+        if e.endswith('.egg'):
+            sys.path.insert(0, os.path.join(lib_path, e))
+setpythonpath()
 
 import django.core.handlers.wsgi
 

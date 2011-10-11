@@ -35,11 +35,14 @@ src_dir = 'src'
 os.chdir(src_dir)
 
 for dirpath, dirnames, filenames in os.walk("."):
-    if 'Weibo' not in dirpath and 'www_root' not in dirpath:continue
+    if 'Weibo' not in dirpath and 'www_root' not in dirpath:continue    
     if ".egg" in dirpath: continue
     # Ignore dirnames that start with '.'
+    
+    #dirnames.del
     for i, dirname in enumerate(dirnames):
         if dirname.startswith('.'): del dirnames[i]
+        #if 'default_settings' in filenames:continue
     if '__init__.py' in filenames:
         #print "dir:%s" % dirpath
         packages.append('.'.join(fullsplit(dirpath)))
