@@ -21,12 +21,16 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = s('DATABASE_ENGINE')       # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = s('DATABASE_NAME')             # Or path to database file if using sqlite3.
-DATABASE_USER = s('DATABASE_USER')              # Not used with sqlite3.
-DATABASE_PASSWORD = s('DATABASE_PASSWORD')         # Not used with sqlite3.
-DATABASE_HOST = s('DATABASE_HOST')             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = s('DATABASE_PORT')            # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'NAME': s('DATABASE_NAME'),
+        'ENGINE': s('DATABASE_ENGINE'),
+        'USER': s('DATABASE_USER'),
+        'PASSWORD': s('DATABASE_PASSWORD'),
+        'HOST': s('DATABASE_HOST'),
+        'PORT': s('DATABASE_PORT'),
+    },
+}
 
 TEST_DATABASE_ENGINE = s('TEST_DATABASE_ENGINE')           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 TEST_DATABASE_NAME = s('TEST_DATABASE_NAME')             # Or path to database file if using sqlite3.
@@ -55,16 +59,19 @@ MEDIA_URL = ''
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = 'http://1.littlefun.sinaapp.com/django1.3/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'xi85492#z7aqt)e&=czb9bm1u35*yznvh^84cxg4p!2icjr2go'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.eggs.Loader',
+        'django.template.loaders.app_directories.Loader',
+      )),
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (

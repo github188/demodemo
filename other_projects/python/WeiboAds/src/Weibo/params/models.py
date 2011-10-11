@@ -103,7 +103,7 @@ class ParameterValue(models.Model):
         verbose_name_plural = '网站参数'
         verbose_name = '网站参数'
 
-    site_url = models.CharField(max_length=256, unique=True, 
+    site_url = models.CharField(max_length=255, unique=True, 
                                 verbose_name="网站地址", 
                                 help_text='配置的唯一地址，需要使用这个地址做Cache清理操作，一定要配置正确。例如：http://www.littlefun.net/apps/yuanfen/sina')
     

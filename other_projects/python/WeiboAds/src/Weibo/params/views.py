@@ -39,7 +39,7 @@ def load_params(r, pid=''):
         
 def config(r, pid=0):
     
-    if r.user.is_anonymous() :return HttpResponseRedirect("%s/index" % APP_ROOT)    
+    if r.user.is_anonymous() :return HttpResponseRedirect("%s/admin/" % APP_ROOT)    
     pid = pid or r.REQUEST.get('pid', 0)
     
     param = message = None
