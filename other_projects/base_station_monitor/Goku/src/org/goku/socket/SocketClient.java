@@ -154,11 +154,14 @@ public class SocketClient implements SelectionHandler, Runnable {
 	}
 	
 	public void write(ByteBuffer src, boolean sync) throws IOException{
-		if(log.isDebugEnabled() && 
-		   src.remaining() < 4096 //不写视频的日志，避免日志量太大了。
-		  ){ 
+		if(log.isDebugEnabled()){
+			if(MODE_HTTP == this.connectionMode){
+				String charSet = this.sessionId != null ? this.encoding : "utf8";
+				String data = new String(src.array(), src.position(), Math.min(1024, src.limit() - src.position()), charSet);
+				log.debug(String.format("Write buffer:%s, to:%s", data, toString()));				
+			}
 			log.debug(String.format("write buffer size:%s, to:%s", src.remaining(), toString()));
-		}
+		}		
 
 		if(this.writeBusy()){
 			this.writeBuffer();

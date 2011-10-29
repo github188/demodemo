@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 public class DummyHttpResponse implements HttpServletResponse {
 	private PrintWriter writer = null;
 	private SocketClient client = null;
-	private ByteArrayOutputStream buffer = new ByteArrayOutputStream(1024 * 4){
+	private ByteArrayOutputStream buffer = new ByteArrayOutputStream(1024 * 40){
 		public void flush() throws IOException{
 			if(this.size() > 0){
 				client.write(this.toByteArray());
