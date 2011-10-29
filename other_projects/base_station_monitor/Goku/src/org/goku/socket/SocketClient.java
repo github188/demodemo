@@ -108,7 +108,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 			this.writeQueue.notifyAll();
 		}
 		
-		if(System.currentTimeMillis() - this.lastBenckmark > 1000){
+		if(System.currentTimeMillis() - this.lastBenckmark > 1000 * 10){
 			if(this.writeSize == 0){ //一秒内没有写任何数据，认为网络连接已断开。
 				this.closeSocket();
 			}else {
