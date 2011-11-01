@@ -66,12 +66,12 @@ public class AreaCiProvider extends ContentProvider {
         
         private void initTestData(SQLiteDatabase db){
             ContentValues values = new ContentValues();
-            values.put(Project.NAME, "first project");
-            values.put(Project.STATUS, "idle");
-            db.insert(Project.DB_TABLE_NAME, Project.NAME, values);
-            values.put(Project.NAME, "first project2");
-            values.put(Project.STATUS, "running");
-            db.insert(Project.DB_TABLE_NAME, Project.NAME, values);
+
+            for(int i=0; i < 20; i++){
+                values.put(Project.NAME, "first project_" + i);
+                values.put(Project.STATUS, i % 3 == 0 ? "idle": "running");
+                db.insert(Project.DB_TABLE_NAME, Project.NAME, values);            	
+            }
         	
         }
     }
@@ -80,7 +80,8 @@ public class AreaCiProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		mOpenHelper = new DatabaseHelper(getContext());		
+		mOpenHelper = new DatabaseHelper(getContext());
+		//mOpenHelper.initTestData(mOpenHelper.getWritableDatabase());
 		return true;
 	}
 

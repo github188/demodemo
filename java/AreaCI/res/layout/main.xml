@@ -9,25 +9,55 @@
         android:layout_height="wrap_content"
         android:text="@string/hello" />
      
-       <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_weight="1">
-      
-    <TextView
-        android:text="row one"
-        android:textSize="15pt"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
-    
-  	<ListView android:id="@+id/list"
+ 	<ListView android:id="@+id/list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:layout_weight="1"
         />
-      
-    </LinearLayout>
+    
+	<RadioGroup android:gravity="center"  
+		android:layout_gravity="bottom"   
+        android:orientation="horizontal"  
+        android:id="@+id/searchRadioGroup"   
+        android:layout_width="fill_parent"   
+        android:layout_height="wrap_content" >
+          
+        <RadioButton android:textSize="17.0sp"   
+            android:id="@+id/prb_list"  
+            android:tag="radio_button0"   
+            android:text="PRB List"  
+            android:layout_weight="1"   
+            >  
+        </RadioButton>  
+        <RadioButton android:textSize="17.0sp"   
+            android:id="@+id/test_policy"  
+            android:tag="radio_button1"  
+            android:text="Test Policy"  
+            android:layout_weight="1"
+            >  
+        </RadioButton>
+        <RadioButton android:textSize="17.0sp"   
+            android:id="@+id/task_queue"  
+            android:tag="radio_button2"  
+            android:text="Task Queue"  
+            android:layout_weight="1"
+            >  
+        </RadioButton>        
+        <RadioButton android:textSize="17.0sp"   
+            android:id="@+id/task_result"  
+            android:tag="radio_button3"  
+            android:text="Task Result"  
+            android:layout_weight="1"
+            >  
+        </RadioButton> 
+        
+        <RadioButton android:textSize="17.0sp"   
+            android:id="@+id/report"  
+            android:tag="radio_button4"  
+            android:text="Report"  
+            android:layout_weight="1"
+            >  
+        </RadioButton> 
+   	</RadioGroup>             
 
 </LinearLayout>

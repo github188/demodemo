@@ -16,13 +16,33 @@
         
         <activity
             android:label="@string/app_name"
-            android:name=".AreaCIActivity" >
+            android:name=".MainTabActivity">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:label="prb"
+            android:name=".PRBActivity" >
+	    </activity>
+	            
+        <activity
+            android:label="policy"
+            android:name=".TaskPolicyActivity" >
+	    </activity>
+        <activity
+            android:label="queue"
+            android:name=".TaskQueueActivity" >
+	    </activity>
+        <activity
+            android:label="result"
+            android:name=".TaskResultActivity" >
+	    </activity>   
+        <activity
+            android:label="report"
+            android:name=".ReportActivity" >
+	    </activity>   
     </application>
 
 </manifest>

@@ -1,34 +1,24 @@
 package com.coci.nsn;
 
+import com.coci.provider.AreaCI.Project;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
-import com.coci.provider.AreaCI.Project;
-
-/**
- * 
- * Android进阶：ListView性能优化异步加载图片 使滑动效果流畅
- * http://blog.csdn.net/wanglong0537/article/details/6334005#comments
- * 
- * 
- * 
- * 定义Sina围脖菜单样式
- * http://blog.csdn.net/wanglong0537/article/details/6434728
- * @author deon
- */
-
-public class AreaCIActivity extends Activity {
-    /** Called when the activity is first created. */
-    @Override
+public class TaskQueueActivity extends Activity {
+	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //TextView textview = new TextView(this);
+        //textview.setText("This is the task queue tab");
+        //setContentView(textview);
         
-        Log.i("areaci", "start to run AreaCIActivity");
         setContentView(R.layout.main);
         
         ListView lv = (ListView) findViewById(R.id.list);
@@ -48,6 +38,6 @@ public class AreaCIActivity extends Activity {
         		cursor,
                 new String[] {Project.NAME, Project.STATUS}, 
                 new int[] {R.id.name, R.id.status});
-        lv.setAdapter(adapter);
-    }    
+        lv.setAdapter(adapter);        
+    }
 }
