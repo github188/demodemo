@@ -1,5 +1,9 @@
 package com.coci.nsn;
 
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -44,5 +48,15 @@ public class TaskQueueActivity extends Activity {
     
     public void doRefresh(View view){
     	Log.i("areaci.task_queue", "click to refresh...");
+    	try {
+			URL url = new URL("http://10.0.2.2:8000/areaci/worker_config");
+			InputStream ins = url.openStream();
+			byte[] buffer = new byte[1024];
+			int len = ins.read(buffer);
+			Log.i("areaci.task_queue", new String(buffer, 0, len));
+			
+		} catch (Exception e) {
+			Log.e("areaci.task_queue", e.toString());
+		}
     } 
 }

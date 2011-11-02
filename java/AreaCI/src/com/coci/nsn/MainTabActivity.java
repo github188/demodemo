@@ -54,5 +54,8 @@ public class MainTabActivity extends TabActivity {
 	    tabHost.addTab(spec);
 	    
 	    tabHost.setCurrentTab(1);
+	    
+	    intent = new Intent().setClass(this, DataSyncService.class);
+	    this.startService(intent);
 	}
 }
