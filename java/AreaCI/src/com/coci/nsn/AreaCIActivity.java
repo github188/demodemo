@@ -19,6 +19,10 @@ import com.coci.provider.AreaCI.Project;
  * 
  * 定义Sina围脖菜单样式
  * http://blog.csdn.net/wanglong0537/article/details/6434728
+ * 
+ * Network
+ * http://www.vogella.de/articles/AndroidNetworking/article.html
+ * 
  * @author deon
  */
 

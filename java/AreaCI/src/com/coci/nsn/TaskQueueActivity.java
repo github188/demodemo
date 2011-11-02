@@ -1,14 +1,15 @@
 package com.coci.nsn;
 
-import com.coci.provider.AreaCI.Project;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
+
+import com.coci.provider.AreaCI.Project;
 
 public class TaskQueueActivity extends Activity {
 	
@@ -19,9 +20,9 @@ public class TaskQueueActivity extends Activity {
         //textview.setText("This is the task queue tab");
         //setContentView(textview);
         
-        setContentView(R.layout.main);
+        setContentView(R.layout.task_queue);
         
-        ListView lv = (ListView) findViewById(R.id.list);
+        ListView lv = (ListView) findViewById(R.id.task_list);
         
         Intent intent = getIntent();
         if (intent.getData() == null) {
@@ -40,4 +41,8 @@ public class TaskQueueActivity extends Activity {
                 new int[] {R.id.name, R.id.status});
         lv.setAdapter(adapter);        
     }
+    
+    public void doRefresh(View view){
+    	Log.i("areaci.task_queue", "click to refresh...");
+    } 
 }
