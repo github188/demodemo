@@ -30,7 +30,11 @@ public class AreaCiProvider extends ContentProvider {
 
     private static final int PROJECTS = 1;
     private static final int PROJECT_ID = 2;
+    
+    private static final int TASK_INFO = 3;
+    private static final int TASK_INFO_ID = 4;
 
+    
     private static final UriMatcher sUriMatcher;
 
     /**
@@ -206,7 +210,9 @@ public class AreaCiProvider extends ContentProvider {
 	            String noteId = uri.getPathSegments().get(1);
 	            count = db.update(Project.DB_TABLE_NAME, values, Project._ID + "=" + noteId
 	                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-	            break;	
+	            break;
+	        case TASK_INFO:
+	        	updateTasks(values);
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -214,10 +220,19 @@ public class AreaCiProvider extends ContentProvider {
         return count;
     }
 	
+	private void updateTasks(ContentValues values){
+		
+	}
+	
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "projects", PROJECTS);
-        sUriMatcher.addURI(AreaCI.AUTHORITY, "projects/#", PROJECT_ID);     
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "projects/#", PROJECT_ID);
+        
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks", TASK_INFO);
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks/#", TASK_INFO_ID);
+        //TASK_INFO
+        
      }	
 
 }
