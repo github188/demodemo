@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,12 +31,29 @@ public class CoCiClient {
 	private final static String TAG = "areaci.http";
 	private HttpClient client = null;
 	private URI endpoint = null;
+	public boolean isConnected = false;
 	
 	
-	public CoCiClient(URI server){
+	public CoCiClient(){
 		 client = new DefaultHttpClient();
-		 endpoint = server;
 	}
+	
+	public boolean connect(URI server){
+		this.endpoint = server;
+		return true;
+	}
+	
+	public boolean connect(String endpoint, String proxy){
+		try {
+			this.endpoint = new URI(endpoint);
+			//The connection is OK if get status info from AreaCI.
+			isConnected = getRPCData("status_info", null) != null;
+		} catch (URISyntaxException e) {
+			Log.e(TAG, e.toString());
+		}
+		
+		return isConnected;
+	}	
 	
 	public List<ContentValues> updatedTask(long lastTime, long limit) throws JSONException{		
 		List<ContentValues> data = null;
@@ -76,17 +94,26 @@ public class CoCiClient {
 	}
 	
 	private Object getRPCData(String api, Map<String, String> param){
-		HttpPost request = new HttpPost(endpoint.resolve(api));
 		HttpResponse response = null;
 		BufferedReader in = null;
 		JSONObject result = null;
+		List<NameValuePair> nameValuePairs = null;
 		
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(param.size());
-        for(Entry<String, String> item : param.entrySet()){          	
-        	nameValuePairs.add(new BasicNameValuePair(item.getKey(), item.getValue()));
+		HttpPost request = new HttpPost(endpoint.resolve(api));
+        
+        StringBuffer query = new StringBuffer(api + "?");        
+        if(param != null){
+        	nameValuePairs = new ArrayList<NameValuePair>(param.size());
+	        for(Entry<String, String> item : param.entrySet()){
+	        	query.append("&" + item.getKey() + "=" + item.getValue());
+	        	nameValuePairs.add(new BasicNameValuePair(item.getKey(), item.getValue()));
+	        }
         }
+        Log.d(TAG, "Request:" + query.toString());
         try {
-        	request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        	if(nameValuePairs != null){
+        		request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        	}
         	response = client.execute(request);
         	if(response != null){
                 in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -100,6 +127,7 @@ public class CoCiClient {
                 result = (JSONObject) new JSONTokener(sb.toString()).nextValue();
         	}
 		} catch (Exception e) {
+			this.isConnected = false;
 			Log.e(TAG, "error:" + e.toString());
 		} finally{
 			if(in != null){
@@ -110,7 +138,6 @@ public class CoCiClient {
 				}
 			}
 		}
-		
 		
 		return result;
 	} 

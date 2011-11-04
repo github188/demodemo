@@ -35,9 +35,11 @@ public class DataSyncService extends Service {
 	@Override
     public void onCreate() {
 		Log.i("areaci.service", "start new service");
+		client = new CoCiClient();
 		threadPool = new ThreadPoolExecutor(
 				1, 3, 60, TimeUnit.SECONDS, 
 				new ArrayBlockingQueue<Runnable>(50));
+		
 		timer.scheduleAtFixedRate(new TimerTask (){
 			@Override
 			public void run() {
@@ -54,6 +56,7 @@ public class DataSyncService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("areaci.service", "start to sync data from networking...");
+		threadPool.execute(new TaskWorker(SYNC_TASK));
 	    return START_STICKY;
 	}
 
@@ -70,16 +73,18 @@ public class DataSyncService extends Service {
 	    if (networkInfo != null && networkInfo.isConnected()) {
 	        return true;
 	    }
+	    Log.d(TAG, "The network isn't available.");
 	    return false;
 	}	
 	
 	public void syncTask(){
 		long cur = System.currentTimeMillis() / 1000;
-		cur = cur - lastTaskUpdatedTime;
+		long lastTime = cur - lastTaskUpdatedTime;
 		List<ContentValues> taskList = null;
 		try {
-			taskList = client.updatedTask(Math.min(cur, 60 * 60 * 24), 50);
+			taskList = client.updatedTask(Math.min(lastTime, 60 * 60 * 24), 50);
 			if(taskList != null){
+				Log.d(TAG, String.format("download task size:%s", taskList.size()));
 				this.saveTaskInfo(taskList);
 				lastTaskUpdatedTime = cur;
 			}
@@ -94,6 +99,24 @@ public class DataSyncService extends Service {
 		}
 	}
 	
+	private synchronized boolean connectoToAreaCI(){
+		String[][] connection = new String[][]{
+			{"http://10.0.2.2:8000/areaci/api/", null},	
+			{"http://10.56.117.81/coci/areaci/api/", null},
+			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
+			{"http://proxy.deonwu84.com/coci/areaci/api/", null},
+			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
+		};
+		for(int i = 0; i < connection.length; i++){
+			if(client.connect(connection[i][0], connection[i][1])){
+				Log.d(TAG, String.format("Connect to '%s', proxy:'%s'", connection[i][0],
+						 connection[i][1]));
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	class TaskWorker implements Runnable{
 		private String task = null;
 		public TaskWorker(String task){
@@ -103,16 +126,13 @@ public class DataSyncService extends Service {
 		@Override
 		public void run() {
 			if(this.task != null && isNetworkAvailable()){
-				if(client == null){
-					try {
-						//SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-						client = new CoCiClient(new URI("http://10.56.117.81/coci/areaci/api/"));
-					} catch (URISyntaxException e) {
-						Log.e(TAG, e.toString());
+				synchronized(client){
+					if(!client.isConnected && !connectoToAreaCI()){
+						Log.d(TAG, "The AreaCI server is disconnected.");						
 						return;
 					}
 				}
-				if(this.task.equals(SYNC_TASK)){
+				if(task.equals(SYNC_TASK)){
 					syncTask();
 				}
 			}

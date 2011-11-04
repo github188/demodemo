@@ -48,6 +48,9 @@ public class TaskQueueActivity extends Activity {
     
     public void doRefresh(View view){
     	Log.i("areaci.task_queue", "click to refresh...");
+    	Intent intent = new Intent().setClass(this, DataSyncService.class);
+	    this.startService(intent);    	
+    	/*
     	try {
 			URL url = new URL("http://10.0.2.2:8000/areaci/worker_config");
 			InputStream ins = url.openStream();
@@ -57,6 +60,6 @@ public class TaskQueueActivity extends Activity {
 			
 		} catch (Exception e) {
 			Log.e("areaci.task_queue", e.toString());
-		}
+		}*/
     } 
 }

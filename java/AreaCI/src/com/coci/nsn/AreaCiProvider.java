@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.coci.provider.AreaCI;
 import com.coci.provider.AreaCI.Project;
+import com.coci.provider.AreaCI.TaskInfo;
 
 public class AreaCiProvider extends ContentProvider {
 	
@@ -56,7 +57,29 @@ public class AreaCiProvider extends ContentProvider {
                     + Project.CREATED_DATE + " INTEGER,"
                     + Project.MODIFIED_DATE + " INTEGER"
                     + ");");
-            
+
+            db.execSQL("CREATE TABLE " + TaskInfo.DB_TABLE_NAME + " ("
+                    + TaskInfo._ID + " INTEGER PRIMARY KEY,"                    
+                    + TaskInfo.PROJECT_ID + " TEXT,"
+                    + TaskInfo.CATEGORY + " TEXT,"
+                    + TaskInfo.PRIORITY + " INTEGER,"
+                    + TaskInfo.NAME + " TEXT,"
+                    + TaskInfo.RESULT + " TEXT,"
+                    + TaskInfo.STATUS + " TEXT,"
+
+                    + TaskInfo.USER + " TEXT,"
+                    + TaskInfo.HOST + " TEXT,"
+                    
+                    + TaskInfo.SW_BUILD + " TEXT,"
+                    + TaskInfo.TEST_COUNT + " INTEGER,"
+                    + TaskInfo.RESULT_COUNT + " INTEGER,"
+                    + TaskInfo.RESULT_PASS + " INTEGER,"
+                    + TaskInfo.RESULT_FAIL + " INTEGER,"
+                    + TaskInfo.DETAIL + " TEXT,"                    
+
+                    + TaskInfo.CREATED_DATE + " INTEGER,"
+                    + TaskInfo.MODIFIED_DATE + " INTEGER"
+                    + ");");            
             this.initTestData(db);
         }
 
@@ -201,7 +224,7 @@ public class AreaCiProvider extends ContentProvider {
 	@Override
     public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int count;
+        int count = 0;
         switch (sUriMatcher.match(uri)) {
 	        case PROJECTS:
 	            count = db.update(Project.DB_TABLE_NAME, values, where, whereArgs);
@@ -212,7 +235,8 @@ public class AreaCiProvider extends ContentProvider {
 	                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
 	            break;
 	        case TASK_INFO:
-	        	updateTasks(values);
+	        	updateTasks(values, db);
+	        	break;
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -220,8 +244,19 @@ public class AreaCiProvider extends ContentProvider {
         return count;
     }
 	
-	private void updateTasks(ContentValues values){
-		
+	private void updateTasks(ContentValues values, SQLiteDatabase db){
+		int taskId = values.getAsInteger("id");
+		values.remove("id");
+        int count = db.update(TaskInfo.DB_TABLE_NAME, values, TaskInfo._ID + "=" + taskId, null);
+		if(count == 0){
+			Log.d(TAG, String.format("insert new task '%s:%s'", taskId,
+					values.getAsString("name")));
+			values.put(TaskInfo._ID, taskId);
+			db.insert(TaskInfo.DB_TABLE_NAME, TaskInfo.NAME, values);
+		}else {
+			Log.d(TAG, String.format("update task '%s:%s'", taskId,
+					values.getAsString("name")));
+		}
 	}
 	
     static {
