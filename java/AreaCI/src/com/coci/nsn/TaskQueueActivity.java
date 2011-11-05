@@ -25,6 +25,15 @@ public class TaskQueueActivity extends Activity {
         //textview.setText("This is the task queue tab");
         //setContentView(textview);
         
+        /**
+         * Favirote, cate/name/status/
+         * 
+         * Toast:
+         *  PATE, 
+         *  SW,
+         *  Create time 
+         */
+        
         setContentView(R.layout.task_queue);
         
         ListView lv = (ListView) findViewById(R.id.task_list);
@@ -36,15 +45,15 @@ public class TaskQueueActivity extends Activity {
         }*/   
         
         Cursor cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
-        		new String[] {TaskInfo._ID, TaskInfo.NAME, TaskInfo.STATUS }, 
+        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS }, 
         		null, null,
                 Project.DEFAULT_SORT_ORDER);
 
         // Used to map notes entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.projectlist_item, 
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.task_queue_item, 
         		cursor,
-                new String[] {TaskInfo.NAME, TaskInfo.STATUS}, 
-                new int[] {R.id.name, R.id.status});
+                new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS}, 
+                new int[] {R.id.category, R.id.name, R.id.status});
         lv.setAdapter(adapter);       
     }
     
