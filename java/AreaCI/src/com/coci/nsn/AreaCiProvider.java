@@ -23,7 +23,7 @@ public class AreaCiProvider extends ContentProvider {
     private static final String TAG = "areaci_provider";
 
     private static final String DATABASE_NAME = "area_ci.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     //private static final String NOTES_TABLE_NAME = "notes";
 
    // private static HashMap<String, String> sNotesProjectionMap;
@@ -34,7 +34,7 @@ public class AreaCiProvider extends ContentProvider {
     
     private static final int TASK_INFO = 3;
     private static final int TASK_INFO_ID = 4;
-
+    private static final int EXPIRED_DATA = 5;
     
     private static final UriMatcher sUriMatcher;
 
@@ -55,7 +55,8 @@ public class AreaCiProvider extends ContentProvider {
                     + Project.NAME + " TEXT,"
                     + Project.STATUS + " TEXT,"
                     + Project.CREATED_DATE + " INTEGER,"
-                    + Project.MODIFIED_DATE + " INTEGER"
+                    + Project.MODIFIED_DATE + " INTEGER,"
+                    + Project.SYNC_TIME + " INTEGER"
                     + ");");
 
             db.execSQL("CREATE TABLE " + TaskInfo.DB_TABLE_NAME + " ("
@@ -75,11 +76,12 @@ public class AreaCiProvider extends ContentProvider {
                     + TaskInfo.RESULT_COUNT + " INTEGER,"
                     + TaskInfo.RESULT_PASS + " INTEGER,"
                     + TaskInfo.RESULT_FAIL + " INTEGER,"
-                    + TaskInfo.DETAIL + " TEXT,"                    
+                    + TaskInfo.DETAIL + " TEXT,"
 
                     + TaskInfo.CREATED_DATE + " INTEGER,"
-                    + TaskInfo.MODIFIED_DATE + " INTEGER"
-                    + ");");            
+                    + TaskInfo.MODIFIED_DATE + " INTEGER,"
+                    + TaskInfo.SYNC_TIME + " INTEGER"
+                    + ");");
             this.initTestData(db);
         }
 
@@ -87,7 +89,8 @@ public class AreaCiProvider extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS notes");
+            db.execSQL("DROP TABLE IF EXISTS " + Project.DB_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TaskInfo.DB_TABLE_NAME);
             onCreate(db);
         }
         
@@ -108,6 +111,11 @@ public class AreaCiProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
+		
+		/**
+		 * 检查数据库版本更新。
+		 */
+		mOpenHelper.getWritableDatabase();
 		//mOpenHelper.initTestData(mOpenHelper.getWritableDatabase());
 		return true;
 	}
@@ -213,7 +221,10 @@ public class AreaCiProvider extends ContentProvider {
 		        String noteId = uri.getPathSegments().get(1);
 		        count = db.delete(Project.DB_TABLE_NAME, Project._ID + "=" + noteId
 		        		+ (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-		        break;		
+		        break;
+		    case EXPIRED_DATA:
+		    	count = deleteExpiredData();
+		    	break;
 		    default:
 		    	throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -247,6 +258,7 @@ public class AreaCiProvider extends ContentProvider {
 	private void updateTasks(ContentValues values, SQLiteDatabase db){
 		int taskId = values.getAsInteger("id");
 		values.remove("id");
+		values.put(TaskInfo.SYNC_TIME, Long.valueOf(System.currentTimeMillis()));
         int count = db.update(TaskInfo.DB_TABLE_NAME, values, TaskInfo._ID + "=" + taskId, null);
 		if(count == 0){
 			Log.d(TAG, String.format("insert new task '%s:%s'", taskId,
@@ -259,6 +271,19 @@ public class AreaCiProvider extends ContentProvider {
 		}
 	}
 	
+	private int deleteExpiredData(){
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		
+		/*
+		 * delete from xxx where _id not in (select _id from xxx order by sync_time desc limit 500); 
+		 */			
+		int count = 0;
+		count += db.delete(TaskInfo.DB_TABLE_NAME, 
+				"_id not in (select _id from " + TaskInfo.DB_TABLE_NAME + " order by sync_time desc limit 500)", null);
+		Log.d(TAG, "deleted expired data, count:" + count);
+		return count;
+	}
+	
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "projects", PROJECTS);
@@ -266,6 +291,9 @@ public class AreaCiProvider extends ContentProvider {
         
         sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks", TASK_INFO);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks/#", TASK_INFO_ID);
+        
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "expired", EXPIRED_DATA);
+        
         //TASK_INFO
         
      }	

@@ -1,7 +1,5 @@
 package com.coci.nsn;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,16 +19,20 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.coci.client.CoCiClient;
+import com.coci.provider.AreaCI;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class DataSyncService extends Service {
 	private final static String SYNC_TASK = "sync_task";
+	private final static String REMOVE_EXPIRED_TASK = "remove_expired_task";
+	
 	private final static String TAG = "areaci.sync";
 	//private WorkerThread worker = null; 
 	private ThreadPoolExecutor threadPool = null;
 	private Timer timer = new Timer();
 	private CoCiClient client = null;
 	private long lastTaskUpdatedTime = 0;
+	private long lastCleanUpTime = 0;
 	
 	@Override
     public void onCreate() {
@@ -43,12 +45,22 @@ public class DataSyncService extends Service {
 		timer.scheduleAtFixedRate(new TimerTask (){
 			@Override
 			public void run() {
-				if(threadPool.getTaskCount() == 0){
+				Log.d(TAG, "Current task queue size:" + threadPool.getQueue().size());
+				int queueSize = threadPool.getQueue().size(); 
+				if(queueSize <= 1){
 					threadPool.execute(new TaskWorker(SYNC_TASK));
-					if(threadPool.getQueue().size() > 10){
-						threadPool.purge();
-					}
+				}else if(queueSize > 10) {
+					Log.w(TAG, "Clean up padding task queue, current size:" + queueSize);
+					threadPool.purge();
+				}				
+				/**
+				 * 每隔5小时清理一次过期数据。
+				 */
+				if(System.currentTimeMillis() - lastCleanUpTime > 1000 * 60 * 60 * 5){
+					lastCleanUpTime = System.currentTimeMillis();
+					threadPool.execute(new TaskWorker(REMOVE_EXPIRED_TASK));
 				}
+				
 			}
 		}, 100, 60 * 1000);		
     }
@@ -78,11 +90,11 @@ public class DataSyncService extends Service {
 	}	
 	
 	public void syncTask(){
-		long cur = System.currentTimeMillis() / 1000;
-		long lastTime = cur - lastTaskUpdatedTime;
+		long cur = System.currentTimeMillis();
+		long lastTime = (cur - lastTaskUpdatedTime) / 1000 / 60;
 		List<ContentValues> taskList = null;
 		try {
-			taskList = client.updatedTask(Math.min(lastTime, 60 * 60 * 24), 50);
+			taskList = client.updatedTask(Math.min(lastTime, 60 * 24), 50);
 			if(taskList != null){
 				Log.d(TAG, String.format("download task size:%s", taskList.size()));
 				this.saveTaskInfo(taskList);
@@ -98,6 +110,10 @@ public class DataSyncService extends Service {
 			getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
 		}
 	}
+	
+	private void deleteExpriedData(){		
+		getContentResolver().delete(AreaCI.EXPRIED_DATA_URI, null, null);
+	}	
 	
 	private synchronized boolean connectoToAreaCI(){
 		String[][] connection = new String[][]{
@@ -134,8 +150,11 @@ public class DataSyncService extends Service {
 				}
 				if(task.equals(SYNC_TASK)){
 					syncTask();
+				}else if (task.equals(REMOVE_EXPIRED_TASK)){
+					deleteExpriedData();
 				}
 			}
 		}
 	}
+		
 }

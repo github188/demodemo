@@ -1,5 +1,10 @@
 package com.coci.provider;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -7,6 +12,33 @@ public class AreaCI {
 	public static final String PREFS_NAME = "areaci_config";
 	
 	public static final String AUTHORITY = "com.coci.provider.AreaCI";
+	
+	//所有过期数据的URI.
+    public static final Uri EXPRIED_DATA_URI
+    = Uri.parse("content://" + AUTHORITY + "/expired");
+
+	public static Map<String, Set<String>> DB_COLUMNS = new HashMap<String, Set<String>>();
+	static{
+		Set<String> f = new TreeSet<String>();
+		f.add("id");
+		f.add(TaskInfo.PROJECT_ID);
+		f.add(TaskInfo.CATEGORY);
+		f.add(TaskInfo.PRIORITY);
+		f.add(TaskInfo.NAME);
+		f.add(TaskInfo.RESULT);
+		f.add(TaskInfo.STATUS);
+		f.add(TaskInfo.USER);
+		f.add(TaskInfo.HOST);
+		f.add(TaskInfo.SW_BUILD);		
+		f.add(TaskInfo.TEST_COUNT);
+		f.add(TaskInfo.RESULT_COUNT);
+		f.add(TaskInfo.RESULT_PASS);
+		f.add(TaskInfo.RESULT_FAIL);
+		f.add(TaskInfo.CREATED_DATE);
+		f.add(TaskInfo.MODIFIED_DATE);		
+		DB_COLUMNS.put(TaskInfo.DB_TABLE_NAME, f);
+		
+	}
 	
     /**
      * Notes table
@@ -46,7 +78,9 @@ public class AreaCI {
          * <P>Type: INTEGER (long)</P>
          */
         public static final String MODIFIED_DATE = "modified";
-    }	
+        
+        public static final String SYNC_TIME = "sync_time";
+    }
     
     /**
      * Notes table
@@ -99,6 +133,7 @@ public class AreaCI {
          * <P>Type: INTEGER (long)</P>
          */
         public static final String MODIFIED_DATE = "modified";
+        public static final String SYNC_TIME = "sync_time";
     }    
 
 }

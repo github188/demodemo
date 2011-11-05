@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -23,6 +24,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import com.coci.provider.AreaCI;
+import com.coci.provider.AreaCI.TaskInfo;
 
 import android.content.ContentValues;
 import android.util.Log;
@@ -69,7 +73,8 @@ public class CoCiClient {
 					if(_tmp != null){
 						data = new ArrayList<ContentValues>(_tmp.length());
 						for(int i = 0; i < _tmp.length(); i++){
-							data.add(jsonToContentValues(_tmp.getJSONObject(i)));
+							data.add(jsonToContentValues(_tmp.getJSONObject(i),
+									AreaCI.DB_COLUMNS.get(TaskInfo.DB_TABLE_NAME)));
 						}
 					}
 				}
@@ -80,10 +85,11 @@ public class CoCiClient {
 		return data;
 	}
 	
-	private ContentValues jsonToContentValues(JSONObject json){
+	private ContentValues jsonToContentValues(JSONObject json, Set<String> fields){
 		ContentValues v = new ContentValues();
 		for(Iterator<String> iter = json.keys(); iter.hasNext(); ){
 			String key = iter.next();
+			if(!fields.contains(key))continue;
 			try {
 				v.put(key, json.getString(key));
 			} catch (JSONException e) {
