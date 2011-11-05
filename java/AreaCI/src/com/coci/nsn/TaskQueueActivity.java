@@ -45,22 +45,28 @@ public class TaskQueueActivity extends Activity {
         }*/   
         
         Cursor cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
-        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS }, 
+        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+        		TaskInfo.HOST, TaskInfo.SW_BUILD 
+        		}, 
         		null, null,
                 Project.DEFAULT_SORT_ORDER);
 
         // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.task_queue_item, 
         		cursor,
-                new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS}, 
-                new int[] {R.id.category, R.id.name, R.id.status});
+                new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+        		TaskInfo.HOST,
+        		TaskInfo.SW_BUILD,}, 
+                new int[] {R.id.category, R.id.name, R.id.status,
+        		R.id.host_ip, R.id.sw_build});
         lv.setAdapter(adapter);       
     }
     
     public void doRefresh(View view){
     	Log.i("areaci.task_queue", "click to refresh...");
     	Intent intent = new Intent().setClass(this, DataSyncService.class);
-	    this.startService(intent);    	
+    	intent.setData(TaskInfo.TASK_QUEUE_URI);
+	    this.startService(intent);
     	/*
     	try {
 			URL url = new URL("http://10.0.2.2:8000/areaci/worker_config");
