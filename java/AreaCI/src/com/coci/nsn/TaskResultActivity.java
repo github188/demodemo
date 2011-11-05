@@ -15,10 +15,9 @@ public class TaskResultActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.task_queue);
+        setContentView(R.layout.task_result);
         
-        ListView lv = (ListView) findViewById(R.id.task_list);
-        
+        ListView lv = (ListView) findViewById(R.id.task_list);        
         /*
         Intent intent = getIntent();
         if (intent.getData() == null) {
@@ -26,15 +25,20 @@ public class TaskResultActivity extends Activity {
         }*/   
         
         Cursor cursor = managedQuery(TaskInfo.TASK_RESULT_URI, 
-        		new String[] {TaskInfo._ID, TaskInfo.NAME, TaskInfo.STATUS }, 
+        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+        		TaskInfo.HOST, TaskInfo.SW_BUILD 
+        		},  
         		null, null,
                 Project.DEFAULT_SORT_ORDER);
 
         // Used to map notes entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.projectlist_item, 
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.task_result_item, 
         		cursor,
-                new String[] {TaskInfo.NAME, TaskInfo.STATUS}, 
-                new int[] {R.id.name, R.id.status});
-        lv.setAdapter(adapter);      
+                new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+                	TaskInfo.HOST, TaskInfo.SW_BUILD,}, 
+                new int[] {R.id.category, R.id.name, R.id.status,
+                	R.id.host_ip, R.id.sw_build}
+        		);
+        lv.setAdapter(adapter);
     }
 }

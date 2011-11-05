@@ -94,7 +94,7 @@ public class DataSyncService extends Service {
 		long lastTime = (cur - lastTaskUpdatedTime) / 1000 / 60;
 		List<ContentValues> taskList = null;
 		try {
-			taskList = client.updatedTask(Math.min(lastTime, 60 * 24), 50);
+			taskList = client.updatedTask(Math.min(lastTime + 1, 60 * 24), 50);
 			if(taskList != null){
 				Log.d(TAG, String.format("download task size:%s", taskList.size()));
 				this.saveTaskInfo(taskList);

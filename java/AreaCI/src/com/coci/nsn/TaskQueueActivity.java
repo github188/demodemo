@@ -58,7 +58,8 @@ public class TaskQueueActivity extends Activity {
         		TaskInfo.HOST,
         		TaskInfo.SW_BUILD,}, 
                 new int[] {R.id.category, R.id.name, R.id.status,
-        		R.id.host_ip, R.id.sw_build});
+        		R.id.host_ip, R.id.sw_build}
+        );
         lv.setAdapter(adapter);       
     }
     

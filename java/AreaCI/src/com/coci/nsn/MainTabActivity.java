@@ -20,13 +20,13 @@ public class MainTabActivity extends TabActivity {
 	    
 	    intent = new Intent().setClass(this, PRBActivity.class);
 	    spec = tabHost.newTabSpec("prb").setIndicator("PRB",
-	                      res.getDrawable(R.drawable.ic_table))
+	                      res.getDrawable(R.drawable.sub_component))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);	    
 
 	    intent = new Intent().setClass(this, TaskPolicyActivity.class);
 	    spec = tabHost.newTabSpec("policy").setIndicator("Policy",
-	                      res.getDrawable(R.drawable.ic_table))
+	                      res.getDrawable(R.drawable.policy))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
@@ -45,7 +45,7 @@ public class MainTabActivity extends TabActivity {
 
 	    intent = new Intent().setClass(this, ReportActivity.class);
 	    spec = tabHost.newTabSpec("report").setIndicator("Report",
-	                      res.getDrawable(R.drawable.ic_table))
+	                      res.getDrawable(R.drawable.report))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    
