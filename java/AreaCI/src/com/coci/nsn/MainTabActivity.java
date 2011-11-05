@@ -18,11 +18,13 @@ public class MainTabActivity extends TabActivity {
 	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 	    Intent intent;  // Reusable Intent for each tab
 	    
-	    //tabHost.
-	    // Create an Intent to launch an Activity for the tab (to be reused)
-	    intent = new Intent().setClass(this, TaskPolicyActivity.class);
+	    intent = new Intent().setClass(this, PRBActivity.class);
+	    spec = tabHost.newTabSpec("prb").setIndicator("PRB",
+	                      res.getDrawable(R.drawable.ic_table))
+	                  .setContent(intent);
+	    tabHost.addTab(spec);	    
 
-	    // Initialize a TabSpec for each tab and add it to the TabHost
+	    intent = new Intent().setClass(this, TaskPolicyActivity.class);
 	    spec = tabHost.newTabSpec("policy").setIndicator("Policy",
 	                      res.getDrawable(R.drawable.ic_table))
 	                  .setContent(intent);
@@ -47,13 +49,7 @@ public class MainTabActivity extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    
-	    intent = new Intent().setClass(this, PRBActivity.class);
-	    spec = tabHost.newTabSpec("prb").setIndicator("PRB",
-	                      res.getDrawable(R.drawable.ic_table))
-	                  .setContent(intent);
-	    tabHost.addTab(spec);
-	    
-	    tabHost.setCurrentTab(1);
+	    tabHost.setCurrentTab(2);
 	    
 	    intent = new Intent().setClass(this, DataSyncService.class);
 	    this.startService(intent);

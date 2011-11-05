@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.coci.provider.AreaCI.Project;
+import com.coci.provider.AreaCI.TaskInfo;
 
 public class TaskQueueActivity extends Activity {
 	
@@ -28,22 +29,23 @@ public class TaskQueueActivity extends Activity {
         
         ListView lv = (ListView) findViewById(R.id.task_list);
         
+        /*
         Intent intent = getIntent();
         if (intent.getData() == null) {
             intent.setData(Project.CONTENT_URI);
-        }        
+        }*/   
         
-        Cursor cursor = managedQuery(getIntent().getData(), 
-        		new String[] {Project._ID, Project.NAME, Project.STATUS }, 
+        Cursor cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
+        		new String[] {TaskInfo._ID, TaskInfo.NAME, TaskInfo.STATUS }, 
         		null, null,
                 Project.DEFAULT_SORT_ORDER);
 
         // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.projectlist_item, 
         		cursor,
-                new String[] {Project.NAME, Project.STATUS}, 
+                new String[] {TaskInfo.NAME, TaskInfo.STATUS}, 
                 new int[] {R.id.name, R.id.status});
-        lv.setAdapter(adapter);        
+        lv.setAdapter(adapter);       
     }
     
     public void doRefresh(View view){
@@ -56,8 +58,7 @@ public class TaskQueueActivity extends Activity {
 			InputStream ins = url.openStream();
 			byte[] buffer = new byte[1024];
 			int len = ins.read(buffer);
-			Log.i("areaci.task_queue", new String(buffer, 0, len));
-			
+			Log.i("areaci.task_queue", new String(buffer, 0, len));			
 		} catch (Exception e) {
 			Log.e("areaci.task_queue", e.toString());
 		}*/

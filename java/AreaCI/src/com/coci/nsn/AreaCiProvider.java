@@ -36,6 +36,11 @@ public class AreaCiProvider extends ContentProvider {
     private static final int TASK_INFO_ID = 4;
     private static final int EXPIRED_DATA = 5;
     
+    private static final int TASK_QUEUE = 6;
+    private static final int TASK_RESULT = 7;
+    //private static final int TASK_RESULT = 7;
+
+    
     private static final UriMatcher sUriMatcher;
 
     /**
@@ -82,7 +87,7 @@ public class AreaCiProvider extends ContentProvider {
                     + TaskInfo.MODIFIED_DATE + " INTEGER,"
                     + TaskInfo.SYNC_TIME + " INTEGER"
                     + ");");
-            this.initTestData(db);
+            //this.initTestData(db);
         }
 
         @Override
@@ -93,7 +98,7 @@ public class AreaCiProvider extends ContentProvider {
             db.execSQL("DROP TABLE IF EXISTS " + TaskInfo.DB_TABLE_NAME);
             onCreate(db);
         }
-        
+        /*
         private void initTestData(SQLiteDatabase db){
             ContentValues values = new ContentValues();
 
@@ -101,9 +106,8 @@ public class AreaCiProvider extends ContentProvider {
                 values.put(Project.NAME, "first project_" + i);
                 values.put(Project.STATUS, i % 3 == 0 ? "idle": "running");
                 db.insert(Project.DB_TABLE_NAME, Project.NAME, values);            	
-            }
-        	
-        }
+            }        	
+        }*/
     }
 
     private DatabaseHelper mOpenHelper;	
@@ -131,12 +135,26 @@ public class AreaCiProvider extends ContentProvider {
             //qb.setProjectionMap(sNotesProjectionMap);
         	qb.setTables(Project.DB_TABLE_NAME);
             break;
-
         case PROJECT_ID:
         	qb.setTables(Project.DB_TABLE_NAME);
             qb.appendWhere(Project._ID + "=" + uri.getPathSegments().get(1));
             break;
-
+        case TASK_INFO:
+        	qb.setTables(TaskInfo.DB_TABLE_NAME);
+        	break;
+        case TASK_INFO_ID:
+        	qb.setTables(TaskInfo.DB_TABLE_NAME);
+            qb.appendWhere(TaskInfo._ID + "=" + uri.getPathSegments().get(1));
+            break;
+        case TASK_QUEUE:
+        	qb.setTables(TaskInfo.DB_TABLE_NAME);
+            qb.appendWhere("status in ('pending', 'waiting', 'running', 'preparing')");
+            break;            
+        case TASK_RESULT:
+        	qb.setTables(TaskInfo.DB_TABLE_NAME);
+            qb.appendWhere("status in ('timout', 'done', 'error')");
+            break;            
+            
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -293,7 +311,8 @@ public class AreaCiProvider extends ContentProvider {
         sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks/#", TASK_INFO_ID);
         
         sUriMatcher.addURI(AreaCI.AUTHORITY, "expired", EXPIRED_DATA);
-        
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "task_queue", TASK_QUEUE);
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "task_result", TASK_RESULT);        
         //TASK_INFO
         
      }	

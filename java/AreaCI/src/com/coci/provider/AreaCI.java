@@ -87,7 +87,13 @@ public class AreaCI {
      */
     public static final class TaskInfo implements BaseColumns {
         public static final String DB_TABLE_NAME = "task_info";
-    	
+
+        public static final Uri TASK_QUEUE_URI
+        = Uri.parse("content://" + AUTHORITY + "/task_queue");
+        public static final Uri TASK_RESULT_URI
+        = Uri.parse("content://" + AUTHORITY + "/task_result");
+
+        
         /**
          * The content:// style URL for this table
          */
