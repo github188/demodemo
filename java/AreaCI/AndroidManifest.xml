@@ -50,6 +50,11 @@
             android:label="report"
             android:name=".ReportActivity" >
 	    </activity>   
+        <activity
+            android:label="Device"
+            android:name=".DevicesActivity" >
+	    </activity>   
+
     </application>
 
 </manifest>

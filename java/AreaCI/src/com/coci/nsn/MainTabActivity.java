@@ -29,17 +29,23 @@ public class MainTabActivity extends TabActivity {
 	                      res.getDrawable(R.drawable.policy))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
+	    
+	    intent = new Intent().setClass(this, DevicesActivity.class);
+	    spec = tabHost.newTabSpec("Device").setIndicator("Device",
+	                      res.getDrawable(R.drawable.devices))
+	                  .setContent(intent);
+	    tabHost.addTab(spec);	    
 
 	    // Do the same for the other tabs
 	    intent = new Intent().setClass(this, TaskQueueActivity.class);
 	    spec = tabHost.newTabSpec("queue").setIndicator("queue",
-	                      res.getDrawable(R.drawable.ic_table))
+	                      res.getDrawable(R.drawable.queue))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
 	    intent = new Intent().setClass(this, TaskResultActivity.class);
 	    spec = tabHost.newTabSpec("result").setIndicator("result",
-	                      res.getDrawable(R.drawable.ic_table))
+	                      res.getDrawable(R.drawable.result))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
@@ -49,7 +55,7 @@ public class MainTabActivity extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    
-	    tabHost.setCurrentTab(2);
+	    tabHost.setCurrentTab(3);
 	    
 	    intent = new Intent().setClass(this, DataSyncService.class);
 	    this.startService(intent);
