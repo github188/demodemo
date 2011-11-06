@@ -118,11 +118,9 @@ public class ProxyServer {
 		if(client != null && client.activeClient() > 0){
 			ProxySession s = newProxySession();
 			Map<String, String> headers = new HashMap<String, String>();
-			log.info(String.format("New Request:%s, sid:%s", request.getPathInfo(), s.sid));
 			for(Enumeration<String> enums = request.getHeaderNames(); enums.hasMoreElements();){
 				String name = enums.nextElement();
 				String val = request.getHeader(name);
-				//log.info(String.format("head:%s=>%s", name, val));
 				headers.put(name, val);
 			}
 			s.method = request.getMethod();
@@ -132,8 +130,8 @@ public class ProxyServer {
 				s.queryURL += "?" + request.getQueryString(); 
 			}
 			
+			int len = 0;
 			if(s.method.toLowerCase().equals("post")){
-				int len = 0;
 				byte[] tmpPostData = new byte[1024 * 64]; 
 				InputStream in = request.getInputStream();
 				if(in != null){
@@ -149,8 +147,8 @@ public class ProxyServer {
 					}
 				}
 			}
-			//log.info("query url:" + s.queryURL);		
 			
+			log.info(String.format("REQ:[%s] %s, %s, SID:%s", s.method, request.getPathInfo(), len, s.sid));			
 			s.continuation =  ContinuationSupport.getContinuation(request, null); 
 			
 			//保存当前Session
@@ -183,7 +181,7 @@ public class ProxyServer {
 		//request.get
 		//ProxySession s =
 		//使用HTTP的分片方式，写数据数据流。
-		ProxyClient client = this.getProxyClient(request);
+		ProxyClient client = this.getProxyClient(request, true);
 		
 		if(client != null){
 			response.setHeader("Transfer-Encoding", "chunked");
@@ -213,6 +211,8 @@ public class ProxyServer {
 			response.flushBuffer();
 			client.activeContinuation(cons);
 			cons.suspend(1800 * 1000);
+		}else {
+			log.info("Not found proxy clinet:" + request.getServerName());
 		}
 	}
 	
@@ -241,7 +241,7 @@ public class ProxyServer {
 				    		session = client.doneSession(Streams.asString(stream));
 				    		if(session != null){
 				    			proxyResponse = (HttpServletResponse)session.continuation.getObject();
-				    			log.debug("------------------------------");
+				    			//log.debug("------------------------------");
 				    		}else {
 				    			break;
 				    		}
@@ -251,7 +251,7 @@ public class ProxyServer {
 				    	}else if(proxyResponse != null && !proxyResponse.isCommitted()){
 				    		String name = item.getFieldName();
 				    		String values = Streams.asString(stream);
-				    		log.debug(String.format("%s:%s", name, values));
+				    		//log.debug(String.format("%s:%s", name, values));
 				    		proxyResponse.setHeader(name,  values);
 				    	}
 				    	stream.close();
@@ -311,7 +311,10 @@ public class ProxyServer {
 	
 	private ProxyClient getProxyClient(HttpServletRequest request, boolean autoCreate){
 		String serverName = request.getServerName();
-		if(serverName == null){
+		if(serverName == null || 
+		   serverName.indexOf(".0.") > 0 //127.0.0.1 10.0.2.2等地址
+		  ){
+			log.debug(String.format("Convert server name '%s' to 'default'", serverName));
 			serverName = "default";
 		}
 		
@@ -320,6 +323,10 @@ public class ProxyServer {
 			this.proxyClients.put(serverName, new ProxyClient());
 		}
 		
-		return this.proxyClients.get(serverName);
+		ProxyClient n = this.proxyClients.get(serverName);
+		if(n == null){
+			log.info(String.format("Not found proxy client for '%s'", serverName));
+		}
+		return n;
 	}	
 }
