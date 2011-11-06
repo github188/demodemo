@@ -61,7 +61,9 @@
 		      android:id="@+id/sw_build"
 		      android:layout_width="match_parent"
 		      android:layout_height="fill_parent"
-		      android:layout_weight="1"/>
+		      android:layout_weight="1"
+		      android:textColor="#00ffaa"
+		      />
 	    
 	</LinearLayout>	    	
 </LinearLayout>

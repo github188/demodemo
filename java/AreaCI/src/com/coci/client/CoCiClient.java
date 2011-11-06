@@ -3,6 +3,7 @@ package com.coci.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -25,11 +26,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.coci.provider.AreaCI;
-import com.coci.provider.AreaCI.TaskInfo;
-
 import android.content.ContentValues;
 import android.util.Log;
+
+import com.coci.provider.AreaCI;
+import com.coci.provider.AreaCI.TaskInfo;
 
 public class CoCiClient {
 	private final static String TAG = "areaci.http";
@@ -138,10 +139,14 @@ public class CoCiClient {
                 }
                  
         	}
-		} catch (Exception e) {
-			this.isConnected = false;
+		} catch (ConnectException e) {
+			//this.isConnected = false;
+			Log.e(TAG, "error:" + e.toString());			
+		}catch (Exception e) {
+			//this.isConnected = false;
 			Log.e(TAG, "error:" + e.toString(), e);
 		} finally{
+			isConnected = result != null;
 			if(in != null){
 				try {
 					in.close();
