@@ -1,0 +1,36 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/order_by"
+          android:icon="@drawable/ic_launcher"
+          android:title="Order by">
+     	<menu>
+		    <group android:checkableBehavior="single">		        		        
+		        <item android:id="@+id/prioirty"
+		              android:title="Prioirty" />
+		        		        
+		        <item android:id="@+id/task_name"
+		              android:title="Task Name" />
+
+		        <item android:id="@+id/create_time"
+		              android:title="Create time" />
+		        		        
+		        <item android:id="@+id/updated_time"
+		              android:title="Updated time" />
+		        <!-- 
+		        <item android:id="@+id/status"
+		              android:title="Status" />
+		        -->
+		     </group>
+	    </menu>  
+	</item>
+    
+    <item android:id="@+id/filter_by"
+          android:icon="@drawable/ic_launcher"
+          android:title="Filter" />
+
+    <item android:id="@+id/search"
+          android:icon="@drawable/ic_launcher"
+          android:title="Search" />
+    
+</menu>

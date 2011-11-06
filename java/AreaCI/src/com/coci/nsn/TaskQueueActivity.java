@@ -1,61 +1,152 @@
 package com.coci.nsn;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.coci.provider.AreaCI;
 import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class TaskQueueActivity extends Activity {
 	private final static String TAG = "areaci.queue";
+	static final int ORDER_DIALOG_ID = 1;
+	private Cursor cursor = null;
+	private SimpleCursorAdapter adapter = null;
+	private int order_by = 0;
+	private String order_by_sql = null;	
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TextView textview = new TextView(this);
-        //textview.setText("This is the task queue tab");
-        //setContentView(textview);
-        
-        /**
-         * Favirote, cate/name/status/
-         * 
-         * Toast:
-         *  PATE, 
-         *  SW,
-         *  Create time 
-         */
-        
         setContentView(R.layout.task_queue);
+
+        SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0); 
+        
+        this.order_by = settings.getInt(AreaCI.PREFS_QUEUE_ORDER_BY, R.id.updated_time);        
+        updateOrderBy(this.order_by, "", false);
         
         ListView lv = (ListView) findViewById(R.id.task_list);
         
-        Cursor cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
-        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
-        		TaskInfo.HOST, TaskInfo.SW_BUILD 
-        		}, 
-        		null, null,
-                Project.DEFAULT_SORT_ORDER);
-
+        this.updateManagedCursor(order_by_sql);
         // Used to map notes entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.task_queue_item, 
+        adapter = new SimpleCursorAdapter(this, R.layout.task_queue_item, 
         		cursor,
                 new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
         		TaskInfo.HOST,
         		TaskInfo.SW_BUILD,}, 
                 new int[] {R.id.category, R.id.name, R.id.status,
         		R.id.host_ip, R.id.sw_build}
-        );
+        );                
+        adapter.setViewBinder(new QueueViewBinder());        
+        lv.setAdapter(adapter);  
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.task_menu, menu);
         
-        adapter.setViewBinder(new QueueViewBinder());
+        MenuItem item = menu.findItem(order_by);
+        if(item != null){
+        	item.setChecked(true);
+        }
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+    	Log.d(TAG, "clicked:" + item.toString());
+        switch (item.getItemId()) {
+        	case R.id.prioirty:
+        	case R.id.task_name:
+        	case R.id.create_time:
+        	case R.id.updated_time:
+        		if (item.isChecked()) item.setChecked(false);
+        		else item.setChecked(true);
+        	updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
+            updateManagedCursor(order_by_sql); 
+        	return true;          
+        	default:
+        		return super.onOptionsItemSelected(item);
+        }
         
-        lv.setAdapter(adapter);       
+    }
+    
+    private void updateOrderBy(int id, String label, boolean save){
+        switch (id) {
+			case R.id.prioirty:
+				order_by_sql = "priority desc, modified desc";
+				break;
+			case R.id.task_name:
+				order_by_sql = "name asc, modified desc";
+				break;				
+			case R.id.create_time:
+				order_by_sql = "created desc, modified desc";
+				break;				
+			case R.id.updated_time:
+				order_by_sql = "modified desc, priority desc";
+				break;
+        }
+        if(save){
+        	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+        	SharedPreferences.Editor editor = settings.edit();
+        	editor.putInt(AreaCI.PREFS_QUEUE_ORDER_BY_ID, id);
+        	editor.commit();
+        } 
+        this.order_by = id;
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+        	case ORDER_DIALOG_ID:
+        		return createOrderDialog();
+        }
+        return null;
+    }    
+    
+    private AlertDialog createOrderDialog(){
+    	final CharSequence[] items = {"Red", "Green", "Blue"};
+
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Pick a color");
+    	builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int item) {
+    	        Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
+    	    }
+    	});
+    	return builder.create();    	
+    }
+    
+    private void updateManagedCursor(String order_by){
+    	if(cursor != null){
+    		stopManagingCursor(cursor);
+    		cursor.close();
+    	}
+        cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
+        		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+        		TaskInfo.HOST, TaskInfo.SW_BUILD 
+        		}, 
+        		null, null,
+        		order_by); 	
+        if(adapter != null){
+        	adapter.changeCursor(cursor);
+        }
     }
     
     public void doRefresh(View view){

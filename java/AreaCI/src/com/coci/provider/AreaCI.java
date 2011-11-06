@@ -11,6 +11,11 @@ import android.provider.BaseColumns;
 public class AreaCI {
 	public static final String PREFS_NAME = "areaci_config";
 	
+	public static final String PREFS_QUEUE_ORDER_BY = "prefs_query_order_by";
+	//
+	public static final String PREFS_QUEUE_ORDER_BY_ID = "prefs_query_order_by_id";
+	
+	
 	public static final String AUTHORITY = "com.coci.provider.AreaCI";
 	
 	//所有过期数据的URI.
