@@ -115,7 +115,7 @@ public class ProxyServer {
 	public void startRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		ProxyClient client = this.getProxyClient(request);
 		
-		if(client.activeClient() > 0){
+		if(client != null && client.activeClient() > 0){
 			ProxySession s = newProxySession();
 			Map<String, String> headers = new HashMap<String, String>();
 			log.info(String.format("New Request:%s, sid:%s", request.getPathInfo(), s.sid));
@@ -130,6 +130,24 @@ public class ProxyServer {
 			s.header = headers;
 			if(request.getQueryString() != null){
 				s.queryURL += "?" + request.getQueryString(); 
+			}
+			
+			if(s.method.toLowerCase().equals("post")){
+				int len = 0;
+				byte[] tmpPostData = new byte[1024 * 64]; 
+				InputStream in = request.getInputStream();
+				if(in != null){
+					for(int i = 0; i >= 0; ){
+						i = in.read(tmpPostData, len, tmpPostData.length - len);
+						if(i < 0 )break;
+						len += i;
+					}
+					in.close();
+					if(len > 0){
+						s.content = new byte[len];
+						System.arraycopy(tmpPostData, 0, s.content, 0, len);						
+					}
+				}
 			}
 			//log.info("query url:" + s.queryURL);		
 			
@@ -151,7 +169,8 @@ public class ProxyServer {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			response.setCharacterEncoding("utf8");
 			response.getWriter().println("Not found active proxy client. <br/>" +
-					"没有找到一个代理客户端来转发请求。");
+					"没有找到一个代理客户端来转发请求。<br/>" +
+					"Server name:" + request.getServerName());
 		}
 	}
 	
@@ -187,13 +206,13 @@ public class ProxyServer {
 			//ObjectOutputStream
 			
 			/**
-			 * 等待3分钟的HTTP请求。
+			 * 等待30分钟的HTTP请求。
 			 */
 			cons.setObject(os);
 			log.info("new task tracker suspend.");
 			response.flushBuffer();
 			client.activeContinuation(cons);
-			cons.suspend(180 * 1000);
+			cons.suspend(1800 * 1000);
 		}
 	}
 	
@@ -260,6 +279,8 @@ public class ProxyServer {
 					session.continuation.resume();
 				}
 			}
+    	}else if(client == null){
+    		response.getWriter().println("Invalid proxy client, for server:" + request.getServerName());
     	}else {
     		log.warn("The request is not a multpart content type.");
     	}
@@ -285,6 +306,20 @@ public class ProxyServer {
 	 * @return
 	 */
 	private ProxyClient getProxyClient(HttpServletRequest request){
-		return this.proxyClients.get("default");
+		return this.getProxyClient(request, false);
 	}
+	
+	private ProxyClient getProxyClient(HttpServletRequest request, boolean autoCreate){
+		String serverName = request.getServerName();
+		if(serverName == null){
+			serverName = "default";
+		}
+		
+		if(!this.proxyClients.containsKey(serverName) && autoCreate){
+			log.info(String.format("create new proxy client for '%s'", serverName));
+			this.proxyClients.put(serverName, new ProxyClient());
+		}
+		
+		return this.proxyClients.get(serverName);
+	}	
 }

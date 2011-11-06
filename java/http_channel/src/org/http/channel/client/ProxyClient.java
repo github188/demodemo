@@ -75,7 +75,9 @@ public class ProxyClient {
 			}else if(commandCount > 10 && proxyCommandPool.getActiveCount() < 3){
 				proxyCommandPool.execute(new RequestTracker());
 			}
-			log.info("Command count:" + commandCount);
+			log.info(String.format("Active thread:%s, executed proxy command count:%s", 
+					proxyCommandPool.getActiveCount(),
+					commandCount));
 			commandCount = 0;
 		}
 	}
@@ -95,9 +97,7 @@ public class ProxyClient {
 				connection.setRequestMethod("POST");
 				connection.setDoInput(true);
 				connection.connect();
-				//InputStream in = ;				
-				//ZipInputStream zip = new ZipInputStream(connection.getInputStream());
-				//zip.getNextEntry();
+				
 				ios = new ObjectInputStream(connection.getInputStream());
 				for(Object obj = ios.readObject(); obj != null; obj = ios.readObject()){
 					commandCount++;
