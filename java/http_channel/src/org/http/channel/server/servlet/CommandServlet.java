@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.http.channel.server.ProxyServer;
 
 public class CommandServlet extends HttpServlet{
@@ -25,6 +27,11 @@ public class CommandServlet extends HttpServlet{
     		ProxyServer.ins.forwardRequest(request, response);
     	}else if(cmd.equals("reponse")){
     		ProxyServer.ins.doneRequest(request, response);
+    	}else if(cmd.equals("stop")){
+    		//停止系统。
+    		LogFactory.getLog("gate").warn("System shut down by '/~/stop'");
+    		response.getWriter().println("Shut down");
+    		System.exit(0);
     	}else {
     		response.getWriter().println("unkown command:" + cmd);
     	}
