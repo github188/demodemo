@@ -23,7 +23,7 @@ public class AreaCiProvider extends ContentProvider {
     private static final String TAG = "areaci_provider";
 
     private static final String DATABASE_NAME = "area_ci.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     //private static final String NOTES_TABLE_NAME = "notes";
 
    // private static HashMap<String, String> sNotesProjectionMap;
@@ -87,7 +87,7 @@ public class AreaCiProvider extends ContentProvider {
                     + TaskInfo.MODIFIED_DATE + " INTEGER,"
                     + TaskInfo.SYNC_TIME + " INTEGER"
                     + ");");
-            //this.initTestData(db);
+            this.initTestData(db);
         }
 
         @Override
@@ -98,16 +98,19 @@ public class AreaCiProvider extends ContentProvider {
             db.execSQL("DROP TABLE IF EXISTS " + TaskInfo.DB_TABLE_NAME);
             onCreate(db);
         }
-        /*
+        
         private void initTestData(SQLiteDatabase db){
             ContentValues values = new ContentValues();
 
-            for(int i=0; i < 20; i++){
-                values.put(Project.NAME, "first project_" + i);
-                values.put(Project.STATUS, i % 3 == 0 ? "idle": "running");
-                db.insert(Project.DB_TABLE_NAME, Project.NAME, values);            	
-            }        	
-        }*/
+            for(int i=0; i < 40; i++){
+                values.put(TaskInfo.NAME, "first project_" + i);
+                values.put(TaskInfo.STATUS, i % 3 == 0 ? "waiting": "done");
+                values.put(TaskInfo.CATEGORY, "smt");
+                values.put(TaskInfo.HOST, "127.0.0.1");
+                values.put(TaskInfo.SW_BUILD, "cb_1.1.1");
+                db.insert(TaskInfo.DB_TABLE_NAME, TaskInfo.NAME, values);
+            } 
+        }
     }
 
     private DatabaseHelper mOpenHelper;	

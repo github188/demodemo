@@ -130,11 +130,17 @@ public class CoCiClient {
                     sb.append(line + NL);
                 }
                 in.close();
-                result = (JSONObject) new JSONTokener(sb.toString()).nextValue();
+                Object o = new JSONTokener(sb.toString()).nextValue();
+                if(o instanceof JSONObject){
+                	result = (JSONObject)o; 
+                }else {
+                	Log.d(TAG, o.toString());
+                }
+                 
         	}
 		} catch (Exception e) {
 			this.isConnected = false;
-			Log.e(TAG, "error:" + e.toString());
+			Log.e(TAG, "error:" + e.toString(), e);
 		} finally{
 			if(in != null){
 				try {

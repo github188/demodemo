@@ -52,7 +52,7 @@ public class DataSyncService extends Service {
 				}else if(queueSize > 10) {
 					Log.w(TAG, "Clean up padding task queue, current size:" + queueSize);
 					threadPool.purge();
-				}				
+				}
 				/**
 				 * 每隔5小时清理一次过期数据。
 				 */
@@ -117,10 +117,10 @@ public class DataSyncService extends Service {
 	
 	private synchronized boolean connectoToAreaCI(){
 		String[][] connection = new String[][]{
-			{"http://10.0.2.2:8000/areaci/api/", null},	
+			{"http://10.0.2.2:8925/areaci/api/", null},	
 			{"http://10.56.117.81/coci/areaci/api/", null},
 			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
-			{"http://proxy.deonwu84.com/coci/areaci/api/", null},
+			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
 			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
 		};
 		for(int i = 0; i < connection.length; i++){
