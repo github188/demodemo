@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/open_console"
+          android:icon="@drawable/ic_launcher"
+          android:title="Open Console" />
+    
+    <item android:id="@+id/show_details"
+          android:icon="@drawable/ic_launcher"
+          android:title="Show details" />
+    
+    
+</menu>

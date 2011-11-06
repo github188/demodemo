@@ -1,18 +1,21 @@
 package com.coci.nsn;
 
-import com.coci.nsn.TaskQueueActivity.QueueViewBinder;
-import com.coci.provider.AreaCI.Project;
-import com.coci.provider.AreaCI.TaskInfo;
-
 import android.app.Activity;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import com.coci.provider.AreaCI.Project;
+import com.coci.provider.AreaCI.TaskInfo;
 
 public class TaskResultActivity extends Activity {
 	private final static String TAG = "areaci.result";
@@ -50,6 +53,29 @@ public class TaskResultActivity extends Activity {
         
         adapter.setViewBinder(new QueueViewBinder());
         lv.setAdapter(adapter);
+        //lv.registerForContextMenu()
+        registerForContextMenu(lv);
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+      	MenuInflater inflater = getMenuInflater();
+      	inflater.inflate(R.menu.task_result_context_menu, menu);
+      	Log.d(TAG, "create context menu...");
+    }    
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo(); 
+    	
+    	//info.targetView
+    	Log.d(TAG, "info id:" + info.id);
+    	switch (item.getItemId()) {      
+    	}
+    	
+    	return true;
     }
     
     class QueueViewBinder implements SimpleCursorAdapter.ViewBinder{

@@ -1,9 +1,8 @@
 package com.coci.nsn;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,15 +15,13 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.coci.provider.AreaCI;
-import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class TaskQueueActivity extends Activity {
 	private final static String TAG = "areaci.queue";
-	static final int ORDER_DIALOG_ID = 1;
+	static final int FILTER_DIALOG_ID = 1;
 	private Cursor cursor = null;
 	private SimpleCursorAdapter adapter = null;
 	private int order_by = 0;
@@ -80,7 +77,12 @@ public class TaskQueueActivity extends Activity {
         		else item.setChecked(true);
         	updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
             updateManagedCursor(order_by_sql); 
-        	return true;          
+        	return true;     
+        	
+        	case R.id.filter_by:
+        		showDialog(FILTER_DIALOG_ID);
+        		return true;
+        		
         	default:
         		return super.onOptionsItemSelected(item);
         }
@@ -114,23 +116,19 @@ public class TaskQueueActivity extends Activity {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        	case ORDER_DIALOG_ID:
-        		return createOrderDialog();
+        	case FILTER_DIALOG_ID:
+        		return createFilterDialog();
         }
         return null;
     }    
     
-    private AlertDialog createOrderDialog(){
-    	final CharSequence[] items = {"Red", "Green", "Blue"};
-
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setTitle("Pick a color");
-    	builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-    	    public void onClick(DialogInterface dialog, int item) {
-    	        Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
-    	    }
-    	});
-    	return builder.create();    	
+    private Dialog createFilterDialog(){
+    	Context mContext = getApplicationContext();
+    	Dialog dialog = new Dialog(mContext);
+    	dialog.setContentView(R.layout.task_filter_dialog);
+    	dialog.setTitle("Task filter Dialog");
+    	Log.d(TAG, "xxx:" + dialog.toString());
+    	return dialog;    	
     }
     
     private void updateManagedCursor(String order_by){
