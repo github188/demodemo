@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,6 +38,7 @@ public class DataSyncService extends Service {
 	private CoCiClient client = null;
 	private long lastTaskUpdatedTime = 0;
 	private long lastCleanUpTime = 0;
+	private long lastTryConnectTime = 0;
 	
 	@Override
     public void onCreate() {
@@ -47,8 +51,8 @@ public class DataSyncService extends Service {
 		timer.scheduleAtFixedRate(new TimerTask (){
 			@Override
 			public void run() {
-				Log.d(TAG, "Current task queue size:" + threadPool.getQueue().size());
 				int queueSize = threadPool.getQueue().size(); 
+				Log.d(TAG, "Current task queue size:" + queueSize);
 				if(queueSize <= 1){
 					threadPool.execute(new TaskWorker(SYNC_TASK));
 				}else if(queueSize > 10) {
@@ -71,7 +75,7 @@ public class DataSyncService extends Service {
 		 */
 		Cursor taskList = getContentResolver().query(TaskInfo.TASK_LIST_URI, null, null, null, null);
 		if(taskList.getCount() < 50){
-			threadPool.execute(new TaskWorker(INIT_LOCAL_DATA));			
+			threadPool.execute(new TaskWorker(INIT_LOCAL_DATA));		
 		}
 		taskList.close();
     }
@@ -79,6 +83,8 @@ public class DataSyncService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("areaci.service", "start to sync data from networking...");
+		
+		//sendNotification("Network111", "Failed to connect to areaci, id:" + startId);
 		threadPool.execute(new TaskWorker(SYNC_TASK));
 	    return START_STICKY;
 	}
@@ -88,6 +94,14 @@ public class DataSyncService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void onDestroy() {
+	    //Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+		Log.i("areaci.service", "Stop the sync service");
+		timer.cancel();
+		threadPool.shutdownNow();
+	}	
 	
 	public boolean isNetworkAvailable() {
 	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -110,6 +124,11 @@ public class DataSyncService extends Service {
 			lastTime = 60 * 24 * 30;
 		}else {
 			lastTime = Math.min(lastTime + 1, 60 * 24);
+		}
+		
+		if(lastTime <= 1) {
+			Log.d(TAG, String.format("ignore sync task action, last update time in %s seconds.", (cur - lastTaskUpdatedTime) / 1000));
+			return;
 		}
 		
 		try {
@@ -137,7 +156,38 @@ public class DataSyncService extends Service {
 		getContentResolver().delete(AreaCI.EXPRIED_DATA_URI, null, null);
 	}	
 	
+	private void sendNotification2(String title, String message){
+		int icon = R.drawable.ipaci;        // icon from resources
+		CharSequence tickerText = "Hello";              // ticker-text
+		long when = System.currentTimeMillis();         // notification time
+		Context context = getApplicationContext();      // application Context
+		//CharSequence contentTitle = "My notification";  // message title
+		//CharSequence contentText = "Hello World!";      // message text
+
+		Intent notificationIntent = new Intent(this, TaskQueueActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		// the next two lines initialize the Notification, using the configurations above
+		Notification notification = new Notification(icon, tickerText, when);
+		notification.setLatestEventInfo(context, title, message, contentIntent);
+		
+		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+		
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);		
+		mNotificationManager.notify(1, notification);		
+	}
+	
 	private synchronized boolean connectoToAreaCI(){
+		
+		if(System.currentTimeMillis() - this.lastTryConnectTime < 5 * 60 * 1000){
+			Log.d(TAG, String.format("ignore connection action, last connected in %s seconds.", 
+					(System.currentTimeMillis() - this.lastTryConnectTime) / 1000));
+			return false;
+		}
+		
+		this.lastTryConnectTime = System.currentTimeMillis();
+		
 		String[][] connection = new String[][]{
 			{"http://10.0.2.2:8000/areaci/api/", null},	
 			{"http://10.56.117.81/coci/areaci/api/", null},
@@ -148,10 +198,12 @@ public class DataSyncService extends Service {
 		for(int i = 0; i < connection.length; i++){
 			if(client.connect(connection[i][0], connection[i][1])){
 				Log.d(TAG, String.format("Connect to '%s', proxy:'%s'", connection[i][0],
-						 connection[i][1]));
+						 connection[i][1]));				
 				return true;
 			}
 		}
+		
+		//sendNotification("Network", "Failed to connect to areaci.");
 		return false;
 	}
 	

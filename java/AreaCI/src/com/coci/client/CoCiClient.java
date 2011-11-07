@@ -19,6 +19,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -108,7 +109,7 @@ public class CoCiClient {
 		
 		HttpPost request = new HttpPost(endpoint.resolve(api));
         
-        StringBuffer query = new StringBuffer(api + "?");        
+        StringBuffer query = new StringBuffer(endpoint.resolve(api).toString() + "?");        
         if(param != null){
         	nameValuePairs = new ArrayList<NameValuePair>(param.size());
 	        for(Entry<String, String> item : param.entrySet()){
@@ -141,9 +142,10 @@ public class CoCiClient {
         	}
 		} catch (ConnectException e) {
 			//this.isConnected = false;
-			Log.e(TAG, "error:" + e.toString());			
+			Log.e(TAG, "error:" + e.toString() + ", url:" + query.toString());
+		} catch(ConnectTimeoutException e){
+			Log.e(TAG, "error:" + e.toString() + ", url:" + query.toString());
 		}catch (Exception e) {
-			//this.isConnected = false;
 			Log.e(TAG, "error:" + e.toString(), e);
 		} finally{
 			isConnected = result != null;
