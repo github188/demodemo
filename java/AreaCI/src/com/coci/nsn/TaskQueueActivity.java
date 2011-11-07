@@ -92,8 +92,8 @@ public class TaskQueueActivity extends Activity {
         	return true;     
         	
         	case R.id.filter_by:
-        		showDialog(FILTER_DIALOG_ID);
-        		return true;
+        		//showDialog(FILTER_DIALOG_ID);
+        		return false;
 
         	case R.id.stop_sync:
         		//showDialog(FILTER_DIALOG_ID);

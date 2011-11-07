@@ -14,6 +14,7 @@ public class AreaCI {
 	public static final String PREFS_QUEUE_ORDER_BY = "prefs_query_order_by";
 	//
 	public static final String PREFS_QUEUE_ORDER_BY_ID = "prefs_query_order_by_id";
+	public static final String PREFS_RESULT_ORDER_BY_ID = "prefs_result_order_by_id";
 	
 	
 	public static final String AUTHORITY = "com.coci.provider.AreaCI";
