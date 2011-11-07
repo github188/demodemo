@@ -145,9 +145,23 @@ public class ProxyClient {
 				URL localURL = new URL(local + request.queryURL);
 				connection = (HttpURLConnection) localURL.openConnection(Proxy.NO_PROXY);
 				connection.setRequestMethod(request.method);
+				
+				/**
+				 * Set default header.
+				 */
+				connection.setRequestProperty("Content-type", "text/html");
+				
 				for(String key: request.header.keySet()){
+					//log.info(key + "-->" + request.header.get(key));
+					if(key.equals("Host")){
+						continue;
+					}
 					connection.setRequestProperty(key, request.header.get(key));
 				}
+				/*
+				if(!contentType){
+					connection.setRequestProperty("Content-type", "text/html");
+				}*/
 				
 				connection.setDoInput(true);
 				if(this.request.content != null){
