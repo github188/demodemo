@@ -13,6 +13,7 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.IBinder;
@@ -24,6 +25,7 @@ import com.coci.provider.AreaCI.TaskInfo;
 
 public class DataSyncService extends Service {
 	private final static String SYNC_TASK = "sync_task";
+	private final static String INIT_LOCAL_DATA = "init_local_data";
 	private final static String REMOVE_EXPIRED_TASK = "remove_expired_task";
 	
 	private final static String TAG = "areaci.sync";
@@ -63,6 +65,15 @@ public class DataSyncService extends Service {
 				
 			}
 		}, 100, 60 * 1000);		
+		
+		/**
+		 * 初始化数据如果本地数据库记录没有数据。
+		 */
+		Cursor taskList = getContentResolver().query(TaskInfo.TASK_LIST_URI, null, null, null, null);
+		if(taskList.getCount() < 50){
+			threadPool.execute(new TaskWorker(INIT_LOCAL_DATA));			
+		}
+		taskList.close();
     }
 	
 	@Override
@@ -89,12 +100,20 @@ public class DataSyncService extends Service {
 	    return false;
 	}	
 	
-	public void syncTask(){
+	public void syncTask(boolean initData){
 		long cur = System.currentTimeMillis();
 		long lastTime = (cur - lastTaskUpdatedTime) / 1000 / 60;
 		List<ContentValues> taskList = null;
+		
+		//如果是第一次初始化数据，查询最近1个月的数据。
+		if(initData){
+			lastTime = 60 * 24 * 30;
+		}else {
+			lastTime = Math.min(lastTime + 1, 60 * 24);
+		}
+		
 		try {
-			taskList = client.updatedTask(Math.min(lastTime + 1, 60 * 24), 50);
+			taskList = client.updatedTask(lastTime, 50);
 			if(taskList != null){
 				Log.d(TAG, String.format("download task size:%s", taskList.size()));
 				this.saveTaskInfo(taskList);
@@ -109,15 +128,18 @@ public class DataSyncService extends Service {
 		for(ContentValues task: taskList){
 			getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
 		}
+		if(taskList.size() > 0){
+			getContentResolver().notifyChange(TaskInfo.CONTENT_URI, null);
+		}
 	}
 	
-	private void deleteExpriedData(){		
+	private void deleteExpriedData(){
 		getContentResolver().delete(AreaCI.EXPRIED_DATA_URI, null, null);
 	}	
 	
 	private synchronized boolean connectoToAreaCI(){
 		String[][] connection = new String[][]{
-			{"http://10.0.2.2:8925/areaci/api/", null},	
+			{"http://10.0.2.2:8000/areaci/api/", null},	
 			{"http://10.56.117.81/coci/areaci/api/", null},
 			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
 			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
@@ -149,9 +171,11 @@ public class DataSyncService extends Service {
 					}
 				}
 				if(task.equals(SYNC_TASK)){
-					syncTask();
+					syncTask(false);
 				}else if (task.equals(REMOVE_EXPIRED_TASK)){
 					deleteExpriedData();
+				}else if(task.equals(INIT_LOCAL_DATA)){
+					syncTask(true);
 				}
 			}
 		}

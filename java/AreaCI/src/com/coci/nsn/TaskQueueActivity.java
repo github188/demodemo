@@ -5,8 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,6 +52,16 @@ public class TaskQueueActivity extends Activity {
         );                
         adapter.setViewBinder(new QueueViewBinder());        
         lv.setAdapter(adapter);  
+        
+        getContentResolver().registerContentObserver(TaskInfo.TASK_LIST_URI, true,
+        		new ContentObserver(new Handler()) {
+        			@Override
+    				public void onChange(boolean selfChange) {
+        				Log.i(TAG, "The task list is updated.");
+        				updateManagedCursor(order_by_sql);
+    				}
+        	}
+        );        
     }
     
     @Override
@@ -81,6 +93,12 @@ public class TaskQueueActivity extends Activity {
         	
         	case R.id.filter_by:
         		showDialog(FILTER_DIALOG_ID);
+        		return true;
+
+        	case R.id.stop_sync:
+        		//showDialog(FILTER_DIALOG_ID);
+        		Intent intent = new Intent().setClass(this, DataSyncService.class);
+        	    this.stopService(intent);      		
         		return true;
         		
         	default:
@@ -144,6 +162,7 @@ public class TaskQueueActivity extends Activity {
         		order_by); 	
         if(adapter != null){
         	adapter.changeCursor(cursor);
+        	//adapter.notifyDataSetChanged();
         }
     }
     
@@ -156,7 +175,6 @@ public class TaskQueueActivity extends Activity {
     }
     
     class QueueViewBinder implements SimpleCursorAdapter.ViewBinder{
-
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 			if(columnIndex == 5 && view instanceof TextView){
@@ -165,6 +183,6 @@ public class TaskQueueActivity extends Activity {
 				return true;
 			}
 			return false;
-		}	
+		}
     }
 }

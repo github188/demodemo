@@ -23,7 +23,7 @@ public class AreaCiProvider extends ContentProvider {
     private static final String TAG = "areaci_provider";
 
     private static final String DATABASE_NAME = "area_ci.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 1;
     //private static final String NOTES_TABLE_NAME = "notes";
 
    // private static HashMap<String, String> sNotesProjectionMap;
@@ -87,7 +87,7 @@ public class AreaCiProvider extends ContentProvider {
                     + TaskInfo.MODIFIED_DATE + " INTEGER,"
                     + TaskInfo.SYNC_TIME + " INTEGER"
                     + ");");
-            this.initTestData(db);
+            //this.initTestData(db);
         }
 
         @Override
@@ -268,7 +268,7 @@ public class AreaCiProvider extends ContentProvider {
 	            break;
 	        case TASK_INFO:
 	        	updateTasks(values, db);
-	        	break;
+	        	return 0; //避免每一个task 更新了都做出notify操作， task update应该是一个批量的操作。
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
         }
