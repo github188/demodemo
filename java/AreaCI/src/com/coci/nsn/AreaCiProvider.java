@@ -23,7 +23,7 @@ public class AreaCiProvider extends ContentProvider {
     private static final String TAG = "areaci_provider";
 
     private static final String DATABASE_NAME = "area_ci.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     //private static final String NOTES_TABLE_NAME = "notes";
 
    // private static HashMap<String, String> sNotesProjectionMap;

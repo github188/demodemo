@@ -178,7 +178,8 @@ public class TaskResultActivity extends Activity {
         		TaskInfo.HOST, TaskInfo.SW_BUILD, 
         		TaskInfo.TEST_COUNT,
         		TaskInfo.RESULT_COUNT, TaskInfo.RESULT_PASS, TaskInfo.RESULT_FAIL,
-        		TaskInfo.RESULT
+        		TaskInfo.RESULT,
+        		TaskInfo.CREATED_DATE, TaskInfo.START_DATE, TaskInfo.DONE_DATE
         		}, 
         		null, null,
         		order_by); 	
@@ -235,6 +236,11 @@ public class TaskResultActivity extends Activity {
 					//o.setTextColor(Color.RED);
 					o.append(result);
 				}
+				
+				o.append("\nCreate:" + cursor.getString(index + 7) + 
+						" Start:" + cursor.getString(index + 8) +
+						" Done:" + cursor.getString(index + 9)
+						);				
 				
 				return true;
 			}

@@ -49,9 +49,9 @@ public class TaskQueueActivity extends Activity {
         		cursor,
                 new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
         		TaskInfo.HOST,
-        		TaskInfo.SW_BUILD,}, 
+        		TaskInfo.SW_BUILD, TaskInfo.CREATED_DATE}, 
                 new int[] {R.id.category, R.id.name, R.id.status,
-        		R.id.host_ip, R.id.sw_build}
+        		R.id.host_ip, R.id.sw_build, R.id.date_time}
         );                
         adapter.setViewBinder(new QueueViewBinder());        
         lv.setAdapter(adapter);  
@@ -193,6 +193,13 @@ public class TaskQueueActivity extends Activity {
 				o.setText("  SW:" + cursor.getString(cursor.getColumnIndex("sw_build")));
 				return true;
 			}
+			if(view.getId() == R.id.date_time){
+				TextView o = (TextView)view;
+				o.setText("Create:" + cursor.getString(cursor.getColumnIndex(TaskInfo.CREATED_DATE)) + 
+						" Start:" + cursor.getString(cursor.getColumnIndex(TaskInfo.START_DATE))
+						);
+				return true;
+			}			
 			return false;
 		}
     }
