@@ -116,7 +116,7 @@ public class ProxyClient {
 							os.flush();
 							blocking.add(session.sid);
 							session = nextSession();
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							log.debug("Task tracker:" + s.toString());
 							log.debug("Write session Error:" + e.toString(), e);
 							continue;
