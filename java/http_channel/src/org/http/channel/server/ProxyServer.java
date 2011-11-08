@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +13,6 @@ import java.util.Timer;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +23,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.http.channel.Version;
 import org.http.channel.proxy.ProxyClient;
 import org.http.channel.proxy.ProxySession;
 import org.http.channel.settings.Settings;
@@ -287,6 +287,51 @@ public class ProxyServer {
     	response.getWriter().println("OK");
 	}
 	
+	public void status(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		StringBuffer status = new StringBuffer();
+		
+		status.append(String.format("=====%s %s %s=====\n", Version.getName(), Version.getVersion(), Version.getBuildDate()));
+		ProxyClient client = this.getProxyClient(request);
+		if(client != null){
+			ArrayList<ProxySession> sessions = new ArrayList<ProxySession>(client.sessions.values());
+			status.append(String.format("\n\n=====Active Session=====\n"));
+			for(ProxySession s: sessions){
+				status.append(s.toString() + "\n");
+			}
+			
+			status.append(String.format("\n\n=====Blocking Session=====\n"));
+			ArrayList<String> blocking = new ArrayList<String>(client.blocking);
+			for(String s: blocking){
+				status.append(s + "\n");
+			}
+
+			status.append(String.format("\n\n=====Waiting Session=====\n"));
+			ArrayList<String> waiting = new ArrayList<String>(client.waiting);
+			for(String s: waiting){
+				status.append(s + "\n");
+			}	
+			
+			status.append(String.format("\n\n=====Active internal client=====\n"));
+			ArrayList<Continuation> clients = new ArrayList<Continuation>(client.clients);
+			for(Continuation c: clients){
+				status.append("Resumed:" +  c.isResumed() + ", pending:" + c.isPending() +  ", " + c.toString() + "\n");
+			}
+			
+			status.append(String.format("\n\n=====Done Session=====\n"));
+			for(ProxySession s: new ArrayList<ProxySession>(client.doneSession)){
+				status.append(s.toString() + "\n");
+			}
+		}else {
+			status.append(String.format("=====Active proxy client=====\n"));
+			for(String key: proxyClients.keySet()){
+				status.append(key + "\n");
+			}
+		}
+		
+		response.setContentType("text/plain");
+		response.getWriter().write(status.toString());
+	}
+	
 	/**
 	 * 创建一个代理会话。
 	 * @return
@@ -294,6 +339,7 @@ public class ProxyServer {
 	private ProxySession newProxySession(){
 		ProxySession s = new ProxySession();
 		s.sid = "s" + nextSid();
+		s.createTime = System.currentTimeMillis();
 		return s;
 	}
 	

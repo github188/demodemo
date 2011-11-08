@@ -2,6 +2,7 @@ package org.http.channel.proxy;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -24,17 +25,24 @@ import org.mortbay.util.ajax.Continuation;
  */
 public class ProxyClient {
 	private Log log = LogFactory.getLog("client");
-	private Map<String, ProxySession> sessions = new HashMap<String, ProxySession>();
-	private Queue<String> waiting = new ConcurrentLinkedQueue<String>();
-	private Queue<String> blocking = new ConcurrentLinkedQueue<String>();
 	
-	private final ReentrantLock lock = new ReentrantLock();
-	
+	/**
+	 * 属性设置为Pulbic,为了显示Status时可以读到内部数据
+	 */
+	public Map<String, ProxySession> sessions = new HashMap<String, ProxySession>();
+	public Queue<String> waiting = new ConcurrentLinkedQueue<String>();
+	public Queue<String> blocking = new ConcurrentLinkedQueue<String>();		
 	/**
 	 * 保存等待下载HTTP请求的连接。
 	 */
-	private Queue<Continuation> clients = new ConcurrentLinkedQueue<Continuation>();
+	public Queue<Continuation> clients = new ConcurrentLinkedQueue<Continuation>();
 	
+	public Queue<ProxySession> doneSession = new ConcurrentLinkedQueue<ProxySession>();
+	
+	/**
+	 * 确保只有一个线程在作Schedule操作.
+	 */
+	private final ReentrantLock lock = new ReentrantLock();
 	public ProxyClient(){
 		
 	}
@@ -45,14 +53,23 @@ public class ProxyClient {
 		schedule();
 	}	
 	
+	/*
 	public void closeSession(String sid){
 		sessions.remove(sid);
-	}
+	}*/
 	
 	public ProxySession doneSession(String sid){
 		blocking.remove(sid);
 		schedule();
-		return sessions.remove(sid);
+		
+		ProxySession s = sessions.remove(sid);
+		if (s != null){
+			doneSession.add(s);
+			while(doneSession.size() > 20){
+				doneSession.poll();
+			}
+		}
+		return s;
 	}
 	
 	/**
@@ -84,6 +101,7 @@ public class ProxyClient {
 	 */
 	private void schedule(){
 		if(lock.tryLock()){
+			cleanUpTimeoutSession();
 			try{
 				ObjectOutputStream os = null;
 				ProxySession session = nextSession();
@@ -105,7 +123,7 @@ public class ProxyClient {
 						}
 					}
 					clients.add(s);
-					if(blocking.size() > 10 || session == null)break;
+					if(session == null)break;
 				}
 				//被取出来了，但是没有发送成功，需要从新放回waiting的队列里面。
 				if(session != null){
@@ -117,12 +135,27 @@ public class ProxyClient {
 		}
 	}
 	
+	private void cleanUpTimeoutSession(){
+		long cur = System.currentTimeMillis();
+		for(ProxySession s: new ArrayList<ProxySession>(sessions.values())){
+			if(cur - s.createTime > 1000 * 60){
+				sessions.remove(s.sid);
+				waiting.remove(s.sid);
+				blocking.remove(s.sid);
+				log.info(String.format("Remove time out session:%s, waiting:%s", s.sid, (cur - s.createTime) / 1000));
+			}
+		}
+	}
+	
 	
 	private ProxySession nextSession(){
 		ProxySession s = null;
-		for(String key = waiting.poll(); key != null; key = waiting.poll()){
+		for(int i = waiting.size(); i > 0 && s == null; i--){
+			String key = waiting.poll();
+			if(key == null)break;
 			s = sessions.get(key);
-			if (s != null)break;
+			if(s == null)continue;
+			break;
 		}
 		return s;
 	}
