@@ -94,6 +94,9 @@ public class ProxyClient {
 			try {
 				URL request = new URL(remote + "/~/request");
 				connection = (HttpURLConnection )request.openConnection();
+				connection.setReadTimeout(1000 * 60 * 5);
+				connection.setConnectTimeout(1000 * 30);
+
 				connection.setRequestMethod("POST");
 				connection.setDoInput(true);
 				connection.connect();
