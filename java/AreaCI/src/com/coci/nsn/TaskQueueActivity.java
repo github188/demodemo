@@ -166,7 +166,8 @@ public class TaskQueueActivity extends Activity {
     	}
         cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
         		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
-        		TaskInfo.HOST, TaskInfo.SW_BUILD 
+        		TaskInfo.HOST, TaskInfo.SW_BUILD, 
+        		TaskInfo.CREATED_DATE, TaskInfo.START_DATE
         		}, 
         		null, null,
         		order_by); 	

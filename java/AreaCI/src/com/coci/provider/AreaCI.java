@@ -44,6 +44,10 @@ public class AreaCI {
 		f.add(TaskInfo.RESULT_FAIL);
 		f.add(TaskInfo.CREATED_DATE);
 		f.add(TaskInfo.MODIFIED_DATE);		
+		f.add(TaskInfo.START_DATE);
+		f.add(TaskInfo.DONE_DATE);
+		f.add(TaskInfo.DETAIL);
+		
 		DB_COLUMNS.put(TaskInfo.DB_TABLE_NAME, f);
 		
 	}
@@ -150,6 +154,9 @@ public class AreaCI {
          * <P>Type: INTEGER (long)</P>
          */
         public static final String MODIFIED_DATE = "modified";
+        public static final String START_DATE = "started";
+        public static final String DONE_DATE = "done";
+        
         public static final String SYNC_TIME = "sync_time";
     }    
 
