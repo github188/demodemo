@@ -1,10 +1,13 @@
 package com.coci.nsn;
 
+import android.R.color;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,7 +23,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.coci.provider.AreaCI;
-import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class TaskResultActivity extends Activity {
@@ -30,13 +32,18 @@ public class TaskResultActivity extends Activity {
 	private SimpleCursorAdapter adapter = null;
 	private int order_by = 0;
 	private String order_by_sql = null;		
+	private TextView lastSynced = null;
+	private SharedPreferences settings = null;	
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.task_result);
         
-        SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0); 
+        settings = getSharedPreferences(AreaCI.PREFS_NAME, 0); 
+
+        lastSynced = (TextView)this.findViewById(R.id.last_synced);        
+        lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
         
         this.order_by = settings.getInt(AreaCI.PREFS_RESULT_ORDER_BY_ID, R.id.updated_time);        
         updateOrderBy(this.order_by, "", false);        
@@ -50,7 +57,24 @@ public class TaskResultActivity extends Activity {
                 	TaskInfo.SW_BUILD,}, 
                 new int[] {R.id.category, R.id.name, R.id.status,
                 	R.id.result_summary}
-        		);
+        		){
+        	
+        	public void bindView(View view, Context context, Cursor cursor){
+        		super.bindView(view, context, cursor);
+        		String st = cursor.getString(3);
+        		int pass = cursor.getInt(8);
+        		int count = cursor.getInt(7);
+        		if(st.equals("error")){
+        			view.setBackgroundColor(Color.RED);
+        		}else if(st.equals("done") && pass == count) {
+        			view.setBackgroundColor(Color.GREEN);
+        		}else if(st.equals("done") && pass != count){
+        			view.setBackgroundColor(Color.YELLOW);
+        		}else if(st.equals("ignore")) {
+        			view.setBackgroundColor(Color.GRAY);
+        		}
+        	}
+        };
         
         ListView lv = (ListView) findViewById(R.id.task_list);
         adapter.setViewBinder(new QueueViewBinder());
@@ -62,6 +86,13 @@ public class TaskResultActivity extends Activity {
     				public void onChange(boolean selfChange) {
         				Log.i(TAG, "The task list is updated.");
         				updateManagedCursor(order_by_sql);
+        				if(lastSynced != null){
+        					lastSynced.post(new Runnable(){
+        						public void run(){
+        							lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
+        						}
+        					});
+        				}        				
     				}
         	}
         );    

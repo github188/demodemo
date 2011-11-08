@@ -1,5 +1,8 @@
 package com.coci.nsn;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,6 +19,7 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,6 +34,7 @@ public class DataSyncService extends Service {
 	private final static String SYNC_TASK = "sync_task";
 	private final static String INIT_LOCAL_DATA = "init_local_data";
 	private final static String REMOVE_EXPIRED_TASK = "remove_expired_task";
+	private final static DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private final static String TAG = "areaci.sync";
 	//private WorkerThread worker = null; 
@@ -148,6 +153,12 @@ public class DataSyncService extends Service {
 			getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
 		}
 		if(taskList.size() > 0){
+        	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+        	SharedPreferences.Editor editor = settings.edit();
+        	editor.putLong(AreaCI.PREFS_LAST_SYNC_TIME, System.currentTimeMillis());        	
+        	Date now = new Date(System.currentTimeMillis());
+        	editor.putString(AreaCI.PREFS_LAST_SYNC_TIME_STR, format.format(now));        	
+        	editor.commit();			
 			getContentResolver().notifyChange(TaskInfo.CONTENT_URI, null);
 		}
 	}

@@ -28,13 +28,16 @@ public class TaskQueueActivity extends Activity {
 	private SimpleCursorAdapter adapter = null;
 	private int order_by = 0;
 	private String order_by_sql = null;	
+	private TextView lastSynced = null;
+	private SharedPreferences settings = null;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_queue);
-
-        SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0); 
+        settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
         
+        lastSynced = (TextView)this.findViewById(R.id.last_synced);        
+        lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
         this.order_by = settings.getInt(AreaCI.PREFS_QUEUE_ORDER_BY, R.id.updated_time);        
         updateOrderBy(this.order_by, "", false);
         
@@ -59,6 +62,13 @@ public class TaskQueueActivity extends Activity {
     				public void onChange(boolean selfChange) {
         				Log.i(TAG, "The task list is updated.");
         				updateManagedCursor(order_by_sql);
+        				if(lastSynced != null){
+        					lastSynced.post(new Runnable(){
+        						public void run(){
+        							lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
+        						}
+        					});
+        				}
     				}
         	}
         );        
