@@ -54,7 +54,7 @@ public class ProxyClient {
 				);
 
 		proxyCommandPool = new ThreadPoolExecutor(
-				1, 3, 60, TimeUnit.SECONDS, 
+				2, 5, 60, TimeUnit.SECONDS, 
 				new LinkedBlockingDeque<Runnable>(50)
 				);
 		proxyCommandPool.execute(new RequestTracker());		
@@ -70,9 +70,9 @@ public class ProxyClient {
 	class TrackerScheduler extends TimerTask {
 		@Override
 		public void run() {
-			if(proxyCommandPool.getActiveCount() < 1) {
+			if(proxyCommandPool.getActiveCount() < 2) {
 				proxyCommandPool.execute(new RequestTracker());
-			}else if(commandCount > 10 && proxyCommandPool.getActiveCount() < 3){
+			}else if(commandCount > 10 && proxyCommandPool.getActiveCount() < 5){
 				proxyCommandPool.execute(new RequestTracker());
 			}
 			log.info(String.format("Active thread:%s, executed proxy command count:%s", 

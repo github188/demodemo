@@ -108,7 +108,7 @@ public class ProxyClient {
 				for(Continuation s = clients.peek(); s != null; ){
 					//会话已经不在阻塞等待状态。
 					s = clients.poll();
-					if(s == null || s.isResumed()) continue;
+					if(s == null || s.isResumed() || !s.isPending()) continue;
 					if(session != null){
 						try {
 							os = (ObjectOutputStream)s.getObject();
@@ -138,7 +138,7 @@ public class ProxyClient {
 	private void cleanUpTimeoutSession(){
 		long cur = System.currentTimeMillis();
 		for(ProxySession s: new ArrayList<ProxySession>(sessions.values())){
-			if(cur - s.createTime > 1000 * 60){
+			if(cur - s.createTime > 1000 * 60 * 3){
 				sessions.remove(s.sid);
 				waiting.remove(s.sid);
 				blocking.remove(s.sid);

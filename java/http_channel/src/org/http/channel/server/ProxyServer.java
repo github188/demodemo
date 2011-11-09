@@ -210,7 +210,7 @@ public class ProxyServer {
 			log.info("new task tracker suspend.");
 			response.flushBuffer();
 			client.activeContinuation(cons);
-			cons.suspend(1800 * 1000);
+			cons.suspend(300 * 1000);
 		}else {
 			log.info("Not found proxy clinet:" + request.getServerName());
 		}
