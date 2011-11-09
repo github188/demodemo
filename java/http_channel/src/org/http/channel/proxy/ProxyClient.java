@@ -108,7 +108,7 @@ public class ProxyClient {
 				for(Continuation s = clients.peek(); s != null; ){
 					//会话已经不在阻塞等待状态。
 					s = clients.poll();
-					if(s == null || s.isResumed() || !s.isPending()) continue;
+					if(s == null || s.isResumed() || (!s.isNew() && !s.isPending())) continue;
 					if(session != null){
 						try {
 							os = (ObjectOutputStream)s.getObject();
