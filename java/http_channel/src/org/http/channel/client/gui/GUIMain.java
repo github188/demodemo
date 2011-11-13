@@ -1,5 +1,7 @@
 package org.http.channel.client.gui;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
 
@@ -11,35 +13,35 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.http.channel.client.ProxyClient;
 import org.http.channel.client.gui.events.EventQueue;
 import org.http.channel.client.gui.xui.XUIContainer;
+import org.http.channel.settings.Settings;
 
 public class GUIMain {
 	
 	private Log log = LogFactory.getLog("gate");
 	private JFrame main = null;
 	private EventQueue eventQueue = null;
+	private static boolean isWin = false;
+	private static File workDir = null;	
 	//private BookController services = null;
 	private XUIContainer xui = new XUIContainer();
 	
 	public static void main(String[] args){
+		//isWin = System.getProperty("sun.desktop").equals("windows");		
 		mainPrivileged(args);
 	}
 	
 	public static void mainPrivileged(String[] args){
+		
 		new GUIMain().startup();
 	}
 	
 	public void startup(){
 		eventQueue = new EventQueue(null);		
-		//lafManager = new LookAndFeelSelector();		
-		//lafManager.setLookAndFeel(LookAndFeelSelector.DEFAULT_SKIN); 
-		
-		//把界面风格相关的事件注册。
-		//eventQueue.registerAction(lafManager);
-		
 		xui.setEventQueue(eventQueue);
-		//xui.		
+
 		try{
 			UIManager.setLookAndFeel(
 		            UIManager.getSystemLookAndFeelClassName());
@@ -49,8 +51,15 @@ public class GUIMain {
 		
 		//services = createPrivilegedProxy(new DefaultBookController(runingJNLP(),
 	 	//		runningSandbox()));	
-		
-		eventQueue.registerAction(new EventsHandler(xui));		
+		Settings s = new Settings("client.conf");		
+		ProxyClient proxy;
+		try {
+			proxy = new ProxyClient(s);
+		} catch (MalformedURLException e) {
+			log.error(e.toString(), e);
+			return;
+		}
+		eventQueue.registerAction(new EventsHandler(xui, proxy));		
 		/*
 		 * 使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
 		 * 使用自定义LAF后，只能在Event thread创建JFrame

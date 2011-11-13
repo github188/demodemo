@@ -6,6 +6,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.http.channel.client.ProxyClient;
 import org.http.channel.client.gui.events.BroadCastEvent;
 import org.http.channel.client.gui.events.EventAction;
 import org.http.channel.client.gui.xui.XUIContainer;
@@ -27,9 +28,11 @@ public class EventsHandler {
 	public static final String SHOW_SETTINGS = "ShowSettings";
 	public static final String SHOW_STATUS = "ShowStatus";
 	
-	private XUIContainer xui;
-	public EventsHandler(XUIContainer xui){
+	private XUIContainer xui = null;
+	private ProxyClient proxy = null;
+	public EventsHandler(XUIContainer xui, ProxyClient proxy){
 		this.xui = xui;
+		this.proxy = proxy;
 	}
 	
 	/**
@@ -75,7 +78,5 @@ public class EventsHandler {
 		JDialog about = (JDialog)xui.getByName("about");
 		about.setLocationRelativeTo(about.getParent());
 		about.setVisible(true);		
-	}
-	
-	
+	}		
 }
