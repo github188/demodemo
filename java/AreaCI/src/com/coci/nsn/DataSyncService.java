@@ -200,10 +200,10 @@ public class DataSyncService extends Service {
 		this.lastTryConnectTime = System.currentTimeMillis();
 		
 		String[][] connection = new String[][]{
+			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
 			{"http://10.0.2.2:8000/areaci/api/", null},	
 			{"http://10.56.117.81/coci/areaci/api/", null},
 			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
-			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
 			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
 		};
 		for(int i = 0; i < connection.length; i++){

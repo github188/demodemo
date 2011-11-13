@@ -171,6 +171,10 @@ public class AreaCiProvider extends ContentProvider {
         } else {
             orderBy = sortOrder;
         }
+        
+        if(selection != null && selection.trim().length() > 0){
+        	qb.appendWhere(" and " + selection);
+        }
 
         // Get the database and run the query
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
@@ -179,7 +183,6 @@ public class AreaCiProvider extends ContentProvider {
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);
         return c;
-
 	}
 
 	@Override

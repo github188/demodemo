@@ -26,25 +26,25 @@
     	android:layout_height="wrap_content"
     	android:orientation="horizontal" >
 		  <TextView
-		      android:id="@+id/category"
+		      android:id="@+id/status"
 		      android:gravity="center_horizontal"
-		      android:width="50px"
 		      android:layout_width="wrap_content"
 		      android:layout_height="fill_parent"
-		    />
-		    
+		      android:textColor="#00ffaa"
+		      /> 
+		  <TextView
+		      android:id="@+id/padding"
+		      android:gravity="center_horizontal"
+		      android:layout_width="wrap_content"
+		      android:layout_height="fill_parent"
+		      android:text="  "
+		      /> 		    
 		   <TextView
 		      android:id="@+id/name"
 		      android:layout_width="match_parent"
 		      android:layout_height="fill_parent"
 		      android:layout_weight="1"/>
 		  
-		  <TextView
-		      android:id="@+id/status"
-		      android:gravity="center_horizontal"
-		      android:layout_width="match_parent"
-		      android:layout_height="fill_parent"
-		      android:layout_weight="0.5"/>
   	</LinearLayout>
 	<LinearLayout 
     	android:layout_width="fill_parent"
@@ -65,6 +65,7 @@
 		      android:textColor="#00ffaa"
 		      />	    
 	</LinearLayout>
+	
     <TextView
       android:id="@+id/date_time"
       android:layout_width="fill_parent"

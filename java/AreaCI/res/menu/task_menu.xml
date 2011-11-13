@@ -7,27 +7,37 @@
      	<menu>
 		    <group android:checkableBehavior="single">		        		        
 		        <item android:id="@+id/prioirty"
-		              android:title="Prioirty" />
-		        		        
+		              android:title="Prioirty" />		        		        
 		        <item android:id="@+id/task_name"
-		              android:title="Task Name" />
-
+		              android:title="Task Name" />		        
+		        <item android:id="@+id/pate_name"
+		              android:title="PATE" />		        		        
 		        <item android:id="@+id/create_time"
 		              android:title="Create time" />
-		        		        
 		        <item android:id="@+id/updated_time"
 		              android:title="Updated time" />
-		        <!-- 
-		        <item android:id="@+id/status"
-		              android:title="Status" />
-		        -->
 		     </group>
 	    </menu>  
 	</item>
     
     <item android:id="@+id/filter_by"
           android:icon="@drawable/ic_launcher"
-          android:title="Filter" />
+          android:title="Filter" >
+     	<menu>
+		    <group android:checkableBehavior="single">		        		        
+		        <item android:id="@+id/cate_all"
+		              android:title="All task" />		        		        
+		        <item android:id="@+id/cate_smt"
+		              android:title="SMT" />		        
+		        <item android:id="@+id/cate_lwt"
+		              android:title="LWT" />		        		        
+		        <item android:id="@+id/cate_crt"
+		              android:title="CRT" />
+		        <item android:id="@+id/cate_sys"
+		              android:title="SYS" />
+		     </group>
+	    </menu>  
+	</item>     	
 
     <item android:id="@+id/search"
           android:icon="@drawable/ic_launcher"
@@ -35,5 +45,5 @@
 
     <item android:id="@+id/stop_sync"
           android:icon="@drawable/ic_launcher"
-          android:title="Stop" />        
+          android:title="Stop" />
 </menu>

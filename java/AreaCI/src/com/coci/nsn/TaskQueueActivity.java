@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,7 +28,9 @@ public class TaskQueueActivity extends Activity {
 	private Cursor cursor = null;
 	private SimpleCursorAdapter adapter = null;
 	private int order_by = 0;
-	private String order_by_sql = null;	
+	private int filter = 0;
+	private String order_by_sql = "priority desc";	
+	private String filter_sql = "";	
 	private TextView lastSynced = null;
 	private SharedPreferences settings = null;
 	
@@ -43,16 +46,16 @@ public class TaskQueueActivity extends Activity {
         
         ListView lv = (ListView) findViewById(R.id.task_list);
         
-        this.updateManagedCursor(order_by_sql);
+        this.updateManagedCursor();
         // Used to map notes entries from the database to views
         adapter = new SimpleCursorAdapter(this, R.layout.task_queue_item, 
         		cursor,
-                new String[] {TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
+                new String[] {TaskInfo.STATUS, TaskInfo.NAME, 
         		TaskInfo.HOST,
         		TaskInfo.SW_BUILD, TaskInfo.CREATED_DATE}, 
-                new int[] {R.id.category, R.id.name, R.id.status,
+                new int[] {R.id.status, R.id.name, 
         		R.id.host_ip, R.id.sw_build, R.id.date_time}
-        );                
+        );
         adapter.setViewBinder(new QueueViewBinder());        
         lv.setAdapter(adapter);  
         
@@ -61,7 +64,7 @@ public class TaskQueueActivity extends Activity {
         			@Override
     				public void onChange(boolean selfChange) {
         				Log.i(TAG, "The task list is updated.");
-        				updateManagedCursor(order_by_sql);
+        				updateManagedCursor();
         				if(lastSynced != null){
         					lastSynced.post(new Runnable(){
         						public void run(){
@@ -83,6 +86,11 @@ public class TaskQueueActivity extends Activity {
         if(item != null){
         	item.setChecked(true);
         }
+        
+        item = menu.findItem(R.id.cate_all);
+        if(item != null){
+        	item.setChecked(true);
+        }        
         return true;
     }
     
@@ -93,17 +101,26 @@ public class TaskQueueActivity extends Activity {
         switch (item.getItemId()) {
         	case R.id.prioirty:
         	case R.id.task_name:
+        	case R.id.pate_name:
         	case R.id.create_time:
         	case R.id.updated_time:
         		if (item.isChecked()) item.setChecked(false);
         		else item.setChecked(true);
-        	updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
-            updateManagedCursor(order_by_sql); 
-        	return true;     
+        			updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
+        			updateManagedCursor(); 
+            	return true;     
         	
-        	case R.id.filter_by:
+        	case R.id.cate_all:
+        	case R.id.cate_smt:
+        	case R.id.cate_lwt:
+        	case R.id.cate_crt:
+        	case R.id.cate_sys:
+        		if (item.isChecked()) item.setChecked(false);
+        		else item.setChecked(true);
+        			updateFilter(item.getItemId(), item.getTitle().toString(), true);
+        			updateManagedCursor(); 
         		//showDialog(FILTER_DIALOG_ID);
-        		return false;
+        		return true;
 
         	case R.id.stop_sync:
         		//showDialog(FILTER_DIALOG_ID);
@@ -117,6 +134,26 @@ public class TaskQueueActivity extends Activity {
         
     }
     
+    private void updateFilter(int id, String label, boolean save){
+	    switch (id) {
+			case R.id.cate_all:
+				this.filter_sql = "";
+				break;
+			case R.id.cate_smt:
+				this.filter_sql = "category = 'smt'";
+				break;
+			case R.id.cate_lwt:
+				this.filter_sql = "category = 'lwt'";
+				break;								
+			case R.id.cate_crt:
+				this.filter_sql = "category = 'crt'";
+				break;				
+			case R.id.cate_sys:
+				this.filter_sql = "category = 'sys'";
+				break;
+	    }
+    }
+    
     private void updateOrderBy(int id, String label, boolean save){
         switch (id) {
 			case R.id.prioirty:
@@ -124,7 +161,10 @@ public class TaskQueueActivity extends Activity {
 				break;
 			case R.id.task_name:
 				order_by_sql = "name asc, modified desc";
-				break;				
+				break;
+			case R.id.pate_name:
+				order_by_sql = "host_ip asc, priority desc";
+				break;								
 			case R.id.create_time:
 				order_by_sql = "created desc, modified desc";
 				break;				
@@ -159,7 +199,8 @@ public class TaskQueueActivity extends Activity {
     	return dialog;    	
     }
     
-    private void updateManagedCursor(String order_by){
+    private void updateManagedCursor(){
+    	Log.i(TAG, "task order by:" + this.order_by_sql);
     	if(cursor != null){
     		stopManagingCursor(cursor);
     		cursor.close();
@@ -167,10 +208,11 @@ public class TaskQueueActivity extends Activity {
         cursor = managedQuery(TaskInfo.TASK_QUEUE_URI, 
         		new String[] {TaskInfo._ID, TaskInfo.CATEGORY, TaskInfo.NAME, TaskInfo.STATUS,
         		TaskInfo.HOST, TaskInfo.SW_BUILD, 
-        		TaskInfo.CREATED_DATE, TaskInfo.START_DATE
+        		TaskInfo.CREATED_DATE, TaskInfo.START_DATE,
+        		TaskInfo.PRIORITY
         		}, 
-        		null, null,
-        		order_by); 	
+        		this.filter_sql, null,
+        		this.order_by_sql); 
         if(adapter != null){
         	adapter.changeCursor(cursor);
         	//adapter.notifyDataSetChanged();
@@ -188,11 +230,35 @@ public class TaskQueueActivity extends Activity {
     class QueueViewBinder implements SimpleCursorAdapter.ViewBinder{
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			if(columnIndex == 5 && view instanceof TextView){
+			if(view.getId() == R.id.status){
+				TextView o = (TextView)view;
+				String st = cursor.getString(cursor.getColumnIndex(TaskInfo.STATUS));
+				if (st.equals("running") || st.equals("preparing")){
+					o.setTextColor(Color.GREEN);
+				}else if (st.equals("waiting")){
+					o.setTextColor(Color.YELLOW);
+				}else {
+					o.setTextColor(Color.RED);
+				}
+				o.setText(st);
+				return true;
+			}
+			
+			if(view.getId() == R.id.sw_build){
 				TextView o = (TextView)view;
 				o.setText("  SW:" + cursor.getString(cursor.getColumnIndex("sw_build")));
 				return true;
 			}
+			if(view.getId() == R.id.name){
+				/* "%s:%s@%s" */
+				TextView o = (TextView)view;
+				String name = cursor.getString(cursor.getColumnIndex(TaskInfo._ID));
+				name += " " + cursor.getString(cursor.getColumnIndex(TaskInfo.NAME));
+				name += " @" + cursor.getString(cursor.getColumnIndex(TaskInfo.PRIORITY));				
+				o.setText(name);
+				return true;
+			}
+			
 			if(view.getId() == R.id.date_time){
 				TextView o = (TextView)view;
 				o.setText("Create:" + cursor.getString(cursor.getColumnIndex(TaskInfo.CREATED_DATE)) + 

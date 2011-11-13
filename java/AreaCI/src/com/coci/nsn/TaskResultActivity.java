@@ -31,7 +31,9 @@ public class TaskResultActivity extends Activity {
 	private Cursor cursor = null;
 	private SimpleCursorAdapter adapter = null;
 	private int order_by = 0;
-	private String order_by_sql = null;		
+	private int filter = 0;
+	private String order_by_sql = "priority desc";	
+	private String filter_sql = "";	
 	private TextView lastSynced = null;
 	private SharedPreferences settings = null;	
 	
@@ -45,10 +47,12 @@ public class TaskResultActivity extends Activity {
         lastSynced = (TextView)this.findViewById(R.id.last_synced);        
         lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
         
-        this.order_by = settings.getInt(AreaCI.PREFS_RESULT_ORDER_BY_ID, R.id.updated_time);        
-        updateOrderBy(this.order_by, "", false);        
+        this.order_by = settings.getInt(AreaCI.PREFS_RESULT_ORDER_BY_ID, R.id.updated_time);
+        this.filter = settings.getInt(AreaCI.PREFS_RESULT_FILTER_ID, R.id.cate_all);
+        updateOrderBy(this.order_by, "", false);
+        updateFilter(this.filter, "", false);
 
-        this.updateManagedCursor(order_by_sql);
+        this.updateManagedCursor();
         
         // Used to map notes entries from the database to views
         adapter = new SimpleCursorAdapter(this, R.layout.task_result_item, 
@@ -57,8 +61,7 @@ public class TaskResultActivity extends Activity {
                 	TaskInfo.SW_BUILD,}, 
                 new int[] {R.id.category, R.id.name, R.id.status,
                 	R.id.result_summary}
-        		){
-        	
+        		){        	
         	public void bindView(View view, Context context, Cursor cursor){
         		super.bindView(view, context, cursor);
         		String st = cursor.getString(3);
@@ -85,7 +88,7 @@ public class TaskResultActivity extends Activity {
         			@Override
     				public void onChange(boolean selfChange) {
         				Log.i(TAG, "The task list is updated.");
-        				updateManagedCursor(order_by_sql);
+        				updateManagedCursor();
         				if(lastSynced != null){
         					lastSynced.post(new Runnable(){
         						public void run(){
@@ -106,10 +109,16 @@ public class TaskResultActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task_menu, menu);
         
-        MenuItem item = menu.findItem(order_by);
+      	MenuItem item = menu.findItem(order_by);
         if(item != null){
         	item.setChecked(true);
         }
+        
+        item = menu.findItem(filter);
+        if(item != null){
+        	item.setChecked(true);
+        }  
+
         return true;
     }
     
@@ -124,13 +133,21 @@ public class TaskResultActivity extends Activity {
         	case R.id.updated_time:
         		if (item.isChecked()) item.setChecked(false);
         		else item.setChecked(true);
-        	updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
-            updateManagedCursor(order_by_sql); 
-        	return true;     
+	        	updateOrderBy(item.getItemId(), item.getTitle().toString(), true);
+	            updateManagedCursor(); 
+	        	return true;     
         	
-        	case R.id.filter_by:
+        	case R.id.cate_all:
+        	case R.id.cate_smt:
+        	case R.id.cate_lwt:
+        	case R.id.cate_crt:
+        	case R.id.cate_sys:
+        		if (item.isChecked()) item.setChecked(false);
+        		else item.setChecked(true);
+        			updateFilter(item.getItemId(), item.getTitle().toString(), true);
+        			updateManagedCursor(); 
         		//showDialog(FILTER_DIALOG_ID);
-        		return false;
+        		return true;
 
         	case R.id.stop_sync:
         		//showDialog(FILTER_DIALOG_ID);
@@ -143,6 +160,33 @@ public class TaskResultActivity extends Activity {
         }
         
     }
+    
+    private void updateFilter(int id, String label, boolean save){
+	    switch (id) {
+			case R.id.cate_all:
+				this.filter_sql = "";
+				break;
+			case R.id.cate_smt:
+				this.filter_sql = "category = 'smt'";
+				break;
+			case R.id.cate_lwt:
+				this.filter_sql = "category = 'lwt'";
+				break;								
+			case R.id.cate_crt:
+				this.filter_sql = "category = 'crt'";
+				break;				
+			case R.id.cate_sys:
+				this.filter_sql = "category = 'sys'";
+				break;
+	    }
+        if(save){
+        	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+        	SharedPreferences.Editor editor = settings.edit();
+        	editor.putInt(AreaCI.PREFS_RESULT_FILTER_ID, id);
+        	editor.commit();
+        } 
+	    this.filter = id;
+    }    
     
     private void updateOrderBy(int id, String label, boolean save){
         switch (id) {
@@ -168,7 +212,7 @@ public class TaskResultActivity extends Activity {
         this.order_by = id;
     }
     
-    private void updateManagedCursor(String order_by){
+    private void updateManagedCursor(){
     	if(cursor != null){
     		stopManagingCursor(cursor);
     		cursor.close();
@@ -181,8 +225,8 @@ public class TaskResultActivity extends Activity {
         		TaskInfo.RESULT,
         		TaskInfo.CREATED_DATE, TaskInfo.START_DATE, TaskInfo.DONE_DATE
         		}, 
-        		null, null,
-        		order_by); 	
+        		this.filter_sql, null,
+        		order_by_sql); 	
         if(adapter != null){
         	adapter.changeCursor(cursor);
         }
@@ -194,7 +238,7 @@ public class TaskResultActivity extends Activity {
     	super.onCreateContextMenu(menu, v, menuInfo);
       	MenuInflater inflater = getMenuInflater();
       	inflater.inflate(R.menu.task_result_context_menu, menu);
-      	Log.d(TAG, "create context menu...");
+      	Log.d(TAG, "create context menu...");               
     }    
     
     @Override
