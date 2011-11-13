@@ -57,10 +57,15 @@ public class GUIMain {
 		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run(){
+				MenuToolbar menuBar = new MenuToolbar(eventQueue);
+				xui.addComponent("menuBar", menuBar.getMenuBar());
+				
 				URL layout = this.getClass().getClassLoader().getResource("org/http/channel/client/gui/MainFrame.xml");
 				if(layout != null) {
 					xui.load(layout);				
-					main = (JFrame)xui.getByName("main");					
+					main = (JFrame)xui.getByName("main");
+					
+					xui.addComponent("about", new AboutDialog(main));
 					//main.initGui();
 	            	//窗口居中.
 	            	main.setLocationRelativeTo(null);

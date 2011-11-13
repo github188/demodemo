@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -12,36 +14,33 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-public class LoginPanel extends JPanel{	
-	public void initPanel(){
-		//private JPanel createSettingJPanel(){
-		//JPanel p = new JPanel(new BorderLayout());		
+import org.http.channel.client.gui.xui.XUIContainer;
+
+public class LoginPanel extends JPanel{
+	public void initPanel(final XUIContainer xui){
+		this.setLayout(new BorderLayout());	
         final JTextField name = new JTextField("");
-        final JTextField username = new JTextField("");
         final JPasswordField password = new JPasswordField("");
-        //final JTextField endpoint = new JTextField("");
-        final JTextField proxy = new JTextField("");
+        final JTextField internal = new JTextField("");
+        final JTextField proxy = new JTextField("");        
         
-                
         JLabel nameLabel = new JLabel("外部域名: ");
-        JLabel usernameLabel = new JLabel("注册密码: ");
-        JLabel usernamePassword = new JLabel("内部地址: ");
-        //JLabel endpointLabel = new JLabel("服务器地址: ");
+        JLabel passwordLabel = new JLabel("注册密码: ");
+        JLabel internalLabel = new JLabel("内部地址: ");
         JLabel proxyLabel = new JLabel("HTTP代理: ");
         
         nameLabel.setLabelFor(name);
-        usernameLabel.setLabelFor(username);
-        //endpointLabel.setLabelFor(endpoint);
-        proxyLabel.setLabelFor(proxy);
-
+        passwordLabel.setLabelFor(password);
+        proxyLabel.setLabelFor(proxy);        
+        
         JPanel textControlsPane = new JPanel();
         GridBagLayout gridbag = new GridBagLayout();
         //GridBagConstraints c = new GridBagConstraints();
 
         textControlsPane.setLayout(gridbag);
 
-        JLabel[] labels = {nameLabel, usernameLabel, usernamePassword, proxyLabel};
-        JTextField[] textFields = {name, username, password, proxy};
+        JLabel[] labels = {nameLabel, passwordLabel, internalLabel,  proxyLabel};
+        JTextField[] textFields = {name, password, internal, proxy};
         addLabelTextRows(labels, textFields, gridbag, textControlsPane);
 
         //textControlsPane.add(actionLabel, c);
@@ -59,6 +58,26 @@ public class LoginPanel extends JPanel{
         
         add(textControlsPane, BorderLayout.CENTER);
         add(buttons, BorderLayout.SOUTH);
+        
+        //this.addComponentListener(l)
+        this.addComponentListener(new ComponentAdapter(){
+        	public void componentShown(ComponentEvent e){
+        		if(xui.eventQueue != null){
+        			xui.eventQueue.fireEvent(EventsHandler.SHOW_SETTINGS, e.getSource());
+        		}
+        	}
+        });
+        
+        /**
+         * 注册GUI控件到XUI.
+         */
+        xui.addComponent(EventsHandler.REMOTE_DOMAIN, name);
+        xui.addComponent(EventsHandler.PROXY_PASSWORD, password);
+        xui.addComponent(EventsHandler.INTERNAL_DOMAIN, internal);
+        xui.addComponent(EventsHandler.HTTP_PROXY, proxy);
+        
+        xui.addComponent(EventsHandler.SAVE_SETTINGS, save);
+        xui.addComponent(EventsHandler.CLOSE_SETTINGS, close);
 	}
 	
     private void addLabelTextRows(JLabel[] labels, JTextField[] textFields,

@@ -40,7 +40,12 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XUIContainer {
 	private Log log = LogFactory.getLog("xui");
 	private Map<String, Object> cache = new HashMap<String, Object>();
-	private EventQueue eventQueue = null;
+	
+	public EventQueue eventQueue = null;
+
+	public XUIContainer(){
+		cache.put("xui", this);
+	}
 	
 	public void load(URL resource){
 		load(resource, true);
@@ -95,7 +100,7 @@ public class XUIContainer {
 		}
 	}
 	
-	private void addComponent(String name, Object o){
+	public void addComponent(String name, Object o){
 		log.info("add component, name:" + name + ", " + o.toString());
 		this.cache.put(name, o);
 		if(o instanceof Component){
@@ -105,6 +110,9 @@ public class XUIContainer {
 		if(o instanceof AbstractButton){
 			AbstractButton c = (AbstractButton)o;
 			c.setActionCommand(name);
+			if(this.eventQueue != null){
+				c.addActionListener(this.eventQueue.getActionListener());
+			}
 		}
 		
 		if(this.eventQueue != null){

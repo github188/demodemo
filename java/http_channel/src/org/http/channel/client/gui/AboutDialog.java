@@ -26,7 +26,7 @@ public class AboutDialog extends JDialog {
 		this.setTitle("关于 " + name);
 		setContentPane(createAboutJPanel());
 		//this.setPreferredSize(new Dimension(340, 200));
-		//setMinimumSize(new Dimension(340, 150));
+		setMinimumSize(new Dimension(340, 150));
 		this.pack();
 		this.setResizable(false);
 	}
@@ -52,7 +52,7 @@ public class AboutDialog extends JDialog {
         final JTextArea about = new JTextArea("");
         about.setEditable(false);
         final String aboutText = "\n" +  
-        						 name + " FTP远程升级软件.\n\n" +
+        						 name + " HTTP从外向内翻墙.\n\n" +
         						 "版本: " + Version.getVersion() + "\n" +
         						 "开发者： 四无浪子\n" +
         						 "联系方式: wudalong@gmail.com" + 
