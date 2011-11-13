@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -130,6 +131,10 @@ public class ProxyServer {
 				s.queryURL += "?" + request.getQueryString(); 
 			}
 			
+			//Cookie[] cookies = request.getCookies();
+			//cookies[0].getName()
+			//response.addCookie(arg0)
+			
 			int len = 0;
 			if(s.method.toLowerCase().equals("post")){
 				byte[] tmpPostData = new byte[1024 * 64]; 
@@ -227,6 +232,7 @@ public class ProxyServer {
     	int status = 0;
     	int length = 0;
     	ProxyClient client = this.getProxyClient(request);
+    	
     	if(isMultipart && client != null){
     		ServletFileUpload upload = new ServletFileUpload();
     		ProxySession session = null;
@@ -248,6 +254,21 @@ public class ProxyServer {
 				    	}else if(item.getFieldName().equals("status") && proxyResponse != null){
 				    		status = Integer.parseInt(Streams.asString(stream));
 				    		proxyResponse.setStatus(status);
+				    	}else if(item.getFieldName().equals("cookie") && proxyResponse != null){
+				    		String cookie = Streams.asString(stream);
+				    		log.debug("set new cookie:" + cookie);
+				    		String[] values = cookie.trim().split(";"); 
+				    		Cookie c = new Cookie(values[0], values[1]);
+				    		switch(values.length){
+				    			case 5:
+				    				c.setDomain(values[4]);
+				    			case 4:
+				    				c.setMaxAge(Integer.parseInt(values[3]));
+				    			case 3:
+				    				c.setPath(values[2]);
+				    			case 2:
+				    		}
+				    		proxyResponse.addCookie(c);
 				    	}else if(proxyResponse != null && !proxyResponse.isCommitted()){
 				    		String name = item.getFieldName();
 				    		String values = Streams.asString(stream);
@@ -332,6 +353,36 @@ public class ProxyServer {
 		response.getWriter().write(status.toString());
 	}
 	
+	public void user_login(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		ProxyClient client = this.getProxyClient(request, true);
+		if(client != null){
+			if(request.getMethod().toLowerCase().equals("post")){
+				ProxySession s = this.newProxySession();
+				s.queryURL = "~/user_login";
+				s.method = request.getMethod();
+				s.header = new HashMap<String, String>();
+				s.header.put("username", request.getParameter("username"));
+				s.header.put("password", request.getParameter("password"));
+				
+				log.info(String.format("REQ:[%s] %s, %s, SID:%s", s.method, s.queryURL, 0, s.sid));			
+				s.continuation =  ContinuationSupport.getContinuation(request, null); 				
+				//保存当前Session
+				client.newSession(s);
+				s.continuation.setObject(response);
+				s.continuation.suspend(180 * 1000);
+				
+			}else {
+				static_serve("org/http/channel/server/static/login_form.html", "text/html", response);
+			}
+		}else {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			response.setCharacterEncoding("utf8");
+			response.getWriter().println("Not found active proxy client. <br/>" +
+					"没有找到一个代理客户端来转发请求。<br/>" +
+					"Server name:" + request.getServerName());
+		}
+	}
+	
 	/**
 	 * 创建一个代理会话。
 	 * @return
@@ -374,5 +425,26 @@ public class ProxyServer {
 			log.info(String.format("Not found proxy client for '%s'", serverName));
 		}
 		return n;
-	}	
+	}
+	
+    protected void static_serve(String path, String mimeType, HttpServletResponse response) throws IOException{
+	    response.setContentType(mimeType == null ? "text/html" : mimeType);
+	    response.setCharacterEncoding("utf-8");
+	    InputStream ins = this.getClass().getClassLoader().getResourceAsStream(path);
+	    byte[] buffer = new byte[64 * 1024];
+	    if(ins == null){
+	    	//response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	    	response.getWriter().println("Not found:" + path);
+	    }else {
+	    	if(response.getOutputStream() != null){
+		    	for(int len = ins.read(buffer); len > 0; ){
+		    		response.getOutputStream().write(buffer, 0, len);
+		    		len = ins.read(buffer);
+		    	}
+	    	}else { //在Socket, 模式不能取到OutputStream.
+	    		response.getWriter().println("Can't get OutputStream.");
+	    	}
+	    	ins.close();
+	    }
+    }	
 }

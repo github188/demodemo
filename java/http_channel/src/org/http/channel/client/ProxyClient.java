@@ -3,17 +3,15 @@ package org.http.channel.client;
 import static org.http.channel.client.Main.LOCAL;
 import static org.http.channel.client.Main.REMOTE;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -31,20 +29,23 @@ public class ProxyClient {
 	private Settings settings = null;
 	private ThreadPoolExecutor proxyWorkerPool = null;
 	private ThreadPoolExecutor proxyCommandPool = null;
-	private String remote = null;
+	private AuthManager auth = null;
+	private URL remote = null;
 	private String local = null;
 	private Timer timer = new Timer();
 	private long commandCount = 0;
 	
-	public ProxyClient(Settings s){
+	public ProxyClient(Settings s) throws MalformedURLException{
 		this.settings = s;
 		
-		this.remote = s.getString(REMOTE, "");
+		this.remote = new URL(s.getString(REMOTE, ""));
 		this.local = s.getString(LOCAL, "");
 	}
 	
 	public void run(){
 		int core_thread_count = 5;
+		
+		auth = new AuthManager();
 		proxyWorkerPool = new ThreadPoolExecutor(
 				core_thread_count,
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
@@ -106,7 +107,13 @@ public class ProxyClient {
 					commandCount++;
 					log.debug("Request:" + obj.toString());
 					if(obj instanceof ProxySession){
-						proxyWorkerPool.execute(new TaskWorker((ProxySession)obj));
+						ProxySession session = (ProxySession)obj;
+						if(session.queryURL .startsWith("/~") ||  
+							session.queryURL .startsWith("~")){
+							proxyWorkerPool.execute(new CommandWorker(session, remote));
+						}else {
+							proxyWorkerPool.execute(new TaskWorker(session, remote));
+						}
 					}
 				}
 				
@@ -128,15 +135,41 @@ public class ProxyClient {
 			}
 		}
 	}
+	
+
+	
+	class CommandWorker extends AbstractWorker implements Runnable {		
+		public CommandWorker(ProxySession s, URL remote) {
+			super(s, remote);
+		}
+
+		public void run(){
+	    	String[] tmps = request.queryURL.split("/");
+	    	String cmd = tmps[tmps.length - 1].toLowerCase().trim();
+	    	try{
+		    	if(cmd.equals("user_login") && auth != null){
+		    		String username = request.header.get("username");
+		    		String password = request.header.get("password");
+		    		if(auth.login(request, username, password)){
+		    			log.info("login successful, user:" + username);
+		    			forwardAuthOK(request);
+		    		}else {
+		    			forwardAuthRequest(request);
+		    		}
+		    	}
+	    	}catch (Exception e) {
+				log.error(e.toString(), e);
+			}
+		}
+	}
 
 	/**
 	 * 用来访问本地的最终服务，并把结果转发回代理服务器。
 	 * @author deon
 	 */
-	class TaskWorker implements Runnable{
-		private ProxySession request = null;
-		public TaskWorker(ProxySession request){
-			this.request = request;
+	class TaskWorker extends AbstractWorker implements Runnable{
+		public TaskWorker(ProxySession s, URL remote) {
+			super(s, remote);
 		}
 
 		@Override
@@ -145,9 +178,15 @@ public class ProxyClient {
 			HttpURLConnection connection = null;
 			InputStream ins = null;
 			try {
+				if(auth != null && !auth.hasPermession(request)){
+					forwardAuthRequest(request);
+					return;
+				}
+				
 				URL localURL = new URL(local + request.queryURL);
 				connection = (HttpURLConnection) localURL.openConnection(Proxy.NO_PROXY);
 				connection.setRequestMethod(request.method);
+				
 				
 				/**
 				 * Set default header.
@@ -191,30 +230,5 @@ public class ProxyClient {
 			}
 		}
 		
-		private void uploadResponse(InputStream in, Map<String, List<String>> header, int code) throws IOException{
-			log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));
-
-			HTTPForm form = new HTTPForm(new URL(remote + "/~/reponse"));
-			form.setParameter("sid", this.request.sid);
-			form.setParameter("status", code + "");
-			
-			
-			String values = "";
-			for(String k: header.keySet()){
-				List<String> val = header.get(k);
-				values = val.get(0);
-				for(int i = 1; i < val.size(); i++){
-					values += "," + val.get(i);
-				}
-				//log.info(String.format("%s->%s", k, values));
-				if(k != null){
-					form.setParameter(k, values);
-				}
-			}
-			form.startFileStream("file0", "file", in);
-			String data = form.read();
-			form.close();
-			log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));
-		}
 	}
 }

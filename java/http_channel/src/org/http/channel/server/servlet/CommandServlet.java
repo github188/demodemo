@@ -29,6 +29,8 @@ public class CommandServlet extends HttpServlet{
     		ProxyServer.ins.doneRequest(request, response);
     	}else if(cmd.equals("status")){
     		ProxyServer.ins.status(request, response);
+    	}else if(cmd.equals("user_login")){
+    		ProxyServer.ins.user_login(request, response);    		
     	}else if(cmd.equals("stop")){
     		//停止系统。
     		LogFactory.getLog("gate").warn("System shut down by '/~/stop'");

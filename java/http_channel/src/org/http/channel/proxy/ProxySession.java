@@ -3,6 +3,8 @@ package org.http.channel.proxy;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+
 import org.mortbay.util.ajax.Continuation;
 
 /**
@@ -27,6 +29,7 @@ public class ProxySession  implements Serializable{
 	 * 里面有一个HttpResponse的引用。
 	 */
 	public transient Continuation continuation = null;
+	public transient Cookie[] set_cookies = null;
 	public long createTime = 0;
 	
 	public String toString(){
