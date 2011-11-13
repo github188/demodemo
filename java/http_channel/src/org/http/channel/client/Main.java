@@ -11,7 +11,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.http.channel.Version;
-import org.http.channel.server.ProxyServer;
+import org.http.channel.client.gui.GUIMain;
 import org.http.channel.settings.Settings;
 
 public class Main {
@@ -21,9 +21,11 @@ public class Main {
 	public static final String VERSION = "version";
 	public static final String REMOTE = "remote";
 	public static final String LOCAL = "local";
+	public static final String GUI = "gui";
 	
 	public static void main(String[] args) throws IOException{
 		Options options = new Options();
+		options.addOption(GUI, false, "Run with gui mode.");
 		options.addOption(VERSION, false, "show version.");
 		options.addOption(REMOTE, true, "the remote URL of proxy.");
 		options.addOption(LOCAL, true, "the local URL of proxy.");
@@ -41,6 +43,9 @@ public class Main {
 		
 		if(cmd.hasOption(VERSION)){
 			System.out.println("Gate " + Version.getVersion());
+			return;
+		}else if(cmd.hasOption(GUI)){
+			GUIMain.main(args);
 			return;
 		}else {
 			initLog4jFile("client.log");

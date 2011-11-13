@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>	
+	<win name='LoginPanel' class='org.http.channel.client.gui.LoginPanel' >
+		<initPanel />
+	</win>
+	<win name='StatusPanel' class='org.http.channel.client.gui.ProxyStatusPanel' />
+	
+	<win name='main' class='javax.swing.JFrame'>
+		<size x='750' y='550' />
+		<title value="FreeGate--HTTP代理客户端" />
+		
+		<!--<layout ref='null' /> -->
+		<add name="mainLayout" align="Center" class="javax.swing.JPanel">							
+			<layout name='cardLayout' class='java.awt.CardLayout' />
+			
+			<add ref="LoginPanel" align="login" />
+			<add ref="StatusPanel" align="status" />
+		</add>
+	</win>
+</root> 
