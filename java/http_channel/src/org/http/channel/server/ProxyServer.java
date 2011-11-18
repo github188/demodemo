@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,7 @@ import org.mortbay.util.ajax.ContinuationSupport;
  *
  */
 public class ProxyServer {
+	public static final String XAUTH = "X-proxy-auth";
 	public static ProxyServer ins = null;
 	private Log log = LogFactory.getLog("gate");
 	private long proxySessionId = 0;
@@ -209,15 +211,21 @@ public class ProxyServer {
 			
 			ObjectOutputStream os = new ObjectOutputStream(f);
 			//ObjectOutputStream
-			
-			/**
-			 * 等待30分钟的HTTP请求。
-			 */
-			cons.setObject(os);
-			log.info("new task tracker suspend.");
-			response.flushBuffer();
-			client.activeContinuation(cons);
-			cons.suspend(300 * 1000);
+			String xAuth = request.getHeader(XAUTH);
+			if(client.accessKey == null || (xAuth != null && client.accessKey.equals(xAuth))){
+				client.lastActive = new Date(System.currentTimeMillis());
+				/**
+				 * 等待30分钟的HTTP请求。
+				 */
+				cons.setObject(os);
+				log.info("new task tracker suspend.");
+				response.flushBuffer();
+				client.activeContinuation(cons);
+				cons.suspend(300 * 1000);
+			}else {
+				os.writeObject("Authencation error.");
+				os.flush();
+			}
 		}else {
 			log.info("Not found proxy clinet:" + request.getServerName());
 		}
@@ -412,6 +420,7 @@ public class ProxyServer {
 	
 	private ProxyClient getProxyClient(HttpServletRequest request, boolean autoCreate){
 		String serverName = request.getServerName();
+		ProxyClient n = null;
 		if(serverName == null || 
 		   serverName.indexOf(".0.") > 0 //127.0.0.1 10.0.2.2等地址
 		  ){
@@ -419,12 +428,27 @@ public class ProxyServer {
 			serverName = "default";
 		}
 		
-		if(!this.proxyClients.containsKey(serverName) && autoCreate){
-			log.info(String.format("create new proxy client for '%s'", serverName));
-			this.proxyClients.put(serverName, new ProxyClient());
+		/**
+		 * 清理过期的代理客户端。
+		 */
+		if(autoCreate){
+			for(String key: new ArrayList<String>(this.proxyClients.keySet())){
+				n = this.proxyClients.get(key);
+				if(n == null)continue;
+				if(System.currentTimeMillis() - n.lastActive.getTime() > 30 * 60 * 1000){
+					this.proxyClients.remove(key);
+				}
+			}
+			n = null;
 		}
 		
-		ProxyClient n = this.proxyClients.get(serverName);
+		if(this.proxyClients.size() < 50 && !this.proxyClients.containsKey(serverName) && autoCreate){
+			log.info(String.format("create new proxy client for '%s'", serverName));
+			n =	new ProxyClient();
+			n.accessKey = request.getHeader(XAUTH); 
+			this.proxyClients.put(serverName, n);
+		}
+		n = this.proxyClients.get(serverName);
 		if(n == null){
 			log.info(String.format("Not found proxy client for '%s'", serverName));
 		}

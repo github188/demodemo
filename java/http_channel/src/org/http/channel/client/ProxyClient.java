@@ -25,6 +25,7 @@ import org.http.channel.settings.Settings;
 
 public class ProxyClient {
 	private Log log = LogFactory.getLog("gate");
+	public static final String XAUTH = "X-proxy-auth";
 	
 	private Settings settings = null;
 	private ThreadPoolExecutor proxyWorkerPool = null;
@@ -99,7 +100,10 @@ public class ProxyClient {
 				connection = (HttpURLConnection )request.openConnection();
 				connection.setReadTimeout(1000 * 60 * 5);
 				connection.setConnectTimeout(1000 * 30);
-
+				
+				if(settings.getString("client_secret_key", null) != null){
+					connection.addRequestProperty(XAUTH, settings.getString("client_secret_key", null));
+				}
 				connection.setRequestMethod("POST");
 				connection.setDoInput(true);
 				connection.connect();

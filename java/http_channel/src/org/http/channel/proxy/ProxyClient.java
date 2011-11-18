@@ -3,6 +3,7 @@ package org.http.channel.proxy;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -31,7 +32,7 @@ public class ProxyClient {
 	 */
 	public Map<String, ProxySession> sessions = new HashMap<String, ProxySession>();
 	public Queue<String> waiting = new ConcurrentLinkedQueue<String>();
-	public Queue<String> blocking = new ConcurrentLinkedQueue<String>();		
+	public Queue<String> blocking = new ConcurrentLinkedQueue<String>();
 	/**
 	 * 保存等待下载HTTP请求的连接。
 	 */
@@ -39,6 +40,11 @@ public class ProxyClient {
 	
 	public Queue<ProxySession> doneSession = new ConcurrentLinkedQueue<ProxySession>();
 	
+	public String accessKey = null;
+	/**
+	 * 最后响应时间，用来计算超时客户端。
+	 */
+	public Date lastActive = new Date();
 	/**
 	 * 确保只有一个线程在作Schedule操作.
 	 */
