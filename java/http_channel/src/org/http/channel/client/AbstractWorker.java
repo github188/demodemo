@@ -25,7 +25,7 @@ public class AbstractWorker {
 	}
 	
 	public void uploadResponse(InputStream in, Map<String, List<String>> header, int code) throws IOException{
-		log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));
+		//log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));
 		
 		HTTPForm form = null;
 		try {
@@ -40,13 +40,19 @@ public class AbstractWorker {
 		
 		String values = "";
 		for(String k: header.keySet()){
+			if(k == null) continue;
 			List<String> val = header.get(k);
 			values = val.get(0);
 			for(int i = 1; i < val.size(); i++){
 				values += "," + val.get(i);
 			}
 			//log.info(String.format("%s->%s", k, values));
-			if(k != null){
+			if(k.toLowerCase().equals("set-cookie")){
+				log.info(String.format("Set cookie:%s=%s", k, values));
+				values = this.convertCookie(values);
+				//log.info("Conver to proxy cookie:" + values);
+				form.setParameter("cookie", values);				
+			}else {
 				form.setParameter(k, values);
 			}
 		}
@@ -83,5 +89,24 @@ public class AbstractWorker {
 		hv.add("ok");
 		header.put("X-proxy-login", hv);
 		uploadResponse(in, header, 200);	
+	}
+	
+	protected String convertCookie(String values){
+		String[] keys = values.split(";");
+		String name, value, age, path;
+		name = keys[0].split("=")[0];
+		value = keys[0].split("=")[1];
+		path = "/";
+		age = "31536000";
+		String[] tmp = null;
+		for(int i = 1; i < keys.length; i++){
+			tmp = keys[i].split("=", 2);
+			if(tmp[0].toLowerCase().equals("path")){
+				path = tmp[1].trim();
+			}else if(tmp[0].toLowerCase().equals("Max-Age")){
+				age = tmp[1].trim();
+			}
+		}
+		return String.format("%s;%s;%s;%s;%s", name, value, path, age, remote.getHost());		
 	}
 }

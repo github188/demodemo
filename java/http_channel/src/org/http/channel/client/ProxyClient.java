@@ -176,15 +176,16 @@ public class ProxyClient {
 
 		@Override
 		public void run() {
-			log.info(String.format("Local:%s, session:%s", request.queryURL, request.sid));
 			HttpURLConnection connection = null;
 			InputStream ins = null;
 			try {
 				if(auth != null && !auth.hasPermession(request)){
+					log.info(String.format("Access denied:%s, session:%s", request.queryURL, request.sid));
 					forwardAuthRequest(request);
 					return;
 				}
 				
+				log.info("Start forward: " + request.toString());				
 				URL localURL = new URL(local + request.queryURL);
 				connection = (HttpURLConnection) localURL.openConnection(Proxy.NO_PROXY);
 				connection.setRequestMethod(request.method);

@@ -131,9 +131,11 @@ public class ProxyServer {
 				s.queryURL += "?" + request.getQueryString(); 
 			}
 			
-			//Cookie[] cookies = request.getCookies();
-			//cookies[0].getName()
-			//response.addCookie(arg0)
+			/*
+			Cookie[] cookies = request.getCookies();
+			for(Cookie k: request.getCookies()){
+				log.info(String.format("cookie: %s=%s", k.getName(), k.getValue()));
+			}*/
 			
 			int len = 0;
 			if(s.method.toLowerCase().equals("post")){
@@ -247,7 +249,9 @@ public class ProxyServer {
 				    		session = client.doneSession(Streams.asString(stream));
 				    		if(session != null){
 				    			proxyResponse = (HttpServletResponse)session.continuation.getObject();
-				    			//log.debug("------------------------------");
+				    			if(proxyResponse == null){
+				    				break;
+				    			}
 				    		}else {
 				    			break;
 				    		}
@@ -256,7 +260,7 @@ public class ProxyServer {
 				    		proxyResponse.setStatus(status);
 				    	}else if(item.getFieldName().equals("cookie") && proxyResponse != null){
 				    		String cookie = Streams.asString(stream);
-				    		log.debug("set new cookie:" + cookie);
+				    		//log.debug("set new cookie:" + cookie);
 				    		String[] values = cookie.trim().split(";"); 
 				    		Cookie c = new Cookie(values[0], values[1]);
 				    		switch(values.length){

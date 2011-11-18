@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
+import org.http.channel.client.Account;
 import org.mortbay.util.ajax.Continuation;
 
 /**
@@ -29,10 +30,15 @@ public class ProxySession  implements Serializable{
 	 * 里面有一个HttpResponse的引用。
 	 */
 	public transient Continuation continuation = null;
+	public transient Account account = null;
 	public transient Cookie[] set_cookies = null;
 	public long createTime = 0;
 	
 	public String toString(){
-		return "sid:" + this.sid + ", url:" + this.queryURL;
+		if(account != null){
+			return "user:" + account.username + ", sid:" + this.sid + ", url:" + this.queryURL;
+		}else {
+			return "sid:" + this.sid + ", url:" + this.queryURL;
+		}
 	}
 }

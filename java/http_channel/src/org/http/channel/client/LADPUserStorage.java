@@ -19,7 +19,7 @@ public class LADPUserStorage implements AccountStorage {
 	private Log log = LogFactory.getLog("ldap");
 	private Settings settings = null;
 	private String baseDN = "ou=People,o=NSN";
-	private String provider = "ldap://ed.es.emea.nsn-intra.net:389/";
+	private String provider = "ldap://ed.es.emea.nsn-intra.net:389";
 	
 	public LADPUserStorage(Settings s){
 		this.settings = s;
@@ -32,8 +32,11 @@ public class LADPUserStorage implements AccountStorage {
 			if(this.authencation(account, password)){
 				 log.info(String.format("Login ok, uid:%s, full name:%s", username, account.fullname));
 			}else {
+				log.info("Password error, user name:" + username);
 				return null;
 			}
+		}else {
+			log.info("Not found user name:" + username);
 		}
 		return account;
 	}
@@ -62,6 +65,7 @@ public class LADPUserStorage implements AccountStorage {
 				Attributes attr = name.getAttributes();	
 				
 				account = new Account();
+				account.username = username;
 				account.email = attr.get("mail").get().toString();
 				account.fullname = attr.get("cn").get().toString();				
 				account.ldapDN = name.getName();				
