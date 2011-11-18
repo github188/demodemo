@@ -45,7 +45,9 @@ public class ProxyClient {
 	public void run(){
 		int core_thread_count = 5;
 		
-		auth = new AuthManager();
+		auth = new AuthManager(this.settings);
+		auth.load();
+		
 		proxyWorkerPool = new ThreadPoolExecutor(
 				core_thread_count,
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
