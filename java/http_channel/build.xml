@@ -181,9 +181,9 @@
         <delete quiet="true" file="test_key"/> 
 		<genkey alias="Goku" storepass="password" keystore="test_key" >
 		  <dname>
-		    <param name="CN" value="Goku"/>
-		    <param name="OU" value="org"/>
-		    <param name="O"  value="goku.org"/>
+		    <param name="CN" value="Deonwu"/>
+		    <param name="OU" value="com"/>
+		    <param name="O"  value="deonwu84.com"/>
 		    <param name="C"  value="ch"/>
 		  </dname>
 		</genkey>	
