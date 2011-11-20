@@ -3,12 +3,12 @@
 <jnlp
   spec="1.5+"
   codebase="http://ci.deonwu84.com/job/Http_channel/lastSuccessfulBuild/artifact/dist/"
-  href="notebook.jnlp">
+  href="FreeGate.jnlp">
   <information>
     <title>FreeGate</title>
     <vendor>Deonwu</vendor>
     <description>Free gate</description>
-    <icon href="http://ci.deonwu84.com/job/Http_channel/lastSuccessfulBuild/artifact/dist/freegate.png"/> 
+    <icon href="freegate.png"/> 
     <offline-allowed/>
     <shortcut online="false">
       <desktop/>
