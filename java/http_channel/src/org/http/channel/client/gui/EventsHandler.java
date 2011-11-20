@@ -8,7 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.http.channel.client.Main;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.http.channel.client.ProxyClient;
 import org.http.channel.client.StatusListener;
 import org.http.channel.client.gui.events.BroadCastEvent;
@@ -16,7 +17,6 @@ import org.http.channel.client.gui.events.EventAction;
 import org.http.channel.client.gui.xui.XUIContainer;
 import org.http.channel.proxy.RemoteStatus;
 import org.http.channel.settings.Settings;
-import org.mortbay.log.Log;
 
 public class EventsHandler {
 	public static final String REMOTE_DOMAIN = "remote_domain";
@@ -38,6 +38,7 @@ public class EventsHandler {
 	public static final String HIDDEN_MAINFRAME = "HiddenMainFrame";
 	public static final String OPEN_MAINFRAME = "OpenMainFrame";
 	private final static DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private Log log = LogFactory.getLog("gate");
 	
 	private XUIContainer xui = null;
 	private ProxyClient proxy = null;
@@ -144,7 +145,7 @@ public class EventsHandler {
 	 */	
 	@EventAction(order=1)
 	public void OpenMainFrame(final BroadCastEvent event){
-		Log.info("OpenMainFrame......");
+		log.info("OpenMainFrame......");
 		String r = proxy.settings.getString(Settings.REMOTE_DOMAIN, "");
 		String l = proxy.settings.getString(Settings.INTERNAL_DOMAIN, "");
 		
@@ -153,11 +154,11 @@ public class EventsHandler {
 		
 		if(r == null || r.length() == 0 || l == null || l.length() == 0){
 			//this.ShowSettings(event);
-			Log.info("OpenMainFrame......login");
+			log.info("OpenMainFrame......login");
 			layout.show(actionPanel, "login");
 		}else {
 			//this.ShowStatus(event);
-			Log.info("OpenMainFrame......status");
+			log.info("OpenMainFrame......status");
 			layout.show(actionPanel, "status");
 		}
 	}
