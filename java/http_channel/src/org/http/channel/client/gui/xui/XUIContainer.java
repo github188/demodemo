@@ -249,7 +249,7 @@ public class XUIContainer {
 			//attributes.getLength()
 			if(clazz != null){
 				try {
-					context.obj = Beans.instantiate(null, clazz);
+					context.obj = getClass().getClassLoader().loadClass(clazz).newInstance();
 				} catch (Exception e) {
 					log.error("fail to instantiate class:" + clazz + ", error:" + e.toString());
 					return;
