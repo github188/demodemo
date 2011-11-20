@@ -148,6 +148,9 @@ public class EventsHandler {
 		log.info("OpenMainFrame......");
 		String r = proxy.settings.getString(Settings.REMOTE_DOMAIN, "");
 		String l = proxy.settings.getString(Settings.INTERNAL_DOMAIN, "");
+		if(!proxy.isRunning){
+			proxy.run();
+		}
 		
 		JPanel actionPanel = (JPanel)xui.getByName("mainLayout");
 		CardLayout layout = (CardLayout)actionPanel.getLayout();			

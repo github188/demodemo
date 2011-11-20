@@ -31,6 +31,7 @@ public class ProxyClient {
 	public RemoteStatus status = new RemoteStatus();
 	public Settings settings = null;
 	public AuthManager auth = null;
+	public boolean isRunning = false;
 	private Collection<StatusListener> statusListeners = new ArrayList<StatusListener>(); 
 	private ThreadPoolExecutor proxyWorkerPool = null;
 	private ThreadPoolExecutor proxyCommandPool = null;
@@ -75,7 +76,8 @@ public class ProxyClient {
 		proxyCommandPool.execute(new RequestTracker());		
 		log.info(String.format("Start proxy client, remote:%s, local:%s", remote, local));
 		
-		timer.scheduleAtFixedRate(new TrackerScheduler(), 100, 60 * 1000);		
+		timer.scheduleAtFixedRate(new TrackerScheduler(), 100, 60 * 1000);
+		isRunning = true;
 	}
 	
 	public void connect(){

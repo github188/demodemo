@@ -54,7 +54,7 @@ public class GUIMain {
 	 	//		runningSandbox()));	
 		Settings s = new Settings(new File(workDir, "client.conf").getAbsolutePath());		
 		ProxyClient proxy = new ProxyClient(s);
-		proxy.run();
+		//proxy.run();
 
 		eventQueue.registerAction(new EventsHandler(xui, proxy));		
 		/*
