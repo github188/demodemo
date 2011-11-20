@@ -1,15 +1,22 @@
 package org.http.channel.client.gui;
 
 import java.awt.CardLayout;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.http.channel.client.Main;
 import org.http.channel.client.ProxyClient;
+import org.http.channel.client.StatusListener;
 import org.http.channel.client.gui.events.BroadCastEvent;
 import org.http.channel.client.gui.events.EventAction;
 import org.http.channel.client.gui.xui.XUIContainer;
+import org.http.channel.proxy.RemoteStatus;
+import org.http.channel.settings.Settings;
+import org.mortbay.log.Log;
 
 public class EventsHandler {
 	public static final String REMOTE_DOMAIN = "remote_domain";
@@ -28,11 +35,28 @@ public class EventsHandler {
 	public static final String SHOW_SETTINGS = "ShowSettings";
 	public static final String SHOW_STATUS = "ShowStatus";
 	
+	public static final String HIDDEN_MAINFRAME = "HiddenMainFrame";
+	public static final String OPEN_MAINFRAME = "OpenMainFrame";
+	private final static DateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private XUIContainer xui = null;
 	private ProxyClient proxy = null;
+	
+	private StatusListener listenerProxy = new StatusListener(){
+		@Override
+		public void updated(RemoteStatus r) {
+			updateStatus();
+		}
+	};
+		
 	public EventsHandler(XUIContainer xui, ProxyClient proxy){
 		this.xui = xui;
 		this.proxy = proxy;
+		this.proxy.addStatusListener(listenerProxy);
+	}
+	
+	@EventAction(order=1)
+	public void XuiLoaded(final BroadCastEvent event){
 	}
 	
 	/**
@@ -51,10 +75,58 @@ public class EventsHandler {
 	 * @param event
 	 */
 	@EventAction(order=1)
-	public void Connection(final BroadCastEvent event){
+	public void Connection(final BroadCastEvent evnet){
 		JPanel actionPanel = (JPanel)xui.getByName("mainLayout");
 		CardLayout layout = (CardLayout)actionPanel.getLayout();
 		layout.show(actionPanel, "login");		
+	}
+	
+	/**
+	 * 设置界面打开时触发.
+	 * @param event
+	 */
+	@EventAction(order=1)
+	public void ShowSettings(final BroadCastEvent event){
+		JTextField field;
+		field = (JTextField)xui.getByName(REMOTE_DOMAIN);
+		if(field != null){
+			field.setText(proxy.settings.getString(Settings.REMOTE_DOMAIN, ""));
+		}
+
+		field = (JTextField)xui.getByName(PROXY_PASSWORD);
+		if(field != null){
+			field.setText(proxy.settings.getString(Settings.PROXY_SECRET_KEY, ""));
+		}
+
+		field = (JTextField)xui.getByName(INTERNAL_DOMAIN);
+		if(field != null){
+			field.setText(proxy.settings.getString(Settings.INTERNAL_DOMAIN, ""));
+		}
+	}
+	
+	@EventAction(order=1)
+	public void saveSettings(final BroadCastEvent event){
+		JTextField field;
+		field = (JTextField)xui.getByName(REMOTE_DOMAIN);
+		if(field != null){
+			proxy.settings.putSetting(REMOTE_DOMAIN, field.getText());
+		}
+
+		field = (JTextField)xui.getByName(PROXY_PASSWORD);
+		if(field != null){
+			proxy.settings.putSetting(Settings.PROXY_SECRET_KEY, field.getText());
+		}
+
+		field = (JTextField)xui.getByName(INTERNAL_DOMAIN);
+		if(field != null){
+			proxy.settings.putSetting(Settings.INTERNAL_DOMAIN, field.getText());
+		}
+		
+		proxy.settings.save();
+		proxy.connect();
+		 
+		//
+		ProxyStatus(event);
 	}
 	
 	/**
@@ -63,14 +135,40 @@ public class EventsHandler {
 	 */
 	@EventAction(order=1)
 	public void ShowStatus(final BroadCastEvent event){
-		JTextField name = (JTextField)xui.getByName(STATUS_REMOTE);
-		name.setText("http://proyx-nsn.deonwu84.com:8080");
+		updateStatus();
+	}
+	
+	/**
+	 * 主窗口打开时触发，开始加载Proxy。
+	 * @param event
+	 */	
+	@EventAction(order=1)
+	public void OpenMainFrame(final BroadCastEvent event){
+		Log.info("OpenMainFrame......");
+		String r = proxy.settings.getString(Settings.REMOTE_DOMAIN, "");
+		String l = proxy.settings.getString(Settings.INTERNAL_DOMAIN, "");
 		
-		/*
-		NoteBookSettings settings = new NoteBookSettings(this, controller);		
-		settings.setLocationRelativeTo(this);
-		settings.setVisible(true);
-		*/
+		JPanel actionPanel = (JPanel)xui.getByName("mainLayout");
+		CardLayout layout = (CardLayout)actionPanel.getLayout();			
+		
+		if(r == null || r.length() == 0 || l == null || l.length() == 0){
+			//this.ShowSettings(event);
+			Log.info("OpenMainFrame......login");
+			layout.show(actionPanel, "login");
+		}else {
+			//this.ShowStatus(event);
+			Log.info("OpenMainFrame......status");
+			layout.show(actionPanel, "status");
+		}
+	}
+	
+	/**
+	 * 退出系统
+	 * @param event
+	 */
+	@EventAction(order=1)
+	public void Exit(final BroadCastEvent event){
+		System.exit(0);
 	}
 	
 	@EventAction(order=1)
@@ -78,5 +176,38 @@ public class EventsHandler {
 		JDialog about = (JDialog)xui.getByName("about");
 		about.setLocationRelativeTo(about.getParent());
 		about.setVisible(true);		
-	}		
+	}
+	
+	@EventAction(order=1)
+	public void HiddenMainFrame(final BroadCastEvent event){
+		
+	}
+	
+	private void updateStatus(){
+		JTextField field = (JTextField)xui.getByName(STATUS_REMOTE);
+		//name.setText("http://proyx-nsn.deonwu84.com:8080");
+		if(field != null){
+			field.setText(proxy.settings.getString(Settings.REMOTE_DOMAIN, ""));
+		}
+
+		field = (JTextField)xui.getByName(STATUS_LOCAL);
+		if(field != null){
+			field.setText(proxy.settings.getString(Settings.INTERNAL_DOMAIN, ""));			
+		}
+
+		field = (JTextField)xui.getByName(STATUS_REQUEST);
+		if(field != null){
+			field.setText(proxy.status.requestCount + "");
+		}
+
+		field = (JTextField)xui.getByName(STATUS_ACTIVE_USER);
+		if(field != null){
+			field.setText(proxy.auth.activeUserCount() + "");
+		}
+
+		field = (JTextField)xui.getByName(STATUS_UPDATED);
+		if(field != null){
+			field.setText(proxy.status.connection + " at " + format.format(proxy.status.lastActive));
+		}		
+	}
 }

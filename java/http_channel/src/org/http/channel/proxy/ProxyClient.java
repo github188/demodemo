@@ -49,8 +49,13 @@ public class ProxyClient {
 	 * 确保只有一个线程在作Schedule操作.
 	 */
 	private final ReentrantLock lock = new ReentrantLock();
-	public ProxyClient(){
-		
+	
+	/**
+	 * 用来应答代理客户端，表示连接建立成功。
+	 */
+	private final RemoteStatus echo = new RemoteStatus();
+	public ProxyClient(){		
+		echo.connection = RemoteStatus.CONNEDTED;
 	}
 
 	public void newSession(ProxySession s){
@@ -87,7 +92,7 @@ public class ProxyClient {
 		clients.add(s);
 		try {
 			ObjectOutputStream o = (ObjectOutputStream)s.getObject();
-			o.writeObject("connected");
+			o.writeObject(echo);
 			o.flush();
 			//log.info("write command...");
 		} catch (IOException e) {

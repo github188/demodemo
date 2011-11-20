@@ -7,10 +7,11 @@
 		<initPanel ref='xui' />
 	</win>
 	
-	<win name='main' class='javax.swing.JFrame'>
+	<win name='main' class='org.http.channel.client.gui.MainFrame'>
 		<size x='350' y='250' />
 		<title value="FreeGate--HTTP代理客户端" />
 		<!--  RootPane().setJMenuBar(menu.getMenuBar()); -->
+		<initPanel ref='xui' />
 		<rootPane>
 			<jMenuBar ref="menuBar" />
 		</rootPane>

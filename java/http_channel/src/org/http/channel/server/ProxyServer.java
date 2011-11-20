@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.http.channel.Version;
 import org.http.channel.proxy.ProxyClient;
 import org.http.channel.proxy.ProxySession;
+import org.http.channel.proxy.RemoteStatus;
 import org.http.channel.settings.Settings;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
@@ -75,7 +76,9 @@ public class ProxyServer {
 		this.settings = s;
 		ins = this;
 
-		proxyClients.put("default", new ProxyClient());
+		ProxyClient proxy = new ProxyClient();
+		proxy.accessKey = "test";
+		proxyClients.put("default", proxy);
 	}
 
 	public void run(){
@@ -212,18 +215,21 @@ public class ProxyServer {
 			ObjectOutputStream os = new ObjectOutputStream(f);
 			//ObjectOutputStream
 			String xAuth = request.getHeader(XAUTH);
-			if(client.accessKey == null || (xAuth != null && client.accessKey.equals(xAuth))){
+			if(client.accessKey == null || (xAuth != null && client.accessKey.equals(xAuth))){				
 				client.lastActive = new Date(System.currentTimeMillis());
 				/**
 				 * 等待30分钟的HTTP请求。
 				 */
 				cons.setObject(os);
-				log.info("new task tracker suspend.");
+				log.info("new task tracker, key:" + xAuth + ", server:" + client.accessKey);
 				response.flushBuffer();
 				client.activeContinuation(cons);
 				cons.suspend(300 * 1000);
 			}else {
-				os.writeObject("Authencation error.");
+				//os.writeObject("Authencation error.");
+				RemoteStatus o = new RemoteStatus();
+				o.connection = RemoteStatus.AUTH_FAILED;
+				os.writeObject(o);
 				os.flush();
 			}
 		}else {

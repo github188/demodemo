@@ -65,6 +65,10 @@ public class AuthManager {
 		storages[1] = new SystemEnvStorage();
 	}
 	
+	public int activeUserCount(){
+		return this.userCache.keys().size();
+	}
+	
 	private Account retriveCookie(String sid){
 		log.info("retriveCookie: " + sid);
 		String info = null, username = null, fullname = null, email = null, sign = null;

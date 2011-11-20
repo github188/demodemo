@@ -18,6 +18,10 @@ public class Settings {
 	public final static String CORE_ROUTE_THREAD_COUNT = "core_route_thread_count";
 	public final static String MAX_ROUTE_THREAD_COUNT = "max_route_thread_count";
 	
+	public final static String PROXY_SECRET_KEY = "client_secret_key";
+	public static final String REMOTE_DOMAIN = "remote_domain";
+	public static final String INTERNAL_DOMAIN = "internal_domain";	
+	
 	private static Log log = LogFactory.getLog("settings");
 	protected Properties settings = System.getProperties();	
 	private String confName = "master.conf";
@@ -43,13 +47,22 @@ public class Settings {
 		}
 		
 		File f = new File(this.confName);
+		InputStream ins = null;
 		if(f.isFile()){
 			try {
-				settings.load(new FileInputStream(f));
+				ins = new FileInputStream(f);
+				settings.load(ins);
 			} catch (FileNotFoundException e) {
 				log.error(e, e.getCause());
 			} catch (IOException e) {
 				log.error(e, e.getCause());
+			} finally{
+				if(ins != null) {
+					try {
+						ins.close();
+					} catch (IOException e) {
+					}
+				}
 			}
 		}
 	}
@@ -72,5 +85,24 @@ public class Settings {
 		
 		return intVal;
 	}	
+	
+	public void save(){
+		OutputStream os = null;
+		try {
+			log.info("Saveing settings to " + confName);
+			os = new FileOutputStream(new File(confName));
+			this.settings.store(os, "");
+		} catch (IOException e) {
+			log.error(e.toString(), e);
+		} finally{
+			if(os != null){
+				try {
+					os.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+		
+	}
 		
 }

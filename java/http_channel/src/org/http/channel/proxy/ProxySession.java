@@ -12,7 +12,7 @@ import org.mortbay.util.ajax.Continuation;
  * 一次HTTP的会话数据.
  * @author deon
  */
-public class ProxySession  implements Serializable{
+public class ProxySession implements Serializable{
 	private static final long serialVersionUID = 8989783162442987982L;
 	
 	public String sid = null;

@@ -1,8 +1,5 @@
 package org.http.channel.client;
 
-import static org.http.channel.client.Main.LOCAL;
-import static org.http.channel.client.Main.REMOTE;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -12,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -21,26 +20,38 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.http.channel.proxy.ProxySession;
+import org.http.channel.proxy.RemoteStatus;
 import org.http.channel.settings.Settings;
 
 public class ProxyClient {
 	private Log log = LogFactory.getLog("gate");
 	public static final String XAUTH = "X-proxy-auth";
-	
-	private Settings settings = null;
+		
+	//public String status = DISCONNECTED;
+	public RemoteStatus status = new RemoteStatus();
+	public Settings settings = null;
+	public AuthManager auth = null;
+	private Collection<StatusListener> statusListeners = new ArrayList<StatusListener>(); 
 	private ThreadPoolExecutor proxyWorkerPool = null;
 	private ThreadPoolExecutor proxyCommandPool = null;
-	private AuthManager auth = null;
 	private URL remote = null;
 	private String local = null;
 	private Timer timer = new Timer();
 	private long commandCount = 0;
 	
-	public ProxyClient(Settings s) throws MalformedURLException{
+	private StatusListener listenerProxy = new StatusListener(){
+		@Override
+		public void updated(RemoteStatus r) {
+			for(StatusListener l: statusListeners){
+				l.updated(r);
+			}
+		}};
+	
+	public ProxyClient(Settings s){
 		this.settings = s;
 		
-		this.remote = new URL(s.getString(REMOTE, ""));
-		this.local = s.getString(LOCAL, "");
+		//this.remote = new URL(s.getString(REMOTE, ""));
+		//this.local = s.getString(LOCAL, "");
 	}
 	
 	public void run(){
@@ -65,6 +76,17 @@ public class ProxyClient {
 		log.info(String.format("Start proxy client, remote:%s, local:%s", remote, local));
 		
 		timer.scheduleAtFixedRate(new TrackerScheduler(), 100, 60 * 1000);		
+	}
+	
+	public void connect(){
+		proxyCommandPool.execute(new RequestTracker());	
+	}
+	
+	public void addStatusListener(StatusListener l){
+		this.statusListeners.add(l);
+	}
+	public void removeStatusListener(StatusListener l){
+		this.statusListeners.remove(l);
 	}
 	
 	/**
@@ -95,14 +117,17 @@ public class ProxyClient {
 		public void run() {
 			ObjectInputStream ios = null;
 			HttpURLConnection connection = null;
-			try {
+			String remoteURL = settings.getString(Settings.REMOTE_DOMAIN, "");
+			try {				
+				remote = new URL(remoteURL);				
 				URL request = new URL(remote + "/~/request");
+				log.debug("connecting to " + request.toString());
 				connection = (HttpURLConnection )request.openConnection();
 				connection.setReadTimeout(1000 * 60 * 5);
 				connection.setConnectTimeout(1000 * 30);
 				
 				if(settings.getString("client_secret_key", null) != null){
-					connection.addRequestProperty(XAUTH, settings.getString("client_secret_key", null));
+					connection.addRequestProperty(XAUTH, settings.getString(Settings.PROXY_SECRET_KEY, null));
 				}
 				connection.setRequestMethod("POST");
 				connection.setDoInput(true);
@@ -111,20 +136,32 @@ public class ProxyClient {
 				ios = new ObjectInputStream(connection.getInputStream());
 				for(Object obj = ios.readObject(); obj != null; obj = ios.readObject()){
 					commandCount++;
-					log.debug("Request:" + obj.toString());
 					if(obj instanceof ProxySession){
+						status.requestCount++;
+						//log.debug("Request:" + obj.toString());
 						ProxySession session = (ProxySession)obj;
-						if(session.queryURL .startsWith("/~") ||  
+						if(session.queryURL .startsWith("/~") ||
 							session.queryURL .startsWith("~")){
 							proxyWorkerPool.execute(new CommandWorker(session, remote));
 						}else {
 							proxyWorkerPool.execute(new TaskWorker(session, remote));
 						}
+					}else if(obj instanceof RemoteStatus){
+						log.debug("status:" + obj.toString());
+						status.copyFrom((RemoteStatus)obj);
+						status.updated();
+						listenerProxy.updated(status);
 					}
-				}
-				
+				}				
 			}catch(ConnectException conn){
 				log.info(String.format("Failed connection to '%s', msg:%s", remote, conn.toString()));
+				synchronized(status){
+					status.connection = RemoteStatus.DISCONNECTED;
+					status.updated();
+					listenerProxy.updated(status);
+				}
+			}catch(MalformedURLException e){
+				log.info(String.format("Invalid remote url:" + remoteURL));				
 			}catch(IOException eof){
 				log.info(String.format("EOF read proxy command. msg:%s", eof.toString()));
 			}catch (Exception e) {
@@ -189,7 +226,9 @@ public class ProxyClient {
 					return;
 				}
 				
-				log.info("Start forward: " + request.toString());				
+				log.info("Start forward: " + request.toString());
+				local = settings.getString(Settings.INTERNAL_DOMAIN, "");
+				
 				URL localURL = new URL(local + request.queryURL);
 				connection = (HttpURLConnection) localURL.openConnection(Proxy.NO_PROXY);
 				connection.setRequestMethod(request.method);
@@ -230,6 +269,7 @@ public class ProxyClient {
 						connection.getContentType()
 						));
 				this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
+				listenerProxy.updated(status);
 			}catch(ConnectException conn){
 				log.info(String.format("Failed connection to '%s', msg:%s", local, conn.toString()));
 			} catch (Exception e) {

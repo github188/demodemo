@@ -37,7 +37,7 @@ public class ProxyStatusPanel extends JPanel {
         JLabel internalLabel = new JLabel("内部地址: ");
         JLabel proxyLabel = new JLabel("转发次数: ");
         JLabel userLabel = new JLabel("活动用户: ");
-        JLabel updatedLabel = new JLabel("最后更新: ");
+        JLabel updatedLabel = new JLabel("状态: ");
         
         name.setEditable(false);
         internal.setEditable(false);

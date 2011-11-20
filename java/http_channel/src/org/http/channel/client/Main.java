@@ -50,8 +50,8 @@ public class Main {
 		}else {
 			initLog4jFile("client.log");
 			Settings s = new Settings("client");
-			s.putSetting(REMOTE, cmd.getOptionValue(REMOTE, ""));
-			s.putSetting(LOCAL, cmd.getOptionValue(LOCAL, ""));
+			s.putSetting(Settings.REMOTE_DOMAIN, cmd.getOptionValue(REMOTE, ""));
+			s.putSetting(Settings.INTERNAL_DOMAIN, cmd.getOptionValue(LOCAL, ""));
 			new ProxyClient(s).run();
 		}
 

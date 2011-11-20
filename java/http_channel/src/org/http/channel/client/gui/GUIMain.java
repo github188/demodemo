@@ -1,7 +1,6 @@
 package org.http.channel.client.gui;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
 
@@ -49,16 +48,13 @@ public class GUIMain {
 			System.out.println(e.toString());
 		}	
 		
+		initWorkDir();
 		//services = createPrivilegedProxy(new DefaultBookController(runingJNLP(),
 	 	//		runningSandbox()));	
-		Settings s = new Settings("client.conf");		
-		ProxyClient proxy;
-		try {
-			proxy = new ProxyClient(s);
-		} catch (MalformedURLException e) {
-			log.error(e.toString(), e);
-			return;
-		}
+		Settings s = new Settings(new File(workDir, "client.conf").getAbsolutePath());		
+		ProxyClient proxy = new ProxyClient(s);
+		proxy.run();
+
 		eventQueue.registerAction(new EventsHandler(xui, proxy));		
 		/*
 		 * 使用Event thread来初始化界面。Swing的部分控件方法只能在Event thread调用。
@@ -71,7 +67,7 @@ public class GUIMain {
 				
 				URL layout = this.getClass().getClassLoader().getResource("org/http/channel/client/gui/MainFrame.xml");
 				if(layout != null) {
-					xui.load(layout);				
+					xui.load(layout);	
 					main = (JFrame)xui.getByName("main");
 					
 					xui.addComponent("about", new AboutDialog(main));
@@ -102,6 +98,18 @@ public class GUIMain {
 			return false;
 		}catch(AccessControlException e){
 			return true;
+		}
+	}
+	
+	private void initWorkDir(){
+		isWin = System.getProperty("sun.desktop").equals("windows");
+		if(isWin){
+			workDir = new File(System.getenv("APPDATA"), ".freegate");
+		}else {
+			workDir = new File(System.getenv("HOME"), ".freegate");
+		}
+		if(!workDir.isDirectory()){
+			workDir.mkdirs();
 		}
 	}
 	
