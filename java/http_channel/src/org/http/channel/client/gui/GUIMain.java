@@ -1,5 +1,6 @@
 package org.http.channel.client.gui;
 
+import java.awt.Image;
 import java.io.File;
 import java.net.URL;
 import java.security.AccessControlException;
@@ -69,7 +70,7 @@ public class GUIMain {
 				if(layout != null) {
 					xui.load(layout);	
 					main = (JFrame)xui.getByName("main");
-					
+					main.setIconImage(appIcon());
 					xui.addComponent("about", new AboutDialog(main));
 					//main.initGui();
 	            	//窗口居中.
@@ -151,6 +152,13 @@ public class GUIMain {
 		return icon;				
 	}
 	
+	private Image appIcon(){
+		return MenuToolbar.icon("org/http/channel/client/gui/images/freegate.png").getImage();			
+	}
+	
+	private Image appIcon16(){
+		return appIcon().getScaledInstance(16, 16, Image.SCALE_SMOOTH);			
+	}	
 	
 
 }
