@@ -46,4 +46,8 @@
     <item android:id="@+id/stop_sync"
           android:icon="@drawable/ic_launcher"
           android:title="Stop" />
+    
+    <item android:id="@+id/login"
+          android:icon="@drawable/ic_launcher"
+          android:title="Login" />    
 </menu>

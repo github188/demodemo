@@ -75,6 +75,22 @@ public class TaskQueueActivity extends Activity {
     				}
         	}
         );        
+        
+        getContentResolver().registerContentObserver(AreaCI.UPDATED_DATA, true,
+        	new ContentObserver(new Handler()) {
+				@Override
+				public void onChange(boolean selfChange) {
+					Log.i(TAG, "The task list is updated.");
+					if(lastSynced != null){
+						lastSynced.post(new Runnable(){
+							public void run(){
+								lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
+							}
+						});
+					}
+				}
+        	}        		
+        );
     }
     
     @Override
@@ -127,6 +143,12 @@ public class TaskQueueActivity extends Activity {
         		Intent intent = new Intent().setClass(this, DataSyncService.class);
         	    this.stopService(intent);      		
         		return true;
+        	
+        	case R.id.login:
+        		Intent login = new Intent().setClass(this, AreaCIActivity.class);
+        		login.setData(AreaCI.EXPRIED_DATA_URI);
+        	    this.startActivity(login);      		
+        		return true;  
         		
         	default:
         		return super.onOptionsItemSelected(item);

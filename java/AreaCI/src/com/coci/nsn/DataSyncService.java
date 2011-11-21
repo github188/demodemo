@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import org.json.JSONException;
 
@@ -31,6 +32,14 @@ import com.coci.provider.AreaCI;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class DataSyncService extends Service {
+	public static final String[][] connection = new String[][]{
+			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
+			{"http://10.0.2.2:8000/areaci/api/", null},	
+			{"http://10.56.117.81/coci/areaci/api/", null},
+			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
+			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
+		};
+	
 	private final static String SYNC_TASK = "sync_task";
 	private final static String INIT_LOCAL_DATA = "init_local_data";
 	private final static String REMOVE_EXPIRED_TASK = "remove_expired_task";
@@ -88,9 +97,12 @@ public class DataSyncService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i("areaci.service", "start to sync data from networking...");
-		
 		//sendNotification("Network111", "Failed to connect to areaci, id:" + startId);
+		SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+        String acsid = settings.getString("ACSID", "");
+        client.updateAuthSID(acsid);        
 		threadPool.execute(new TaskWorker(SYNC_TASK));
+		
 	    return START_STICKY;
 	}
 
@@ -152,14 +164,16 @@ public class DataSyncService extends Service {
 		for(ContentValues task: taskList){
 			getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
 		}
+    	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+    	SharedPreferences.Editor editor = settings.edit();
+    	editor.putLong(AreaCI.PREFS_LAST_SYNC_TIME, System.currentTimeMillis());        	
+    	Date now = new Date(System.currentTimeMillis());
+    	editor.putString(AreaCI.PREFS_LAST_SYNC_TIME_STR, format.format(now));        	
+    	editor.commit();		
 		if(taskList.size() > 0){
-        	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
-        	SharedPreferences.Editor editor = settings.edit();
-        	editor.putLong(AreaCI.PREFS_LAST_SYNC_TIME, System.currentTimeMillis());        	
-        	Date now = new Date(System.currentTimeMillis());
-        	editor.putString(AreaCI.PREFS_LAST_SYNC_TIME_STR, format.format(now));        	
-        	editor.commit();			
 			getContentResolver().notifyChange(TaskInfo.CONTENT_URI, null);
+		}else {
+			getContentResolver().notifyChange(AreaCI.UPDATED_DATA, null);			
 		}
 	}
 	
@@ -199,13 +213,6 @@ public class DataSyncService extends Service {
 		
 		this.lastTryConnectTime = System.currentTimeMillis();
 		
-		String[][] connection = new String[][]{
-			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
-			{"http://10.0.2.2:8000/areaci/api/", null},	
-			{"http://10.56.117.81/coci/areaci/api/", null},
-			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
-			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
-		};
 		for(int i = 0; i < connection.length; i++){
 			if(client.connect(connection[i][0], connection[i][1])){
 				Log.d(TAG, String.format("Connect to '%s', proxy:'%s'", connection[i][0],

@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:text="NSN-Intra:"/>
     <EditText
+        android:singleLine="true"
         android:id="@+id/username"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -25,7 +26,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
-        android:layout_below="@+id/password_label"/>
+        android:layout_below="@+id/password_label"
+        android:password="true"
+        android:singleLine="true"
+        />
     
     <Button
         android:id="@+id/login"

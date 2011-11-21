@@ -152,13 +152,16 @@ public class AreaCiProvider extends ContentProvider {
             qb.appendWhere(TaskInfo._ID + "=" + uri.getPathSegments().get(1));
             break;
         case TASK_QUEUE:
+        	//在Queue里面超过1天没有更新的记录为过期记录不显示。
+        	long startTime = System.currentTimeMillis() - 1000 * 60 * 60 * 24;
         	qb.setTables(TaskInfo.DB_TABLE_NAME);
-            qb.appendWhere("status in ('pending', 'waiting', 'running', 'preparing')");
+            qb.appendWhere("status in ('pending', 'waiting', 'running', 'preparing') and sync_time > " + startTime);
             break;            
         case TASK_RESULT:
+        	long startTime2 = System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 3;
         	qb.setTables(TaskInfo.DB_TABLE_NAME);
-            qb.appendWhere("status in ('timout', 'done', 'error')");
-            break;            
+            qb.appendWhere("status in ('timout', 'done', 'error') and sync_time > " + startTime2);
+            break;           
             
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);

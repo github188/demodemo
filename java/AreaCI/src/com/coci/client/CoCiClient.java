@@ -7,6 +7,7 @@ import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,11 +47,18 @@ public class CoCiClient {
 	public CoCiClient(){
 		 client = new DefaultHttpClient();
 		 acsid = new BasicClientCookie("ACSID", "");
+		 acsid.setExpiryDate(new Date(System.currentTimeMillis() + 365 * 1000 * 60 * 60 * 24));
 	}
 	
 	public boolean connect(URI server){
 		this.endpoint = server;
 		return true;
+	}
+	
+	//更新会话Cookie
+	public void updateAuthSID(String sid){
+		this.acsid.setValue(sid);
+		client.getCookieStore().addCookie(acsid);
 	}
 	
 	public boolean connect(String endpoint, String proxy){

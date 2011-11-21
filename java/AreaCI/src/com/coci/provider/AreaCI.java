@@ -25,6 +25,9 @@ public class AreaCI {
 	//所有过期数据的URI.
     public static final Uri EXPRIED_DATA_URI
     = Uri.parse("content://" + AUTHORITY + "/expired");
+    
+    public static final Uri UPDATED_DATA
+    = Uri.parse("content://" + AUTHORITY + "/tasks/updated");    
 
 	public static Map<String, Set<String>> DB_COLUMNS = new HashMap<String, Set<String>>();
 	static{
