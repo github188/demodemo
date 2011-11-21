@@ -14,13 +14,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,13 +37,15 @@ import com.coci.provider.AreaCI.TaskInfo;
 
 public class CoCiClient {
 	private final static String TAG = "areaci.http";
-	private HttpClient client = null;
+	private DefaultHttpClient client = null;
 	private URI endpoint = null;
 	public boolean isConnected = false;
-	
+	public boolean isLoginOk = true;
+	public BasicClientCookie acsid = null;
 	
 	public CoCiClient(){
 		 client = new DefaultHttpClient();
+		 acsid = new BasicClientCookie("ACSID", "");
 	}
 	
 	public boolean connect(URI server){
@@ -52,14 +56,37 @@ public class CoCiClient {
 	public boolean connect(String endpoint, String proxy){
 		try {
 			this.endpoint = new URI(endpoint);
+			acsid.setDomain(this.endpoint.getHost());
+			acsid.setPath("/");
+			client.getCookieStore().addCookie(acsid);
 			//The connection is OK if get status info from AreaCI.
-			isConnected = getRPCData("status_info", null) != null;
+			getRPCData("status_info", null);
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.toString());
 		}
 		
 		return isConnected;
-	}	
+	}
+	
+	public boolean login(String username, String password){
+		Map<String, String> param = new HashMap<String, String>();		
+		this.isLoginOk = false;
+		param.put("username", username);
+		param.put("password", password);		
+		getRPCData("/~/user_login", param);
+		if(isLoginOk){
+			for(Cookie c:client.getCookieStore().getCookies()){
+				if(!c.getName().equals("ACSID")){
+					continue;
+				}else {
+					this.acsid.setValue(c.getValue());
+					Log.d(TAG, "ACSID:" + this.acsid.getValue());
+					break;
+				}
+			}
+		}
+		return isLoginOk;
+	}
 	
 	public List<ContentValues> updatedTask(long lastTime, long limit) throws JSONException{		
 		List<ContentValues> data = null;
@@ -101,11 +128,16 @@ public class CoCiClient {
 		return v;
 	}
 	
+	private void saveAccessKey(String key){
+		//this.accessKey = sessionHeader.getValue();
+	}
+	
 	private Object getRPCData(String api, Map<String, String> param){
 		HttpResponse response = null;
 		BufferedReader in = null;
 		JSONObject result = null;
 		List<NameValuePair> nameValuePairs = null;
+		Header authHeader = null;
 		
 		HttpPost request = new HttpPost(endpoint.resolve(api));
         
@@ -119,26 +151,32 @@ public class CoCiClient {
         }
         Log.d(TAG, "Request:" + query.toString());
         try {
+        	//request.
         	if(nameValuePairs != null){
         		request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         	}
         	response = client.execute(request);
         	if(response != null){
-                in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                StringBuffer sb = new StringBuffer("");
-                String line = "";
-                String NL = System.getProperty("line.separator");
-                while ((line = in.readLine()) != null) {
-                    sb.append(line + NL);
-                }
-                in.close();
-                Object o = new JSONTokener(sb.toString()).nextValue();
-                if(o instanceof JSONObject){
-                	result = (JSONObject)o; 
-                }else {
-                	Log.d(TAG, o.toString());
-                }
-                 
+            	authHeader = response.getFirstHeader("X-proxy-login");
+            	if(authHeader != null){
+            		this.isLoginOk =  authHeader.getValue().equals("ok");
+            	}else {
+            		this.isLoginOk = true;
+	                in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+	                StringBuffer sb = new StringBuffer("");
+	                String line = "";
+	                String NL = System.getProperty("line.separator");
+	                while ((line = in.readLine()) != null) {
+	                    sb.append(line + NL);
+	                }
+	                in.close();
+	                Object o = new JSONTokener(sb.toString()).nextValue();
+	                if(o instanceof JSONObject){
+	                	result = (JSONObject)o; 
+	                }else {
+	                	Log.d(TAG, o.toString());
+	                }
+            	}
         	}
 		} catch (ConnectException e) {
 			//this.isConnected = false;
@@ -148,7 +186,7 @@ public class CoCiClient {
 		}catch (Exception e) {
 			Log.e(TAG, "error:" + e.toString(), e);
 		} finally{
-			isConnected = result != null;
+			isConnected = authHeader != null || result != null;
 			if(in != null){
 				try {
 					in.close();

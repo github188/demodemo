@@ -2,13 +2,12 @@ package com.coci.nsn;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.view.View;
 
-import com.coci.provider.AreaCI.Project;
+import com.coci.provider.AreaCI;
 
 /**
  * 
@@ -32,26 +31,20 @@ public class AreaCIActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        Log.i("areaci", "start to run AreaCIActivity");
-        setContentView(R.layout.main);
-        
-        ListView lv = (ListView) findViewById(R.id.list);
-        
-        Intent intent = getIntent();
-        if (intent.getData() == null) {
-            intent.setData(Project.CONTENT_URI);
-        }        
-        
-        Cursor cursor = managedQuery(getIntent().getData(), 
-        		new String[] {Project._ID, Project.NAME, Project.STATUS }, 
-        		null, null,
-                Project.DEFAULT_SORT_ORDER);
-
-        // Used to map notes entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.projectlist_item, 
-        		cursor,
-                new String[] {Project.NAME, Project.STATUS}, 
-                new int[] {R.id.name, R.id.status});
-        lv.setAdapter(adapter);
-    }    
+        SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
+        String acsid = settings.getString("ACSID", "");
+        if(acsid == null || acsid.trim().length() == 0){
+            Log.i("areaci", "start to show login dialog");        
+            setContentView(R.layout.login_dialog);   	
+        }else {
+        	Log.i("areaci", "Get login session, and show main tab activity");
+        	Intent intent = new Intent().setClass(getApplicationContext(), MainTabActivity.class);
+    	    this.startService(intent);
+    	    finish();
+        } 
+    } 
+    
+    public void clickLogin(View v){
+    	Log.i("areaci", "click login button.");  
+    }
 }
