@@ -138,7 +138,7 @@ public class DevicesActivity extends Activity {
 			if(view.getId() == R.id.status){
 				TextView o = (TextView)view;
 				String st = cursor.getString(cursor.getColumnIndex(Device.STATUS));
-				if (st.equals("idle")){
+				if (st.equals("idle") || st.equals("running")){
 					o.setTextColor(Color.GREEN);
 				}else if (st.equals("reserved") || st.equals("prereserve")){
 					o.setTextColor(Color.YELLOW);
