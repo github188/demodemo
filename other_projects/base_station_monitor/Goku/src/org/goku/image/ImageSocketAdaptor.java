@@ -79,6 +79,8 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		}else if(cmd.equals("set_date")){
 			setDate(client, out, param.get("baseStation"),					
 					param.get("date"));
+		}else {
+			client.write(("Image Server, unkown command:" + command).getBytes());
 		}
 		out.println("\n\n\n");
 		out.flush();
@@ -426,14 +428,14 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		public OutputStream out = null;
 		public OutputWriter(final SocketClient client){
 			//this.client = client;
-			out = new ByteArrayOutputStream(1024 * 128){
+			out = new ByteArrayOutputStream(1024 * 1024){
 				public void flush() throws IOException{
 					if(this.size() > 0){
 						client.write(this.toByteArray());
 						this.reset();
 					}
 				}
-			};				
+			};
 		}
 		
 		public void println(String l) throws IOException{

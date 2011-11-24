@@ -46,6 +46,8 @@ public class SocketVideoAdapter implements SocketAdaptor{
 			doSeek(client, param.get("pos"));
 		}else if(cmd.equals("ack")){
 			doOk(client);
+		}else {
+			client.write(("Video Server, unkown command:" + command).getBytes());
 		}
 	}
 	
