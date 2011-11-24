@@ -65,13 +65,6 @@ public class TaskQueueActivity extends Activity {
     				public void onChange(boolean selfChange) {
         				Log.i(TAG, "The task list is updated.");
         				updateManagedCursor();
-        				if(lastSynced != null){
-        					lastSynced.post(new Runnable(){
-        						public void run(){
-        							lastSynced.setText("Last sync:" + settings.getString(AreaCI.PREFS_LAST_SYNC_TIME_STR, "n/a"));
-        						}
-        					});
-        				}
     				}
         	}
         );        

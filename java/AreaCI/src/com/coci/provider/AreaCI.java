@@ -15,6 +15,8 @@ public class AreaCI {
 	//
 	public static final String PREFS_QUEUE_ORDER_BY_ID = "prefs_query_order_by_id";
 	public static final String PREFS_RESULT_ORDER_BY_ID = "prefs_result_order_by_id";
+	public static final String PREFS_DEV_ORDER_BY_ID = "prefs_result_dev_by_id";
+	
 	public static final String PREFS_RESULT_FILTER_ID = "prefs_result_filter_id";
 	public static final String PREFS_LAST_SYNC_TIME = "prefs_last_sync_time";
 	public static final String PREFS_LAST_SYNC_TIME_STR = "prefs_last_sync_time_str";
