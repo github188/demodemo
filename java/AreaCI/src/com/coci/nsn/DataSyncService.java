@@ -3,13 +3,11 @@ package com.coci.nsn;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.prefs.Preferences;
 
 import org.json.JSONException;
 
@@ -29,6 +27,8 @@ import android.util.Log;
 
 import com.coci.client.CoCiClient;
 import com.coci.provider.AreaCI;
+import com.coci.provider.AreaCI.Device;
+import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class DataSyncService extends Service {
@@ -36,8 +36,6 @@ public class DataSyncService extends Service {
 			{"http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/", null},
 			{"http://10.0.2.2:8000/areaci/api/", null},	
 			{"http://10.56.117.81/coci/areaci/api/", null},
-			//{"http://10.56.117.81/coci/areaci/", "http://10.144.1.10:8080"},
-			//{"http://proxy.deonwu84.com/coci/areaci/", "http://10.144.1.10:8080"},
 		};
 	
 	private final static String SYNC_TASK = "sync_task";
@@ -133,8 +131,7 @@ public class DataSyncService extends Service {
 	
 	public void syncTask(boolean initData){
 		long cur = System.currentTimeMillis();
-		long lastTime = (cur - lastTaskUpdatedTime) / 1000 / 60;
-		List<ContentValues> taskList = null;
+		long lastTime = (cur - lastTaskUpdatedTime) / 1000 / 60;		
 		
 		//如果是第一次初始化数据，查询最近1个月的数据。
 		if(initData){
@@ -148,33 +145,62 @@ public class DataSyncService extends Service {
 			return;
 		}
 		
+		int taskCount = 0, projectCount = 0, deviceCount = 0;
+		SyncData data = null;
 		try {
-			taskList = client.updatedTask(lastTime, 50);
-			if(taskList != null){
-				Log.d(TAG, String.format("download task size:%s", taskList.size()));
-				this.saveTaskInfo(taskList);
+			for(int i = 0; i < 3; i++){
+				data = client.updatedTask(lastTime, 50 * (i + 1), i * 50);
+				if(data.taskList != null){
+					for(ContentValues task: data.taskList){
+						getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
+					}
+					taskCount += data.taskList.size();
+				}
+				if(data.projectList != null){
+					for(ContentValues task: data.projectList){
+						getContentResolver().update(Project.CONTENT_URI, task, null, null);
+					}
+					projectCount += data.projectList.size();
+				}
+				if(data.deviceList != null){
+					for(ContentValues task: data.deviceList){
+						getContentResolver().update(Device.CONTENT_URI, task, null, null);
+					}
+					deviceCount += data.deviceList.size();
+				}
+				if(!data.hasMore)break;
+			}
+			
+			if(data.isOK){
 				lastTaskUpdatedTime = cur;
 			}
+
 		} catch (JSONException e) {
 			Log.e(TAG, e.toString());
+		} finally{
+			if(data != null && data.isOK){
+				notifyUpdating(taskCount, projectCount, deviceCount);
+			}
 		}
 	}
 	
-	private void saveTaskInfo(List<ContentValues> taskList){
-		for(ContentValues task: taskList){
-			getContentResolver().update(TaskInfo.CONTENT_URI, task, null, null);
-		}
+	private void notifyUpdating(int taskCount, int projectCount, int deviceCount){
     	SharedPreferences settings = getSharedPreferences(AreaCI.PREFS_NAME, 0);
     	SharedPreferences.Editor editor = settings.edit();
     	editor.putLong(AreaCI.PREFS_LAST_SYNC_TIME, System.currentTimeMillis());        	
     	Date now = new Date(System.currentTimeMillis());
     	editor.putString(AreaCI.PREFS_LAST_SYNC_TIME_STR, format.format(now));        	
-    	editor.commit();		
-		if(taskList.size() > 0){
-			getContentResolver().notifyChange(TaskInfo.CONTENT_URI, null);
-		}else {
-			getContentResolver().notifyChange(AreaCI.UPDATED_DATA, null);			
-		}
+    	editor.commit();
+    	if(taskCount > 0){
+    		getContentResolver().notifyChange(TaskInfo.CONTENT_URI, null);
+    	}
+    	if(projectCount > 0){
+    		getContentResolver().notifyChange(Project.CONTENT_URI, null);
+    	}
+    	if(deviceCount > 0){
+    		getContentResolver().notifyChange(Device.CONTENT_URI, null);
+    	} 
+		getContentResolver().notifyChange(AreaCI.UPDATED_DATA, null);			
 	}
 	
 	private void deleteExpriedData(){

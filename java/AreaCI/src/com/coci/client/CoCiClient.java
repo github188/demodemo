@@ -33,7 +33,10 @@ import org.json.JSONTokener;
 import android.content.ContentValues;
 import android.util.Log;
 
+import com.coci.nsn.SyncData;
 import com.coci.provider.AreaCI;
+import com.coci.provider.AreaCI.Device;
+import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
 public class CoCiClient {
@@ -96,22 +99,42 @@ public class CoCiClient {
 		return isLoginOk;
 	}
 	
-	public List<ContentValues> updatedTask(long lastTime, long limit) throws JSONException{		
-		List<ContentValues> data = null;
+	public SyncData updatedTask(long lastTime, long limit, long offset) throws JSONException{
+		SyncData data = new SyncData();
+		//List<ContentValues> data = null;
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("last_time", lastTime + "");
 		param.put("limit", limit + "");	
-		Object obj = getRPCData("updated_task", param);
+		param.put("offset", offset + "");	
+		Object obj = getRPCData("updated_data", param);
 		try{
 			if(obj != null){
 				JSONObject json = (JSONObject)obj;
+				data.isOK = true;
+				data.hasMore = json.getBoolean("has_more");
 				if(json.getString("status").equals("ok")){
-					JSONArray _tmp = json.getJSONArray("data");
+					JSONArray _tmp = json.getJSONArray("tasks");
 					if(_tmp != null){
-						data = new ArrayList<ContentValues>(_tmp.length());
+						data.taskList = new ArrayList<ContentValues>(_tmp.length());
 						for(int i = 0; i < _tmp.length(); i++){
-							data.add(jsonToContentValues(_tmp.getJSONObject(i),
-									AreaCI.DB_COLUMNS.get(TaskInfo.DB_TABLE_NAME)));
+							data.taskList.add(jsonToContentValues(_tmp.getJSONObject(i),
+										AreaCI.DB_COLUMNS.get(TaskInfo.DB_TABLE_NAME)));
+						}
+					}
+					_tmp = json.getJSONArray("policies");
+					if(_tmp != null){
+						data.projectList = new ArrayList<ContentValues>(_tmp.length());
+						for(int i = 0; i < _tmp.length(); i++){
+							data.projectList.add(jsonToContentValues(_tmp.getJSONObject(i),
+										AreaCI.DB_COLUMNS.get(Project.DB_TABLE_NAME)));
+						}
+					}
+					_tmp = json.getJSONArray("devices");
+					if(_tmp != null){
+						data.deviceList = new ArrayList<ContentValues>(_tmp.length());
+						for(int i = 0; i < _tmp.length(); i++){
+							data.deviceList.add(jsonToContentValues(_tmp.getJSONObject(i),
+										AreaCI.DB_COLUMNS.get(Device.DB_TABLE_NAME)));
 						}
 					}
 				}

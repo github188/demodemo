@@ -1,5 +1,7 @@
 package com.coci.nsn;
 
+import java.util.TreeSet;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -15,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.coci.provider.AreaCI;
+import com.coci.provider.AreaCI.Device;
 import com.coci.provider.AreaCI.Project;
 import com.coci.provider.AreaCI.TaskInfo;
 
@@ -23,7 +26,7 @@ public class AreaCiProvider extends ContentProvider {
     private static final String TAG = "areaci_provider";
 
     private static final String DATABASE_NAME = "area_ci.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
     //private static final String NOTES_TABLE_NAME = "notes";
 
    // private static HashMap<String, String> sNotesProjectionMap;
@@ -38,6 +41,10 @@ public class AreaCiProvider extends ContentProvider {
     
     private static final int TASK_QUEUE = 6;
     private static final int TASK_RESULT = 7;
+
+    private static final int DEVICES = 8;
+    private static final int DEVICE_ID = 9;
+    
     //private static final int TASK_RESULT = 7;
 
     
@@ -57,13 +64,18 @@ public class AreaCiProvider extends ContentProvider {
         	Log.i(TAG, "Create new table...");
             db.execSQL("CREATE TABLE " + Project.DB_TABLE_NAME + " ("
                     + Project._ID + " INTEGER PRIMARY KEY,"
+                    + Project.PROJECT_ID + " TEXT,"
+                    + Project.CATEGORY + " TEXT,"
                     + Project.NAME + " TEXT,"
                     + Project.STATUS + " TEXT,"
+                    + Project.HOST_IP + " TEXT,"
+                    + Project.TEST_COUNT + " TEXT,"
+                    + Project.TASK_STATUS + " TEXT,"
                     + Project.CREATED_DATE + " INTEGER,"
                     + Project.MODIFIED_DATE + " INTEGER,"
                     + Project.SYNC_TIME + " INTEGER"
                     + ");");
-
+            
             db.execSQL("CREATE TABLE " + TaskInfo.DB_TABLE_NAME + " ("
                     + TaskInfo._ID + " INTEGER PRIMARY KEY,"                    
                     + TaskInfo.PROJECT_ID + " TEXT,"
@@ -89,7 +101,23 @@ public class AreaCiProvider extends ContentProvider {
                     + TaskInfo.DONE_DATE + " TEXT,"
                     + TaskInfo.SYNC_TIME + " INTEGER"
                     + ");");
-            //this.initTestData(db);
+
+            db.execSQL("CREATE TABLE " + Device.DB_TABLE_NAME + " ("
+                    + Device._ID + " INTEGER PRIMARY KEY,"
+                    + Device.PROJECT_ID + " TEXT,"
+                    + Device.NAME + " TEXT,"
+                    + Device.STATUS + " TEXT,"
+                    + Device.HOST_IP + " TEXT,"
+                    + Device.TEST_ENV + " TEXT,"
+                    + Device.PKG_ENV + " TEXT,"
+                    + Device.CUR_TASK + " TEXT,"
+                    + Device.AVAILABLE + " TEXT,"
+                    + Device.RESERVED + " TEXT,"
+                    
+                    + Device.CREATED_DATE + " INTEGER,"
+                    + Device.MODIFIED_DATE + " INTEGER,"
+                    + Device.SYNC_TIME + " INTEGER"
+                    + ");");
         }
 
         @Override
@@ -98,20 +126,8 @@ public class AreaCiProvider extends ContentProvider {
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + Project.DB_TABLE_NAME);
             db.execSQL("DROP TABLE IF EXISTS " + TaskInfo.DB_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + Device.DB_TABLE_NAME);
             onCreate(db);
-        }
-        
-        private void initTestData(SQLiteDatabase db){
-            ContentValues values = new ContentValues();
-
-            for(int i=0; i < 40; i++){
-                values.put(TaskInfo.NAME, "first project_" + i);
-                values.put(TaskInfo.STATUS, i % 3 == 0 ? "waiting": "done");
-                values.put(TaskInfo.CATEGORY, "smt");
-                values.put(TaskInfo.HOST, "127.0.0.1");
-                values.put(TaskInfo.SW_BUILD, "cb_1.1.1");
-                db.insert(TaskInfo.DB_TABLE_NAME, TaskInfo.NAME, values);
-            } 
         }
     }
 
@@ -150,6 +166,13 @@ public class AreaCiProvider extends ContentProvider {
         case TASK_INFO_ID:
         	qb.setTables(TaskInfo.DB_TABLE_NAME);
             qb.appendWhere(TaskInfo._ID + "=" + uri.getPathSegments().get(1));
+            break;
+        case DEVICES:
+        	qb.setTables(Device.DB_TABLE_NAME);
+        	break;
+        case DEVICE_ID:
+        	qb.setTables(Device.DB_TABLE_NAME);
+            qb.appendWhere(Device._ID + "=" + uri.getPathSegments().get(1));
             break;
         case TASK_QUEUE:
         	//在Queue里面超过1天没有更新的记录为过期记录不显示。
@@ -267,13 +290,14 @@ public class AreaCiProvider extends ContentProvider {
         int count = 0;
         switch (sUriMatcher.match(uri)) {
 	        case PROJECTS:
-	            count = db.update(Project.DB_TABLE_NAME, values, where, whereArgs);
+	            updateProject(values, db);
 	            break;	
 	        case PROJECT_ID:
-	            String noteId = uri.getPathSegments().get(1);
-	            count = db.update(Project.DB_TABLE_NAME, values, Project._ID + "=" + noteId
-	                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-	            break;
+	        	count = db.update(Project.DB_TABLE_NAME, values, where, whereArgs);
+	        	return 0;
+	        case DEVICES:
+	        	updateDevice(values, db);
+	        	return 0;
 	        case TASK_INFO:
 	        	updateTasks(values, db);
 	        	return 0; //避免每一个task 更新了都做出notify操作， task update应该是一个批量的操作。
@@ -283,12 +307,46 @@ public class AreaCiProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
+
+	private void updateDevice(ContentValues values, SQLiteDatabase db){
+		//int taskId = values.getAsInteger("id");
+		//values.remove("id");
+		String hostIp = values.getAsString(Device.HOST_IP);
+		values.remove(Device.HOST_IP);
+		values.put(Device.SYNC_TIME, Long.valueOf(System.currentTimeMillis()));
+        int count = db.update(Device.DB_TABLE_NAME, values, Device.HOST_IP + "=?", new String[]{hostIp});
+		if(count == 0){
+			Log.d(TAG, String.format("insert new device '%s:%s'", hostIp,
+					values.getAsString("name")));
+			values.put(Device.HOST_IP, hostIp);
+			db.insert(Device.DB_TABLE_NAME, Device.NAME, values);
+		}else {
+			Log.d(TAG, String.format("update device '%s:%s'", hostIp,
+					values.getAsString("name")));
+		}
+	}	
+	
+	private void updateProject(ContentValues values, SQLiteDatabase db){
+		String taskId = values.getAsString("id");
+		values.remove("id");
+		values.put(Project.SYNC_TIME, Long.valueOf(System.currentTimeMillis()));
+        int count = db.update(Project.DB_TABLE_NAME, values, Project._ID + "=?", new String[]{taskId});
+		if(count == 0){
+			Log.d(TAG, String.format("insert new project '%s:%s'", taskId,
+					values.getAsString("name")));
+			values.put(Project._ID, taskId);
+			db.insert(Project.DB_TABLE_NAME, Project.NAME, values);
+		}else {
+			Log.d(TAG, String.format("update prject '%s:%s'", taskId,
+					values.getAsString("name")));
+		}
+	}
 	
 	private void updateTasks(ContentValues values, SQLiteDatabase db){
-		int taskId = values.getAsInteger("id");
+		String taskId = values.getAsString("id");
 		values.remove("id");
 		values.put(TaskInfo.SYNC_TIME, Long.valueOf(System.currentTimeMillis()));
-        int count = db.update(TaskInfo.DB_TABLE_NAME, values, TaskInfo._ID + "=" + taskId, null);
+        int count = db.update(TaskInfo.DB_TABLE_NAME, values, TaskInfo._ID + "=?", new String[]{taskId});
 		if(count == 0){
 			Log.d(TAG, String.format("insert new task '%s:%s'", taskId,
 					values.getAsString("name")));
@@ -306,10 +364,20 @@ public class AreaCiProvider extends ContentProvider {
 		/*
 		 * delete from xxx where _id not in (select _id from xxx order by sync_time desc limit 500); 
 		 */			
-		int count = 0;
+		int count = 0, tmp =0;
 		count += db.delete(TaskInfo.DB_TABLE_NAME, 
 				"_id not in (select _id from " + TaskInfo.DB_TABLE_NAME + " order by sync_time desc limit 500)", null);
-		Log.d(TAG, "deleted expired data, count:" + count);
+		Log.d(TAG, "deleted expired task data, count:" + count);
+		
+		tmp = db.delete(Project.DB_TABLE_NAME, 
+				"_id not in (select _id from " + Project.DB_TABLE_NAME + " order by sync_time desc limit 100)", null);
+		count += tmp;
+		Log.d(TAG, "deleted expired prject data, count:" + tmp);
+		
+		tmp = db.delete(Device.DB_TABLE_NAME, 
+				"host_ip not in (select host_ip from " + Device.DB_TABLE_NAME + " order by sync_time desc limit 100)", null);
+		count += tmp;
+		Log.d(TAG, "deleted expired device data, count:" + tmp);
 		return count;
 	}
 	
@@ -321,11 +389,12 @@ public class AreaCiProvider extends ContentProvider {
         sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks", TASK_INFO);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "tasks/#", TASK_INFO_ID);
         
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "devices", DEVICES);
+        sUriMatcher.addURI(AreaCI.AUTHORITY, "devices/#", DEVICE_ID);        
+        
         sUriMatcher.addURI(AreaCI.AUTHORITY, "expired", EXPIRED_DATA);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "task_queue", TASK_QUEUE);
         sUriMatcher.addURI(AreaCI.AUTHORITY, "task_result", TASK_RESULT);        
-        //TASK_INFO
-        
      }	
 
 }
