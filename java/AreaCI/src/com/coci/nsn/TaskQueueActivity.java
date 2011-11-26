@@ -8,13 +8,17 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -55,9 +59,16 @@ public class TaskQueueActivity extends Activity {
         		TaskInfo.SW_BUILD, TaskInfo.CREATED_DATE}, 
                 new int[] {R.id.status, R.id.name, 
         		R.id.host_ip, R.id.sw_build, R.id.date_time}
-        );
+        ){        	
+        	public void bindView(View view, Context context, Cursor cursor){
+        		super.bindView(view, context, cursor);
+        		view.setTag(R.id.task_name, cursor.getString(0));
+        	};
+        };
+        	
         adapter.setViewBinder(new QueueViewBinder());        
         lv.setAdapter(adapter);  
+        registerForContextMenu(lv);
         
         getContentResolver().registerContentObserver(TaskInfo.TASK_LIST_URI, true,
         		new ContentObserver(new Handler()) {
@@ -233,6 +244,42 @@ public class TaskQueueActivity extends Activity {
         	//adapter.notifyDataSetChanged();
         }
     }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+      	MenuInflater inflater = getMenuInflater();
+      	inflater.inflate(R.menu.task_queue_context_menu, menu);
+      	Log.d(TAG, "create context menu...");               
+    }        
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo(); 
+    	
+    	//info.targetView
+    	Log.d(TAG, "info id:" + info.id);
+    	//info.targetView
+    	switch (item.getItemId()) {
+    		case R.id.open_console:
+    			String o = (String)info.targetView.getTag(R.id.task_name);
+    			openConsoleText(o);
+    		return true;
+    	}    	
+    	return false;
+    }
+    
+    private void openConsoleText(String id){
+    	Log.i(TAG, "open colsole text for task :" + id);
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);
+		Uri u = Uri.parse("http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/console_text?task_id=" + id);
+		intent.setData(u);
+		//intent.setDataAndType(u, "plain/text");
+		startActivity(intent);
+    }    
     
     public void doRefresh(View view){
     	Log.i("areaci.task_queue", "click to refresh...");

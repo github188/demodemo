@@ -1,6 +1,7 @@
 package com.coci.nsn;
 
-import android.R.color;
+import java.net.URI;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -76,6 +78,7 @@ public class TaskResultActivity extends Activity {
         		}else if(st.equals("ignore")) {
         			view.setBackgroundColor(Color.GRAY);
         		}
+        		view.setTag(R.id.task_name, cursor.getString(0));
         	}
         };
         
@@ -247,16 +250,32 @@ public class TaskResultActivity extends Activity {
     	
     	//info.targetView
     	Log.d(TAG, "info id:" + info.id);
-    	switch (item.getItemId()) {      
-    	}
-    	
-    	return true;
+    	//info.targetView
+    	switch (item.getItemId()) {
+    		case R.id.open_console:
+    			String o = (String)info.targetView.getTag(R.id.task_name);
+    			openConsoleText(o);
+    		return true;
+    	}    	
+    	return false;
+    }
+    
+    private void openConsoleText(String id){
+    	Log.i(TAG, "open colsole text for task:" + id);
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);
+		Uri u = Uri.parse("http://proxy-nsn.deonwu84.com:8080/coci/areaci/api/console_text?task_id=" + id);
+		intent.setData(u);
+		//intent.setDataAndType(u, "plain/text");
+		startActivity(intent);
     }
     
     class QueueViewBinder implements SimpleCursorAdapter.ViewBinder{
     	
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+			//view.setTag(R.id.task_name, cursor.getString(0));
 			/**
 			 * 192.168.1.2, SW:%s, Planed:%s
 			 * Result:%s/%s/%s, TA Error by xx

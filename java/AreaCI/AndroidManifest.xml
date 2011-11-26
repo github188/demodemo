@@ -12,7 +12,9 @@
 
     <application
         android:icon="@drawable/ipaci"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar"
+        >
         
         
         <provider android:name="AreaCiProvider"
