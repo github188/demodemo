@@ -10,7 +10,7 @@ import android.util.Log;
 public abstract class ResultHandler {
 	private final static String TAG = "areaci.http";
 	public boolean processInputStream(InputStream ins, GokuResult r) throws IOException{
-		BufferedReader in = new BufferedReader(new InputStreamReader(ins));		
+		BufferedReader in = new BufferedReader(new InputStreamReader(ins, "utf8"));		
 		boolean headerDone = false;
         String line = null;
         while ((line = in.readLine()) != null) {

@@ -25,6 +25,7 @@ public class GokuClient {
 	private String server = null;
 	private DefaultHttpClient client = null;
 	public String sid = null;
+	public String encoding = "utf8";
 	public boolean isConnected = false;
 	public boolean isLoginOk = true;
 	
@@ -64,7 +65,7 @@ public class GokuClient {
 	public GokuResult listBTS(){
 		GokuResult r = new GokuResult();
 		Map<String, String> param = new HashMap<String, String>();
-		this.getRPCData("list_bs_tree", param, PingHandler, r);
+		this.getRPCData("list_bs_tree", param, BTSHandler, r);
 		if(r.btsList != null){
 			this.btsList = r.btsList;
 		}
@@ -110,6 +111,7 @@ public class GokuClient {
     	if(sid != null){
     		param.put("sid", sid);
     	}
+    	param.put("en", encoding);
     	param.put("q", api); 
     	nameValuePairs = new ArrayList<NameValuePair>(param.size());
         for(Entry<String, String> item : param.entrySet()){
