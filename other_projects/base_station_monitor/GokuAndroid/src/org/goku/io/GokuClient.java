@@ -67,7 +67,9 @@ public class GokuClient {
 		Map<String, String> param = new HashMap<String, String>();
 		this.getRPCData("list_bs_tree", param, BTSHandler, r);
 		if(r.btsList != null){
-			this.btsList = r.btsList;
+			//this.btsList = r.btsList;
+			this.btsList.clear();
+			this.btsList.addAll(r.btsList);
 		}
 		return r;
 	}

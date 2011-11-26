@@ -58,11 +58,11 @@ public class BTSActivity extends Activity {
     private class LoadBTSTask extends AsyncTask<GokuResult, String, GokuResult>{
 		protected void onPostExecute(GokuResult r) {
         	if(r.status == 0){
-        		adapter.clear();
-        		for(BaseStation b: goku.btsList){
-        			Log.d(TAG, "uuid:" + b.uuid);
-        			adapter.add(b);
-        		}
+        		//adapter.clear();
+        		//for(BaseStation b: goku.btsList){
+        		//	Log.d(TAG, "uuid:" + b.uuid);
+        		//	adapter.add(b);
+        		//}
         		adapter.notifyDataSetChanged();
         		showMessage("基站列表加载完成.");
         	}else {
