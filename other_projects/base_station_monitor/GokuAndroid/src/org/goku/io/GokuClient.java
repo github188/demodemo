@@ -105,6 +105,21 @@ public class GokuClient {
 		return r;
 	}
 	
+	public GokuResult queryAlaram(Map<String, String> param){
+		GokuResult r = new GokuResult();
+		queryAlram.clear();
+		param.put("c", "2");
+		this.getRPCData("list_al", param, AlarmHandler, r);		
+		if(r.alarmList != null){
+			for(AlarmRecord alarm: r.alarmList){
+				alarm.bts = btsMap.get(alarm.btsID);				
+			}
+			queryAlram.addAll(r.alarmList);
+		}
+		
+		return r;
+	}
+	
 	public GokuResult alarmConfirm(String uuid){
 		GokuResult r = new GokuResult();
 		Map<String, String> param = new HashMap<String, String>();

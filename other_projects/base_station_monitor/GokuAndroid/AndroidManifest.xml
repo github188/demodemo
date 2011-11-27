@@ -38,6 +38,10 @@
             android:label="@string/app_name"
             android:name=".QueryAlarmActivity" >
         </activity>                        
+        <activity
+            android:label="@string/app_name"
+            android:name=".QueryAlarmListActivity" >
+        </activity>                                    
     </application>
 
 </manifest>
