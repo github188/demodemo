@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -23,10 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class RealAlarmActivity extends Activity {
 	private static final String TAG = "bts";
@@ -55,7 +59,19 @@ public class RealAlarmActivity extends Activity {
         //BTSListAdapter.
         goku = GokuClient.getInstance();
         adapter = new AlarmListAdapter();
-        lv.setAdapter(adapter);         
+        lv.setAdapter(adapter);        
+        
+        lv.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+            	AlarmRecord al = adapter.getItem(position);
+            	if(al.category == 2){
+            		browseImageAlarm(al.uuid);
+            	}else {
+            		showMessage("只支持浏览图片告警。");
+            	}
+            }
+          });          
         
         /**
          * 定时更新告警数据。
@@ -92,6 +108,17 @@ public class RealAlarmActivity extends Activity {
 			}
         }, 100, 60 * 1000);        
     } 
+    
+    protected void browseImageAlarm(String uuid){
+    	String url = goku.getAlarmBrowseURL(uuid);
+    	Log.i(TAG, "open img alarm:" + url);
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);
+		Uri u = Uri.parse(url);
+		intent.setData(u);
+		startActivity(intent);    	
+    }    
     
     @Override
     protected void onStart() {

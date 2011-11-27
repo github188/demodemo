@@ -62,7 +62,7 @@ public class QueryAlarmActivity extends Activity {
         adapter.add(new Item("2", "自动确认"));
         adapter.add(new Item("1", "未确认"));       
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        status.setAdapter(adapter);         
+        status.setAdapter(adapter);   
     } 
     
     protected Dialog onCreateDialog(int id) {

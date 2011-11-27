@@ -137,6 +137,11 @@ public class GokuClient {
 		return r;
 	}
 	
+	public String getAlarmBrowseURL(String uuid){
+		//http://hzluming.3322.org:8080/?q=image_alarm&id=1004523293308535
+		return server + "/?q=image_alarm&id=" + uuid;
+	}
+	
 	private Object getRPCData(String api, Map<String, String> param, ResultHandler h, GokuResult r){
 		HttpResponse response = null;
 		Object result = null;

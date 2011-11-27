@@ -2,20 +2,18 @@ package org.goku.client;
 
 import java.util.Comparator;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.goku.io.AlarmRecord;
 import org.goku.io.GokuClient;
-import org.goku.io.GokuResult;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,9 +52,33 @@ public class QueryAlarmListActivity extends Activity {
         ListView lv = (ListView) findViewById(R.id.task_list);
         //BTSListAdapter.
         goku = GokuClient.getInstance();
-        adapter = new AlarmListAdapter();
-        lv.setAdapter(adapter);                 
+        adapter = new AlarmListAdapter(); 
+        lv.setAdapter(adapter);      
+        lv.setTextFilterEnabled(true);
+        
+        lv.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+            	AlarmRecord al = adapter.getItem(position);
+            	if(al.category == 2){
+            		browseImageAlarm(al.uuid);
+            	}else {
+            		showMessage("只支持浏览图片告警。");
+            	}
+            }
+          });        
     } 
+    
+    protected void browseImageAlarm(String uuid){
+    	String url = goku.getAlarmBrowseURL(uuid);
+    	Log.i(TAG, "open img alarm:" + url);
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);
+		Uri u = Uri.parse(url);
+		intent.setData(u);
+		startActivity(intent);    	
+    }
     
     @Override
     protected void onStart() {
