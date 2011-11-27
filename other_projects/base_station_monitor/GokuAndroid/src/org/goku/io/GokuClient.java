@@ -30,6 +30,7 @@ public class GokuClient {
 	public boolean isLoginOk = true;
 	
 	public List<BaseStation> btsList = new ArrayList<BaseStation>();
+	public Map<String, BaseStation> btsMap = new HashMap<String, BaseStation>();
 	public List<AlarmRecord> realTimeAlram = new ArrayList<AlarmRecord>();
 	public List<AlarmRecord> queryAlram = new ArrayList<AlarmRecord>();
 	
@@ -70,6 +71,9 @@ public class GokuClient {
 			//this.btsList = r.btsList;
 			this.btsList.clear();
 			this.btsList.addAll(r.btsList);
+			for(BaseStation bs: r.btsList){
+				btsMap.put(bs.uuid, bs);
+			}
 		}
 		return r;
 	}
@@ -86,6 +90,7 @@ public class GokuClient {
 					this.realTimeAlram.remove(alarm);
 				}else {
 					this.realTimeAlram.add(alarm);
+					alarm.bts = btsMap.get(alarm.btsID);
 				}
 			}
 		}
@@ -199,13 +204,13 @@ public class GokuClient {
 			String[] data = l.split("\\$");
 			switch(data.length){
 				case 9: al.devType = data[8];
-				case 8: al.category = data[7];
+				case 8: al.category = Integer.parseInt(data[7]);
 				case 7: al.endTime = data[6];
 				case 6: al.startTime = data[5];
 				case 5: al.level = data[4];
 				case 4: al.status = Integer.parseInt(data[3]);
-				case 3: al.btsID = data[2];
-				case 2: al.code = data[1];
+				case 3: al.setBTS(data[2]);
+				case 2: al.alarmName = data[1];
 				case 1: al.uuid = data[0];
 			}
 			r.addAlarmRecord(al);

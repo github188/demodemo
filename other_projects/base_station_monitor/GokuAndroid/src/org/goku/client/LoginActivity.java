@@ -42,9 +42,9 @@ public class LoginActivity extends Activity {
         password = (EditText)this.findViewById(R.id.password);    
         server = (EditText)this.findViewById(R.id.server_ip);    
         
-        userName.setText(settings.getString(GoKu.PREFS_USERNAME, ""), BufferType.NORMAL);
-        password.setText(settings.getString(GoKu.PREFS_PASSWORD, ""), BufferType.NORMAL);
-        server.setText(settings.getString(GoKu.PREFS_SERVER, ""), BufferType.NORMAL);  
+        userName.setText(settings.getString(GoKu.PREFS_USERNAME, "test1"), BufferType.NORMAL);
+        password.setText(settings.getString(GoKu.PREFS_PASSWORD, "pass"), BufferType.NORMAL);
+        server.setText(settings.getString(GoKu.PREFS_SERVER, "hzluming.3322.org:8080"), BufferType.NORMAL);  
         client = GokuClient.getInstance();
     } 
     
@@ -138,5 +138,5 @@ public class LoginActivity extends Activity {
     	this.startActivity(intent);
 	    finish();		
 	}
-
+	
 }

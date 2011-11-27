@@ -1,5 +1,6 @@
 package org.goku.client;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -63,7 +64,7 @@ public class RealAlarmActivity extends Activity {
                 	final GokuResult r = goku.realTimeAlarm();
                 	if(r.count > 0){
                 		updateAlarmList();
-                	}else {
+                	}else if(r.status != 0){
                 		showMessage(r.getMessage());
                 	}
                 }
@@ -90,7 +91,7 @@ public class RealAlarmActivity extends Activity {
     	isActive = true;
     	Log.d(TAG, "resume....");
     	updateAlarmList();
-    }    
+    }
 
     protected void onPause() {
     	super.onPause();
@@ -113,12 +114,7 @@ public class RealAlarmActivity extends Activity {
     	if(!isActive) return;
 		runOnUiThread(
 			new Runnable(){
-				public void run(){
-					/*
-					adapter.clear();
-					for(AlarmRecord alarm: goku.realTimeAlram){
-						adapter.add(alarm);
-					}*/
+				public void run(){					
 					adapter.notifyDataSetChanged();
 				}
 			}
@@ -182,6 +178,16 @@ public class RealAlarmActivity extends Activity {
     class AlarmListAdapter extends ArrayAdapter<AlarmRecord>{
     	AlarmListAdapter(List<AlarmRecord> list){
             super(RealAlarmActivity.this, R.layout.real_alarm_item, list);
+            this.sort(new Comparator<AlarmRecord>(){
+    			@Override
+    			public int compare(AlarmRecord al, AlarmRecord al_other) {
+    				String d1 = al.startTime;
+    				String d2 = al_other.startTime;
+    				if(d1 != null && d2 != null){
+    					return d1.compareTo(d2) * -1;
+    				}
+    				return -1;
+    			}});            
         }
     	
     	public View getView(int position, View convertView, ViewGroup parent) {
@@ -196,12 +202,13 @@ public class RealAlarmActivity extends Activity {
              } else {
             	 wrapper = (ViewWrapper)row.getTag();
              }
-    		 AlarmRecord bs = this.getItem(position);
-    		 
-    		 wrapper.getName().setText(bs.uuid + "_" + bs.uuid);
-    		 wrapper.getStatus().setText(bs.status + "");
-         
+    		 AlarmRecord al = this.getItem(position);
+    		 if(al != null){    		 
+    			 wrapper.getName().setText(al.getAlaramType() + " " + al.alarmName + " " + al.getBTSName() + " "
+    					 + al.startTime);
+    			 wrapper.getStatus().setText(al.status + "");
+    		 }
              return row;    		 
-    	}    	
+    	}
     }  
 }

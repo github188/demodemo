@@ -50,9 +50,11 @@ public class BTSActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        showDialog(WAITING_DIALOG);
-        inWaiting = true;
-        new LoadBTSTask().execute();
+        if(goku.btsList.size() == 0){
+	        showDialog(WAITING_DIALOG);
+	        inWaiting = true;
+	        new LoadBTSTask().execute();
+        }
     }
    
     private class LoadBTSTask extends AsyncTask<GokuResult, String, GokuResult>{
