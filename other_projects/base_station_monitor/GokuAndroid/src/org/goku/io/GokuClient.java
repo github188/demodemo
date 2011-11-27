@@ -25,6 +25,7 @@ public class GokuClient {
 	private String server = null;
 	private DefaultHttpClient client = null;
 	public String sid = null;
+	public long lastActive = 0; 
 	public String encoding = "utf8";
 	public boolean isConnected = false;
 	public boolean isLoginOk = true;
@@ -93,6 +94,11 @@ public class GokuClient {
 					alarm.bts = btsMap.get(alarm.btsID);
 				}
 			}
+		}
+		if(r.status == 0){
+			this.lastActive = System.currentTimeMillis();
+		}else if(r.status == 1) {
+			this.sid = null;
 		}
 		
 		return r;

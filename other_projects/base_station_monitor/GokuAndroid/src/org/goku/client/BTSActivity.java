@@ -43,7 +43,7 @@ public class BTSActivity extends Activity {
         ListView lv = (ListView) findViewById(R.id.task_list);
         //BTSListAdapter.
         goku = GokuClient.getInstance();
-        adapter = new BTSListAdapter(goku.btsList);
+        adapter = new BTSListAdapter();
         lv.setAdapter(adapter);        
     }
     
@@ -56,20 +56,35 @@ public class BTSActivity extends Activity {
 	        new LoadBTSTask().execute();
         }
     }
-   
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateBTSListView();
+	}
+
+    private void updateBTSListView(){
+		runOnUiThread(
+			new Runnable(){
+				public void run(){
+					adapter.clear();
+					for(BaseStation b: goku.btsList){
+						//Log.d(TAG, "uuid:" + b.uuid);
+						adapter.add(b);
+					}
+					adapter.notifyDataSetChanged();
+				}
+			});
+    }
+    
     private class LoadBTSTask extends AsyncTask<GokuResult, String, GokuResult>{
 		protected void onPostExecute(GokuResult r) {
         	if(r.status == 0){
-        		//adapter.clear();
-        		//for(BaseStation b: goku.btsList){
-        		//	Log.d(TAG, "uuid:" + b.uuid);
-        		//	adapter.add(b);
-        		//}
-        		adapter.notifyDataSetChanged();
+        		updateBTSListView();
         		showMessage("基站列表加载完成.");
         	}else {
         		showMessage(r.getMessage());
-        	}			
+        	}
 		}
 
 		@Override
@@ -133,8 +148,8 @@ public class BTSActivity extends Activity {
     }
     
     class BTSListAdapter extends ArrayAdapter<BaseStation>{
-    	BTSListAdapter(List<BaseStation> list){
-            super(BTSActivity.this, R.layout.bts_item, list);
+    	BTSListAdapter(){
+            super(BTSActivity.this, R.layout.bts_item);
         }
     	
     	public View getView(int position, View convertView, ViewGroup parent) {

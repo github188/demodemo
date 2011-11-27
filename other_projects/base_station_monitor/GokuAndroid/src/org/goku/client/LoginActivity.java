@@ -48,6 +48,23 @@ public class LoginActivity extends Activity {
         client = GokuClient.getInstance();
     } 
     
+    @Override
+    public void onStart(){
+    	super.onStart();
+    	boolean isLaunching = false;
+    	Intent i = this.getIntent();
+    	if(i != null && i.getCategories().contains(Intent.CATEGORY_LAUNCHER)){
+    		isLaunching = true;
+    	}
+    	
+    	if(isLaunching && client.sid != null && 
+    	   System.currentTimeMillis() - client.lastActive < 60 * 5 * 1000){
+        	Intent intent = new Intent().setClass(getApplicationContext(), MainTabActivity.class);
+        	this.startActivity(intent);
+    	    finish();
+    	}
+    }
+    
     public void clickLogin(View v){
     	Log.i("areaci", "click login button.");  
     	final String username = userName.getText().toString();

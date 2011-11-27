@@ -50,7 +50,7 @@ public class RealAlarmActivity extends Activity {
         ListView lv = (ListView) findViewById(R.id.task_list);
         //BTSListAdapter.
         goku = GokuClient.getInstance();
-        adapter = new AlarmListAdapter(goku.realTimeAlram);
+        adapter = new AlarmListAdapter();
         lv.setAdapter(adapter);         
         
         /**
@@ -114,7 +114,11 @@ public class RealAlarmActivity extends Activity {
     	if(!isActive) return;
 		runOnUiThread(
 			new Runnable(){
-				public void run(){					
+				public void run(){
+					adapter.clear();
+					for(AlarmRecord al: goku.realTimeAlram){
+						adapter.add(al);
+					}
 					adapter.notifyDataSetChanged();
 				}
 			}
@@ -176,8 +180,8 @@ public class RealAlarmActivity extends Activity {
     }
     
     class AlarmListAdapter extends ArrayAdapter<AlarmRecord>{
-    	AlarmListAdapter(List<AlarmRecord> list){
-            super(RealAlarmActivity.this, R.layout.real_alarm_item, list);
+    	AlarmListAdapter(){
+            super(RealAlarmActivity.this, R.layout.real_alarm_item);
             this.sort(new Comparator<AlarmRecord>(){
     			@Override
     			public int compare(AlarmRecord al, AlarmRecord al_other) {
