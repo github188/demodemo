@@ -9,6 +9,7 @@ public class GokuResult {
 	public int status = -2;
 	public String message = null;
 	
+	public int newAlarm = 0;
 	public int totalCount = 0;	
 	public int count = 0;
 	public String session = null;

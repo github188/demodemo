@@ -92,6 +92,7 @@ public class GokuClient {
 				}else {
 					this.realTimeAlram.add(alarm);
 					alarm.bts = btsMap.get(alarm.btsID);
+					r.newAlarm++;
 				}
 			}
 		}

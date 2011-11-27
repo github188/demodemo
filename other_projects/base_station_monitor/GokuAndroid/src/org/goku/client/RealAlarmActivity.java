@@ -33,7 +33,8 @@ public class RealAlarmActivity extends Activity {
 	private AlarmListAdapter adapter = null;
 	private Timer timer = new Timer();
 	private boolean inWaiting = false;
-	private boolean isActive = true;
+	private boolean isActive = false;
+	private boolean isStopped = false;
 	private final int WAITING_DIALOG = 1;	
 
 	private GokuClient client = null;
@@ -64,12 +65,23 @@ public class RealAlarmActivity extends Activity {
                 	final GokuResult r = goku.realTimeAlarm();
                 	if(r.count > 0){
                 		updateAlarmList();
+                		if(r.newAlarm > 0){
+                			onNewAlarm(r);
+                		}
                 	}else if(r.status != 0){
                 		showMessage(r.getMessage());
                 	}
                 }
             }
-        };        
+        }; 
+        
+        timer.scheduleAtFixedRate(new TimerTask (){
+			@Override
+			public void run() {
+				Message msg = handler.obtainMessage(realAlarm);
+				handler.sendMessage(msg);
+			}
+        }, 100, 60 * 1000);        
     } 
     
     @Override
@@ -77,18 +89,25 @@ public class RealAlarmActivity extends Activity {
         super.onStart();
         Log.d(TAG, "start....");
         isActive = true;
-        timer.scheduleAtFixedRate(new TimerTask (){
-			@Override
-			public void run() {
-				Message msg = handler.obtainMessage(realAlarm);
-				handler.sendMessage(msg);
-			}        	
-        }, 100, 60 * 1000);
+    }
+    
+    protected void onNewAlarm(GokuResult result){
+    	//如果界面已经关闭，用通知提示，如果应用还在使用中，用toast提示。
+    	if(isStopped){
+    		this.alarmNotification(result);
+    	}else if(!isActive){
+    		this.showMessage(String.format("有%s条基站告警", result.newAlarm));
+    	}
+    }
+    
+    protected void alarmNotification(GokuResult result){
+    	
     }
     
     protected void onResume() {
     	super.onResume();
     	isActive = true;
+    	isStopped = false;
     	Log.d(TAG, "resume....");
     	updateAlarmList();
     }
@@ -103,6 +122,7 @@ public class RealAlarmActivity extends Activity {
     	super.onStop();
     	Log.d(TAG, "stop....");
     	isActive = false;
+    	isStopped = true;
     }
     
     protected void onDestroy() {
@@ -140,6 +160,7 @@ public class RealAlarmActivity extends Activity {
     }    
     
 	private void showMessage(final String message){
+		if(!isActive) return;
 		runOnUiThread(
 			new Runnable(){
 				public void run(){
