@@ -1,7 +1,6 @@
 package org.goku.client;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,6 +18,9 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -39,6 +41,7 @@ public class RealAlarmActivity extends Activity {
 
 	private GokuClient client = null;
 	private final int realAlarm = 1;
+	private final int confirmAlarm = 2;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,12 @@ public class RealAlarmActivity extends Activity {
                 			onNewAlarm(r);
                 		}
                 	}else if(r.status != 0){
+                		showMessage(r.getMessage());
+                	}
+                }else if(msg.what == confirmAlarm){
+                	String uuid = (String)msg.obj;
+                	final GokuResult r = goku.alarmConfirm(uuid);
+                	if(r.status != 0){
                 		showMessage(r.getMessage());
                 	}
                 }
@@ -128,6 +137,38 @@ public class RealAlarmActivity extends Activity {
     protected void onDestroy() {
     	super.onDestroy();
     	timer.cancel();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.real_alarm_menu, menu);
+                
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	
+    	Log.d(TAG, "clicked:" + item.toString());
+        switch (item.getItemId()) {
+        	case R.id.all_confirm:
+        		confirmAllAlarm();
+        		return true;
+        	default:
+        		return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    private void confirmAllAlarm(){
+    	AlarmRecord al = null;
+    	for(int i = 0; i < adapter.getCount(); i++){
+			Message msg = handler.obtainMessage(confirmAlarm);
+			al = adapter.getItem(i);
+			msg.obj = al.uuid;
+			handler.sendMessage(msg);
+    	}
+    	
     }
     
     private void updateAlarmList(){

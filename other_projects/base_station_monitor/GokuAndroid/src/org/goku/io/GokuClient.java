@@ -105,6 +105,16 @@ public class GokuClient {
 		return r;
 	}
 	
+	public GokuResult alarmConfirm(String uuid){
+		GokuResult r = new GokuResult();
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("uuid", uuid);
+		param.put("status", "3");
+		this.getRPCData("alarm_action", param, ConfirmAlarmHandler, r);
+		
+		return r;		
+	}
+	
 	public GokuResult ping(){
 		GokuResult r = new GokuResult();
 		Map<String, String> param = new HashMap<String, String>();
@@ -196,6 +206,8 @@ public class GokuClient {
 			r.addBaseStation(bs);
 		}
 	};	
+	
+	protected ResultHandler ConfirmAlarmHandler = new ResultHandler(){};
 	
 	protected ResultHandler AlarmHandler = new ResultHandler(){
 		protected void extraHeader(String l, GokuResult r){

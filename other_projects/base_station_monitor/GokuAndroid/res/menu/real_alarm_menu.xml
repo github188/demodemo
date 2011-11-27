@@ -1,0 +1,15 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/all_confirm"
+          android:icon="@drawable/ic_launcher"
+          android:title="全部确认" />
+
+    <item android:id="@+id/stop_sync"
+          android:icon="@drawable/ic_launcher"
+          android:title="停止刷新" />
+    
+    <item android:id="@+id/exit"
+          android:icon="@drawable/ic_launcher"
+          android:title="退出" />    
+</menu>
