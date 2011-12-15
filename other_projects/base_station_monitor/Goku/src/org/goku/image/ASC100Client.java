@@ -47,7 +47,7 @@ public class ASC100Client {
 			}
 			tmp = tmp[1].split("\\.", 3);
 			if(tmp.length < 3) throw new Error("Error Image client location:" + location);
-			this.srId = tmp[0] + "." + tmp[1];
+			this.srId = (tmp[0] + "." + tmp[1]).toLowerCase();
 			this.channel = tmp[2];
 		}
 		
