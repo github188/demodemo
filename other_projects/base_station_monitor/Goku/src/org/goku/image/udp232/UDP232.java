@@ -1,5 +1,6 @@
 package org.goku.image.udp232;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -8,7 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.comm.CommPortIdentifier;
-import javax.comm.PortInUseException;
 import javax.comm.SerialPort;
 
 import org.apache.commons.logging.Log;
@@ -50,14 +50,20 @@ public class UDP232 implements Runnable{
 			String portName = temp[0], id = temp[1];
 			log.info(String.format("init client:%s->%s", portName, id));
 			try {
-				CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(portName);
-				SerialPort sPort = (SerialPort) portId.open(id, 5000);
-				sPort.setSerialPortParams(bitRate, SerialPort.DATABITS_8, 
-					SerialPort.STOPBITS_1, 
-					SerialPort.PARITY_NONE);								
-				UDP232Client co = new UDP232Client(id, sPort);
-				threadPool.execute(co);
-				mx.register(co);
+				if(new File(portName).isFile()){
+					ReplyFileData co = new ReplyFileData(id, portName);
+					threadPool.execute(co);
+					mx.register(co);
+				}else {
+					CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(portName);
+					SerialPort sPort = (SerialPort) portId.open(id, 5000);
+					sPort.setSerialPortParams(bitRate, SerialPort.DATABITS_8, 
+						SerialPort.STOPBITS_1, 
+						SerialPort.PARITY_NONE);								
+						UDP232Client co = new UDP232Client(id, sPort);
+						threadPool.execute(co);
+						mx.register(co);					
+				}
 			} catch (Exception e) {
 				log.info(e.toString(), e);
 			}
