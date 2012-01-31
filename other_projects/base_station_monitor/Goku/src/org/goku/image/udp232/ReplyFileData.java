@@ -12,6 +12,7 @@ import org.goku.image.ASC100Client;
 public class ReplyFileData extends ASC100Client implements Runnable {
 	private String path = null;
 	private BufferedReader reader = null;
+	private int count = 0;
 	
 	public ReplyFileData(String id, String path) {
 		super(id);
@@ -65,6 +66,7 @@ public class ReplyFileData extends ASC100Client implements Runnable {
 		
 		for(String line = reader.readLine(); line != null; 
 			line = reader.readLine()){
+			count++;
 			try{
 				if((!line.contains("---")) && line.trim().length() > 0){
 					String[] tmp = line.split(" ");
@@ -72,6 +74,7 @@ public class ReplyFileData extends ASC100Client implements Runnable {
 					for(int i = 0; i < tmp.length; i++){
 						data[i] = (byte)Integer.parseInt(tmp[i], 16);
 					}
+					log.info("read data file line:" + count);
 					break;
 				}
 			}catch(Exception e){
@@ -80,6 +83,10 @@ public class ReplyFileData extends ASC100Client implements Runnable {
 		}
 		if(data == null){
 			log.info("Close the file, and reset to read from header...");
+			try {
+				Thread.sleep(5 * 1000);
+			} catch (InterruptedException e) {
+			}
 			if(reader != null){
 				reader.close();
 				reader = null;

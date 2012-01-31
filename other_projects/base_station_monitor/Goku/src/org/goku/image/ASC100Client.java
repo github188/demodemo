@@ -37,6 +37,12 @@ public class ASC100Client {
 	private ByteBuffer outBuffer = ByteBuffer.allocate(64 * 1024);
 	private byte lastCmd = 0;
 	private long readCount = 0;
+	/**
+	 *为重试解析缓存数据。
+	 *如果是新的协议，校验和对。尝试使用老的协议解析。 
+	 */
+	private ByteBuffer tmpBuffer = null;
+	private boolean needRetry = true;
 	
 	
 	public ASC100Client(String location){
@@ -85,6 +91,14 @@ public class ASC100Client {
 		
 		while(buffer.hasRemaining()){
 			cur = buffer.get();
+			if(tmpBuffer != null){
+				if(tmpBuffer.hasRemaining()){
+					tmpBuffer.put(cur);
+				}else {
+					log.warn("the retry buffer is full, length:" + tmpBuffer.position());
+					tmpBuffer.clear();
+				}
+			}
 			//数据需要转义处理。
 			if(inBuffer.autoEscaped){
 				if(cur == (byte)0xFF ||cur == (byte)0xFE){
@@ -157,6 +171,16 @@ public class ASC100Client {
 							//System.exit(1);
 						}
 					}
+					if(needRetry && this.image != null){  //新协议的图片数据端。
+						if(tmpBuffer == null){
+							tmpBuffer = ByteBuffer.allocate(2 * 1024);
+						}else {
+							tmpBuffer.clear();
+						}
+						inBuffer.autoEscaped = false;
+					}else if (!needRetry && this.image != null){ //老协议的图片数据端。
+						inBuffer.autoEscaped = true;
+					}
 					break;
 				case ASC100Package.STATUS_DATA:
 					//图片传输数据，不需要转义数据里面的. 0xFF,0xFE等字符。					
@@ -168,6 +192,11 @@ public class ASC100Client {
 						
 						//到了校验和阶段始终需要数据转义
 						inBuffer.autoEscaped = true;		
+					}
+					
+					//纯粹的图片数据不需要转义。
+					if(!needRetry && this.image != null && inBuffer.inBuffer.position() >= 9){
+						inBuffer.autoEscaped = false;
 					}
 					break;
 				case ASC100Package.STATUS_CHECKSUM:
@@ -181,9 +210,36 @@ public class ASC100Client {
 						inBuffer.bufferCheckSum = getCheckSum(
 								new byte[]{(byte)inBuffer.cmd, (byte)(inBuffer.len & 0xff), (byte)((inBuffer.len >> 8) & 0xff)},
 								inBuffer.inBuffer.asReadOnlyBuffer());
-						processData(inBuffer);
-						inBuffer.status = ASC100Package.STATUS_END;
-						inBuffer.paddingIndex = 0;
+						if(inBuffer.checkSum != inBuffer.bufferCheckSum){
+							if(this.needRetry && this.image != null){
+								this.needRetry = false;
+								inBuffer.autoEscaped = true;
+								inBuffer.status = ASC100Package.STATUS_DATA;
+								inBuffer.paddingIndex = 0;
+								inBuffer.inBuffer.position(0); //reset image data buffer.
+								this.tmpBuffer.flip();
+								ByteBuffer retry = tmpBuffer;
+								this.tmpBuffer = null;
+								log.warn(String.format("Checksum error, excepted:%x, actual:%x, retry process data length:%s, buffer length:%s", 
+										inBuffer.checkSum, inBuffer.bufferCheckSum, retry.remaining(),
+										buffer.remaining()));
+								process(retry);
+								log.debug(String.format("done process retry buffer, image length:%s, buffer length:%s, status:%s", inBuffer.inBuffer.position(),
+										buffer.remaining(), inBuffer.status));
+							}else if (!this.needRetry && this.image != null){
+								this.needRetry = true;
+								processData(inBuffer);
+								inBuffer.status = ASC100Package.STATUS_END;
+								inBuffer.paddingIndex = 0;
+							}
+						}else {
+							processData(inBuffer);
+							inBuffer.status = ASC100Package.STATUS_END;
+							inBuffer.paddingIndex = 0;
+							if(tmpBuffer != null){
+								this.tmpBuffer.clear();
+							}
+						}
 					}
 					break;
 			}
