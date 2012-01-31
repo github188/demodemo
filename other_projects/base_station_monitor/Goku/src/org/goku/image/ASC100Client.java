@@ -136,12 +136,6 @@ public class ASC100Client {
 					inBuffer.cmd = cur;
 					inBuffer.status = ASC100Package.STATUS_LENGTH;
 					inBuffer.paddingIndex = 0;
-					//图片数据不需要转义。
-					if(inBuffer.cmd == 0x06 && this.image != null){
-						inBuffer.autoEscaped = false;
-					}
-					
-					//log.debug(String.format("Reading cmd:%x, ", inBuffer.cmd));
 					break;
 				case ASC100Package.STATUS_LENGTH:
 					if(inBuffer.paddingIndex < 2){
