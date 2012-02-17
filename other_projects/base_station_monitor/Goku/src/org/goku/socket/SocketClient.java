@@ -73,6 +73,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 	 * 有可读数据时，调用处理数据。
 	 */
 	public void run() {
+		if(this.selectionKey == null) return;		
 		try {
 			if(this.selectionKey.isReadable()){
 				this.read();
@@ -250,6 +251,7 @@ public class SocketClient implements SelectionHandler, Runnable {
 			}
 		}
 		if(this.selectionKey != null){
+			this.selectionKey.attach(null);
 			this.selectionKey.cancel();
 			this.selectionKey = null;
 		}	
