@@ -86,7 +86,6 @@ public class SocketClient implements SelectionHandler, Runnable {
 			}
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			this.selectionKey.cancel();
 			this.closeSocket();
 		}
 	}
@@ -242,16 +241,18 @@ public class SocketClient implements SelectionHandler, Runnable {
 	public void closeSocket(){
 		log.info("Close socket, " + toString() + ", write queue:" + this.writeQueue.size());
 		this.writeQueue.clear();
-		if(this.selectionKey != null){
-			this.selectionKey.cancel();
-		}
 		if(this.socket != null){
 			try {
 				this.socket.close();
+				this.socket = null;
 			} catch (IOException e) {
 				log.error(e.toString(), e);
 			}
 		}
+		if(this.selectionKey != null){
+			this.selectionKey.cancel();
+			this.selectionKey = null;
+		}	
 	}
 	
 	public String toString(){

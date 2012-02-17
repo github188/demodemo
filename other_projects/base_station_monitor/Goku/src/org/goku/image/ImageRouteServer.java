@@ -200,6 +200,22 @@ public class ImageRouteServer {
 					}
 				}});
 		};
+		
+		public void connectionError(final ImageClientEvent event) {
+			threadPool.execute(new Runnable(){
+				@Override
+				public void run() {
+					try {
+						event.source.info.connectionStatus = "timeout";
+						event.source.info.lastActive = new Date(System.currentTimeMillis());
+						storage.save(event.source.info, 
+									 new String[]{"connectionStatus", 
+												  "lastActive"});
+					} catch (Throwable e) {
+						log.error("Failed to update client status." + e.toString(), e);
+					}
+				}});			
+		}
 	};	
 
 }

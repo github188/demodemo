@@ -23,6 +23,7 @@ public class ASC100Client {
 	public BaseStation info = null;
 	public Collection<ImageClientListener> ls = Collections.synchronizedCollection(new ArrayList<ImageClientListener>());
 	public long lastActive = 0;
+	public long lastErrorReport = 0;
 	public ASC100Package inBuffer = new ASC100Package();
 	public ImageInfo image = null;
 	public int maxRetryTime = 5;
@@ -154,10 +155,10 @@ public class ASC100Client {
 								inBuffer.status = ASC100Package.STATUS_CHECKSUM;
 							}
 							inBuffer.paddingIndex = 0;
-							if(inBuffer.cmd == 0x06 && this.image != null && inBuffer.len > 24){
+							if(inBuffer.cmd == 0x06 && this.image != null){
 								inBuffer.inBuffer.limit(inBuffer.len -2);
 								log.debug("read image data length:" +inBuffer.len);
-							}							
+							}
 						}else {
 							log.debug(String.format("Error length data:%s, b1:0x%x, b2:0x%x", inBuffer.len, inBuffer.padding[0], inBuffer.padding[1]));
 							inBuffer.clear();
@@ -237,12 +238,6 @@ public class ASC100Client {
 					}
 					break;
 			}
-		}
-		
-		//报告设备处于活动状态。
-		if(System.currentTimeMillis() - this.lastActive > 60 * 1000){
-			this.eventProxy.active(new ImageClientEvent(this));
-			this.lastActive = System.currentTimeMillis();
 		}
 	}
 	
@@ -325,9 +320,22 @@ public class ASC100Client {
 				log.warn("Can't send data, the client have not register to MX");
 			}
 		}
+		
+		//报告设备处于错误状态。
+		if(System.currentTimeMillis() - this.lastActive > 60 * 1000 * 5 && 
+			System.currentTimeMillis() - lastErrorReport > 60 * 1000){
+			this.eventProxy.connectionError(new ImageClientEvent(this));
+			this.lastErrorReport = System.currentTimeMillis(); 
+		}
 	}
 	
 	public void processData(ASC100Package data){
+		//报告设备处于活动状态。
+		if(System.currentTimeMillis() - this.lastActive > 60 * 1000){
+			this.eventProxy.active(new ImageClientEvent(this));
+			this.lastActive = System.currentTimeMillis();
+		}
+		
 		if(data.checkSum != data.bufferCheckSum){
 			log.debug(String.format("Drop package the check sum error. excepted:%x, actual:%x", data.checkSum, data.bufferCheckSum));
 			if(data.cmd == 0x06 && image != null){
