@@ -163,7 +163,14 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		}
 		InputStream in = new FileInputStream(alarm.absPath);
 		in.read(data);
-		in.close();		
+		in.close();	
+		
+		//alarm.baseStation;
+		//alarm.alarm;
+		String name = ImageText.titleName(alarm.baseStation, "");
+		String title = String.format("%s_%s 通道%s", alarm.baseStation, name, alarm.channelId);
+		
+		data = ImageText.drawText(data, title);
 		//String meta = String.format("size:%s$time:%s$length:%s$base:%s$ch:%s$status:$%s",
 		//		size, date, data.length, alarm.baseStation, alarm.channelId, alarm.alarmStatus);
 		String meta = String.format("%s$%s$%s$%s$%s$$%s",
@@ -217,6 +224,12 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		image.buffer.duplicate().get(data);
 		//String meta = String.format("size:%s$time:%s$length:%s",
 		//		size, date, data.length);
+		
+		String name = ImageText.titleName(bts, "");
+		String title = String.format("%s_%s 通道%s", bts, name, ch);
+		
+		data = ImageText.drawText(data, title);
+		
 		String meta = String.format("%s$%s$%s$%s$%s$1",
 				size.replace('*', '$'), date, data.length, bts, ch);	
 		log.debug("image data:" + meta);
