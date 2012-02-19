@@ -3,8 +3,8 @@ package org.task.queue.topic;
 import hudson.model.BuildableItem;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,7 +14,9 @@ public class MessageTaskMapping {
 	public URL queue = null;
 	public BuildableItem project = null;
 	public long lastPoll = 0;
-	private List<Message> messages = new ArrayList<Message>();
+	private Queue<Message> messages = new ArrayBlockingQueue<Message>(50);
+	
+	//ArrayBlockingQueue(int capacity) 
 	
 	public boolean canPoll(){
 		return System.currentTimeMillis() - lastPoll > 1000 * 3;
@@ -24,12 +26,14 @@ public class MessageTaskMapping {
 	 * 还没有trigger的message list
 	 * @return
 	 */
-	public List<Message> pendingMessage(){
+	public Queue<Message> pendingMessage(){
 		return messages;
 	}
 	
 	public void addMessage(Message msg){
-		this.messages.add(msg);
+		if(messages.size() < 50){
+			this.messages.add(msg);
+		}
 	}
 	
 	public boolean equals(Object o){

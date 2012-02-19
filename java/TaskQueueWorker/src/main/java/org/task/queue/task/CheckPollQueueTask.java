@@ -1,6 +1,7 @@
 package org.task.queue.task;
 
 import hudson.model.Hudson;
+import hudson.model.Queue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,9 @@ public class CheckPollQueueTask implements Runnable {
 		
 		mappingList.addAll(TaskQueuePlugin.getInstance().mappingList);
 		
+		Queue q = Hudson.getInstance().getQueue(); 
 		for(MessageTaskMapping mapping: mappingList){
-			if(Hudson.getInstance().getQueue().contains(mapping.project)){
+			if(q != null && q.contains(mapping.project)){
 				continue;
 			}
 			if(mapping.project.isBuildBlocked()){

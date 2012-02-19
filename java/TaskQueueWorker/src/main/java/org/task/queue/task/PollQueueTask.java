@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.Iterator;
-import java.util.concurrent.locks.ReentrantLock;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -67,6 +66,7 @@ public class PollQueueTask implements Runnable {
 		HttpURLConnection conn = null;
 		JSONObject obj = null;
 		InputStream ins = null;
+		String data = null;
 		try{
 			// TODO Auto-generated method stub
 			log.info("Get task queue info from url:" + mapping.queue.toString());
@@ -96,10 +96,14 @@ public class PollQueueTask implements Runnable {
 					offset += len;
 				}
 			}
-			String data = new String(buffer, 0, offset, "utf8");
+			data = new String(buffer, 0, offset, "utf8");
 			obj = JSONObject.fromObject(data);
 		}catch(Exception e){
-			log.error("load config error", e);
+			String msg = "load queue task error.";
+			if(data != null){
+				msg += " data:" + data;
+			}
+			log.error(msg, e);
 		} finally{
 			if(ins != null){
 				try {
@@ -113,6 +117,6 @@ public class PollQueueTask implements Runnable {
 			}
 		}		
 		return obj;
-	}	
+	}
 
 }

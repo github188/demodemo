@@ -1,6 +1,7 @@
 package org.task.queue.task;
 
 import hudson.model.Hudson;
+import hudson.model.Queue;
 
 import java.util.Iterator;
 
@@ -30,25 +31,25 @@ public class TriggerTaskWorkerTask implements Runnable {
 	
 	private void trigger(){
 		Message m = null;
-		for(Iterator<Message> iter = mapping.pendingMessage().iterator();
-		iter.hasNext();){
+		java.util.Queue<Message> q = mapping.pendingMessage();
+		while(q.size() > 0){
 			if(!this.isProjectInQueue()){
-				m = iter.next();
-				this.triggerWithMessage(m);
-				iter.remove();
-			}
+				this.triggerWithMessage(q.poll());
+			}			
 		}
 	}
 	
 	private boolean isProjectInQueue(){
+		Queue q = Hudson.getInstance().getQueue(); 
+		
 		for(int i = 0; i < 3; i++){
-			if(Hudson.getInstance().getQueue().contains(mapping.project)){
+			if(q != null && q.contains(mapping.project)){
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
 			}else {
-				return false;				
+				return false;
 			}
 		}
 		return true;
