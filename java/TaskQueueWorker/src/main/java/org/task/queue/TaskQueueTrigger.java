@@ -6,6 +6,7 @@ import hudson.model.Item;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -18,21 +19,27 @@ import antlr.ANTLRException;
 public class TaskQueueTrigger extends Trigger<BuildableItem>{
 	private transient static Log log = LogFactory.getLog("queue");
 	
-	private URL taskQueue = null;
+	//private URL taskQueue = null;
+	public String taskQueue = null;
 	
     @DataBoundConstructor
     public TaskQueueTrigger(String taskQueue)
-    throws ANTLRException {
+    throws ANTLRException, IOException {
       super("");
       
-      this.taskQueue = new URL(taskQueue);
+      this.taskQueue = taskQueue;
     }
     
     public void start(BuildableItem project, boolean newInstance) {
     	super.start(project, newInstance);
     	log.info("start message queue trigger, job:" + this.job.getName());
-    	
-    	TaskQueuePlugin.getInstance().registerTopic(this.taskQueue, this.job);
+    	URL queue = null;
+    	try{
+    		queue = new URL(taskQueue);
+    	}catch(IOException e){
+    		
+    	}
+    	TaskQueuePlugin.getInstance().registerTopic(queue, this.job);
     }
   
     @Override
@@ -44,7 +51,13 @@ public class TaskQueueTrigger extends Trigger<BuildableItem>{
     @Override
     public void stop() {
     	log.info("remove message queue trigger, project:" + this.job.getName());
-    	TaskQueuePlugin.getInstance().unregisterTopic(this.taskQueue, this.job);
+    	URL queue = null;
+    	try{
+    		queue = new URL(taskQueue);
+    	}catch(IOException e){
+    		
+    	}    	
+    	TaskQueuePlugin.getInstance().unregisterTopic(queue, this.job);
     }	
     
 
