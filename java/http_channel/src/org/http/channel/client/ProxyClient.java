@@ -8,9 +8,12 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -270,13 +273,45 @@ public class ProxyClient {
 						connection.getContentLength(),
 						connection.getContentType()
 						));
-				this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
+				if(connection.getContentType().toLowerCase().contains("text")){
+					this.convertContentLink(ins, localURL, remote, connection.getHeaderFields(), connection.getResponseCode());
+				}else {
+					this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
+				}
 				listenerProxy.updated(status);
 			}catch(ConnectException conn){
 				log.info(String.format("Failed connection to '%s', msg:%s", local, conn.toString()));
 			} catch (Exception e) {
 				log.error(e.toString(), e);
 			}
+		}
+		
+		private void convertContentLink(InputStream in, URL local, URL remote, Map<String, List<String>> header, int code) throws IOException{
+			HTTPForm form = this.createUploadResponse(header, code);
+			
+			if(in != null){
+				form.startFileStream("file0", "file", null);
+			}
+		    byte[] buffer = new byte[64 * 1024];
+		    String localURL = null, remoteURL = null;
+		    try {
+		    	localURL = local.toURI().resolve("/").toString();
+		    	remoteURL = remote.toURI().resolve("/").toString();
+			} catch (URISyntaxException e) {
+				log.error(e.toString(), e);
+			}
+		    
+		    for(int len = 0; len >= 0; ){
+		    	len = in.read(buffer);
+		    	if(len > 0){
+		    		String newData = new String(buffer, 0, len).replaceAll(localURL, remoteURL);
+		    		form.write(newData);
+		    	}
+		    }
+			
+			String data = form.read();
+			form.close();
+			log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));			
 		}
 		
 	}

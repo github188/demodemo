@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +26,24 @@ public class AbstractWorker {
 	}
 	
 	public void uploadResponse(InputStream in, Map<String, List<String>> header, int code) throws IOException{
-		//log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));
+		//log.debug(String.format("Proxy return:%s, sid:%s", this.request.queryURL, this.request.sid));		
+		HTTPForm form = createUploadResponse(header, code);
 		
+		if(in != null){
+			form.startFileStream("file0", "file", in);
+		}
+		String data = form.read();
+		form.close();
+		log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));
+	}
+	
+	public HTTPForm createUploadResponse(Map<String, List<String>> header, int code) throws IOException{
 		HTTPForm form = null;
 		try {
 			form = new HTTPForm(remote.toURI().resolve("/~/reponse").toURL());
 		} catch (URISyntaxException e) {
 			log.error(e.toString(), e);
-			return;
+			return null;
 		}
 		form.setParameter("sid", this.request.sid);
 		form.setParameter("status", code + "");
@@ -65,13 +76,9 @@ public class AbstractWorker {
 			}
 		}
 		
-		if(in != null){
-			form.startFileStream("file0", "file", in);
-		}
-		String data = form.read();
-		form.close();
-		log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));
+		return form;
 	}
+	
 	
 	protected void forwardAuthRequest(ProxySession s) throws IOException{
 		InputStream in = this.getClass().getClassLoader().getResourceAsStream("org/http/channel/client/redirect_user_login.html");

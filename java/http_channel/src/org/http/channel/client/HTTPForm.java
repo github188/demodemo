@@ -60,14 +60,16 @@ public class HTTPForm {
 	    newline();
 	    this.out.flush();
 	    
-	    byte[] buffer = new byte[10 * 1024];
-	    for(int len = 0; len >= 0; ){
-	    	len = in.read(buffer);
-	    	if(len > 0){
-	    		//log.info("write len:" + len);
-	    		this.out.write(buffer, 0, len);
-	    		this.out.flush();
-	    	}
+	    if(in == null){
+		    byte[] buffer = new byte[10 * 1024];
+		    for(int len = 0; len >= 0; ){
+		    	len = in.read(buffer);
+		    	if(len > 0){
+		    		//log.info("write len:" + len);
+		    		this.out.write(buffer, 0, len);
+		    		this.out.flush();
+		    	}
+		    }
 	    }
 	}
 	
