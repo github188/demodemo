@@ -176,6 +176,20 @@
            </batchtest>
          </junit>
     </target>
+    
+    <target name='gen_doc'>
+  		<javadoc packagenames="org.http.*"
+           sourcepath="src"
+           defaultexcludes="yes"
+           destdir="docs/api"
+           author="true"
+           version="true"
+           use="true"
+           encoding="utf8"
+           windowtitle="Test API">
+  	  		<doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
+    	</javadoc>
+    </target>
          
 	<target name="gen-key">
         <delete quiet="true" file="test_key"/> 
