@@ -698,26 +698,27 @@ public class MasterServerServlet extends BaseRouteServlet{
 			if(userObj == null){
 				response.getWriter().println("1:Session is expired or logout");
 			}else {
-				AlarmRecord alarm = (AlarmRecord)server.storage.load(AlarmRecord.class, uuid);
-				if(alarm == null){
-					response.getWriter().println("2:Not found alarm by uuid");
+				if(uuid.equals("all")){
+					SystemLog.saveLog(SystemLog.ALARM_CONFIRM, userObj.name, uuid, "");
+					String updateSql = "update alarm_record set user = ${0}, comfirmTime = ${1}," +
+							"lastUpdateTime=${1}, alarmStatus=${2} " +
+							"where alarmStatus='1'";
+					try {
+						server.storage.execute_sql(updateSql, new Object[]{userObj.name,
+								new Date(System.currentTimeMillis()),
+								this.getStringParam(request, "status", "1"),
+								});
+						response.getWriter().println("0:Alarm confirm$1");
+					} catch (SQLException e) {
+						log.error(e.toString(), e);
+						response.getWriter().println("3:SQL error");
+					}						
 				}else {
-					SystemLog.saveLog(SystemLog.ALARM_CONFIRM, userObj.name, alarm.uuid, "");
-					if(uuid.equals("all")){
-						String updateSql = "update alarm_record set user = ${0}, comfirmTime = ${1}," +
-								"lastUpdateTime=${1}, alarmStatus=${2} " +
-								"where alarmStatus='1'";
-						try {
-							server.storage.execute_sql(updateSql, new Object[]{userObj.name,
-									new Date(System.currentTimeMillis()),
-									this.getStringParam(request, "status", "1"),
-									});
-							response.getWriter().println("0:Alarm confirm$" + alarm.alarmStatus);
-						} catch (SQLException e) {
-							log.error(e.toString(), e);
-							response.getWriter().println("3:SQL error");
-						}						
+					AlarmRecord alarm = (AlarmRecord)server.storage.load(AlarmRecord.class, uuid);
+					if(alarm == null){
+						response.getWriter().println("2:Not found alarm by uuid");
 					}else {
+						SystemLog.saveLog(SystemLog.ALARM_CONFIRM, userObj.name, alarm.uuid, "");
 						String updateSql = "update alarm_record set user = ${0}, comfirmTime = ${1}," +
 								"lastUpdateTime=${1}, alarmStatus=${2} " +
 								"where uuid=${3} or combineUuid=${3}";
