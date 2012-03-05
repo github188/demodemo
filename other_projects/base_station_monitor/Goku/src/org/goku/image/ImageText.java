@@ -25,17 +25,23 @@ public class ImageText {
 	private static Log log = LogFactory.getLog("img");
 	private static Map<String, String> names = new HashMap<String, String>();
 	
-	public static byte[] drawText(byte[] image, String text){		
+	public static byte[] drawText(byte[] image, String text, String location){		
 		InputStream input = new ByteArrayInputStream(image);
 		ByteArrayOutputStream os = new ByteArrayOutputStream(1024 * 64); 
 
 		BufferedImage img = null;
 		try{
 			img = ImageIO.read(input);
-			
+			int[] l = parseLocation(location);
 			Graphics g = img.getGraphics(); 
 			g.setColor(Color.white);
-			g.drawString(text, 10, 15);
+			if(l[0] < 0){
+				l[0] += img.getWidth();
+			}
+			if(l[1] < 0){
+				l[1] += img.getHeight();
+			}	
+			g.drawString(text, l[0], l[1]);
 			ImageIO.write(img, "jpeg", os);
 		} catch (IOException e) {
 			log.error(e.toString(), e);
@@ -49,6 +55,15 @@ public class ImageText {
 		}
 		
 		return os.toByteArray();
+	}
+	
+	private static int[] parseLocation(String location){
+		int data[] = new int[2];
+		String tmp[] = location.split("x");
+		
+		data[0] = Integer.parseInt(tmp[0].trim());
+		data[1] = Integer.parseInt(tmp[1].trim());
+		return data;
 	}
 	
 	public static String titleName(String uuid, String ch){
@@ -67,13 +82,13 @@ public class ImageText {
 	
 	
 	public static void main(String[] args) throws Exception{
-		File f = new File("/home/deon/works/base_station_monitor/Goku/data_path/pic_2.jpg");
+		File f = new File("D:\\照片\\叶问2\\IMG_2591.jpg");
 		byte[] data = new byte[(int)f.length()];
 		InputStream in = new FileInputStream(f);
 		in.read(data);
 		in.close();	
 		
-		data = drawText(data, "this is atest");
+		data = drawText(data, "this is atest", "10x-30");
 		
 		File f2 = new File("test.jpg");
 		OutputStream os = new FileOutputStream(f2);

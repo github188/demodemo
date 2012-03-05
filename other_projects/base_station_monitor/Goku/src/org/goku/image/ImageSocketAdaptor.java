@@ -170,7 +170,11 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		String name = ImageText.titleName(alarm.baseStation, "");
 		String title = String.format("%s_%s 通道%s", alarm.baseStation, name, alarm.channelId);
 		
-		data = ImageText.drawText(data, title);
+		String label_location = "10x-15";
+		if(server != null){
+			label_location = server.settings.getString("img_title_location", label_location);
+		}
+		data = ImageText.drawText(data, title, label_location);
 		//String meta = String.format("size:%s$time:%s$length:%s$base:%s$ch:%s$status:$%s",
 		//		size, date, data.length, alarm.baseStation, alarm.channelId, alarm.alarmStatus);
 		String meta = String.format("%s$%s$%s$%s$%s$$%s",
@@ -228,7 +232,12 @@ public class ImageSocketAdaptor implements SocketAdaptor{
 		String name = ImageText.titleName(bts, "");
 		String title = String.format("%s_%s 通道%s", bts, name, ch);
 		
-		data = ImageText.drawText(data, title);
+		String label_location = "10x-15";
+		if(server != null){
+			label_location = server.settings.getString("img_title_location", label_location);
+		}
+		
+		data = ImageText.drawText(data, title, label_location);
 		
 		String meta = String.format("%s$%s$%s$%s$%s$1",
 				size.replace('*', '$'), date, data.length, bts, ch);	
