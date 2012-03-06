@@ -273,7 +273,8 @@ public class ProxyClient {
 						connection.getContentLength(),
 						connection.getContentType()
 						));
-				if(connection.getContentType().toLowerCase().contains("text")){
+				if(connection.getContentType() != null && 
+					connection.getContentType().toLowerCase().contains("text")){
 					this.convertContentLink(ins, localURL, remote, connection.getHeaderFields(), connection.getResponseCode());
 				}else {
 					this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
