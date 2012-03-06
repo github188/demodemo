@@ -60,7 +60,7 @@ public class HTTPForm {
 	    newline();
 	    this.out.flush();
 	    
-	    if(in == null){
+	    if(in != null){
 		    byte[] buffer = new byte[10 * 1024];
 		    for(int len = 0; len >= 0; ){
 		    	len = in.read(buffer);
