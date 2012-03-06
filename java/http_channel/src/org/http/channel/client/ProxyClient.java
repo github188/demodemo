@@ -284,6 +284,14 @@ public class ProxyClient {
 				log.info(String.format("Failed connection to '%s', msg:%s", local, conn.toString()));
 			} catch (Exception e) {
 				log.error(e.toString(), e);
+			} finally{
+				if(ins != null){
+					try {
+						ins.close();
+					} catch (IOException e) {
+						log.error(e, e);
+					}
+				}
 			}
 		}
 		
