@@ -243,6 +243,8 @@ public class ProxyClient {
 				 * Set default header.
 				 */
 				connection.setRequestProperty("Content-type", "text/html");
+				connection.setRequestProperty("Cache-Control", "no-cache");
+				
 				
 				for(String key: request.header.keySet()){
 					//log.info(key + "-->" + request.header.get(key));
@@ -251,10 +253,6 @@ public class ProxyClient {
 					}
 					connection.setRequestProperty(key, request.header.get(key));
 				}
-				/*
-				if(!contentType){
-					connection.setRequestProperty("Content-type", "text/html");
-				}*/
 				
 				connection.setDoInput(true);
 				if(this.request.content != null){
@@ -294,6 +292,8 @@ public class ProxyClient {
 				}
 			}
 		}
+		
+		//2private 
 		
 		private void convertContentLink(InputStream in, URL local, URL remote, Map<String, List<String>> header, int code) throws IOException{
 			HTTPForm form = this.createUploadResponse(header, code);
