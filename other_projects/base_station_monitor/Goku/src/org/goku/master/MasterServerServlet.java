@@ -702,7 +702,7 @@ public class MasterServerServlet extends BaseRouteServlet{
 					SystemLog.saveLog(SystemLog.ALARM_CONFIRM, userObj.name, uuid, "");
 					String updateSql = "update alarm_record set user = ${0}, comfirmTime = ${1}," +
 							"lastUpdateTime=${1}, alarmStatus=${2} " +
-							"where alarmStatus='1'";
+							"where alarmStatus=(1, 2)";
 					try {
 						server.storage.execute_sql(updateSql, new Object[]{userObj.name,
 								new Date(System.currentTimeMillis()),
