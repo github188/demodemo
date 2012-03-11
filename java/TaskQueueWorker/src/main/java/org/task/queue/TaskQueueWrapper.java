@@ -58,6 +58,8 @@ public class TaskQueueWrapper extends BuildWrapper{
     	}
     	
     	public boolean tearDown(AbstractBuild build, BuildListener listener){
+    		
+    		//build.getResult()
     		return true;
     	} 
     }
