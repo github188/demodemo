@@ -6,8 +6,8 @@
     <version>1.399</version><!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
-  <groupId>task_queue_worker</groupId>
-  <artifactId>task_queue_worker</artifactId>
+  <groupId>org.task.queue</groupId>
+  <artifactId>TaskQueueWorker</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
