@@ -16,7 +16,8 @@ public class HTTPForm {
 	
 	private static String boundary = "---------------------------" + randomString() + randomString() + randomString();
 	public HttpURLConnection connection = null;
-	private OutputStream out = null;
+	public OutputStream out = null;
+	
 	
 	public HTTPForm(URL form) throws IOException{
 		connection = (HttpURLConnection)form.openConnection();

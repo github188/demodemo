@@ -19,6 +19,8 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -273,7 +275,14 @@ public class ProxyClient {
 						));
 				if(connection.getContentType() != null && 
 					connection.getContentType().toLowerCase().contains("text")){
-					this.convertContentLink(ins, localURL, remote, connection.getHeaderFields(), connection.getResponseCode());
+					//connection.getHeaderFields()
+					String[] _tmp = connection.getContentType().split("=");
+					String charset = "utf8";
+					if(_tmp.length == 2){
+						charset = _tmp[1];
+					}
+					String encoding = connection.getContentEncoding();
+					this.convertContentLink(ins, localURL, remote, connection.getHeaderFields(), connection.getResponseCode(), encoding, charset);
 				}else {
 					this.uploadResponse(ins, connection.getHeaderFields(), connection.getResponseCode());
 				}
@@ -292,15 +301,22 @@ public class ProxyClient {
 				}
 			}
 		}
-		
-		//2private 
-		
-		private void convertContentLink(InputStream in, URL local, URL remote, Map<String, List<String>> header, int code) throws IOException{
+				
+		private void convertContentLink(InputStream in, URL local, URL remote, Map<String, List<String>> header, 
+				int code, String encode, String charset) throws IOException{
 			HTTPForm form = this.createUploadResponse(header, code);
 			
 			if(in != null){
 				form.startFileStream("file0", "file", null);
 			}
+			
+			InputStream newIns = in;
+			OutputStream os = form.out;
+			if(encode != null && encode.equals("gzip")){
+				newIns = new GZIPInputStream(in);
+				os = new GZIPOutputStream(form.out);
+			}
+			
 		    byte[] buffer = new byte[64 * 1024];
 		    String localURL = null, remoteURL = null;
 		    try {
@@ -310,17 +326,32 @@ public class ProxyClient {
 				log.error(e.toString(), e);
 			}
 		    
+		    int count = 0;
+		    int offset = 0;
 		    for(int len = 0; len >= 0; ){
-		    	len = in.read(buffer);
+		    	len = newIns.read(buffer, offset, buffer.length - offset);
 		    	if(len > 0){
-		    		String newData = new String(buffer, 0, len).replaceAll(localURL, remoteURL);
-		    		form.write(newData);
+		    		offset += len;
+		    		if(offset >= buffer.length){
+		    			count += offset;
+		    			String newData = new String(buffer, 0, offset, charset).replaceAll(localURL, remoteURL);
+		    			os.write(newData.getBytes(charset));
+		    			offset = 0;
+		    		}
 		    	}
 		    }
-			
+
+    		if(offset > 0){
+    			count += offset;
+    			String newData = new String(buffer, 0, offset, charset).replaceAll(localURL, remoteURL);
+    			os.write(newData.getBytes(charset));
+    			offset = 0;
+    		}
+    		
+    		os.flush();    		
 			String data = form.read();
 			form.close();
-			log.debug(String.format("Proxy done:%s, msg:%s", this.request.queryURL, data));			
+			log.debug(String.format("Proxy done:%s, len:%s, msg:%s", this.request.queryURL, count, data));			
 		}
 		
 	}
