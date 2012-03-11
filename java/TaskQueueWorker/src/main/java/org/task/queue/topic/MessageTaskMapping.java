@@ -33,7 +33,12 @@ public class MessageTaskMapping {
 	public void addMessage(Message msg){
 		if(messages.size() < 50){
 			this.messages.add(msg);
+			msg.mapping = this;
 		}
+	}
+	
+	public void ackMessageDone(Message msg){
+		
 	}
 	
 	public boolean equals(Object o){
