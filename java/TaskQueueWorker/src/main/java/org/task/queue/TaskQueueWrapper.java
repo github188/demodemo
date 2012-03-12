@@ -18,7 +18,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.task.queue.topic.Message;
 
 /**
- * 在build 开始前,准备环境变量.在结束后更新Queue状态.
+ * 鍦╞uild 寮�鍓�鍑嗗鐜鍙橀噺.鍦ㄧ粨鏉熷悗鏇存柊Queue鐘舵�.
  * @author Administrator
  *
  */
@@ -41,6 +41,8 @@ public class TaskQueueWrapper extends BuildWrapper{
     		for(Map.Entry<String, String> entry: ((MsgEnvironment)msgEnv).data.entrySet()){
     			listener.getLogger().println(String.format("%s='%s'", entry.getKey(), entry.getValue()));
     		}
+    		listener.getLogger().println(String.format("--------------------"));
+
     	}else {
     		msgEnv = new Environment(){};
     	}
@@ -60,9 +62,12 @@ public class TaskQueueWrapper extends BuildWrapper{
     	
     	private Map<String, String> getMsgEnv(){
     		Map<String, String> data = new HashMap<String, String>();
-    		for(Map.Entry<String, String> entry: data.entrySet()){
-    			if(entry.getValue().indexOf('\n') < 0 && entry.getValue().length() < 1024){
-    				data.put(entry.getKey(), entry.getValue());
+    		String value = null;
+    		for(Map.Entry<String, Object> entry: msg.data.entrySet()){
+    			if(entry.getValue() == null)continue;
+    			value = entry.getValue().toString().trim();
+    			if(value.indexOf('\n') < 0 && value.length() < 1024){
+    				data.put(entry.getKey(), value);
     			}
     		}
     		return data;
