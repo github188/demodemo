@@ -43,7 +43,6 @@ public class TaskQueueWrapper extends BuildWrapper{
     			listener.getLogger().println(String.format("%s='%s'", entry.getKey(), entry.getValue()));
     		}
     		listener.getLogger().println(String.format("--------------------"));
-    		launcher.envs(newEnvs);
 
     	}else {
     		msgEnv = new Environment(){};
@@ -59,8 +58,13 @@ public class TaskQueueWrapper extends BuildWrapper{
     	public MsgEnvironment(Message msg){
     		this.msg =msg;
     		this.data = getMsgEnv();
-    		this.buildEnvVars(data);
+    		//this.buildEnvVars(data);
     	}
+    	
+        @Override
+        public void buildEnvVars(Map<String, String> env) {
+            env.putAll(data);
+        }    	
     	
     	private Map<String, String> getMsgEnv(){
     		Map<String, String> data = new HashMap<String, String>();
