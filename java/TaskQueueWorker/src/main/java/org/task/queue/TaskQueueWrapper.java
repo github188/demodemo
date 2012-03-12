@@ -73,7 +73,7 @@ public class TaskQueueWrapper extends BuildWrapper{
     			if(entry.getValue() == null)continue;
     			value = entry.getValue().toString().trim();
     			if(value.indexOf('\n') < 0 && value.length() < 1024){
-    				data.put(entry.getKey(), value);
+    				data.put("MQ_" + entry.getKey(), value);
     			}
     		}
     		return data;
