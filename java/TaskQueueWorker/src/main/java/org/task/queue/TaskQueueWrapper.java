@@ -38,10 +38,12 @@ public class TaskQueueWrapper extends BuildWrapper{
     		TaskQueueCause c = (TaskQueueCause)cause;
     		msgEnv = new MsgEnvironment(c.msg);
     		listener.getLogger().println(String.format("----message %s----", c.msg.id));
-    		for(Map.Entry<String, String> entry: ((MsgEnvironment)msgEnv).data.entrySet()){
+    		Map<String, String> newEnvs = ((MsgEnvironment)msgEnv).data;
+    		for(Map.Entry<String, String> entry: newEnvs.entrySet()){
     			listener.getLogger().println(String.format("%s='%s'", entry.getKey(), entry.getValue()));
     		}
     		listener.getLogger().println(String.format("--------------------"));
+    		launcher.envs(newEnvs);
 
     	}else {
     		msgEnv = new Environment(){};
