@@ -2,11 +2,15 @@ package org.task.queue.topic;
 
 import hudson.model.BuildableItem;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.task.queue.TaskQueuePlugin;
+import org.task.queue.task.AckMessageTask;
 
 public class MessageTaskMapping {
 	public Lock queueLock = new ReentrantLock();;
@@ -38,7 +42,13 @@ public class MessageTaskMapping {
 	}
 	
 	public void ackMessageDone(Message msg){
-		
+		URL ack = null;
+		try {
+			ack = new URL(queue.toString().replace("fetch", "ack"));
+			TaskQueuePlugin.getInstance().threadPool.execute(new AckMessageTask(ack, msg.id));
+		} catch (MalformedURLException e) {
+			TaskQueuePlugin.getInstance().log.error(e.toString(), e);
+		}
 	}
 	
 	public boolean equals(Object o){
