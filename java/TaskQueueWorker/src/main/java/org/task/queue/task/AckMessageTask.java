@@ -34,7 +34,7 @@ public class AckMessageTask implements Runnable {
 		String data = null;
 		try{
 			// TODO Auto-generated method stub
-			log.info("Get task queue info from url:" + ackURL.toString());
+			log.info("Ack message url:" + ackURL.toString());
 			conn = (HttpURLConnection)ackURL.openConnection();
 			/**
 			 * Use post method to avoid request caching in http proxy.
@@ -49,7 +49,7 @@ public class AckMessageTask implements Runnable {
 			 * Write a dummy string, the django server will error if no data with post request.
 			 */
 			OutputStream os = conn.getOutputStream();
-			os.write(("msgIDs=" + id).getBytes());
+			os.write(("msg_id=" + id).getBytes());
 			os.close();
 			
 			byte[] buffer = new byte[512];
@@ -64,7 +64,7 @@ public class AckMessageTask implements Runnable {
 			data = new String(buffer, 0, offset, "utf8");
 			log.info("ack message return:" + data);
 		}catch(Exception e){
-			String msg = "load queue task error.";
+			String msg = "ack message error.";
 			if(data != null){
 				msg += " data:" + data;
 			}
