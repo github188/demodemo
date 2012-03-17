@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jvnet.hudson.hadoop.HDFSArchiver;
+import org.jvnet.hudson.hadoop.Version;
 
 import com.mongodb.gridfs.GridFSDBFile;
 
@@ -38,6 +39,7 @@ public class DirectoryList extends BaseServlet{
 		mime.put("xml", "text/xml");
 		mime.put("txt", "text/plain");
 		mime.put("log", "text/plain");
+		mime.put("view", "text/plain");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -111,6 +113,8 @@ public class DirectoryList extends BaseServlet{
     	context.put("prefix", prefix);
     	
     	context.put("fileList", fileList);
+    	
+    	context.put("build_version", Version.getVersion());
     	this.outputStatic("gui_header.html", response.getWriter());
     	this.renderTemplate("dir_list.html", context, response.getWriter());
     	this.outputStatic("gui_footer.html", response.getWriter());
@@ -205,10 +209,10 @@ public class DirectoryList extends BaseServlet{
     	for(Enumeration enumeration = zipFile.entries(); enumeration.hasMoreElements();){
     		entry = (ZipEntry)enumeration.nextElement();
     		//log.info("zip entry:" + entry.getName());
-    		if(!entry.getName().startsWith(path)) continue;
+    		if(path.length() > 0 && !entry.getName().startsWith(path)) continue;
     		String name = entry.getName(); 
     		if(name.endsWith("/"))name = name.substring(0, name.length() -1);
-    		if(name.indexOf('/', path.length()) > 0) continue;
+    		if(path.length() > 0 && name.indexOf('/', path.length()) > 0) continue;
     		list.add(entry);
     	}
     	

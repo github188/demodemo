@@ -10,6 +10,21 @@
      </tstamp> 
      <property file="build.properties"/> 
      <property name="version" value="1.0.0"/>
+   	
+       	<property environment="env" /> 
+        
+        <condition property="fileTargetName" value="${env.BUILD_NUMBER}">
+           <isset property="env.BUILD_NUMBER" />
+        </condition>
+
+        <condition property="fileTargetName" value="dev">
+           <not>
+               <isset property="env.BUILD_NUMBER" />
+           </not>
+        </condition> 
+    <filter token="build" value="${fileTargetName}"/>
+   	<filter token="build_date" value="${build.date}"/>   
+   	
    </target> 
   
    <target name="init" depends="properties"> 
@@ -17,6 +32,8 @@
             <mkdir dir="${build.dir}/classes"/> 
             <mkdir dir="${build.dir}/lib"/>
             <mkdir dir="${dist.dir}"/> 
+    		<mkdir dir="${build.dir}/test_reports"/>   	
+    		<mkdir dir="${build.dir}/unittest"/>   	
    </target> 
     <path id="dependent-lib">
         <fileset dir="libs" >
@@ -25,6 +42,13 @@
     </path>         
           
          <target name="compile-shell" depends="properties, init"> 
+         	<copy file="src/main/java/org/jvnet/hudson/hadoop/Version.java.tempate" 
+         		  tofile="src/main/java/org/jvnet/hudson/hadoop/Version.java"
+         		  filtering="yes"
+         		  encoding='utf8'
+         		  overwrite="yes"
+         			  />
+         	
                  <javac srcdir="src/main/java" 
                             destdir="${build.dir}/classes" 
                             includes="**/*.java" 
@@ -62,7 +86,11 @@
             	<zipfileset src="libs/slf4j-log4j12-1.6.1.jar"/>  
             	<zipfileset src="libs/commons-cli-1.1.jar"/>
             	<zipfileset src="libs/commons-logging-1.1.1.jar"/>
+            	<zipfileset src="libs/hadoop-core-0.20.203.0.jar"/>
             	<zipfileset src="libs/commons-fileupload-1.2.2.jar"/>
+            	<zipfileset src="libs/commons-configuration-1.6.jar"/>
+            	<zipfileset src="libs/commons-lang-2.4.jar"/>
+            	
             	<zipfileset src="libs/Template.jar"/>
             	<zipfileset src="libs/mongo-2.5.2.jar"/>
             	<zipfileset src="libs/json_simple-1.1.jar"/>
@@ -95,6 +123,53 @@
             </java>     	
         </target>
  	         
+    <target name="test" depends="compile-test">
+         <junit printsummary="yes" haltonfailure="no" fork="true" newenvironment="true">
+           <classpath>
+           	<!-- Can't use singed jar -->
+              <pathelement location="${build.dir}/lib/${name}-${version}.jar"/>
+              <pathelement location="${build.dir}/unittest"/>
+              <fileset dir="libs" >
+           		 <include name="*.jar"/>
+        	  </fileset>
+			  <fileset dir="jmock-2.5.1" >
+				 <include name="*.jar"/>
+			  </fileset>           	
+           </classpath>
+
+		   <formatter type="plain"/>
+           <batchtest fork="yes" todir="${build.dir}/test_reports">
+              	<fileset dir="tests">
+                	<include name="**/Test**.java"/>
+           	  	</fileset>
+           </batchtest>
+         </junit>
+    </target>
+ 	
+   <target name="compile-test" depends="properties">
+                <javac srcdir="tests"
+                           destdir="${build.dir}/unittest"
+                           includes="**/*.java"
+                           deprecation="on"
+                           debug="true"
+                           target="1.5"
+                           source="1.5"
+                           encoding="utf-8"
+                           includeantruntime="flase"
+                >
+	            <classpath>	
+    	        	  <pathelement location="${dist.dir}/${name}-${version}.jar"/>
+        				<fileset dir="libs" >
+           					<include name="*.jar"/>
+        				</fileset>
+    					<fileset dir="jmock-2.5.1" >
+       						<include name="*.jar"/>
+    					</fileset>	            	
+                </classpath>
+                
+                </javac>
+    </target>   	
+ 	
 	<target name="gen-key">
         <delete quiet="true" file="test_key"/> 
 		<genkey alias="${name}" storepass="password" keystore="test_key" >

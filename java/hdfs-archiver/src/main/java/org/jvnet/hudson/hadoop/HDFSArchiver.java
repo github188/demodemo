@@ -1,16 +1,25 @@
 package org.jvnet.hudson.hadoop;
 
 import java.io.File;
-import java.io.FilterInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -22,6 +31,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.jvnet.hudson.queue.MessageQueue;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 
@@ -39,7 +49,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class HDFSArchiver {
 	private Log log = LogFactory.getLog("hdfs.archiver");
-	public static final String version = "0.1.1";
+	public static final String version = Version.getVersion();
 	
 	public static final String VERSION = "version";
 	public static final String PREFIX = "prefix";
@@ -60,10 +70,14 @@ public class HDFSArchiver {
 	
 	public long fileQouta = 1024 * 1024 * 1024;
 	
+	public HDFSStorage hdfs = null;
 	public GridFS defaultFs = null;
 	public  DBCollection qoutaCollection = null;
 	public Map<String, GridFS> fsCache = new HashMap<String, GridFS>();
 	public Map<String, Long> sizeToLocal = new HashMap<String, Long>(); 
+	
+	public ThreadPoolExecutor threadPool = null; 
+	
 	
 	public Map<String, SoftReference<ZipFileWrapper>> zipCache = new HashMap<String, SoftReference<ZipFileWrapper>>();//cache.put(sid, new SoftReference<ChartData>(chart));
 		
@@ -71,7 +85,7 @@ public class HDFSArchiver {
 	
 	public HDFSArchiver(String httpPort, String[] conn, String local){
 		rootPath = new File(local).getAbsoluteFile();
-		if(rootPath.isDirectory()){
+		if(!rootPath.isDirectory()){
 			rootPath.mkdirs();
 		}
 		log.info("Local root:" + rootPath.getAbsolutePath());
@@ -82,6 +96,7 @@ public class HDFSArchiver {
 			log.error("Invalid http port:" + httpPort);
 		}
 		
+		threadPool = new ThreadPoolExecutor(2, 60, 15, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1024));
 		this.conns = conn;
 		ins = this;
 	}
@@ -118,9 +133,10 @@ public class HDFSArchiver {
 		}
 		
 		if(cmd.hasOption(VERSION)){
-			System.out.println("GridFS " + version);
+			System.out.println("GridFS " + Version.getVersion());
 			return;
 		}
+		
 		
 		String prefix = cmd.getOptionValue(PREFIX, "/");
 		String httpPort = cmd.getOptionValue(HTTPPORT, "8924");
@@ -130,38 +146,34 @@ public class HDFSArchiver {
 		String[] dbSizes = cmd.getOptionValues(SIZE_TO_LOCAL);
 		//long fileQouta = 0;
 		//long Qouta = 0;
-		if(addrs != null && addrs.length > 0){
-			HDFSArchiver archiver = new HDFSArchiver(httpPort, addrs, localPath);
-			archiver.defaultDB = dbName;
-			archiver.prefix = prefix;
-			if(dbSizes != null){
-				for(String size: dbSizes){
-					//System.out.println("xxx:" + size);
-					String[] tmp = null;
-					if(size.indexOf(':') > 0){
-						try{
-							tmp = size.split(":", 2);
-							archiver.sizeToLocal.put(tmp[0].trim(), Long.parseLong(tmp[1].trim()));
-						}catch(Exception e){
-							System.out.println("Error to parse db size:" + size + ", error:" + e.toString());
-						}
+		HDFSArchiver archiver = new HDFSArchiver(httpPort, addrs, localPath);
+		archiver.defaultDB = dbName;
+		archiver.prefix = prefix;
+		if(dbSizes != null){
+			for(String size: dbSizes){
+				//System.out.println("xxx:" + size);
+				String[] tmp = null;
+				if(size.indexOf(':') > 0){
+					try{
+						tmp = size.split(":", 2);
+						archiver.sizeToLocal.put(tmp[0].trim(), Long.parseLong(tmp[1].trim()));
+					}catch(Exception e){
+						System.out.println("Error to parse db size:" + size + ", error:" + e.toString());
 					}
 				}
 			}
-			
-			if(cmd.hasOption(FILEQOUTA)){
-				archiver.fileQouta = Integer.parseInt(cmd.getOptionValue(FILEQOUTA)) * 1204 * 1024;
-				
-			}
-			if(cmd.hasOption(DAILYQOUTA)){
-				archiver.dailyQouta = Integer.parseInt(cmd.getOptionValue(DAILYQOUTA)) * 1024.0 * 1024.0;
-			}
-			
-			archiver.start();
-			System.out.println("Stopped.");
-		}else {
-			System.out.println("least one '-fs <ip:port>' is required.");
 		}
+		
+		if(cmd.hasOption(FILEQOUTA)){
+			archiver.fileQouta = Integer.parseInt(cmd.getOptionValue(FILEQOUTA)) * 1204 * 1024;
+			
+		}
+		if(cmd.hasOption(DAILYQOUTA)){
+			archiver.dailyQouta = Integer.parseInt(cmd.getOptionValue(DAILYQOUTA)) * 1024.0 * 1024.0;
+		}
+		
+		archiver.start();
+		System.out.println("Stopped.");
 		
 	}
 	
@@ -170,11 +182,23 @@ public class HDFSArchiver {
 		log.info("prefix:" + prefix);
 		log.info("max file size:" + this.fileQouta / 1024 / 1024 + " MB");
 		log.info("max uploading size in 24 hours:"+ this.dailyQouta / 1024 / 1024 + " MB");
-		connectHDFS();
+		if(this.conns != null && conns.length > 0){
+			log.info("fs:" + conns[0]);
+			if(conns[0].startsWith("hdfs:")){
+				connectHDFS();
+			}else {
+				connectGRIDFS();
+			}
+		}
 		startHTTPServer();
 	}
 	
 	private void connectHDFS(){
+		log.info("connect to hdfs:" + conns[0]);
+		hdfs = new HDFSStorage(conns[0], rootPath);
+	}
+	
+	private void connectGRIDFS(){
 		List addrs = new ArrayList();
 		for(String x : conns){
 			log.info("MonogoDB addr:" + x);
@@ -188,7 +212,8 @@ public class HDFSArchiver {
 		}
 		try{
 			Mongo mongo = new Mongo(addrs);	
-			mongo.slaveOk();
+			//有可能导致文件还没有同步，所以找不到。
+			//mongo.slaveOk();
 			DB db = mongo.getDB(this.defaultDB); // new DB(mongo, "archive");
 			defaultFs = new GridFS(db);
 		}catch(Throwable e){
@@ -197,11 +222,27 @@ public class HDFSArchiver {
 	}
 	
 	private void startHTTPServer(){
+		MessageQueue.start(this.rootPath);
+		
 		Server server = new Server(httpPort);
-        ServletHandler handler = new ServletHandler();
+        ServletHandler handler=new ServletHandler(){
+        	public void handle(String target, HttpServletRequest request,HttpServletResponse response, int type)
+            throws IOException, ServletException
+            {
+        		super.handle(target, request, response, type);
+        		Throwable th = (Throwable)request.getAttribute(ServletHandler.__J_S_ERROR_EXCEPTION);
+        		if(th != null){
+        			log.error("INTERNAL_SERVER_ERROR", th);
+        		}
+            }
+        };
         server.setHandler(handler);
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.UploadFile", this.prefix + "upload");
+        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.AddZipToHDFS", this.prefix + "add_zip");
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DistributeLockService", this.prefix + "lock");
+        handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DistributeLockService", this.prefix + "lock/*");        
+        handler.addServletWithMapping("org.jvnet.hudson.queue.servlet.MessageQueueServlet", this.prefix + "queue/*");
+        
         handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.DirectoryList", this.prefix + "*");
         if(this.prefix.length() > 1){
         	handler.addServletWithMapping("org.jvnet.hudson.hadoop.servlet.WelcomeIndex", "/*");
@@ -212,6 +253,15 @@ public class HDFSArchiver {
 			server.join();
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+		}
+	}
+	
+	public boolean archiveToHDFS(String path, InputStream in, Map<String, String> meta) throws IOException, InterruptedException{
+		if(this.hdfs != null){
+			return hdfs.uploadFile(path, in);
+		}else {
+			log.info("Not connect to HDFS.");
+			return false;
 		}
 	}
 	
@@ -226,7 +276,8 @@ public class HDFSArchiver {
 		log.debug(String.format("Client uploading qouta, client:%s, qouta:%s MB", client.getString("_id"), 
 				client.getQouta() / 1024 /1024));
 		QoutaInputStream filterIn = new QoutaInputStream(in, (long)Math.min(client.getQouta(), 
-																	  this.fileQouta));		
+																	  this.fileQouta),
+														 path);		
 		GridFS fs = null;
 		GridFSFile file = null;
 		if(path.indexOf('$') > 0){
@@ -235,17 +286,51 @@ public class HDFSArchiver {
 			path = t[1];
 		}else {
 			fs = defaultFs;
-		}		
-		file = fs.createFile(filterIn, path);
-		BasicDBObject obj = new BasicDBObject();
-		obj.putAll(meta);
-		file.setMetaData(obj);
-		file.save();
-
-		//如果文件太大，保存文件到本地文件系统。
-		if(isDumpToLocal(file, fs)){
-			new Thread(new DumpFileToLocalFS(fs.findOne((ObjectId)file.getId()), fs)).start();
 		}
+		
+		//是否默认直接保存到本地目录。
+		if(isDumpToLocal(null, fs)){
+			File localPath = new File(this.rootPath, path);
+			if(!localPath.getParentFile().isDirectory()){
+				localPath.getParentFile().mkdirs();
+			}
+			OutputStream out = new FileOutputStream(localPath);
+			log.debug("Create local archive file:" + localPath.getAbsolutePath());
+			byte[] buffer = new byte[1024 * 64];
+			for(int len = 0; len >= 0;){
+				len = filterIn.read(buffer);
+				if(len > 0){
+					out.write(buffer, 0, len);
+				}
+			}
+			out.flush();
+			out.close();
+			filterIn.close();
+			GridFSInputFile newFile = fs.createFile(new byte[]{0, 0,});
+			BasicDBObject obj = new BasicDBObject();
+			obj.putAll(meta);
+			newFile.setMetaData(obj);
+			newFile.setFilename(path);
+			log.debug("Get file length:" + localPath.length());
+			newFile.put("localLength", filterIn.size);
+			newFile.save(10);
+		}else {
+			file = fs.createFile(filterIn, path);
+			BasicDBObject obj = new BasicDBObject();
+			obj.putAll(meta);
+			file.setMetaData(obj);
+			file.save();
+			//如果文件太大，保存文件到本地文件系统。
+			if(isDumpToLocal(file, fs)){
+				GridFSDBFile newFile = fs.findOne((ObjectId)file.getId());
+				if(newFile != null){
+					threadPool.execute(new DumpFileToLocalFS(newFile, fs, rootPath));
+				}else {
+					log.debug("Not file by file id:" + file.getId());
+				}
+			}
+		}
+		filterIn.printSpeed();
 		
 		log.debug(String.format("uploading file '%s' size:%s", path, filterIn.size));		
 		client.reduceQouta(filterIn.size);
@@ -261,8 +346,14 @@ public class HDFSArchiver {
 		}else {
 			limit = this.sizeToLocal.get("default");
 		}
-		log.debug("Check db limit, file size:" + file.getLength() + ", db:" + limit);
-		return file.getLength() > limit;
+		if(file == null && limit == 0){
+			return true;
+		}else if(file != null){
+			log.debug("Check db limit, file size:" + file.getLength() + ", db:" + limit);
+			return file.getLength() > limit;
+		}else {
+			return false;
+		}		
 	}
 	
 	public List searchFile(String path, int offset, int limit){
@@ -335,8 +426,71 @@ public class HDFSArchiver {
 	
 	public ZipFile getCachedZip(String path){
 		SoftReference<ZipFileWrapper> ref = zipCache.get(path);
-		
 		if(ref != null && ref.get() == null){
+			cleanZipCache();
+		}
+		
+		ZipFileWrapper cache = null;
+		if(ref == null || ref.get() == null || 
+		   ref.get().file == null){
+			
+			if(hdfs != null){
+				cache = hdfs.downloadFile(path);
+			}
+			
+			if(cache == null){
+				cache = new ZipFileWrapper();
+				File localPath = new File(this.rootPath, path);
+				if(localPath.isFile()){
+					cache.isLocal = true;
+					cache.rawFile = localPath;
+					log.debug("local zip file:" + cache.rawFile.getAbsolutePath());				
+				}else {
+					GridFSDBFile file = this.getFile(path);
+					if(file != null){
+						try {
+							if(file.containsField("localLength")){
+								cache.isLocal = true;
+								cache.rawFile = new File(this.rootPath, file.getFilename());
+								log.debug("local zip file:" + cache.rawFile.getAbsolutePath());
+							}else {
+								cache.rawFile = File.createTempFile("archive", "tmp");
+								cache.rawFile.deleteOnExit();
+								log.debug("cache zip file:" + path + "-->" + cache.rawFile.getAbsolutePath());
+								file.writeTo(cache.rawFile);
+							}
+						} catch (IOException e) {
+							log.error(e.toString(), e);
+						}
+					}
+				}
+			}
+			
+			if(cache.rawFile != null && cache.rawFile.isFile()){
+				try{
+					log.debug("Get local file length:" + cache.rawFile.length());
+					cache.file = new ZipFile(cache.rawFile, ZipFile.OPEN_READ);
+					zipCache.put(path, new SoftReference<ZipFileWrapper>(cache));
+				}catch (IOException e) {
+					cache = null;
+					log.error(e.toString(), e);
+				}
+			}else if(cache.rawFile != null){
+				log.debug("Not found local path:" + cache.rawFile.getAbsolutePath());
+			}
+		}else {
+			cache = ref.get();
+		}
+		
+		if(cache != null && cache.file != null){
+			log.debug("hit zip cache:" + path + "-->" + cache.rawFile.getAbsolutePath());
+			return cache.file;		
+		}else {
+			return null;
+		}
+	}
+	
+	private void cleanZipCache(){
 			System.gc();
 			Collection<String> conn = new ArrayList<String>();
 			conn.addAll(zipCache.keySet());
@@ -345,59 +499,13 @@ public class HDFSArchiver {
 					zipCache.remove(k);
 				}
 			}
-		}
-		
-		if(ref != null && 
-		   ref.get() != null && 
-		   ref.get().rawFile.isFile()
-		   ){
-			log.debug("hit zip cache:" + path + "-->" + ref.get().rawFile.getAbsolutePath());
-			return ref.get().file;
-		}else {
-			GridFSDBFile file = this.getFile(path);
-			if(file != null){
-				ZipFileWrapper cache = new ZipFileWrapper();
-				try {
-					if(file.containsField("localLength")){
-						cache.rawFile = new File(this.rootPath, file.getFilename());
-						log.debug("local zip file:" + cache.rawFile.getAbsolutePath());
-					}else {
-						cache.rawFile = File.createTempFile("archive", "tmp");
-						cache.rawFile.deleteOnExit();
-						log.debug("cache zip file:" + path + "-->" + cache.rawFile.getAbsolutePath());
-						file.writeTo(cache.rawFile);
-					}
-					cache.file = new ZipFile(cache.rawFile, ZipFile.OPEN_READ);
-					zipCache.put(path, new SoftReference<ZipFileWrapper>(cache));
-					return cache.file;
-				} catch (IOException e) {
-					log.error(e.toString(), e);
-				}
-			}
-		}
-		return null;
 	}
 	
 	public boolean isConnected(){
 		return defaultFs != null;
 	}
 	
-	class ZipFileWrapper{
-		ZipFile file = null;
-		File rawFile = null; 
-		protected void finalize() throws Throwable {
-		    try {
-		    	if(file != null){
-		    		file.close();
-		    	}
-		    	if(rawFile != null){
-		    		rawFile.delete();
-		    	}
-		    } finally {
-		        super.finalize();
-		    }
-		}
-	}
+
 	
 	public Client getClientQouta(String id){
 		if(qoutaCollection == null){
@@ -455,67 +563,7 @@ public class HDFSArchiver {
 		}
 	} 
 	
-	class QoutaInputStream extends FilterInputStream{
-		public long qouta = Long.MAX_VALUE, size = 0;		
-		public QoutaInputStream(InputStream in, long qouta){
-			super(in);
-			this.qouta = qouta;
-		}
-		
-		public int read() throws IOException{
-			this.size++;
-			this.checkQouta();
-			return super.read();
-		}
-		
-		public int read(byte[] b) throws IOException{
-			int r = super.read(b);
-			this.size += r;
-			this.checkQouta();
-			return r;
-		}
-		
-		public int read(byte[] b, int off, int len) throws IOException{
-			int r = super.read(b, off, len);
-			this.size += r;
-			this.checkQouta();
-			return r;
-		}		
-		
-		private void checkQouta() throws IOException{
-			if(this.size > this.qouta) throw new IOException("violated the qouta limitation, size:" + this.qouta);
-		}
-	}
-	
-	public class DumpFileToLocalFS implements Runnable{
-		private GridFSDBFile file = null;
-		private GridFS fs = null;
-		
-		public DumpFileToLocalFS(GridFSDBFile file, GridFS fs){
-			this.file = file;
-			this.fs = fs;
-		}
 
-		@Override
-		public void run() {
-			try{
-				File localPath = new File(rootPath, file.getFilename());
-				log.info("Save to local file:" + localPath.getAbsolutePath());
-				File dirName = localPath.getParentFile();
-				if(!dirName.exists()){
-					dirName.mkdirs();
-				}
-				file.writeTo(localPath);
-				GridFSInputFile newFile = fs.createFile(new byte[]{0, 0,});
-				newFile.setMetaData(file.getMetaData());
-				newFile.setFilename(file.getFilename());
-				newFile.put("localLength", file.getLength());
-				newFile.save(10);
-				//log.info("remove:%s" + file.getId() + ", fn:" + file.getFilename());
-				fs.remove((ObjectId)file.getId());
-			}catch(Throwable e){
-				log.error("Failed to dump file to local fs, error:" + e.toString(), e);
-			}
-		}
-	}
+	
+
 }

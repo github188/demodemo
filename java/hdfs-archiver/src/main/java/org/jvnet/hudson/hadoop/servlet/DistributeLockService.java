@@ -13,9 +13,14 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jvnet.hudson.hadoop.Version;
+
 public class DistributeLockService extends BaseServlet {
 	private static Map<String, LockObject> lockPool = new HashMap<String, LockObject>();
-	private static long lastCleanUp = 0; 
+	//only used for status report.
+	private static LockStatus status = new LockStatus();
+	private Version ver = new Version();
+	private static long lastCleanUp = 0;
 	
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		String name = request.getParameter("name");
@@ -23,6 +28,7 @@ public class DistributeLockService extends BaseServlet {
 		String timeOut = request.getParameter("timeout");
 		LockObject lock = null;
 		if(name != null && owner != null){
+			status.lastActive = new Date(System.currentTimeMillis());
 			long timeout = 30000;
 			try{
 				timeout = Integer.parseInt(timeOut);
@@ -32,7 +38,21 @@ public class DistributeLockService extends BaseServlet {
 			this.tryGetLock(lock);
 			if(request.getParameter("release") != null && lock.isLocked){
 				releaseLock(lock);				
-			}				
+			}
+			if(request.getParameter("release") == null){
+				if(lock.isLocked){
+					status.reqiredLockCount++;
+				}else {
+					status.failedLockCount++;
+				}
+				LockObject tmp = new LockObject(name, owner, timeout);
+				tmp.remoteIp = lock.remoteIp;
+				if(!lock.isLocked){
+					tmp.curOnwer = lock.onwer;
+				}
+				tmp.isLocked = lock.isLocked;
+				status.activeLock(tmp);
+			}
 			response.setHeader("locked", lock.isLocked ? "ok": "failed");
 			response.setHeader("lock_name", lock.name);
 			response.setHeader("lock_owner", lock.onwer);
@@ -48,6 +68,9 @@ public class DistributeLockService extends BaseServlet {
 			Map<String, Object> context = new HashMap<String, Object>();
 			context.put("locks", this.activeLockList());
 			context.put("lock", lock);
+			context.put("now", new Date(System.currentTimeMillis()));
+			context.put("status", status);
+			context.put("version", ver);
 			this.renderTemplate("active_lock_list.html", context, response.getWriter());			
 		}
 	}
@@ -64,6 +87,7 @@ public class DistributeLockService extends BaseServlet {
 			lock.isLocked = true;
 		}else {
 			if(curTime - tmp.lastActiveTime > tmp.timeout){
+				status.timeoutLockCount++;
 				lockPool.put(lock.name, lock);
 				lock.isLocked = true;
 			}else if(tmp.onwer.equals(lock.onwer) &&
@@ -111,7 +135,10 @@ public class DistributeLockService extends BaseServlet {
 		Iterator<Entry<String, LockObject>> iter = lockPool.entrySet().iterator();
 		while(iter.hasNext()){
 			LockObject obj = iter.next().getValue();
-			if(curTime - obj.lastActiveTime > obj.timeout)iter.remove();
+			if(curTime - obj.lastActiveTime > obj.timeout){
+				status.timeoutLockCount++;
+				iter.remove();
+			}
 		}
 	}
 	
@@ -120,6 +147,7 @@ public class DistributeLockService extends BaseServlet {
 		public long timeout;
 		public long lastActiveTime = System.currentTimeMillis();
 		public String onwer;
+		public String curOnwer = "";
 		public String remoteIp;
 		public boolean isLocked = false;
 		public LockObject(String name, String owner, long timeout){
@@ -134,6 +162,7 @@ public class DistributeLockService extends BaseServlet {
 		public String getName(){return name;}
 		public long getTimeout(){return timeout;}
 		public String getOwner(){return onwer;}
+		public String getCurOwner(){return curOnwer;}
 		public String getRemoteIp(){return remoteIp;}
 		public boolean getIsLocked(){return isLocked;}
 	}
