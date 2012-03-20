@@ -152,3 +152,61 @@ class ParameterValue(models.Model):
     def __str__(self):
         return self.site_url
     
+	
+class Question(models.Model):
+    """问题列表"""
+    
+    class Meta:
+        db_table = 'weibo_question'
+        verbose_name_plural = '问答题目'
+        verbose_name = '问答题目'
+    
+    group_name = models.CharField(max_length=50,
+								  default="weibo",
+                                  verbose_name="问题分组",
+                                  help_text='问题名称'
+                                  )
+								  
+    input_type = models.CharField(max_length=12,
+                                  verbose_name="问题类型",
+                                  choices=(('single', "single"),
+                                           ('select', "select"),
+                                      ), 
+                                  help_text='问题类型',
+                                  default='single',
+                                 )  
+								 
+    values = models.TextField(verbose_name="问题描述",
+                              help_text='问题描述')
+							  
+    view_order = models.IntegerField(verbose_name="显示排序", 
+                                     help_text='问题的排序',
+                                     default=0)			  
+							  
+    update_time = models.DateTimeField('update time', auto_now=True)
+    create_time = models.DateTimeField('create time', auto_now_add=True)
+
+class Answer(models.Model):
+    """问题列表"""
+    
+    class Meta:
+        db_table = 'weibo_answer'
+        verbose_name_plural = '问答答案'
+        verbose_name = '问答答案'
+    
+    group_name = models.CharField(max_length=50,
+								  default="weibo",
+                                  verbose_name="问题分组",
+                                  help_text='问题名称'
+                                  )
+								  
+    values = models.TextField(verbose_name="问题答案",
+                              help_text='问题答案')
+							  
+    view_order = models.IntegerField(verbose_name="显示排序", 
+                                     help_text='问题的排序',
+                                     default=0)			  
+							  
+    update_time = models.DateTimeField('update time', auto_now=True)
+    create_time = models.DateTimeField('create time', auto_now_add=True)	
+	
