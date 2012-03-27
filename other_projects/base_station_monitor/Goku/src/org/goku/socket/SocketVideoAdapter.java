@@ -174,7 +174,7 @@ public class SocketVideoAdapter implements SocketAdaptor{
 
 		@Override
 		public boolean isClosed() {
-			return !(client.socket.isOpen() && client.socket.isConnected());
+			return client.socket == null || !(client.socket.isOpen() && client.socket.isConnected());
 		}
 		
 	}
