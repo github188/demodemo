@@ -268,6 +268,8 @@ public class ASC100Client {
 	 * @throws IOException 
 	 */
 	public void sendCommand(byte cmd, byte data[]) throws IOException{
+		inBuffer.autoEscaped = true;
+		
 		//log.info(".....data:" + data.length);
 		ByteBuffer temp = ByteBuffer.allocate(data.length +5);
 		temp.order(ByteOrder.LITTLE_ENDIAN);
@@ -371,6 +373,7 @@ public class ASC100Client {
 				}else if(data.cmd == (byte)0x30){
 					log.debug(String.format("Restart client, message:%s", data.inBuffer.asCharBuffer().toString()));
 					this.image = null;
+					this.inBuffer.autoEscaped = true;
 				}
 				ImageClientEvent event = new ImageClientEvent(this);
 				event.data = data;
