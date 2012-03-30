@@ -63,5 +63,5 @@ class PathUtils(object):
         name = re.sub(r"[?=&.]", "_", name)
         return "%s.html" % name
         
-print PathUtils.relative_url("a.html", "/a/c/b.html")
+#print PathUtils.relative_url("a.html", "/a/c/b.html")
         

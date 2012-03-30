@@ -23,7 +23,12 @@ class Analyse(Sailor):
         if url.port: host_name += ":%s" % url.port
              
         task.header('Site', host_name)
-        task.add_action("%s ==> index.html" % (settings.START_INDEX, ))
+
+        url_path = url.path
+        if(url_path.endswith("/") or not url_path.strip()):
+            url_path = "%sindex.html" % url_path
+
+        task.add_action("%s ==> %s" % (settings.START_INDEX, url_path.strip("/")))
         
         task.status = 'waiting'
         
