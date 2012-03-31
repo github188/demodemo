@@ -28,6 +28,11 @@ class FileTask(object):
         
         self._writer = None
         self.headers = None
+        self.cur_id = 0
+        
+    def _next_data_id(self):
+        self.cur_id += 1
+        return "%06d" % self.cur_id
 
     def _init_task(self, path, create=False):
         if not exists_path(path):
@@ -108,7 +113,25 @@ class FileTask(object):
                     self._writer.write("\n")
         
         return self._writer
-    
+        
+    def save_data(self, data_id, data):
+        if not data_id: data_id = self._next_data_id()
+        path = os.path.join(self._id, "%s.data" % data_id)
+        if not os.path.isdir(self._id): os.mkdir(self._id)
+        fd = open(path, 'w')
+        fd.write(data)
+        fd.close()        
+        return data_id
+        
+    def get_data(self, data_id):
+        path = os.path.join(self._id, "%s.data" % data_id)
+        data = ""
+        if os.path.isfile(path):
+            fd = open(path, 'r')
+            data = fd.read()
+            fd.close()
+        return data
+        
     @staticmethod
     def search(path, status='*', pattern='*', len=5):
         
