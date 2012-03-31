@@ -41,7 +41,7 @@ class Spider(Sailor):
         next_task.header('Site', t.header('Site'))
         
         for l in t.list_actions():
-            action, url, save_as, args = self._parse_action(l)
+            action, url, save_as, args = self._parse_action(l, site)
             try:
                 handler = self.actions.get(action, None)
                 self.logger.debug("[%s] %s-->%s, args:%s" % (action, url, save_as, str(args)))
@@ -55,7 +55,7 @@ class Spider(Sailor):
             
         next_task.status = 'waiting'
         
-    def _parse_action(self, l):
+    def _parse_action(self, l, site):
         '''        
         return [action, url, local_path, args]
         '''
