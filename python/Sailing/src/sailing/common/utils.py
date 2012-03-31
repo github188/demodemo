@@ -60,7 +60,7 @@ class PathUtils(object):
                            '.html', '.zip', '.css', '.mp3']:
             return name
         
-        name = re.sub(r"[?=&.]", "_", name)
+        name = re.sub(r"[?=&.]", "_", name) or 'index'
         return "%s.html" % name
         
 #print PathUtils.relative_url("a.html", "/a/c/b.html")

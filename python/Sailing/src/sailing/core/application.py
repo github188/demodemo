@@ -57,7 +57,9 @@ class Application(ControllableDaemon):
             sleep(CONFIG.POLLING_INTERVAL)
             
     def _setting_logging(self):
-        
+        if not os.path.isdir('logs'):
+            os.mkdir('logs')
+            
         filename = "%s/%s" % (CONFIG.LOG_PATH, CONFIG.LOG_NAME)
         
         FORMAT = "%(asctime)-15s %(name)-5s: %(levelname)-6s %(message)s"

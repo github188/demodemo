@@ -1,6 +1,6 @@
 from sailing.common.utils import import_class
 from sailing.common.common import *
-import sys
+import sys, os
 class Management():
     
     def __init__(self, argv=None):
@@ -12,6 +12,9 @@ class Management():
             sys.exit()
         
         self.command = self.argv[1]
+        if os.path.isdir('libs'):
+            sys.path.insert(0, 'libs')
+            
         command = "sailing.core.commands.%s.Command" % self.command
         cmd_cls = import_class(command)
         
@@ -26,5 +29,6 @@ class Management():
     def _setting_logging(self):
         import logging.config
         from common.common import join_path
+        
         logging.config.fileConfig(join_path(dir_name(__file__), "logging.ini"))
     

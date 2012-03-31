@@ -17,6 +17,8 @@ class DownLoadSite(Crawler):
         
         self.process_ext = ('.js', '.html', '.css')
         self.logger = logging.getLogger("DownloadSite")
+        self.downloads = param.get("patterns", (".*", ))
+        self.logger.info("init download site, pattern:%s" % (str(self.downloads), ))
     
     def crawl(self, status, path, orginal_url, next_task, site):
         if status != '200': return
@@ -40,7 +42,6 @@ class DownLoadSite(Crawler):
                 else:
                     url_mapping[l] = utils.absolute_path(path, l)
             
-            self.logger.info("url mapping:%s --> %s" % (l, url_mapping[l]))
             return url_mapping[l]
         
         crawler = LinkCrawler()
@@ -49,8 +50,16 @@ class DownLoadSite(Crawler):
         for link, path in url_mapping.iteritems():
             if link.count(':') > 0: continue
             link = utils.absolute_url(url, link)
+            
+            if not self._accept_download(link): continue            
+            self.logger.info("add spider:%s==>%s" % (link, path))            
             task.add_action("%s==>%s" % (link, path))
-        
+    
+    def _accept_download(self, url):
+        for p in self.downloads:
+            if re.match(p, url): return True
+        return False
+
     def _process_css(self, path, *arg):
         pass
 
