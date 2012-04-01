@@ -37,8 +37,9 @@ class Application(ControllableDaemon):
         
         if len(task_list) == 0:
             self.sailor.idle()
-            self.logger.info('Waiting %d seconds for idle action' % CONFIG.IDLE_INTERVAL)
-            sleep(CONFIG.IDLE_INTERVAL)
+            if self.daemon: 
+                self.logger.info('Waiting %d seconds for idle action' % CONFIG.IDLE_INTERVAL)
+                sleep(CONFIG.IDLE_INTERVAL)
         else:
             for t in task_list:
                 t.status = 'running'
@@ -53,8 +54,9 @@ class Application(ControllableDaemon):
                     
             self.sailor.waiting()
             
-            self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
-            sleep(CONFIG.POLLING_INTERVAL)
+            if self.daemon: 
+                self.logger.info('Waiting %d seconds for next round' % CONFIG.POLLING_INTERVAL)
+                sleep(CONFIG.POLLING_INTERVAL)
             
     def _setting_logging(self):
         if not os.path.isdir('logs'):
