@@ -21,7 +21,7 @@ class FetchGuessTopic(object):
     def __call__(self, site, http, next_task, url, local_url, *args):        
         local_abs_path = site.real_path(local_url)
         if os.path.isfile(local_abs_path):
-            self.logger.info("the topic is exist in local:%s" % url)
+            self.logger.info("the topic is exist in local:%s, local:%s" % (url, local_abs_path))
             return
         
         self.logger.info("start fetch topic, url:%s" % url)
@@ -45,7 +45,7 @@ class FetchGuessTopic(object):
         
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.83 Safari/535.11',
                    'Content-Type': 'application/x-www-form-urlencoded',
-                   'Cookie': 'JSESSIONID=5E452CC6EBCE84F422FA6752E5BBF8C9; cnzz_a1741434=19; sin1741434=; rtime=4; ltime=1333264920274; cnzz_eid=92129616-1332144602-'
+                   #'Cookie': 'JSESSIONID=5E452CC6EBCE84F422FA6752E5BBF8C9; cnzz_a1741434=19; sin1741434=; rtime=4; ltime=1333264920274; cnzz_eid=92129616-1332144602-'
                    }
         
         answer = http.post_data("http://www.uqude.com/guess/answer", post_data, headers)

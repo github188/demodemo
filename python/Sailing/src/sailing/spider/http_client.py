@@ -1,5 +1,5 @@
 
-import urllib2, httplib
+import urllib2, httplib, cookielib
 import StringIO
 import gzip
 from urlparse import urlparse
@@ -19,14 +19,19 @@ class HTTPClient(object):
         self.proxy = None
         self.last_url = None
         self.logger = logging.getLogger("HttpClient")
-        #import urllib
+        
+        self.cookies = cookielib.MozillaCookieJar("http_cookie.txt")
+        self.cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
+        
     
     def set_proxy(self, proxy, www_root=None):
         if proxy:
             self.proxy = urllib2.ProxyHandler(proxy)
             
     def _http_handlers(self):
-        return self.proxy and [self.proxy, ] or []
+        h = [self.cookie_handler, ]
+        if self.proxy: h.append(self.proxy)
+        return h
     
     def relative_path(self, url):
         
@@ -112,6 +117,9 @@ class HTTPClient(object):
             raise   
         
         return data
-        
+    
+    def close(self):
+        self.logger.info("save cookies to 'http_cookie.txt'....")
+        self.cookies.save("http_cookie.txt", True, True)
     
     

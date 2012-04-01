@@ -52,6 +52,7 @@ class Spider(Sailor):
                     
             except Exception, e:
                 self.logger.error(trackable("Exception on task '%s'" % e))
+        self.http.close()
             
         next_task.status = 'waiting'
         
