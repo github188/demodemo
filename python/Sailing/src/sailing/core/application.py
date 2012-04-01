@@ -33,7 +33,11 @@ class Application(ControllableDaemon):
         
     def run(self):
         from sailing.core import FileTask
-        task_list = FileTask.search(CONFIG.APP_NAME, "waiting", len=5)
+        
+        if os.getenv("TASK_ID", None):
+            task_list = FileTask.search(CONFIG.APP_NAME, "*", pattern=os.getenv("TASK_ID", None), len=5)
+        else:
+            task_list = FileTask.search(CONFIG.APP_NAME, "waiting", len=5)
         
         if len(task_list) == 0:
             self.sailor.idle()

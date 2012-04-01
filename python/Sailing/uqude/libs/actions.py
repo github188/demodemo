@@ -11,7 +11,7 @@ class LoginUqude(object):
         
 class FetchGuessTopic(object):
     def __init__(self, ):
-        pass
+        self.logger = logging.getLogger("uqude")
     
     def __call__(self, site, http, next_task, url, local_url, *args):
         
