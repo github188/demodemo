@@ -36,6 +36,9 @@ class DownLoadSite(Crawler):
         
         url_mapping = {}
         def _process_link(l):
+            if not self._accept_download(l):
+                return l
+            
             if not url_mapping.has_key(l):
                 if l.count(":"): #mailto:, javascript:, http:
                     url_mapping[l] = l
@@ -50,8 +53,7 @@ class DownLoadSite(Crawler):
         for link, path in url_mapping.iteritems():
             if link.count(':') > 0: continue
             link = utils.absolute_url(url, link)
-            
-            if not self._accept_download(link): continue            
+                        
             self.logger.info("add spider:%s==>%s" % (link, path))            
             task.add_action("%s==>%s" % (link, path))
     

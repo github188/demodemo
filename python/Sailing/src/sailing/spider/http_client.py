@@ -64,6 +64,9 @@ class HTTPClient(object):
         fd.close()
         
         return '200'
+    
+    def get(self, url):
+        return self._http_request(url, )
         
     
     def _http_request(self, url, req_data):

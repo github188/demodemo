@@ -30,10 +30,13 @@ class LinkCrawler(object):
             l = m.group(3).strip("'").strip('"')
             #print "url:%s" % url
             local_path = action(l)
-            local_url = utils.relative_url(url, local_path)
+            if local_path:
+                local_url = utils.relative_url(url, local_path)
+            else:
+                local_url = l
             #print "local_url:%s" % local_url
             
-            self.logger.info("%s-->%s" % (l, local_url))
+            #self.logger.info("%s-->%s" % (l, local_url))
             return "%s='%s'" % (m.group(2), local_url)
         
         return re.sub(links, repl, data)
