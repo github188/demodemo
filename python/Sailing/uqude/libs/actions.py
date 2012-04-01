@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 import logging
 import re
+import json
+import os
 
 class LoginUqude(object):
     def __init__(self, ):
@@ -13,11 +15,69 @@ class LoginUqude(object):
 class FetchGuessTopic(object):
     def __init__(self, ):
         self.logger = logging.getLogger("uqude")
+        
+        self.parser = TopicParser()
     
-    def __call__(self, site, http, next_task, url, local_url, *args):
+    def __call__(self, site, http, next_task, url, local_url, *args):        
+        local_abs_path = site.real_path(local_url)
+        if os.path.isfile(local_abs_path):
+            self.logger.info("the topic is exist in local:%s" % url)
+            return
         
         self.logger.info("start fetch topic, url:%s" % url)
         data = http.get(url)
+        
+        topic = self.parser.process(data, {})
+        
+        if len(topic['options']) == 0:
+            self.logger.info("Not found options, It may is not a guess topic")
+            return
+        
+        if not (topic['coverId'] and topic['coverSubjectId']):
+            self.logger.info("Not found 'coverId' and 'coverSubjectId', It may is not a guess topic")
+            return
+        
+        values = topic['options'].values()        
+        post_data = {'optionId': values[0]['id'], 
+                     'coverId': topic['coverId'],
+                     'coverSubjectId': topic['coverSubjectId'],
+                     }
+        
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.83 Safari/535.11',
+                   'Content-Type': 'application/x-www-form-urlencoded',
+                   'Cookie': 'JSESSIONID=5E452CC6EBCE84F422FA6752E5BBF8C9; cnzz_a1741434=19; sin1741434=; rtime=4; ltime=1333264920274; cnzz_eid=92129616-1332144602-'
+                   }
+        
+        answer = http.post_data("http://www.uqude.com/guess/answer", post_data, headers)
+        
+        an = self.parser.process_answer(answer, {})
+        if not an.get('desc', ''):
+            self.logger.info("not found answer...")
+        
+        ok = False
+        for e in values:
+            if e['desc'] == an['options']:
+                e['right'] = 'y'
+                e['answer_desc'] = an.get('desc', '')
+                ok = True
+                break
+        
+        if not ok:
+            self.logger.info("answer process error, ignore the topic...")
+        
+        self.logger.info("Fetch guess topic ok, url:%s" % url)
+        self.save_topic_data(topic, local_abs_path)
+        
+        next_task.add_action("%s==>%s" % (url, local_url))
+        
+        
+    def save_topic_data(self, topic, local_path):
+        from sailing.common.common import *
+        if not exists_path(dir_name(local_path)): make_path(dir_name(local_path))
+        
+        fd = open(local_path, 'w')
+        fd.write(json.dumps(topic))
+        fd.close()        
         
 
 ALL_ATTRS = "[^>]+"

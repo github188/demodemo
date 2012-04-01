@@ -7,6 +7,7 @@ from sailing.common.common import *
 import logging
 import socket
 import os
+import urllib
 
 # timeout in seconds
 timeout = 10
@@ -68,8 +69,17 @@ class HTTPClient(object):
     def get(self, url):
         return self._http_request(url, None)
         
+    def post_data(self, url, data, headers={}):
+        if data and isinstance(data, dict):
+            data = urllib.urlencode(data)
+        elif data and os.path.isfile(data):
+            fd = open(data, 'r')
+            data = fd.read()
+            fd.close()
+        return self._http_request(url, data, headers)
+
     
-    def _http_request(self, url, req_data):
+    def _http_request(self, url, req_data, headers={}):
     
         #url = self.relative_path(url)
         try:
@@ -80,6 +90,9 @@ class HTTPClient(object):
                 request = urllib2.Request(url)
                 
             request.add_header('Accept-encoding', 'gzip') 
+            for k, v in headers.iteritems():
+                request.add_header(k, v)
+                            
             opener = urllib2.build_opener(*self._http_handlers())
             
             f = opener.open(request)
