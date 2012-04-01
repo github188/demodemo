@@ -13,6 +13,8 @@ class HTTPClient(object):
         self.proxy = None
         self.last_url = None
         self.logger = logging.getLogger("HttpClient")
+        
+        
         #import urllib
     
     def set_proxy(self, proxy, www_root=None):

@@ -3,7 +3,7 @@ from sailing.core import Sailor, new_task
 from sailing.core.web.website import WebSite
 from http_client import HTTPClient
 from sailing.conf import settings
-from sailing.common.common import join_path, trackable
+from sailing.common.common import join_path, trackable, is_file
 from sailing.common.utils import import_class
 import logging
 
@@ -80,8 +80,11 @@ class Spider(Sailor):
         
     def http_get(self, site, http, next_task, url, save_as, *args):
         local_path = self._save_as(site, save_as)
-        status = http.download(url, local_path)
-        next_task.add_action("%s %s %s" % (status, url, save_as))
+        if not is_file(local_path):
+            status = http.download(url, local_path)
+            next_task.add_action("%s %s %s" % (status, url, save_as))
+        else:
+            self.logger.info("exist local file:%s->%s" % (url, local_path))
         
     def http_post(self, site, http, next_task, url, save_as, data, *args):
         local_path = self._save_as(site, save_as)
