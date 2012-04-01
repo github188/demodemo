@@ -31,10 +31,12 @@ class FetchGuessTopic(object):
         
         if len(topic['options']) == 0:
             self.logger.info("Not found options, It may is not a guess topic")
+            self.save_org_data(data, local_abs_path)
             return
         
         if not (topic['coverId'] and topic['coverSubjectId']):
             self.logger.info("Not found 'coverId' and 'coverSubjectId', It may is not a guess topic")
+            self.save_org_data(data, local_abs_path)
             return
         
         values = topic['options'].values()        
@@ -51,8 +53,10 @@ class FetchGuessTopic(object):
         answer = http.post_data("http://www.uqude.com/guess/answer", post_data, headers)
         
         an = self.parser.process_answer(answer, {})
-        if not an.get('desc', ''):
+        if not an.get('options', ''):
             self.logger.info("not found answer...")
+            self.save_org_data(answer, local_abs_path)
+            return
         
         ok = False
         for e in values:
@@ -67,8 +71,9 @@ class FetchGuessTopic(object):
         
         self.logger.info("Fetch guess topic ok, url:%s" % url)
         self.save_topic_data(topic, local_abs_path)
+        self.post_to_taidian(topic, http, local_abs_path)
         
-        next_task.add_action("%s==>%s" % (url, local_url))
+        next_task.add_action("200 %s %s" % (url, local_url))
         
         
     def save_topic_data(self, topic, local_path):
@@ -77,8 +82,25 @@ class FetchGuessTopic(object):
         
         fd = open(local_path, 'w')
         fd.write(json.dumps(topic))
-        fd.close()        
+        fd.close() 
         
+    def post_to_taidian(self, topic, http, local_path):        
+        data = http.post_data("http://3.taidian.sinaapp.com/api/guess_import/", 
+                              {'data':json.dumps(topic)}, 
+                              {})
+
+        fd = open("%s.txt" % local_path, 'w')
+        fd.write(data)
+        fd.close()
+        
+    def save_org_data(self, data, local_path):
+        from sailing.common.common import *
+        if not exists_path(dir_name(local_path)): make_path(dir_name(local_path))
+        fd = open("%s.html" % local_path, 'w')
+        fd.write(data)
+        fd.close()
+        
+        self.save_topic_data(data, local_path)
 
 ALL_ATTRS = "[^>]+"
 EMPTY = "\s+"
@@ -209,13 +231,16 @@ class TopicParser(object):
         regex += r'<p class="clear"> <span class="left">\s+'
         regex += r'<input type="radio" name="" class="radio" value=""  disabled="disabled"/>(.*?)</span>\s+'
         
-        regex += r'<span.*?<span class="guessResult">(.*?)</span>'
+        regex += r'(?:<span.*?<span class="guessResult">(.*?)</span>)?'
         
         answer = {}
         t = re.search(regex, data, re.S)
         if t:
             answer['options'] = t.group(1).strip()
-            answer['desc'] = t.group(2).strip()
+            if t.group(2):
+                answer['desc'] = t.group(2).strip()
+            else:
+                answer['desc'] = ""
         
         return answer
     

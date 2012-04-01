@@ -1,6 +1,6 @@
 
 CRAWLER = {'download': ('sailing.worker.crawler.Site.DownLoadSite', 
-                          {'patterns': ('/guess/(last|hot)(.*?)', )}),
+                          {'patterns': ('/guess/(last|hot)(.*?)', r'.*?start=\d+')}),
             'guess_topic': ('guess_crwaler.GuessTopicCrwaler', {})
 		  }
 
