@@ -24,3 +24,5 @@ IDLE_INTERVAL = 1 * 60
 RUNNING_FLAG = join_path(DATA_ROOT, '.%s_running' % APP_NAME)
 CLOSING_FLAG = join_path(DATA_ROOT, '.%s_closing' % APP_NAME)
 
+TIME_ZONE = 'RPC'
+
