@@ -36,6 +36,11 @@ class TopicParser(object):
         
         return t
     
+    def process_answer(self, html, topic):
+        an = self._fetch_correct_option(html)
+        
+        return an
+    
     def _fetch_topic_title(self, data):
         """
     <div class="icons icons2">
@@ -121,6 +126,36 @@ class TopicParser(object):
             ids['coverSubjectId'] = t.group(2)
         
         return ids
+    
+    def _fetch_correct_option(self, data):
+        """
+<div class="model-box model-box-h model-proper">
+                            <p class="clear"> <span class="left">
+                              <input type="radio" name="" class="radio" value=""  disabled="disabled"/>
+                              白素贞体</span> <span class="right"> <span class=" proper-icons"></span> <span class="green f12">正确答案</span> </span> </p>
+                          </div>
 
-
+                          <div class="prompt mt20 clear">
+                                              <span class="left resultPro"> 
+                                                  <span class="bold">答案说明：</span>
+                                                  <span class="guessResult">近日白素贞体在网络流行，南方一直阴雨绵绵，网友很无奈发明白素贞体，白素贞体的句式是“许仙不在这里”，白素贞体的流行让不少网友恶搞不断，纷纷发留言称“许仙不在我们这里，真的不在，白素贞你就收手吧”。<br><br></span>
+                                              </span> 
+                                              <span class="right">
+                                                  <a class="blue" href="javascript:void(0)" onclick="AT.guess.showResult(this)">展开全部»</a>
+                                              </span>
+                                            </div> 
+"""                                                    
+        regex = r'<div class="model-box model-box-h model-proper">\s+'
+        regex += r'<p class="clear"> <span class="left">\s+'
+        regex += r'<input type="radio" name="" class="radio" value=""  disabled="disabled"/>(.*?)</span>\s+'
+        
+        regex += r'<span.*?<span class="guessResult">(.*?)</span>'
+        
+        answer = {}
+        t = re.search(regex, data, re.S)
+        if t:
+            answer['options'] = t.group(1).strip()
+            answer['desc'] = t.group(2).strip()
+        
+        return answer
     

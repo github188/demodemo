@@ -33,6 +33,16 @@ class FetchGuessTopicTestCase(unittest.TestCase):
         
         self.assertEqual(t['coverId'], '37920')
         self.assertEqual(t['coverSubjectId'], '234644')
+        
+    def test_fetch_answer(self):
+        topic = TopicParser()
+        
+        data = self._load_data('gest_topic_1_answer.html')
+
+        an = topic.process_answer(data, {})
+        
+        self.assertEqual(an['options'], "白素贞体", )
+        self.assertEqual(an['desc'], "近日白素贞体在网络流行<br><br>", )
 
 
     def _load_data(self, f):
