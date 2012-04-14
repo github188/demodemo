@@ -38,9 +38,10 @@ class GetTaokDetail(object):
         desc_images = self._parse_image_from_desc(data['item']['desc'])        
         (desc_images, index) = self.save_image_to_oss(desc_images, index, http, site, num_iid)
         
-        data['main_images'] = images
-        data['desc_images'] = desc_images
+        data['item']['main_images'] = images
+        data['item']['desc_images'] = desc_images
         #print data
+        http.post(url, site.real_path("log/%s/%s.txt" % (num_iid[-1:], num_iid)), {'data': json.dumps(data['item'])})
         self.save_topic_data(data, local_abs_path)
         
     def save_topic_data(self, topic, local_path):
@@ -62,8 +63,8 @@ class GetTaokDetail(object):
             
             thumb_url = "taoke/%s/%s/%s_%s_thumb.jpg" % (path, num_iid, num_iid, index)
             local_thumb = site.real_path(thumb_url)
-            http.download(url, local)
             try:
+                http.download(url, local)            
                 import Image
                 im = Image.open(local)
                 (w, h) = im.size
@@ -75,10 +76,8 @@ class GetTaokDetail(object):
                     self.logger.info("thumbnail %s -> %s " % (url, data[url]))
             except Exception, e:
                 logging.info("error:%s" % e)
-                data[url] = 'http://storage.aliyun.com/fmei_st/%s' % thumb_url        
-                if self._save_to_oss(thumb_url, local, num_iid):
-                    self.logger.info("thumbnail %s -> %s " % (url, data[url]))
-        
+                data[url] = url
+                
         return (data, index)
 
     def _save_to_oss(self, path, local_path, num_iid):
