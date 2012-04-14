@@ -3,4 +3,6 @@
 #PROXY = {'http': 'http://10.144.1.10:8080'}
 #
 
-ACTIONS = {}
+ACTIONS = {'fetch_taoke_detail': ('actions.GetTaokDetail', {})
+           
+           }

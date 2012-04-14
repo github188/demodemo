@@ -44,14 +44,14 @@ class Spider(Sailor):
             action, url, save_as, args = self._parse_action(l, site)
             try:
                 handler = self.actions.get(action, None)
-                self.logger.debug("[%s] %s-->%s, args:%s" % (action, url, save_as, str(args)))
+                self.logger.debug("[%s] %s --> %s, args:%s" % (action, url, save_as, str(args)))
                 if handler is not None:
                     handler(site, self.http, next_task, url, save_as, *args)
                 else:
                     self.logger.error("not found sipder action:'%s'", action)
                     
             except Exception, e:
-                self.logger.error(trackable("Exception on task '%s'" % e))
+                self.logger.exception(trackable("Exception on task '%s'" % e))
         self.http.close()
             
         next_task.status = 'waiting'

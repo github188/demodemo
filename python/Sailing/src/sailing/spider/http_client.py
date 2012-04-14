@@ -8,6 +8,7 @@ import logging
 import socket
 import os
 import urllib
+import time
 
 # timeout in seconds
 timeout = 10
@@ -48,7 +49,7 @@ class HTTPClient(object):
     
     def download(self, url, save_as):
         
-        self.logger.info("download:%s-->%s" % (url, save_as))        
+        self.logger.info("download:%s --> %s" % (url, save_as))
         self.post(url, save_as)
         
         return '200'
@@ -65,7 +66,7 @@ class HTTPClient(object):
         
         data = self._http_request(url, data)
         
-        fd = open(save_as, "w+")
+        fd = open(save_as, "wb")
         fd.write(data)
         fd.close()
         
@@ -87,6 +88,7 @@ class HTTPClient(object):
     def _http_request(self, url, req_data, headers={}):
     
         #url = self.relative_path(url)
+        data = None
         try:
             #httplib.HTTPConnection.debuglevel = 1
             if req_data:
@@ -100,18 +102,35 @@ class HTTPClient(object):
                             
             opener = urllib2.build_opener(*self._http_handlers())
             
-            f = opener.open(request)
-            #print f
-            encoding = f.headers.get('Content-Encoding')
-            if encoding and 'gzip' in encoding:
-                compresseddata = f.read()                              
-                compressedstream = StringIO.StringIO(compresseddata)   
-                gzipper = gzip.GzipFile(fileobj=compressedstream)      
-                data = gzipper.read()
-                gzipper.close()
+            for i in range(3):
+                try:
+                    f = opener.open(request)
+                    #print f
+                    encoding = f.headers.get('Content-Encoding')
+                    #self.logger.info("header:%s" % f.headers)
+                    if encoding and 'gzip' in encoding:
+                        compresseddata = f.read()                              
+                        compressedstream = StringIO.StringIO(compresseddata)   
+                        gzipper = gzip.GzipFile(fileobj=compressedstream)      
+                        data = gzipper.read()
+                        gzipper.close()
+                    else:
+                        data = f.read()
+                        f.close()
+                    break
+                except Exception, e:
+                    if "timed out" in str(e):
+                        self.logger.info("Time out, sleep 5 seconds then retry.")
+                        time.sleep(5)
+                    else:
+                        raise
+            
+            content_size = f.headers.get("Content-Length", 0)
+            if int(content_size) > 0 and int(content_size) != len(data):
+                raise Exception("Content size error:%s != %s" %(int(content_size), len(data)))
             else:
-                data = f.read()
-                f.close()
+                #self.logger.info("Data read right:%s == %s" %(int(content_size), len(data)))
+                pass
        
         except urllib2.HTTPError, e:
             raise   
