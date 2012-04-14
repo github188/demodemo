@@ -66,7 +66,7 @@ class GetTaokDetail(object):
             try:
                 import Image
                 im = Image.open(local)
-                (w, h) = im.size()
+                (w, h) = im.size
                 if w < 200 or h < 200: continue
                 im.thumbnail((128, 128), Image.ANTIALIAS)
                 im.save(local_thumb)
