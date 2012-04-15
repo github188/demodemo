@@ -1,6 +1,7 @@
 from taobao import Taobao
 from oss.oss_xml_handler import *
 from oss.oss_api import *
+from sailing.common.common import *
 import re
 from time import localtime, strftime
 import logging
@@ -46,7 +47,6 @@ class GetTaokDetail(object):
         self.save_topic_data(data, local_abs_path)
         
     def save_topic_data(self, topic, local_path):
-        from sailing.common.common import *
         if not exists_path(dir_name(local_path)): make_path(dir_name(local_path))
         
         fd = open(local_path, 'w')
