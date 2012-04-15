@@ -5,6 +5,7 @@ import re
 from time import localtime, strftime
 import logging
 import json
+import os
 
 class GetTaokDetail(object):
     def __init__(self, ):
@@ -62,18 +63,18 @@ class GetTaokDetail(object):
             local = site.real_path("taoke/%s/%s/%s_%s.jpg" % (path, num_iid, num_iid, index))
             
             thumb_url = "taoke/%s/%s/%s_%s_thumb.jpg" % (path, num_iid, num_iid, index)
-            local_thumb = site.real_path(thumb_url)
+            local_thumb = os.path.join('/opt/data', thumb_url) #site.real_path(thumb_url)
             try:
-                http.download(url, local)            
+                http.download(url, local)
                 import Image
                 im = Image.open(local)
                 (w, h) = im.size
                 if w < 200 or h < 200: continue
                 im.thumbnail((128, 128), Image.ANTIALIAS)
                 im.save(local_thumb)
-                if self._save_to_oss(thumb_url, local_thumb, num_iid):
-                    data[url] = 'http://storage.aliyun.com/fmei_st/%s' % thumb_url
-                    self.logger.info("thumbnail %s -> %s " % (url, data[url]))
+                #if self._save_to_oss(thumb_url, local_thumb, num_iid):
+                data[url] = 'http://data.deonwu84.com/%s' % thumb_url
+                self.logger.info("thumbnail %s -> %s " % (url, data[url]))
             except Exception, e:
                 logging.info("error:%s" % e)
                 data[url] = url
