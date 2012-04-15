@@ -71,6 +71,7 @@ class GetTaokDetail(object):
                 (w, h) = im.size
                 if w < 200 or h < 200: continue
                 im.thumbnail((128, 128), Image.ANTIALIAS)
+                if not exists_path(dir_name(local_thumb)): make_path(dir_name(local_thumb))
                 im.save(local_thumb)
                 #if self._save_to_oss(thumb_url, local_thumb, num_iid):
                 data[url] = 'http://data.deonwu84.com/%s' % thumb_url
