@@ -26,11 +26,22 @@ class GetTaokDetail(object):
         num_iid = re.search(r"/(\d{7,})/", url).group(1)
         self.logger.info("start fetch taoke details id:%s" % num_iid)
         
-        data = self.taobao.taobao_item_get(fields='detail_url,num_iid,title,nick,type,cid,seller_cids,props,input_pids,input_str,desc,pic_url,num,valid_thru,list_time,delist_time,stuff_status,location,price,post_fee,express_fee,ems_fee,has_discount,freight_payer,has_invoice,has_warranty,has_showcase,modified,increment,approve_status,postage_id,product_id,auction_point,property_alias,item_img,prop_img,sku,video,outer_id,is_virtual', 
-    num_iid=num_iid)
-        data = data.get('item_get_response')
+        try:
+            data = self.taobao.taobao_item_get(fields='detail_url,num_iid,title,nick,type,cid,seller_cids,props,input_pids,input_str,desc,pic_url,num,valid_thru,list_time,delist_time,stuff_status,location,price,post_fee,express_fee,ems_fee,has_discount,freight_payer,has_invoice,has_warranty,has_showcase,modified,increment,approve_status,postage_id,product_id,auction_point,property_alias,item_img,prop_img,sku,video,outer_id,is_virtual', 
+                num_iid=num_iid)
+            data = data.get('item_get_response')
+        except Exception, e:
+            if e.__class__.__name__ == 'TaobaoException' and 'isv.' in e.sub_code: # == 'isv.item-is-delete:invalid-numIid-or-iid':
+                self.logger.info("expired taoke id:%s" % num_iid)
+                remove_url = "http://%s/queue/expired_taoke/" % site.hostname
+                http.post_data(remove_url, {'num_iid': num_iid})
+                return
+            else:
+                raise
+
         #self.logger.info("data:%s" % data)
         
+        data['item']['traderates'] = self.get_comments(num_iid, data['item']['nick'])
         self.logger.info("start fetch main images...")
         index = 0
         main_image = [e['url'] for e in data['item']['item_imgs']['item_img'] ]
@@ -45,6 +56,10 @@ class GetTaokDetail(object):
         #print data
         http.post(url, site.real_path("log/%s/%s.txt" % (num_iid[-1:], num_iid)), {'data': json.dumps(data['item'])})
         self.save_topic_data(data, local_abs_path)
+        
+    def get_comments(self, num_iid, nick):
+        data = self.taobao.taobao_traderates_search(num_iid=num_iid, seller_nick=nick, )
+        return data.get("traderates_search_response", {}).get("trade_rates", {}).get('trade_rate', [])
         
     def save_topic_data(self, topic, local_path):
         if not exists_path(dir_name(local_path)): make_path(dir_name(local_path))

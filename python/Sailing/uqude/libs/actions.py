@@ -18,7 +18,7 @@ class FetchGuessTopic(object):
         
         self.parser = TopicParser()
     
-    def __call__(self, site, http, next_task, url, local_url, *args):        
+    def __call__(self, site, http, next_task, url, local_url, *args): 
         local_abs_path = site.real_path(local_url)
         if os.path.isfile(local_abs_path):
             self.logger.info("the topic is exist in local:%s, local:%s" % (url, local_abs_path))

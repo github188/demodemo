@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import hashlib
 from time import localtime, strftime
 import os
@@ -31,6 +32,7 @@ class Taobao(object):
         return {
             'taobao.itemcats.get': ['fields', 'parent_cid', 'cids'],
             'taobao.item.get': ['fields', 'num_iid'],
+            'taobao.traderates.search': ['num_iid', 'seller_nick', 'page_no', 'page_size'],
         }.get(name, [])
         
     def _default_http(self, ):
@@ -41,6 +43,13 @@ class Taobao(object):
                 data = req.read()
                 return data
         return httpClient()
+
+class TaobaoException(Exception):
+    def __init__(self, data):
+        super(TaobaoException, self).__init__(data.get('msg'))
+        self.sub_code = data.get("sub_code")
+        self.code = data.get("code")
+        self.sub_msg = data.get("sub_msg")
         
 class CallProxy(object):
     
@@ -63,18 +72,12 @@ class CallProxy(object):
         str_param = '%s&sign=%s' % (str_param, sign)     
         api_url = '%s%s' % (self.host, str_param)
                 
-        #timestamp = '';
-        #yyyy-MM-dd HH:mm:ss
-        #print "------------------"
-        #print api_url
-        #print "-------------------"
-        resp = self.http.get(api_url)
-        #print resp
-        #print "-------------------"
+        resp = self.http.get(api_url)        
+        resp = resp.replace("\r", "\\r").replace("\n", "\\n")
         
-        data = json.loads(resp)
+        data = json.loads(resp, 'utf-8')
         if data.get('error_response'):
-            raise Exception(str(data.get('error_response')))
+            raise TaobaoException(data.get('error_response'))
         return data
         
     def _get_sign(self, sys_param, app_param):

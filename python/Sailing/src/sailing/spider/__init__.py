@@ -1,3 +1,4 @@
+﻿# -*- coding:utf-8 -*-
 
 from sailing.core import Sailor, new_task
 from sailing.core.web.website import WebSite
@@ -51,7 +52,7 @@ class Spider(Sailor):
                     self.logger.error("not found sipder action:'%s'", action)
                     
             except Exception, e:
-                self.logger.exception(trackable("Exception on task '%s'" % e))
+                self.logger.exception(trackable(u"Exception on task '%s'" % e))
         self.http.close()
             
         next_task.status = 'waiting'

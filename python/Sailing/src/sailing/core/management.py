@@ -1,6 +1,6 @@
 from sailing.common.utils import import_class
 from sailing.common.common import *
-import sys, os
+import sys, os, time
 class Management():
     
     def __init__(self, argv=None):
@@ -11,6 +11,10 @@ class Management():
             print 'python -m sailing start|stop <application>'
             sys.exit()
         
+        if hasattr(time, 'tzset'):
+            os.environ['TZ'] = 'Asia/Shanghai'
+            time.tzset()
+    
         self.command = self.argv[1]
         if os.path.isdir('libs'):
             sys.path.insert(0, 'libs')
