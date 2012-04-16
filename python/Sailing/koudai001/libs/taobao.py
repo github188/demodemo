@@ -86,14 +86,14 @@ class CallProxy(object):
         
         param_order = self.sys_order + self.app_order
         param_order.sort()
-        params = [ "%s%s" % (e, b.get(e)) for e in param_order if str(b.get(e, '')).strip() ]
+        params = [ u"%s%s" % (e, b.get(e)) for e in param_order if unicode(b.get(e, '')).strip() ]
         
         secret = sys_param['app_secret']
-        str_param = "".join(params)
-        str_param = "%s%s%s" % (secret, str_param, secret,)
+        str_param = u"".join(params)
+        str_param = u"%s%s%s" % (secret, str_param, secret,)
         #print "xx:%s" % str_param
         
-        return hashlib.md5(str_param).hexdigest().upper()
+        return hashlib.md5(str_param.encode("utf-8")).hexdigest().upper()
         
         
     def _create_str_param(self, sys_param, app_param):
@@ -103,9 +103,9 @@ class CallProxy(object):
         param_order = self.sys_order + self.app_order
         
         
-        params = [ "%s=%s" % (e, urllib.quote(str(b.get(e)))) for e in param_order if str(b.get(e, '')).strip() ]
+        params = [ u"%s=%s" % (e, urllib.quote(b.get(e).encode("utf-8"))) for e in param_order if unicode(b.get(e, '')).strip() ]
         
-        str_param = "&".join(params)
+        str_param = u"&".join(params)
         return str_param
         
         
