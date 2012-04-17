@@ -26,7 +26,7 @@ public class TaskQueueTrigger extends Trigger<BuildableItem>{
     @DataBoundConstructor
     public TaskQueueTrigger(String taskQueue, String filter)
     throws ANTLRException, IOException {
-      super("");
+      super("* * * * *");
       
       this.taskQueue = taskQueue;
       this.filter = filter;
@@ -41,12 +41,23 @@ public class TaskQueueTrigger extends Trigger<BuildableItem>{
     	}catch(IOException e){
     		
     	}
-    	TaskQueuePlugin.getInstance().registerTopic(queue, this.job, filter);
+    	if(queue != null){
+    		TaskQueuePlugin.getInstance().registerTopic(queue, this.job, filter);
+    	}
     }
   
     @Override
     public void run() {
-    	log.info("run task queue.......");
+    	log.info("run message queue trigger, job:" + this.job.getName());
+    	URL queue = null;
+    	try{
+    		queue = new URL(taskQueue);
+    	}catch(IOException e){
+    		
+    	}
+    	if(queue != null){
+    		TaskQueuePlugin.getInstance().registerTopic(queue, this.job, filter);
+    	}
     	//this.
     }
     
