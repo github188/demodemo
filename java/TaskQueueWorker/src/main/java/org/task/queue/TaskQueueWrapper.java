@@ -58,7 +58,7 @@ public class TaskQueueWrapper extends BuildWrapper{
     	for(Map.Entry<String, String> entry: data.entrySet()){
     		try{
     			new FilePath(path, entry.getKey()).write(entry.getValue(), "utf-8");
-    		}catch(IOException e){
+    		}catch(Exception e){
     			listener.getLogger().println("Failed to write file:" + e.toString());
     		}
     	}
