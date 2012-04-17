@@ -44,7 +44,7 @@ public class TaskQueueWrapper extends BuildWrapper{
     		}
     		listener.getLogger().println(String.format("--------------------"));
     		if(build.getWorkspace() != null){
-    			this.writeDataToWorkspace(build.getWorkspace(), ((MsgEnvironment)msgEnv).fileData);
+    			this.writeDataToWorkspace(build.getWorkspace(), ((MsgEnvironment)msgEnv).fileData, listener);
     		}
     		
     	}else {
@@ -54,9 +54,13 @@ public class TaskQueueWrapper extends BuildWrapper{
     	return msgEnv;
     }
     
-    private void writeDataToWorkspace(FilePath path, Map<String, String> data){
+    private void writeDataToWorkspace(FilePath path, Map<String, String> data, final BuildListener listener){
     	for(Map.Entry<String, String> entry: data.entrySet()){
-    		new FilePath(path, entry.getKey()).write(entry.getValue(), "utf-8");
+    		try{
+    			new FilePath(path, entry.getKey()).write(entry.getValue(), "utf-8");
+    		}catch(IOException e){
+    			listener.getLogger().println("Failed to write file:" + e.toString());
+    		}
     	}
     }
     
