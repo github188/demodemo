@@ -107,16 +107,19 @@ class HTTPClient(object):
                 try:
                     f = opener.open(request)
                     #print f
-                    encoding = f.headers.get('Content-Encoding')
+                    encoding = f.headers.get('Content-Encoding')                    
+                    trans_encoding = f.headers.get('Transfer-Encoding')
+                    
                     #self.logger.info("header:%s" % f.headers)
                     if encoding and 'gzip' in encoding:
-                        compresseddata = f.read()                              
-                        compressedstream = StringIO.StringIO(compresseddata)   
-                        gzipper = gzip.GzipFile(fileobj=compressedstream)      
+                        #compresseddata = f.read()                              
+                        compresseddata = self._read_data(f, trans_encoding=='chunked')
+                        compressedstream = StringIO.StringIO(compresseddata)
+                        gzipper = gzip.GzipFile(fileobj=compressedstream)   
                         data = gzipper.read()
                         gzipper.close()
                     else:
-                        data = f.read()
+                        data = self._read_data(f, trans_encoding=='chunked') # f.read()
                         f.close()
                     break
                 except Exception, e:
@@ -126,16 +129,24 @@ class HTTPClient(object):
                     else:
                         raise
             
-            content_size = f.headers.get("Content-Length", 0)
-            if int(content_size) > 0 and int(content_size) != len(data):
-                raise Exception("Content size error:%s != %s" %(int(content_size), len(data)))
-            else:
-                #self.logger.info("Data read right:%s == %s" %(int(content_size), len(data)))
-                pass
+            #content_size = f.headers.get("Content-Length", 0)
+            #if 'gzip' not in encoding and int(content_size) > 0 and int(content_size) != len(data):
+            #    raise Exception("Content size error:%s != %s" %(int(content_size), len(data)))
+            #else:
+            #    #self.logger.info("Data read right:%s == %s" %(int(content_size), len(data)))
+            #    pass
        
         except urllib2.HTTPError, e:
             raise   
         
+        return data
+        
+    def _read_data(self, fd, chunked=False):
+        data = fd.read()
+        while chunked:
+            ch = fd.read(1024)
+            if not ch:break
+            data += ch
         return data
     
     def close(self):
