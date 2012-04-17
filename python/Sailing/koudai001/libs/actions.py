@@ -45,17 +45,17 @@ class GetTaokDetail(object):
         self.logger.info("start fetch main images...")
         index = 0
         main_image = [e['url'] for e in data['item']['item_imgs']['item_img'] ]
-        #(main_image, index) = self.save_image_to_oss(main_image, index, http, site, num_iid)
+        (main_image, index) = self.save_image_to_oss(main_image, index, http, site, num_iid)
         
         self.logger.info("start fetch desc images...")
         desc_images = self._parse_image_from_desc(data['item']['desc'])        
-        #(desc_images, index) = self.save_image_to_oss(desc_images, index, http, site, num_iid)
+        (desc_images, index) = self.save_image_to_oss(desc_images, index, http, site, num_iid)
         
         data['item']['main_images'] = main_image
         data['item']['desc_images'] = desc_images
         #print data
         if os.environ.get('HUDSON_URL'):
-            http.post_data("http://127.0.0.1:8924/queue/q/imported_taoke", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
+            http.post_data("http://127.0.0.1:8924/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
         else:
             http.post_data("http://data.deonwu84.com/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
         http.post(url, site.real_path("log/%s/%s.txt" % (num_iid[-1:], num_iid)), {'data': json.dumps(data['item'])})
