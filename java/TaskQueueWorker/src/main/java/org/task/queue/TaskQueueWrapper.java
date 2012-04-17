@@ -9,6 +9,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
+import hudson.FilePath;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.task.queue.topic.Message;
 
 /**
- * 鍦╞uild 寮�鍓�鍑嗗鐜鍙橀噺.鍦ㄧ粨鏉熷悗鏇存柊Queue鐘舵�.
  * @author Administrator
  *
  */
