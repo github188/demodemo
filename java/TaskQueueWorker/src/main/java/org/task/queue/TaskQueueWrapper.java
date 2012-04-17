@@ -43,7 +43,10 @@ public class TaskQueueWrapper extends BuildWrapper{
     			listener.getLogger().println(String.format("%s='%s'", entry.getKey(), entry.getValue()));
     		}
     		listener.getLogger().println(String.format("--------------------"));
-
+    		if(build.getWorkspace() != null){
+    			this.writeDataToWorkspace(build.getWorkspace(), ((MsgEnvironment)msgEnv).fileData);
+    		}
+    		
     	}else {
     		msgEnv = new Environment(){};
     	}
@@ -51,8 +54,15 @@ public class TaskQueueWrapper extends BuildWrapper{
     	return msgEnv;
     }
     
+    private void writeDataToWorkspace(FilePath path, Map<String, String> data){
+    	for(Map.Entry<String, String> entry: data.entrySet()){
+    		new FilePath(path, entry.getKey()).write(entry.getValue(), "utf-8");
+    	}
+    }
+    
     class MsgEnvironment extends Environment{
     	public Map<String, String> data = null;
+    	public Map<String, String> fileData = new HashMap<String, String>();
     	private Message msg = null;
 
     	public MsgEnvironment(Message msg){
@@ -74,6 +84,8 @@ public class TaskQueueWrapper extends BuildWrapper{
     			value = entry.getValue().toString().trim();
     			if(value.indexOf('\n') < 0 && value.length() < 1024){
     				data.put("MQ_" + entry.getKey(), value);
+    			}else {
+    				fileData.put(String.format("MQ_%s.data", entry.getKey()), value);
     			}
     		}
     		return data;
