@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.xidea.el.Expression;
+import org.xidea.el.ExpressionFactory;
+import org.xidea.el.impl.ExpressionFactoryImpl;
+
 public class TopicSubscriber {
 	public MessageTopic topic = null;
-	
 	public MessageTopic active = null;
+	private ExpressionFactory factory = ExpressionFactoryImpl.getInstance();
 	
 	public TopicSubscriber(MessageTopic topic, MessageTopic active){
 		this.topic = topic;
@@ -21,10 +25,10 @@ public class TopicSubscriber {
 		active.setDataDiskStorage(new FullStorage(active.storage.dataPath));
 	}
 	
-	public List<Message> fetchWithLock(int limit, int timeout){
+	public List<Message> fetchWithLock(int limit, int timeout, String filter){
 		List<Message> result = new ArrayList<Message>(limit);
 		synchronized(this){
-			fetchFromOriginTopic();
+			fetchFromOriginTopic(filter);
 			long expried = System.currentTimeMillis() + timeout;
 			long cur = System.currentTimeMillis();
 			for(Message msg : active.queue.allMessage()){
@@ -45,7 +49,8 @@ public class TopicSubscriber {
 		return result;
 	}
 	
-	public void fetchFromOriginTopic(){
+	public void fetchFromOriginTopic(String filter){
+		Expression el = null; //factory.create("test2 * 1 && true || false");
 		int activeSize = active.remainSize();
 		Message m = active.tail();
 		if(m != null && topic.queue.size() > 0 && m.id == topic.tail().id){
@@ -55,10 +60,16 @@ public class TopicSubscriber {
 		int startID = 1;
 		if(m != null){ startID = m.id + 1; }
 		
+		if(filter != null && filter.trim().length() > 0){
+			el = factory.create(filter + "  && true || false");
+		}
+		
 		List<Message> result = topic.fetchMessage(0, startID, 0, activeSize);
 		for(Message msg : result){
-			m = msg.copy();
-			active.putMessage(m);
+			if(el == null || (Boolean)el.evaluate(msg.getData())){
+				m = msg.copy();
+				active.putMessage(m);
+			}
 		}
 	}
 	

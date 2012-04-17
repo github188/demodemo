@@ -117,13 +117,14 @@ public class MessageQueueServlet extends BaseServlet {
 		try{
 			timeout = Integer.parseInt(request.getParameter("timeout"));
 		}catch(Exception e){ }
+		String filter = request.getParameter("filter");
 
 		
 		List<Message> messages = null;
 		
-		MessageQueue.log(topic.name, "fetch", String.format("receiver:%s, limit:%s", receiver, limit));		
-		TopicSubscriber subscriber = this.queue.getSubscriber(topic, receiver);		
-		messages = subscriber.fetchWithLock(limit, timeout);
+		MessageQueue.log(topic.name, "fetch", String.format("receiver:%s, limit:%s, filter:%s", receiver, limit, filter));		
+		TopicSubscriber subscriber = this.queue.getSubscriber(topic, receiver);	
+		messages = subscriber.fetchWithLock(limit, timeout, filter);
 		
 		outputMessageQueue(subscriber.active, messages, request, response);		
 	}
