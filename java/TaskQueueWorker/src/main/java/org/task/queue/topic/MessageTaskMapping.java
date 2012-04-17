@@ -16,6 +16,7 @@ public class MessageTaskMapping {
 	public Lock queueLock = new ReentrantLock();;
 	public Lock triggerLock = new ReentrantLock();;
 	public URL queue = null;
+	public String filter = null;
 	public BuildableItem project = null;
 	public long lastPoll = 0;
 	private Queue<Message> messages = new ArrayBlockingQueue<Message>(50);

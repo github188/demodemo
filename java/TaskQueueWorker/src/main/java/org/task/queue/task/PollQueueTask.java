@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.Iterator;
 
 import net.sf.json.JSONArray;
@@ -85,6 +86,9 @@ public class PollQueueTask implements Runnable {
 			 */
 			OutputStream os = conn.getOutputStream();
 			os.write("format=json".getBytes());
+			if(mapping.filter != null && mapping.filter.trim().length() > 0){
+				os.write(("&filter=" + URLEncoder.encode(mapping.filter, "utf8")).getBytes());
+			}
 			os.close();
 			
 			byte[] buffer = new byte[1024 * 1024];

@@ -53,12 +53,19 @@ public class TaskQueuePlugin extends Plugin{
     			}}, 1000 * 10, 1000);
     }
 	
-	public void registerTopic(URL messageQueue, BuildableItem pri){
+	public synchronized void registerTopic(URL messageQueue, BuildableItem pri, String filter){
 		MessageTaskMapping mapping = new MessageTaskMapping();
 		mapping.queue = messageQueue;
 		mapping.project = pri;
+		mapping.filter = filter;
 		if(!mappingList.contains(mapping)){
 			mappingList.add(mapping);
+		}else {
+			for(MessageTaskMapping map: mappingList){
+				if(map.equals(mapping)){
+					map.filter = filter;
+				}
+			}
 		}
 	}
 	

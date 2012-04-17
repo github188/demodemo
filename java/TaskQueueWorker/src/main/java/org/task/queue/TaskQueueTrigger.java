@@ -21,13 +21,15 @@ public class TaskQueueTrigger extends Trigger<BuildableItem>{
 	
 	//private URL taskQueue = null;
 	public String taskQueue = null;
+	public String filter = null;
 	
     @DataBoundConstructor
-    public TaskQueueTrigger(String taskQueue)
+    public TaskQueueTrigger(String taskQueue, String filter)
     throws ANTLRException, IOException {
       super("");
       
       this.taskQueue = taskQueue;
+      this.filter = filter;
     }
     
     public void start(BuildableItem project, boolean newInstance) {
@@ -39,7 +41,7 @@ public class TaskQueueTrigger extends Trigger<BuildableItem>{
     	}catch(IOException e){
     		
     	}
-    	TaskQueuePlugin.getInstance().registerTopic(queue, this.job);
+    	TaskQueuePlugin.getInstance().registerTopic(queue, this.job, filter);
     }
   
     @Override

@@ -2,4 +2,7 @@
   <f:entry title="${%Task Queue URL}" field="taskQueue" >
     <f:textbox field="taskQueue" value="${it.taskQueue}" />
   </f:entry>
+  <f:entry title="${%Message Filter}" field="filter" >
+    <f:textbox field="taskQueue" value="${it.filter}" />
+  </f:entry>
 </j:jelly>
