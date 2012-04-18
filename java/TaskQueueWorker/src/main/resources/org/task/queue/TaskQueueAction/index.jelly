@@ -1,0 +1,36 @@
+
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <j:getStatic var="permission" className="hudson.model.Item" field="CREATE"/>
+    <l:layout norefresh="true" permission="${permission}" title="Task queue status">
+        <st:include page="sidepanel.jelly" class="hudson.model.View"/>
+        <l:main-panel>
+            <h4>Task Queue status list</h4>
+         
+            <table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+                <tr>
+                	<th>Task queue</th>
+                	<th>Job name</th>
+                	<th>Job status</th>
+                    <th>Size</th>
+                    <th>Last poll time</th>
+                </tr>
+                <j:forEach var="sch" items="${it.taskQueue}">
+                <tr>
+                	<td><a href="${sch.queue}">${sch.queue}</a>
+                	<br/>
+                	${sch.filter}
+                	</td>
+                	<td>${sch.project.name}</td>
+                	<td>${sch.projectStatus}</td>                	
+                    <td>${sch.pendingMessageSize}</td>
+                    <td>${sch.lastPoll}</td>
+                </tr>
+                </j:forEach>
+            </table>
+          
+          <br/>
+        </l:main-panel>
+    </l:layout>
+
+</j:jelly>

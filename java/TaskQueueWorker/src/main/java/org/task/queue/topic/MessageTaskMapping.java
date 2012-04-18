@@ -1,9 +1,11 @@
 package org.task.queue.topic;
 
 import hudson.model.BuildableItem;
+import hudson.model.Project;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +21,7 @@ public class MessageTaskMapping {
 	public String filter = null;
 	public BuildableItem project = null;
 	public long lastPoll = 0;
+	
 	private Queue<Message> messages = new ArrayBlockingQueue<Message>(50);
 	
 	//ArrayBlockingQueue(int capacity) 
@@ -40,6 +43,29 @@ public class MessageTaskMapping {
 			this.messages.add(msg);
 			msg.mapping = this;
 		}
+	}
+	
+	public int getPendingMessageSize(){
+		return messages.size();
+	}
+	
+	public Date getLastPoll(){
+		return new Date(lastPoll);
+	}
+	
+	public String getProjectStatus(){
+		String status = "";
+		Project p = (Project)project;
+		if(p.isDisabled()){
+			status = "disabled";
+		}else if(p.isInQueue()) {
+			status = "in queue";
+		}else if(p.isBuilding()){
+			status = "building";
+		}else {
+			status = "idle";
+		}
+		return status;
 	}
 	
 	public void ackMessageDone(Message msg){
