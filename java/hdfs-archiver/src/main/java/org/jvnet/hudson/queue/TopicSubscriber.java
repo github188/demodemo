@@ -38,6 +38,7 @@ public class TopicSubscriber {
 					result.add(msg);
 					msg.expired = expried;
 					msg.status = Message.LOCKED;
+					msg.retry++;
 					active.flushed = false;
 					if(result.size() >= limit){ 
 						break;
@@ -92,7 +93,7 @@ public class TopicSubscriber {
 					if(!stopMove){
 						removeHeadCount++;
 					}
-				}else if(!stopMove && msg.status != null && msg.status.equals(Message.PROCESSED)){
+				}else if(!stopMove && (msg.status != null && msg.status.equals(Message.PROCESSED) ||msg.retry > 3)){
 					removeHeadCount++;
 				}else if(msg.status == null || !msg.status.equals(Message.PROCESSED)){
 					stopMove = true;
