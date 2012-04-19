@@ -44,8 +44,11 @@ class GetTaokDetail(object):
                 return
             else:
                 raise
-
+        
+        self.load_cid_props(unicode(data['item']['cid']))
         #self.logger.info("data:%s" % data)
+        data['item']['props_str'] = self.convert_props_tostr(data['item']['props'])
+        logging.info(u"prpos:%s" % data['item']['props_str']);
         
         data['item']['traderates'] = self.get_comments(num_iid, data['item']['nick'])
         self.logger.info("start fetch main images...")
@@ -59,6 +62,7 @@ class GetTaokDetail(object):
         
         data['item']['main_images'] = main_image
         data['item']['desc_images'] = desc_images
+        
         #print data
         if os.environ.get('HUDSON_URL'):
             http.post_data("http://127.0.0.1:8924/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
@@ -127,6 +131,26 @@ class GetTaokDetail(object):
             images.append(url)
                      
         return images
+        
+    def load_cid_props(self, cid):
+        path = u"props/%s/%s.data" % (cid[-1], cid)
+        if not os.path.isfile(path):
+            self.props = {}
+            logging.info(u"Not found '%s' propertyes file." % cid)
+            return
+            
+        import codecs
+        with codecs.open(path, "r", "utf-8") as fd:
+            self.props = json.loads(fd.read(), "utf-8")
+            
+            
+    def convert_props_tostr(self, props):
+        props_data = re.compile(r"\d+:\d+")
+        def repl(m):
+            key = m.group(0).replace(":", "_")
+            return self.props.get(key, key)
+        
+        return re.sub(props_data, repl, props) 
 
 class Site(object):
     def __init__(self, ):
@@ -147,7 +171,11 @@ if __name__ == "__main__":
         local_url = sys.argv[2]
         logging.info("local_url:%s, taoke_url:%s" % (local_url, taoke_url))
         task = GetTaokDetail()
-        data = task(Site(), HTTPClient(), None, taoke_url, local_url)
+        http = HTTPClient()
+        if os.environ.get("http_proxy", ""):
+            http.set_proxy({'http': os.environ.get("http_proxy", "")})
+        
+        data = task(Site(), http, None, taoke_url, local_url)
     else:
         logging.info("python import_details.py <taoke_url> <local url>")
     print "done"
