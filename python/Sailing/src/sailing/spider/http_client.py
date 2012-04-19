@@ -125,7 +125,7 @@ class HTTPClient(object):
                     break
                 except Exception, e:
                     if re.search(r"(timed out|reset by peer)", str(e)):
-                        self.logger.info("Time out, sleep 5 seconds then retry.")
+                        self.logger.info("Time out, sleep 5 seconds then retry, url:%s" % url)
                         time.sleep(5)
                     else:
                         raise
