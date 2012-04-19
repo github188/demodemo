@@ -44,7 +44,13 @@ public class PollQueueTask implements Runnable {
 	
 	private void poll(){
 		JSONObject result = getMessages();
-		JSONArray data = result.getJSONArray("data");
+		JSONArray data = null;
+		if(result != null){
+			data = result.getJSONArray("data");
+		}
+		if(data == null){
+			log.info("failed to get message data.");
+		}
 		
 		Message m = null;
 		JSONObject obj = null;
