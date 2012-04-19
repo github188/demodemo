@@ -72,9 +72,12 @@ class GetTaokDetail(object):
             self.fd.write(u"%s-->%s --> %s\n" % (c['cid'], c['name'], c['parent_cid']))
             print (c['cid'], c['name'])
             if not c['is_parent']:
-                cid = unicode(c['cid'])
-                props = self._get_cate_props(cid)
-                self._save_props(cid, props)
+                try:
+                    cid = unicode(c['cid'])
+                    props = self._get_cate_props(cid)
+                    self._save_props(cid, props)
+                except Exception, e:
+                    logging.error("get cate props error:%s" % e)
         
     def open_file(self, path):
         import codecs
