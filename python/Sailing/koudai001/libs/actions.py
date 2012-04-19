@@ -60,6 +60,7 @@ class GetTaokDetail(object):
             http.post_data("http://data.deonwu84.com/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
         http.post(url, site.real_path("log/%s/%s.txt" % (num_iid[-1:], num_iid)), {'data': json.dumps(data['item'])})
         self.save_topic_data(data, local_abs_path)
+        self.logger.info("done process taoke, id:%s" % num_iid)
         
     def get_comments(self, num_iid, nick):
         data = self.taobao.taobao_traderates_search(num_iid=num_iid, seller_nick=nick, )
