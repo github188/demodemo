@@ -50,6 +50,7 @@ public class PollQueueTask implements Runnable {
 		}
 		if(data == null){
 			log.info("failed to get message data.");
+			return;
 		}
 		
 		Message m = null;
