@@ -10,6 +10,7 @@ import socket
 import os
 import urllib
 import time
+import re
 
 # timeout in seconds
 timeout = 10
@@ -123,7 +124,7 @@ class HTTPClient(object):
                         f.close()
                     break
                 except Exception, e:
-                    if "timed out" in str(e):
+                    if re.search(r"(timed out|reset by peer)", str(e)):
                         self.logger.info("Time out, sleep 5 seconds then retry.")
                         time.sleep(5)
                     else:
