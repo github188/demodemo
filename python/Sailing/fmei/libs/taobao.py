@@ -31,6 +31,7 @@ class Taobao(object):
     def _api_param_order(self, name):
         return {
             'taobao.itemcats.get': ['fields', 'parent_cid', 'cids'],
+            'taobao.itemprops.get': ['fields', 'cid', 'pid'],            
             'taobao.item.get': ['fields', 'num_iid'],
             'taobao.traderates.search': ['num_iid', 'seller_nick', 'page_no', 'page_size'],
         }.get(name, [])
