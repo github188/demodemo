@@ -20,7 +20,7 @@ class GetTaokDetail(object):
         from oss.oss_api import *
 
         self.logger = logging.getLogger("taoke")
-        self.taobao = Taobao('12395385', '53697d99eccd670191af0603d7256f77', http=http_client)
+        self.taobao = Taobao('12570801', 'fbab4f2ded890ae889e876ae0eee90b9', http=http_client)
         
     def generate_cate_tree(self, site, http, pid):
     
@@ -33,7 +33,7 @@ class GetTaokDetail(object):
                 parents_id += [ unicode(e['cid']) for e in sub_cate if e['is_parent'] ]                
                 self._save_and_output(sub_cate)
                 import time
-                time.sleep(1) # taobao call limit.
+                time.sleep(3) # taobao call limit.
         pass
         
     def _get_cate_list(self, cid):

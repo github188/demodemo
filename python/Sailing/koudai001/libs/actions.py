@@ -11,7 +11,7 @@ import os
 class GetTaokDetail(object):
     def __init__(self, ):
         self.logger = logging.getLogger("taoke")
-        self.taobao = Taobao('12395385', '53697d99eccd670191af0603d7256f77')
+        self.taobao = Taobao('12570801', 'fbab4f2ded890ae889e876ae0eee90b9')
         self.oss = OssAPI("storage.aliyun.com", "dcixul0kll5ubeisualf3q1d", "1fMUf01mRTfjXe/Ub4qEmLiu7tU=")
         
     def __call__(self, site, http, next_task, url, local_url, *args):
