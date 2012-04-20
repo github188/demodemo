@@ -7,6 +7,7 @@ import logging
 import json
 import os    
 import sqlite3
+import time
 
 def init_path():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,8 @@ class GetTaokDetail(object):
                 sub_cate = self._get_cate_list(cid)
                 parents_id += [ unicode(e['cid']) for e in sub_cate if e['is_parent'] ]                
                 self._save_and_output(sub_cate)
+                import time
+                time.sleep(1) # taobao call limit.
         pass
         
     def _get_cate_list(self, cid):
