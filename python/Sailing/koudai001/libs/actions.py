@@ -11,6 +11,17 @@ import os
 class GetTaokDetail(object):
     def __init__(self, ):
         self.logger = logging.getLogger("taoke")
+        
+    def __call__(self, site, http, next_task, url, local_url, *args):
+        if os.environ.get('HUDSON_URL'):
+            http.post_data("http://127.0.0.1:8924/queue/q/waiting_import?format=json", {'num_iid': num_iid, 'detail_url':url}, {})
+        else:
+            http.post_data("http://data.deonwu84.com/queue/q/waiting_import?format=json", {'num_iid': num_iid, 'detail_url':url}, {})
+        self.logger.info("post import data:%s" % url)
+
+class GetTaokDetailOld(object):
+    def __init__(self, ):
+        self.logger = logging.getLogger("taoke")
         self.taobao = Taobao('12570801', 'fbab4f2ded890ae889e876ae0eee90b9')
         self.oss = OssAPI("storage.aliyun.com", "dcixul0kll5ubeisualf3q1d", "1fMUf01mRTfjXe/Ub4qEmLiu7tU=")
         
