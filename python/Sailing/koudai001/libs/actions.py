@@ -13,6 +13,9 @@ class GetTaokDetail(object):
         self.logger = logging.getLogger("taoke")
         
     def __call__(self, site, http, next_task, url, local_url, *args):
+        num_iid = re.search(r"/(\d{7,})/", url).group(1)
+        self.logger.info("start fetch taoke details id:%s" % num_iid)
+    
         if os.environ.get('HUDSON_URL'):
             http.post_data("http://127.0.0.1:8924/queue/q/waiting_import?format=json", {'num_iid': num_iid, 'detail_url':url}, {})
         else:
