@@ -8,6 +8,11 @@ import logging
 import json
 import os    
 
+exists_path = os.path.isdir
+dir_name = os.path.dirname
+dir_name = os.path.dirname
+def make_path(path):
+    not exists_path(path) and os.makedirs(path)
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 
