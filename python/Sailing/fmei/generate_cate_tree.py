@@ -73,7 +73,7 @@ class GetTaokDetail(object):
             #self.fd.write("-->")
             #self.fd.write(c['name'])
             self.fd.write(u"%s-->%s --> %s\n" % (c['cid'], c['name'], c['parent_cid']))
-            print (c['cid'], c['name'])
+            print u"%s -> %s" % (c['cid'], c['name'])
             if not c['is_parent']:
                 try:
                     cid = unicode(c['cid'])

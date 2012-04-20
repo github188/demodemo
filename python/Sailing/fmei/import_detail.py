@@ -9,6 +9,8 @@ import json
 import os    
 
 
+CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def init_path():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     lib_path = os.path.join(cur_dir, 'libs')
@@ -133,7 +135,7 @@ class GetTaokDetail(object):
         return images
         
     def load_cid_props(self, cid):
-        path = u"props/%s/%s.data" % (cid[-1], cid)
+        path = u"%s/props/%s/%s.data" % (CUR_DIR, cid[-1], cid)
         if not os.path.isfile(path):
             self.props = {}
             logging.info(u"Not found '%s' propertyes file." % cid)

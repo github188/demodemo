@@ -10,6 +10,7 @@ import socket
 import os
 import urllib
 import time
+import re
 
 exists_path = os.path.isdir
 dir_name = os.path.dirname
