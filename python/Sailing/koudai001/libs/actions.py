@@ -21,6 +21,28 @@ class GetTaokDetail(object):
         else:
             http.post_data("http://data.deonwu84.com/queue/q/waiting_import?format=json", {'num_iid': num_iid, 'detail_url':url}, {})
         self.logger.info("post import data:%s" % url)
+        
+class GetTaokCate(object):
+    def __init__(self, ):
+        self.logger = logging.getLogger("taoke")
+        
+    def __call__(self, site, http, next_task, url, local_url, *args):
+        local_abs_path = site.real_path(local_url)
+        if os.path.isfile(local_abs_path):
+            self.logger.info("the topic is exist in local:%s, local:%s" % (url, local_abs_path))
+            return
+        
+        output_text = http.post_data(url, {})
+        for e in output_text.splitlines():
+            if not e.startswith("# "):continue
+            import_item = e[1:].strip()
+            num_iid = re.search(r"/(\d{7,})/", import_item).group(1)            
+            data = {'num_iid': num_iid, 'detail_url':import_item}
+            if os.environ.get('HUDSON_URL'):
+                http.post_data("http://127.0.0.1:8924/queue/q/waiting_import?format=json", data, {})
+            else:
+                http.post_data("http://data.deonwu84.com/queue/q/waiting_import?format=json", data, {})
+            self.logger.info("post import data:%s" % import_item)
 
 class GetTaokDetailOld(object):
     def __init__(self, ):
