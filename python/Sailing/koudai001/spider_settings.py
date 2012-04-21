@@ -4,5 +4,5 @@
 #
 
 ACTIONS = {'fetch_taoke_detail': ('actions.GetTaokDetail', {}),
-           'fetch_taoke_cate': {'actions.GetTaokCate', {})
+           'fetch_taoke_cate': ('actions.GetTaokCate', {}),
            }
