@@ -71,10 +71,10 @@ class GetTaokDetail(object):
         data['item']['desc_images'] = desc_images
         
         #print data
-        if os.environ.get('HUDSON_URL'):
-            http.post_data("http://127.0.0.1:8924/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
-        else:
-            http.post_data("http://data.deonwu84.com/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
+        #if os.environ.get('HUDSON_URL'):
+        #    http.post_data("http://127.0.0.1:8924/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
+        #else:
+        #    http.post_data("http://data.deonwu84.com/queue/q/imported_taoke?format=json", {'details': json.dumps(data['item']), 'num_iid': num_iid}, {})
         logging.info("")
         http.post(url, site.real_path("log/%s/%s.txt" % (num_iid[-1:], num_iid)), {'data': json.dumps(data['item'])})
         
