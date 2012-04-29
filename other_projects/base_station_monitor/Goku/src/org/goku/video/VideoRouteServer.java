@@ -90,7 +90,7 @@ public class VideoRouteServer {
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
 				60, 
 				TimeUnit.SECONDS, 
-				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
+				new LinkedBlockingDeque<Runnable>(core_thread_count * 200)
 				);
 		socketManager = new SocketManager(threadPool);
 		threadPool.execute(socketManager);

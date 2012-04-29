@@ -326,6 +326,8 @@ public class ASC100Client {
 		//报告设备处于错误状态。
 		if(System.currentTimeMillis() - this.lastActive > 60 * 1000 * 5 && 
 			System.currentTimeMillis() - lastErrorReport > 60 * 1000){
+			inBuffer.autoEscaped = true;
+			this.image = null;
 			this.eventProxy.connectionError(new ImageClientEvent(this));
 			this.lastErrorReport = System.currentTimeMillis(); 
 		}

@@ -71,7 +71,7 @@ public class MasterVideoServer {
 				settings.getInt(Settings.MAX_ROUTE_THREAD_COUNT, 500),
 				60, 
 				TimeUnit.SECONDS, 
-				new LinkedBlockingDeque<Runnable>(core_thread_count * 2)
+				new LinkedBlockingDeque<Runnable>(core_thread_count * 200)
 				);
 		
 		routeManager = new RouteServerManager(threadPool, storage);
