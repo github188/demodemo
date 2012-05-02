@@ -110,7 +110,7 @@ class GetTaokDetail(object):
                 import Image
                 im = Image.open(local)
                 (w, h) = im.size
-                if w < 200 or h < 200: continue
+                if w < 350 or h < 300: continue
                 im.thumbnail((128, 128), Image.ANTIALIAS)
                 if not exists_path(dir_name(local_thumb)): make_path(dir_name(local_thumb))
                 im.save(local_thumb)
