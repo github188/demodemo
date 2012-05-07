@@ -126,6 +126,7 @@ public class ArrayListMessageQueue {
 			Message[] _tmp = this.lazyloader.load(m.createTime, m.id, messages.size() - i);
 			messages.setRef(_tmp);
 			for(int j = 0; i < messages.size(); i++, j++){
+				if(j >= _tmp.length)break;
 				if(messages.get(i).id == _tmp[j].id){
 					messages.get(i).fillData(new SoftReference<Map<String, String>>(_tmp[j].getData()));
 				}
