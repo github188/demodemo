@@ -81,6 +81,7 @@ class GetTaokDetail(object):
         # http://fmei.sinaapp.com/queue/import_detail/16432132380/
         auto_sort_url = url.replace("import_detail", "auto_taoke_sort")
         http.post(auto_sort_url, site.real_path("log/%s/%s_auto.txt" % (num_iid[-1:], num_iid)), {'data': ''})
+        logging.info(auto_sort_url)
         #self.save_topic_data(data, local_abs_path)
         
     def get_comments(self, num_iid, nick):
