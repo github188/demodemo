@@ -33,15 +33,13 @@ class GetTaokCate(object):
             return
         
         output_text = http.post_data(url, {})
+        self.logger.info("-----------%s------------------------" % url);
+        self.logger.info(output_text);
         for e in output_text.splitlines():
             if not e.startswith("# "):continue
             import_item = e[1:].strip()
             num_iid = re.search(r"/(\d{7,})/", import_item).group(1)            
             data = {'num_iid': num_iid, 'detail_url':import_item}
-            if os.environ.get('HUDSON_URL'):
-                http.post_data("http://127.0.0.1:8924/queue/q/waiting_import?format=json", data, {})
-            else:
-                http.post_data("http://data.deonwu84.com/queue/q/waiting_import?format=json", data, {})
             self.logger.info("post import data:%s" % import_item)
 
 class GetTaokDetailOld(object):
