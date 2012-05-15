@@ -3,7 +3,7 @@ from oss.oss_xml_handler import *
 from oss.oss_api import *
 from sailing.common.common import *
 import re
-from time import localtime, strftime
+from time import localtime, strftime, sleep
 import logging
 import json
 import os
@@ -33,7 +33,7 @@ class GetTaokCate(object):
             return
         
         output_text = http.post_data(url, {})
-        self.logger.info("-----------%s------------------------" % url);
+        self.logger.info("-----------%s   --------------" % url);
         self.logger.info(output_text);
         for e in output_text.splitlines():
             if not e.startswith("# "):continue
@@ -41,6 +41,7 @@ class GetTaokCate(object):
             num_iid = re.search(r"/(\d{7,})/", import_item).group(1)            
             data = {'num_iid': num_iid, 'detail_url':import_item}
             self.logger.info("post import data:%s" % import_item)
+            sleep(5)
 
 class GetTaokDetailOld(object):
     def __init__(self, ):
