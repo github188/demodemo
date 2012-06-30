@@ -63,7 +63,7 @@ class GetTaokDetail(object):
             data['item']['traderates_count'] = traderates.get('total_results', 0)
             self.logger.info("traderates_count:%s" % data['item']['traderates_count'])
         except Exception, e:
-            pass
+            self.logger.info("failed to get comments:%s" % e)
         
         self.logger.info("start fetch main images...")
         index = 0
