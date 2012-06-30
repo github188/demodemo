@@ -4,6 +4,7 @@ from time import localtime, strftime
 import os
 import json
 import urllib
+import logging
 #os.environ['TZ'] = 'Asia/Shanghai'
 #tzset()
 #'2012-04-14 10:03:00'
@@ -34,6 +35,7 @@ class Taobao(object):
             'taobao.itemprops.get': ['fields', 'cid', 'pid'],            
             'taobao.item.get': ['fields', 'num_iid'],
             'taobao.traderates.search': ['num_iid', 'seller_nick', 'page_no', 'page_size'],
+            'taobao_traderates_get': ['fields', 'rate_type', 'role', 'result', 'page_no', 'page_size', 'start_date', 'end_date', 'tid', 'use_has_next', 'num_iid']
         }.get(name, [])
         
     def _default_http(self, ):
@@ -78,6 +80,8 @@ class CallProxy(object):
         
         data = json.loads(resp, 'utf-8')
         if data.get('error_response'):
+            #logging.info("response:%s" % resp)
+            logging.info("api:%s, response:%s" % (self.sys_param['method'], resp))
             raise TaobaoException(data.get('error_response'))
         return data
         

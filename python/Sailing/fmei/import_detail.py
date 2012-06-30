@@ -57,10 +57,13 @@ class GetTaokDetail(object):
         data['item']['props_str'] = self.convert_props_tostr(data['item']['props'])
         logging.info(u"prpos:%s" % data['item']['props_str']);
         
-        traderates = self.get_comments(num_iid, data['item']['nick'])
-        data['item']['traderates'] = traderates.get("trade_rates", {}).get('trade_rate', [])        
-        data['item']['traderates_count'] = traderates.get('total_results', 0)
-        self.logger.info("traderates_count:%s" % data['item']['traderates_count'])
+        try:
+            traderates = self.get_comments(num_iid, data['item']['nick'])
+            data['item']['traderates'] = traderates.get("trade_rates", {}).get('trade_rate', [])        
+            data['item']['traderates_count'] = traderates.get('total_results', 0)
+            self.logger.info("traderates_count:%s" % data['item']['traderates_count'])
+        except Exception, e:
+            pass
         
         self.logger.info("start fetch main images...")
         index = 0
@@ -89,7 +92,7 @@ class GetTaokDetail(object):
         #self.save_topic_data(data, local_abs_path)
         
     def get_comments(self, num_iid, nick):
-        data = self.taobao.taobao_traderates_search(num_iid=num_iid, seller_nick=nick, )
+        data = self.taobao.taobao_traderates_get(num_iid=num_iid, seller_nick=nick, rate_type='get', role='buyer')
         comments = data.get("traderates_search_response", {}) #.get("trade_rates", {}) #.#get('trade_rate', [])
         #self.logger.info("comments:%s" % comments)
         
