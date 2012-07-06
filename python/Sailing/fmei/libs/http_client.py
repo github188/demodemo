@@ -156,6 +156,40 @@ class HTTPClient(object):
             data += ch
         return data
     
+    def get_real_url(self, url, req_data=None, headers={}):
+        class MyHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+            def http_error_302(self, req, fp, code, msg, headers):
+                print "Cookie Manip Right Here:%s, headers:%s" % (str(locals()), str(headers))
+                return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
+
+            http_error_301 = http_error_303 = http_error_307 = http_error_302
+
+        data = None
+        try:
+            #httplib.HTTPConnection.debuglevel = 1
+            if req_data:
+                request = urllib2.Request(url, req_data)
+            else:
+                request = urllib2.Request(url)
+                
+            request.add_header('Accept-encoding', 'gzip') 
+            for k, v in headers.iteritems():
+                request.add_header(k, v)
+            
+            h = [MyHTTPRedirectHandler(),] + self._http_handlers()
+                            
+            opener = urllib2.build_opener(*h)
+            f = opener.open(request)
+            print "header:%s" % f.headers
+            #data = self._read_data(f)
+            #print "xxx:%s" % data
+            f.close()
+            
+        except urllib2.HTTPError, e:
+            raise
+        
+        
+    
     def close(self):
         self.logger.info("save cookies to 'http_cookie.txt'....")
         self.cookies.save("http_cookie.txt", True, True)

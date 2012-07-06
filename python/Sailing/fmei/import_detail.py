@@ -130,7 +130,7 @@ class GetTaokDetail(object):
                 self.logger.info("thumbnail %s -> %s " % (url, data[url]))
             except Exception, e:
                 logging.info("error:%s" % e)
-                data[url] = url
+                #data[url] = url
                 
         return (data, index)
 
