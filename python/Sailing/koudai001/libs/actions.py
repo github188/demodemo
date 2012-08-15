@@ -32,7 +32,11 @@ class GetTaokCate(object):
             self.logger.info("the topic is exist in local:%s, local:%s" % (url, local_abs_path))
             return
         
-        output_text = http.post_data(url, {})
+        try:
+            self.logger.info("open url:%s" % url)
+            output_text = http.get(url)
+        except:
+            pass
         self.logger.info("-----------%s   --------------" % url);
         self.logger.info(output_text)
         sleep(5)
