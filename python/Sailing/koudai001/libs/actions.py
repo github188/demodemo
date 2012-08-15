@@ -36,6 +36,7 @@ class GetTaokCate(object):
             self.logger.info("open url:%s" % url)
             output_text = http.get(url)
         except:
+            output_text = 'error to get url.'		
             pass
         self.logger.info("-----------%s   --------------" % url);
         self.logger.info(output_text)
