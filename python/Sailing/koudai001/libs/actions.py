@@ -40,7 +40,7 @@ class GetTaokCate(object):
             pass
         self.logger.info("-----------%s   --------------" % url);
         self.logger.info(output_text)
-        sleep(5)
+        sleep(1)
 
 class GetTaokDetailOld(object):
     def __init__(self, ):
